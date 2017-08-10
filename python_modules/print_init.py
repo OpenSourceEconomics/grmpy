@@ -30,7 +30,6 @@ def print_dict(dict_, file_name):
                 key_ = 'coeff'
 
                 for i in range(len(dict_[label][key_])):
-                    print(dict_[label]['coeff'][i])
                     str_ = '{0:<10} {1:20.4f}\n'
                     file_.write(str_.format(key_, dict_[label]['coeff'][i]))
             else:
