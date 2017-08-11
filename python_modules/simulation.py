@@ -21,10 +21,11 @@ def simulation(init_dict):
     C_coeffs = init_dict['COST']['all']
     coeffs = [Y0_coeffs, Y1_coeffs, C_coeffs]
 
-    U0_sd, U1_sd, V_sd = init_dict['DIST']['all_sd']
+    U0_sd, U1_sd, V_sd = init_dict['DIST']['all'][:3]
     vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
-    U01, U0_V, U1_V = init_dict['DIST']['all_cov']
+    U01, U0_V, U1_V = init_dict['DIST']['all'][3:]
     covar_ = [U01**2, U0_V**2, U1_V**2]
+    print(U01, U0_V, U1_V)
 
     num_covars_out = Y1_coeffs.shape[0]
     num_covars_cost = C_coeffs.shape[0]
@@ -90,7 +91,7 @@ def _simulate_outcomes(exog, err, coeff):
 
     cost = cost_exp + err[0:, 2]
 
-    D = np.array((expected_benefits - cost > 0).astype(float))
+    D = np.array((expected_benefits - cost > 0).astype(int))
 
     # Realized outcome in both cases for each individual
 
@@ -108,7 +109,7 @@ def _write_output(end, exog, source, unobserved=False):
     and saves the data in an html file/pickle'''
 
     # Stack arrays
-    data = np.column_stack((end[0], end[1], exog[0], exog[1]))
+    data = np.column_stack((end[0], end[1], exog[0], exog[1],end[2], end[3]))
 
     # List of column names
     column = ['Y', 'D']
@@ -119,29 +120,22 @@ def _write_output(end, exog, source, unobserved=False):
     for i in range(exog[1].shape[1]):
         str_ = 'Z_' + str(i)
         column.append(str_)
-
+    column.append('Y1')
+    column.append('Y0')
+    header={}
+    for i in range(len(column)):
+        header[str(i)] = column[i]
+    print(header)
     # Generate data frame, save it with pickle and create a html file
 
-    if not unobserved:
 
-        df = pd.DataFrame(data=data, columns=column)
+    df = pd.DataFrame(data=data, columns=column)
 
-        df.to_pickle(source)
+    df.to_pickle(source + '.pkl')
 
-        pd.DataFrame.to_html(df, source + '.html',
-                             float_format='%.3f', header=column)
+    pd.DataFrame.to_html(df, source + '.html',
+                         float_format='%.3f', header=column)
+    df.to_stata('./' + source + '.dat')
 
-    else:
-        column.append('Y1')
-        column.append('Y0')
-
-        data = np.column_stack((data, end[2], end[3]))
-
-        df = pd.DataFrame(data=data, columns=column)
-
-        df.to_pickle(source)
-
-        pd.DataFrame.to_html(df, source + '.html',
-                             float_format='%.3f', header=column)
 
     return df

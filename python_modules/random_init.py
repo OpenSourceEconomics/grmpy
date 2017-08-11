@@ -1,22 +1,30 @@
 
 import numpy as np
+import random
+import string
 
 AGENTS = 1000
-SOURCE = 'dataset'
 
 
 def generate_random_dict():
     """generates a random initialization dictionary"""
+    SOURCE = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(8)])
 
     dict_ = {}
+    treated_num = np.random.randint(4, 10)
+    cost_num = np.random.randint(4, 10)
 
     # Coefficients
     for key_ in ['UNTREATED', 'TREATED', 'COST']:
 
         dict_[key_] = {}
 
-        for i in range(4):
-            dict_[key_]['coeff'] = np.random.uniform(0., 2., [4])
+        if key_ in ['UNTREATED', 'TREATED']:
+
+            dict_[key_]['coeff'] = np.random.normal(0.0, 2., [treated_num])
+
+        else:
+            dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num])
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -33,14 +41,19 @@ def generate_random_dict():
     # Variance and covariance parameters
     A = np.random.rand(3, 3)
     B = np.dot(A, A.transpose())
+    print(B)
 
-    for i in [0, 1, 2]:
-        dict_['DIST']['sigma' + str(i + 1)] = B[i, i]
+    dict_['DIST']['coeff'] = []
 
-    for i in [2, 3, ]:
-        if i == 2:
-            dict_['DIST']['sigma21'] = B[1, 0]
-        if i == 3:
-            dict_['DIST']['sigma31'] = B[2, 0]
-            dict_['DIST']['sigma32'] = B[2, 1]
+    for i in range(3):
+        dict_['DIST']['coeff'].append(B[i, i])
+
+    dict_['DIST']['coeff'].append(B[1, 0])
+    dict_['DIST']['coeff'].append(B[2, 0])
+    dict_['DIST']['coeff'].append(B[2, 1])
+
+    dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff'])
+
+
     return dict_
+

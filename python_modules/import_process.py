@@ -65,23 +65,12 @@ def _auxiliary(dict_):
     """
     dict_['AUX'] = {}
 
-    for key_ in ['UNTREATED', 'TREATED', 'COST']:
+    for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
         dict_[key_]['all'] = dict_[key_]['coeff']
         dict_[key_]['all'] = np.array(dict_[key_]['all'])
 
-    dict_['DIST']['all_sd'] = []
-    dict_['DIST']['all_cov'] = []
 
     # Create keys that contain all standard deviation and covariance parameters
-    for key_ in sorted(dict_['DIST'].keys()):
-        if key_ not in ['all_sd', 'all_cov']:
-            if key_ in ['sigma1', 'sigma2', 'sigma3']:
-                dict_['DIST']['all_sd'].append(dict_['DIST'][key_])
-            elif key_ in ['sigma21', 'sigma31', 'sigma32']:
-                dict_['DIST']['all_cov'].append(dict_['DIST'][key_])
-
-    dict_['DIST']['all_sd'] = np.array(dict_['DIST']['all_sd'])
-    dict_['DIST']['all_cov'] = np.array(dict_['DIST']['all_cov'])
 
     # Number of covariates
     num_covars_out = len(dict_['TREATED']['all'])
@@ -98,16 +87,11 @@ def _auxiliary(dict_):
     dict_['AUX']['init_values'] = []
 
     for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-        if key_ == 'DIST':
-            dict_['AUX']['init_values'] += dict_[key_]['all_sd'].tolist()
-            dict_['AUX']['init_values'] += dict_[key_]['all_cov'].tolist()
-        else:
-            dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
+        dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
 
         for j in sorted(dict_[key_].keys()):
-            if j in ['all_sd', 'all_cov', 'all']:
+            if j in ['all']:
                 pass
-
             else:
                 del dict_[key_][j]
 

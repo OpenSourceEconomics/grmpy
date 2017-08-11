@@ -3,6 +3,8 @@ def print_dict(dict_, file_name):
 
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
 
+
+
     with open(file_name, 'w') as file_:
 
         for label in labels:
@@ -25,19 +27,11 @@ def print_dict(dict_, file_name):
                         file_.write(str_.format(
                             key_, dict_['SIMULATION'][key_]))
 
-            elif label in ['TREATED', 'UNTREATED', 'COST']:
-
+            elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 key_ = 'coeff'
 
                 for i in range(len(dict_[label][key_])):
                     str_ = '{0:<10} {1:20.4f}\n'
                     file_.write(str_.format(key_, dict_[label]['coeff'][i]))
-            else:
-                keys_ = ['sigma1', 'sigma2', 'sigma3', 'sigma21',
-                         'sigma31', 'sigma32']
-
-                for key_ in keys_:
-                    str_ = '{0:<10} {1:20.4f}\n'
-                    file_.write(str_.format(key_, dict_[label][key_]))
 
             file_.write('\n')
