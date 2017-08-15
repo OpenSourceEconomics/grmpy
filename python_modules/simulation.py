@@ -4,6 +4,10 @@ import numpy as np
 import pandas as pd
 import pickle
 
+from info import _print_info
+from write import _write_output
+
+
 
 def simulation(init_dict):
     """Main function, defines variables by using the init_dict.
@@ -15,6 +19,7 @@ def simulation(init_dict):
     # Distribute information
     num_agents = init_dict['SIMULATION']['agents']
     source = init_dict['SIMULATION']['source']
+    is_deterministic = init_dict['DETERMINISTIC']
 
     Y1_coeffs = init_dict['TREATED']['all']
     Y0_coeffs = init_dict['UNTREATED']['all']
@@ -25,36 +30,39 @@ def simulation(init_dict):
     vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
     U01, U0_V, U1_V = init_dict['DIST']['all'][3:]
     covar_ = [U01**2, U0_V**2, U1_V**2]
-    print(U01, U0_V, U1_V)
 
     num_covars_out = Y1_coeffs.shape[0]
     num_covars_cost = C_coeffs.shape[0]
 
     # Simulate observables
+    if not is_deterministic:
+        means = np.tile(0.0, num_covars_out)
+        covs = np.identity(num_covars_out)
+        X = np.random.multivariate_normal(means, covs, num_agents)
 
-    means = np.tile(0.0, num_covars_out)
-    covs = np.identity(num_covars_out)
-    X = np.random.multivariate_normal(means, covs, num_agents)
-
-    means = np.tile(0.0, num_covars_cost)
-    covs = np.identity(num_covars_cost)
-    Z = np.random.multivariate_normal(means, covs, num_agents)
-
-    Z[:, 0], X[:, 0] = 1.0, 1.0
+        means = np.tile(0.0, num_covars_cost)
+        covs = np.identity(num_covars_cost)
+        Z = np.random.multivariate_normal(means, covs, num_agents)
+        Z[:, 0], X[:, 0] = 1.0, 1.0
+    else:
+        X = np.array([])
+        Z = np.array([])
 
     # Simulate unobservables
     # Read information about the distribution and the specific means from the init dic
 
-    U = _simulate_unobservables(covar_, vars_, num_agents)
+    U, V = _simulate_unobservables(covar_, vars_, num_agents)
 
     # Simulate endogeneous variables
 
     Y, D, Y_1, Y_0 = _simulate_outcomes([X, Z], U, coeffs)
 
     # Write output file
-    df = _write_output([Y, D, Y_1, Y_0], [X, Z], source)
+    df = _write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source, is_deterministic)
 
-    return df, Y, Y_1, Y_0, D
+    _print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs], source)
+
+    return df, Y, Y_1, Y_0, D, X, Z, U, V
 
 
 def _simulate_unobservables(covar, vars_, num_agents):
@@ -72,7 +80,8 @@ def _simulate_unobservables(covar, vars_, num_agents):
 
     U = np.random.multivariate_normal([0.0, 0.0, 0.0], cov_, num_agents)
 
-    return U
+    V = U[0:, 2] - U[0:, 1] + U[0:, 0]
+    return U, V
 
 
 def _simulate_outcomes(exog, err, coeff):
@@ -104,38 +113,3 @@ def _simulate_outcomes(exog, err, coeff):
     return Y, D, Y_1, Y_0
 
 
-def _write_output(end, exog, source, unobserved=False):
-    '''Converts simulated data to a panda data frame
-    and saves the data in an html file/pickle'''
-
-    # Stack arrays
-    data = np.column_stack((end[0], end[1], exog[0], exog[1],end[2], end[3]))
-
-    # List of column names
-    column = ['Y', 'D']
-
-    for i in range(exog[0].shape[1]):
-        str_ = 'X_' + str(i)
-        column.append(str_)
-    for i in range(exog[1].shape[1]):
-        str_ = 'Z_' + str(i)
-        column.append(str_)
-    column.append('Y1')
-    column.append('Y0')
-    header={}
-    for i in range(len(column)):
-        header[str(i)] = column[i]
-    print(header)
-    # Generate data frame, save it with pickle and create a html file
-
-
-    df = pd.DataFrame(data=data, columns=column)
-
-    df.to_pickle(source + '.pkl')
-
-    pd.DataFrame.to_html(df, source + '.html',
-                         float_format='%.3f', header=column)
-    df.to_stata('./' + source + '.dat')
-
-
-    return df

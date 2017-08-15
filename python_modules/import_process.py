@@ -1,4 +1,5 @@
 
+
 import shlex
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import pickle
 # Import process
 
 
-def import_process(file_):
+def import_process(file_, is_deterministic, is_zero_coeff=False):
     '''reads the initialization file and provides an dictionary with parameters for the simulation'''
     dict_ = {}
     for line in open(file_).readlines():
@@ -30,18 +31,19 @@ def import_process(file_):
 
         _process(list_, dict_, keyword)
 
-    dict_ = _auxiliary(dict_)
+    dict_ = _auxiliary(dict_, is_deterministic)
 
     return dict_
 
 
-def _process(list_, dict_, keyword):
+def _process(list_, dict_, keyword, is_zero_coeff = False):
     '''processes keyword parameters'''
     name, val = list_[0], list_[1]
 
     if name not in dict_[keyword].keys():
         if name in ['coeff']:
             dict_[keyword][name] = []
+
 
     # Type conversion
     if name in ['agents', 'seed']:
@@ -60,14 +62,24 @@ def _process(list_, dict_, keyword):
     return dict_
 
 
-def _auxiliary(dict_):
+def _auxiliary(dict_, is_deterministic):
     """
     """
     dict_['AUX'] = {}
 
     for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
-        dict_[key_]['all'] = dict_[key_]['coeff']
-        dict_[key_]['all'] = np.array(dict_[key_]['all'])
+        if key_ in ['UNTREATED', 'TREATED', 'COST']:
+            if not is_deterministic:
+                dict_[key_]['all'] = dict_[key_]['coeff']
+                dict_[key_]['all'] = np.array(dict_[key_]['all'])
+            else:
+                dict_[key_]['all'] = np.array([])
+        else:
+            dict_[key_]['all'] = dict_[key_]['coeff']
+            dict_[key_]['all'] = np.array(dict_[key_]['all'])
+
+
+
 
 
     # Create keys that contain all standard deviation and covariance parameters
@@ -94,6 +106,7 @@ def _auxiliary(dict_):
                 pass
             else:
                 del dict_[key_][j]
+    dict_['DETERMINISTIC']= is_deterministic
 
     return dict_
 

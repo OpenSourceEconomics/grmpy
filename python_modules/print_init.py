@@ -1,3 +1,5 @@
+
+
 def print_dict(dict_, file_name):
     """Creates an init file from a given dictionary"""
 
@@ -5,7 +7,7 @@ def print_dict(dict_, file_name):
 
 
 
-    with open(file_name, 'w') as file_:
+    with open(file_name + '.grmpy.ini', 'w') as file_:
 
         for label in labels:
 
