@@ -33,7 +33,7 @@ class TestClass():
         assert V.all() == (U[0:, 2] - U[0:, 1] + U[0:, 0]).all()
 
     def test2(self):
-        '''Testing if relationships hold if process is deterministic'''
+        '''Testing whether relationships hold if process is deterministic'''
 
         is_deterministic, dict_= generate_random_dict(deterministic = 1.0)
         init_file_name = dict_['SIMULATION']['source']
@@ -47,7 +47,7 @@ class TestClass():
         assert Y[D == 0].all() == Y_0.all()
         assert V.all() == (U[0:, 2] - U[0:, 1] + U[0:, 0]).all()
     def test3(self):
-        '''Testing if relationships hold if coefficients are zero in different setups'''
+        '''Testing whether relationships hold if coefficients are zero in different setups'''
 
 
         # All Coefficients
