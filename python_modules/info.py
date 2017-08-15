@@ -12,17 +12,17 @@ def _collect_information(data_frame):
     untreated_count= Indiv - treatment_count
     # Average Treatment Effect
     ATE = np.mean(data_frame.Y1 - data_frame.Y0)
-    # Treatment of the Treated
+    # Treatment on Treated
     TT = np.mean(data_frame.Y1[data_frame.D == 1])
     - np.mean(data_frame.Y0[data_frame.D == 1])
-    # Treatment of Untreated
+    # Treatment on Untreated
     TUT = np.mean(data_frame.Y0[data_frame.D == 1])
     - np.mean(data_frame.Y0[data_frame.D == 0])
     # Average observed wage overall and by treatment status
     Mean = np.mean(data_frame.Y)
     Mean_treat = np.mean(data_frame.Y[data_frame.D == 1])
     Mean_untreat = np.mean(data_frame.Y[data_frame.D == 0])
-    # Print out model parameterization
+
     data = {
         'Number of Agents': Indiv, 'Treated Agents': treatment_count, 'Untreated Agents': untreated_count, 'Average Treatment Effect': ATE, 'Treatment on Treated': TT,
         'Treatment on Untreated': TUT, 'Mean': Mean, 'Mean Treated': Mean_treat, 'Mean Untreated': Mean_untreat
@@ -36,10 +36,10 @@ def _collect_information(data_frame):
 
 
 def _print_info(data_frame, coeffs, file_name):
+    '''Prints an info file for the specififc dataset'''
 
     data_ = _collect_information(data_frame)
 
-    '''Prints an info file for the specififc dataset'''
     labels= ['Simulation', 'Additional Information', 'Effects', 'Model Paramerization']
 
     with open(file_name + '.grmpy.info', 'w') as file_:
