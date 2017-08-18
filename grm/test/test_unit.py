@@ -157,9 +157,9 @@ class TestClass():
                 os.remove(f)
 
     def test4(self):
-        constraints(probability=0.0, Agents=1)
+        constr = constraints(probability=0.0, Agents=1)
         for i in range(100):
-            dict_ = generate_random_dict()
+            dict_ = generate_random_dict(constr)
             print_dict(dict_)
             dict_ = import_process('test.grmpy.ini')
             df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
