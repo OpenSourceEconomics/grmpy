@@ -1,6 +1,5 @@
 
-
-def print_dict(dict_, file_name):
+def print_dict(dict_, file_name='test'):
     """Creates an init file from a given dictionary"""
 
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']

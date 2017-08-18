@@ -30,6 +30,8 @@ def _write_output(end, exog, err, source, is_deterministic):
     # Generate data frame, save it with pickle and create a html file
 
     df=pd.DataFrame(data=data, columns=column)
+    df['D'] = df['D'].apply(np.int64)
+
 
     df.to_pickle(source + '.grmpy.pkl')
 

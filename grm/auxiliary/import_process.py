@@ -7,7 +7,7 @@ import pickle
 # Import process
 
 
-def import_process(file_, is_deterministic, is_zero_coeff=False):
+def import_process(file_):
     '''reads the initialization file and provides an dictionary with parameters for the simulation'''
     dict_ = {}
     for line in open(file_).readlines():
@@ -31,12 +31,12 @@ def import_process(file_, is_deterministic, is_zero_coeff=False):
 
         _process(list_, dict_, keyword)
 
-    dict_ = _auxiliary(dict_, is_deterministic)
+    dict_ = _auxiliary(dict_)
 
     return dict_
 
 
-def _process(list_, dict_, keyword, is_zero_coeff = False):
+def _process(list_, dict_, keyword):
     '''processes keyword parameters'''
     name, val = list_[0], list_[1]
 
@@ -62,10 +62,15 @@ def _process(list_, dict_, keyword, is_zero_coeff = False):
     return dict_
 
 
-def _auxiliary(dict_, is_deterministic):
+def _auxiliary(dict_):
     """
     """
     dict_['AUX'] = {}
+    if 'coeff' not in dict_['TREATED'].keys():
+        is_deterministic = True
+    else:
+        is_deterministic = False
+
 
     for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
         if key_ in ['UNTREATED', 'TREATED', 'COST']:

@@ -3,9 +3,16 @@
 import numpy as np
 import pandas as pd
 import pickle
+import sys
+import os.path
 
-from info import _print_info
-from write import _write_output
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+
+from auxiliary.write import _write_output
+from auxiliary.info import _print_info
+
+
 
 
 
@@ -30,6 +37,7 @@ def simulation(init_dict):
     vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
     U01, U0_V, U1_V = init_dict['DIST']['all'][3:]
     covar_ = [U01**2, U0_V**2, U1_V**2]
+    Dist_coeffs = init_dict['DIST']['all']
 
     num_covars_out = Y1_coeffs.shape[0]
     num_covars_cost = C_coeffs.shape[0]
@@ -60,7 +68,7 @@ def simulation(init_dict):
     # Write output file
     df = _write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source, is_deterministic)
 
-    _print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs], source)
+    _print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
 
     return df, Y, Y_1, Y_0, D, X, Z, U, V
 
@@ -74,7 +82,6 @@ def _simulate_unobservables(covar, vars_, num_agents):
     cov_[0, 1], cov_[1, 0] = covar[0], covar[0]
     cov_[0, 2], cov_[2, 0] = covar[1], covar[1]
     cov_[1, 2], cov_[2, 1] = covar[2], covar[2]
-    print()
 
     # Option to integrate case specifications for different distributions
 
