@@ -11,12 +11,13 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from auxiliary.write import _write_output
 from auxiliary.info import _print_info
+from auxiliary.import_process import import_process
 
 
 
 
 
-def simulation(init_dict):
+def simulate(init_dict):
     """Main function, defines variables by using the init_dict.
     It creates the endogeneous variables X and Z and relies
     on the _simulate_outcome and _simulate_unobservables functions

@@ -11,9 +11,9 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 
 
-from simulation.simulation import simulation
-from simulation.random_init import generate_random_dict
-from simulation.random_init import constraints
+from simulation.simulation import simulate
+from random_init import generate_random_dict
+from random_init import constraints
 from auxiliary.import_process import import_process
 from auxiliary.print_init import print_dict
 
@@ -21,11 +21,11 @@ from auxiliary.print_init import print_dict
 class TestClass():
     def test1(self):
         '''Testing relations in simulated dataset'''
-        for i in range(100):
+        for i in range(10):
             dict_ = generate_random_dict()
             print_dict(dict_)
             dict_ = import_process('test.grmpy.ini')
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             # endogeneous variables
 
@@ -46,11 +46,11 @@ class TestClass():
     def test2(self):
         '''Testing if relationships hold if process is deterministic'''
         constr = constraints(probability=1.)
-        for i in range(100):
+        for i in range(10):
             dict_ = generate_random_dict(constr)
             print_dict(dict_)
             dict_ = import_process('test.grmpy.ini')
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == U[0:, 1].all()
             assert Y_0.all() == U[0:, 0].all()
@@ -66,7 +66,7 @@ class TestClass():
 
     def test3(self):
         '''Testing if relationships hold if coefficients are zero in different setups'''
-        for i in range(100):
+        for i in range(10):
         # All Coefficients
             dict_ = generate_random_dict()
             print_dict(dict_)
@@ -75,7 +75,7 @@ class TestClass():
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 dict_[key_]['all'] = np.array([0] * len(dict_[key_]['all']))
 
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == U[0:, 1].all()
             assert Y_0.all() == U[0:, 0].all()
@@ -91,7 +91,7 @@ class TestClass():
             for key_ in ['TREATED', 'UNTREATED']:
                 dict_[key_]['all'] = np.array([0] * len(dict_[key_]['all']))
 
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == U[0:, 1].all()
             assert Y_0.all() == U[0:, 0].all()
@@ -106,7 +106,7 @@ class TestClass():
 
             dict_['TREATED']['all'] = np.array([0] * len(dict_['TREATED']['all']))
 
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == U[0:, 1].all()
             assert Y_0.all() == (
@@ -124,7 +124,7 @@ class TestClass():
             dict_['UNTREATED']['all'] = np.array(
                 [0] * len(dict_['UNTREATED']['all']))
 
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == (
                 np.dot(dict_['TREATED']['all'], X.T) + U[0:, 1]).all()
@@ -140,7 +140,7 @@ class TestClass():
 
             dict_['COST']['all'] = np.array([0] * len(dict_['COST']['all']))
 
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == (
                 np.dot(dict_['TREATED']['all'], X.T) + U[0:, 1]).all()
@@ -158,11 +158,11 @@ class TestClass():
 
     def test4(self):
         constr = constraints(probability=0.0, Agents=1)
-        for i in range(100):
+        for i in range(10):
             dict_ = generate_random_dict(constr)
             print_dict(dict_)
             dict_ = import_process('test.grmpy.ini')
-            df, Y, Y_1, Y_0, D, X, Z, U, V = simulation(dict_)
+            df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             files = [f for f in os.listdir('.') if os.path.isfile(f)]
             files = [f for f in files if '.grmpy.' in f]
@@ -172,7 +172,7 @@ class TestClass():
 
     def test5(self):
         '''Test the generating and  import process'''
-        for i in range(100):
+        for i in range(10):
             gen_dict = generate_random_dict()
             init_file_name = gen_dict['SIMULATION']['source']
             print_dict(gen_dict, init_file_name)
