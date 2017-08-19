@@ -1,6 +1,89 @@
-
-import numpy as np
 import pandas as pd
+import numpy as np
+
+
+def _simulate_unobservables(covar, vars_, num_agents):
+    """Creates the error term values for each type of error term variable
+    """
+    # Create a Covariance matrix
+    cov_ = np.diag(vars_)
+
+    cov_[0, 1], cov_[1, 0] = covar[0], covar[0]
+    cov_[0, 2], cov_[2, 0] = covar[1], covar[1]
+    cov_[1, 2], cov_[2, 1] = covar[2], covar[2]
+
+    # Option to integrate case specifications for different distributions
+
+    U = np.random.multivariate_normal([0.0, 0.0, 0.0], cov_, num_agents)
+
+    V = U[0:, 2] - U[0:, 1] + U[0:, 0]
+    return U, V
+
+
+def _simulate_outcomes(exog, err, coeff):
+    """ Simulates the potential outcomes Y0 and Y1, the resulting
+        treatment dummy D and the realized outcome Y """
+
+    # Expected values for individuals
+
+    exp_y0, exp_y1 = np.dot(coeff[0], exog[0].T), np.dot(coeff[1], exog[0].T)
+
+    cost_exp = np.dot(coeff[2], exog[1].T)
+
+    # Calculate expected benefit and the resulting treatment dummy
+
+    expected_benefits = exp_y1 - exp_y0
+
+    cost = cost_exp + err[0:, 2]
+
+    D = np.array((expected_benefits - cost > 0).astype(int))
+
+    # Realized outcome in both cases for each individual
+
+    Y_0, Y_1 = exp_y0 + err[0:, 0], exp_y0 + err[0:, 1]
+
+    # Observed outcomes
+
+    Y = D * Y_1 + (1 - D) * Y_0
+
+    return Y, D, Y_1, Y_0
+
+
+def _write_output(end, exog, err, source, is_deterministic):
+    '''Converts simulated data to a panda data frame
+    and saves the data in an html file/pickle'''
+    column = ['Y', 'D']
+
+    # Stack arrays
+    if not is_deterministic:
+        data = np.column_stack(
+            (end[0], end[1], exog[0], exog[1], end[2], end[3]))
+        data = np.column_stack(
+            (data, err[0][0:, 0], err[0][0:, 1], err[0][0:, 2], err[1]))
+        # List of column names
+
+        for i in range(exog[0].shape[1]):
+            str_ = 'X_' + str(i)
+            column.append(str_)
+        for i in range(exog[1].shape[1]):
+            str_ = 'Z_' + str(i)
+            column.append(str_)
+    else:
+        data = np.column_stack((end[0], end[1], end[2], end[3], err[0][0:, 0], err[0][0:, 1], err[0][0:, 2], err[1]))
+    column = column + ['Y1', 'Y0', 'U0', 'U1', 'UC', 'V']
+    # Generate data frame, save it with pickle and create a html file
+
+    df=pd.DataFrame(data=data, columns=column)
+    df['D'] = df['D'].apply(np.int64)
+
+
+    df.to_pickle(source + '.grmpy.pkl')
+
+    with open(source + '.grmpy.txt', 'w') as file_:
+        df.to_string(file_, index=False, header=True, na_rep='.', col_space=15)
+
+    return df
+
 
 
 def _collect_information(data_frame):

@@ -1,21 +1,11 @@
-
-
 import numpy as np
-import pandas as pd
-import pytest
 import os
-import sys
-import os.path
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
-
-
-from simulation.simulation import simulate
-from random_init import generate_random_dict
-from random_init import constraints
-from auxiliary.import_process import import_process
-from auxiliary.print_init import print_dict
+from grmpy.read.read import read
+from grmpy.test.random_init import generate_random_dict
+from grmpy.simulation.simulation import simulate
+from grmpy.test.random_init import print_dict
+from grmpy.test.random_init import constraints
 
 
 class TestClass():
@@ -24,7 +14,7 @@ class TestClass():
         for i in range(10):
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
             df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             # endogeneous variables
@@ -49,7 +39,7 @@ class TestClass():
         for i in range(10):
             dict_ = generate_random_dict(constr)
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
             df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             assert Y_1.all() == U[0:, 1].all()
@@ -70,7 +60,7 @@ class TestClass():
         # All Coefficients
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
 
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 dict_[key_]['all'] = np.array([0] * len(dict_[key_]['all']))
@@ -86,7 +76,7 @@ class TestClass():
             # Treated and Untreated
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
 
             for key_ in ['TREATED', 'UNTREATED']:
                 dict_[key_]['all'] = np.array([0] * len(dict_[key_]['all']))
@@ -102,7 +92,7 @@ class TestClass():
             # Only Treated
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
 
             dict_['TREATED']['all'] = np.array([0] * len(dict_['TREATED']['all']))
 
@@ -119,7 +109,7 @@ class TestClass():
             # Only Untreated
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
 
             dict_['UNTREATED']['all'] = np.array(
                 [0] * len(dict_['UNTREATED']['all']))
@@ -136,7 +126,7 @@ class TestClass():
             # Only Cost
             dict_ = generate_random_dict()
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
 
             dict_['COST']['all'] = np.array([0] * len(dict_['COST']['all']))
 
@@ -161,7 +151,7 @@ class TestClass():
         for i in range(10):
             dict_ = generate_random_dict(constr)
             print_dict(dict_)
-            dict_ = import_process('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
             df, Y, Y_1, Y_0, D, X, Z, U, V = simulate(dict_)
 
             files = [f for f in os.listdir('.') if os.path.isfile(f)]
@@ -176,7 +166,7 @@ class TestClass():
             gen_dict = generate_random_dict()
             init_file_name = gen_dict['SIMULATION']['source']
             print_dict(gen_dict, init_file_name)
-            imp_dict = import_process(init_file_name + '.grmpy.ini')
+            imp_dict = read(init_file_name + '.grmpy.ini')
 
             for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 assert gen_dict[key_]['coeff'].all() == imp_dict[key_]['all'].all()

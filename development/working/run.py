@@ -2,14 +2,14 @@
 """
 import sys
 import os
-sys.path.insert(0, "../../grmpy")
+sys.path.insert(0, "../../")
 
-from simulation.simulation import simulate
-from simulation.random_init import generate_random_dict
-from auxiliary.import_process import import_process
-from auxiliary.print_init import print_dict
-
-#dict_ = generate_random_dic()
-#print_dict(dict_)
-dict_ = import_process('test.grmpy.ini')
+from grmpy.simulation.simulation import simulate
+from grmpy.read.read import read
+from grmpy.test.random_init import generate_random_dict
+from grmpy.read.print_init import print_dict
+dict_ = generate_random_dict()
+print_dict(dict_)
+dict_ = read('test.grmpy.ini')
+print(dict_)
 simulate(dict_)
