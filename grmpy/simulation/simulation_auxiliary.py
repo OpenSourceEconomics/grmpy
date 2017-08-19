@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def _simulate_unobservables(covar, vars_, num_agents):
+def simulate_unobservables(covar, vars_, num_agents):
     """Creates the error term values for each type of error term variable
     """
     # Create a Covariance matrix
@@ -20,7 +20,7 @@ def _simulate_unobservables(covar, vars_, num_agents):
     return U, V
 
 
-def _simulate_outcomes(exog, err, coeff):
+def simulate_outcomes(exog, err, coeff):
     """ Simulates the potential outcomes Y0 and Y1, the resulting
         treatment dummy D and the realized outcome Y """
 
@@ -49,7 +49,7 @@ def _simulate_outcomes(exog, err, coeff):
     return Y, D, Y_1, Y_0
 
 
-def _write_output(end, exog, err, source, is_deterministic):
+def write_output(end, exog, err, source, is_deterministic):
     '''Converts simulated data to a panda data frame
     and saves the data in an html file/pickle'''
     column = ['Y', 'D']
@@ -86,7 +86,7 @@ def _write_output(end, exog, err, source, is_deterministic):
 
 
 
-def _collect_information(data_frame):
+def collect_information(data_frame):
     '''Calculates the required information for the info file'''
     # Number of individuals:
     Indiv = len(data_frame)
@@ -114,9 +114,9 @@ def _collect_information(data_frame):
     return data
 
 
-def _print_info(data_frame, coeffs, file_name):
+def print_info(data_frame, coeffs, file_name):
 
-    data_ = _collect_information(data_frame)
+    data_ = collect_information(data_frame)
     no_treatment, all_treatment = _adjust_collecting(data_['Treated Agents'], data_['Untreated Agents'])
     '''Prints an info file for the specififc dataset'''
     labels = ['Simulation', 'Additional Information', 'Effects',

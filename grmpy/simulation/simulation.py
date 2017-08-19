@@ -1,23 +1,18 @@
 import numpy as np
 
-
-from grmpy.simulation.simulation_auxiliary import _simulate_unobservables
-from grmpy.simulation.simulation_auxiliary import _simulate_outcomes
-from grmpy.simulation.simulation_auxiliary import _write_output
-from grmpy.simulation.simulation_auxiliary import _print_info
+from grmpy.simulation.simulation_auxiliary import simulate_unobservables
+from grmpy.simulation.simulation_auxiliary import simulate_outcomes
+from grmpy.simulation.simulation_auxiliary import write_output
+from grmpy.simulation.simulation_auxiliary import print_info
 
 
 def simulate(init_dict):
-    """Main function, defines variables by using the init_dict.
-    It creates the endogeneous variables X and Z and relies
-    on the _simulate_outcome and _simulate_unobservables functions
-    to simulate the model. Finally it writes an output file by using
-    the _write_output function."""
-
+    """ This function simulated a user-specified version of the generalized Roy model
+    """
     # Distribute information
+    is_deterministic = init_dict['DETERMINISTIC']
     num_agents = init_dict['SIMULATION']['agents']
     source = init_dict['SIMULATION']['source']
-    is_deterministic = init_dict['DETERMINISTIC']
 
     Y1_coeffs = init_dict['TREATED']['all']
     Y0_coeffs = init_dict['UNTREATED']['all']
@@ -50,15 +45,15 @@ def simulate(init_dict):
     # Simulate unobservables
     # Read information about the distribution and the specific means from the init dic
 
-    U, V = _simulate_unobservables(covar_, vars_, num_agents)
+    U, V = simulate_unobservables(covar_, vars_, num_agents)
 
     # Simulate endogeneous variables
 
-    Y, D, Y_1, Y_0 = _simulate_outcomes([X, Z], U, coeffs)
+    Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
 
     # Write output file
-    df = _write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source, is_deterministic)
+    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source, is_deterministic)
 
-    _print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
+    print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
 
     return df, Y, Y_1, Y_0, D, X, Z, U, V
