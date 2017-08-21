@@ -152,9 +152,6 @@ texinfo_documents = [
      author, 'grmpy', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.

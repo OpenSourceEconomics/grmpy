@@ -1,14 +1,12 @@
 import numpy as np
 
-def _process(list_, dict_, keyword):
-    '''processes keyword parameters'''
+
+def process(list_, dict_, keyword):
+    """processes keyword parameters"""
     name, val = list_[0], list_[1]
 
-    if name not in dict_[keyword].keys():
-        if name in ['coeff']:
-            dict_[keyword][name] = []
-
-
+    if name not in dict_[keyword].keys() and name in ['coeff']:
+        dict_[keyword][name] = []
     # Type conversion
     if name in ['agents', 'seed']:
         val = int(val)
@@ -26,30 +24,22 @@ def _process(list_, dict_, keyword):
     return dict_
 
 
-def _auxiliary(dict_):
+def auxiliary(dict_):
     """
     """
     dict_['AUX'] = {}
-    if 'coeff' not in dict_['TREATED'].keys():
+    if dict_['DIST']['coeff'] == [0.0] * len(dict_['DIST']['coeff']):
         is_deterministic = True
     else:
         is_deterministic = False
 
-
     for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
         if key_ in ['UNTREATED', 'TREATED', 'COST']:
-            if not is_deterministic:
                 dict_[key_]['all'] = dict_[key_]['coeff']
                 dict_[key_]['all'] = np.array(dict_[key_]['all'])
-            else:
-                dict_[key_]['all'] = np.array([])
         else:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
-
-
-
-
 
     # Create keys that contain all standard deviation and covariance parameters
 
@@ -63,8 +53,7 @@ def _auxiliary(dict_):
     # Number of parameters
     dict_['AUX']['num_paras'] = 2 * num_covars_out + num_covars_cost + 2 + 2
 
-
-    #Starting values
+    # Starting values
     dict_['AUX']['init_values'] = []
 
     for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
@@ -75,14 +64,6 @@ def _auxiliary(dict_):
                 pass
             else:
                 del dict_[key_][j]
-    dict_['DETERMINISTIC']= is_deterministic
+    dict_['DETERMINISTIC'] = is_deterministic
 
     return dict_
-
-
-
-
-
-
-
-

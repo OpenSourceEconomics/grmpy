@@ -1,15 +1,25 @@
-
-
 import numpy as np
 import random
 import string
 
 
-def constraints(probability=0.1, is_zero=False, Agents=1000):
-    constraints_dict = {}
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
+    constraints_dict = dict()
     constraints_dict['DETERMINISTIC'] = random.random() < probability
-    constraints_dict['IS_ZERO'] = is_zero
-    constraints_dict['AGENTS'] = Agents
+    if not constraints_dict['DETERMINISTIC'] and is_zero:
+        constraints_dict['IS_ZERO'] = random.random() < (
+                                                            probability) / (1 - probability)
+    else:
+        constraints_dict['IS_ZERO'] = False
+    if agents is None:
+        constraints_dict['AGENTS'] = random.randint(1, 1000)
+    else:
+        constraints_dict['AGENTS'] = agents
+    if seed is None:
+        constraints_dict['SEED'] = random.randint(1, 10000)
+    else:
+        constraints_dict['SEED'] = seed
+
     return constraints_dict
 
 
@@ -19,27 +29,19 @@ def generate_random_dict(constraints_dict=None):
     if constraints_dict is not None:
         assert isinstance(constraints_dict, dict)
     else:
-        constraints_dict = {}
-        # adjust !!!!
+        constraints_dict = constraints()
 
-    if 'DETERMINISTIC' in constraints_dict.keys():
-        is_deterministic = constraints_dict['DETERMINISTIC']
-    else:
-        is_deterministic = False
+    is_deterministic = constraints_dict['DETERMINISTIC']
 
-    if 'IS_ZERO' in constraints_dict.keys():
-        is_zerocoeff = constraints_dict['IS_ZERO']
-    else:
-        is_zerocoeff = False
-    if 'AGENTS' in constraints_dict.keys():
-        AGENTS = constraints_dict['AGENTS']
-    else:
-        AGENTS = 1000
+    is_zero = constraints_dict['IS_ZERO']
 
-    assert is_zerocoeff != is_deterministic or is_zerocoeff == is_deterministic == False
+    AGENTS = constraints_dict['AGENTS']
+
+    SEED = constraints_dict['SEED']
 
     SOURCE = ''.join(
-        [random.choice(string.ascii_letters + string.digits) for n in range(8)])
+        [random.choice(string.ascii_letters + string.digits) for n in range(8)]
+    )
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
@@ -50,30 +52,24 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            if not is_deterministic:
 
-                if not is_zerocoeff:
-                    dict_[key_]['coeff'] = np.random.normal(
-                        0.0, 2., [treated_num])
-                else:
-                    dict_[key_]['coeff'] = np.array([0] * treated_num)
+            if not is_zero:
+                dict_[key_]['coeff'] = np.random.normal(
+                    0.0, 2., [treated_num])
             else:
-                dict_[key_]['coeff'] = np.array([])
-
+                dict_[key_]['coeff'] = np.array([0] * treated_num)
         else:
-            if not is_deterministic:
-                if not is_zerocoeff:
-                    dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num])
-                else:
-                    dict_[key_]['coeff'] = np.array([0] * cost_num)
+
+            if not is_zero:
+                dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num])
             else:
-                dict_[key_]['coeff'] = np.array([])
+                dict_[key_]['coeff'] = np.array([0] * cost_num)
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
         if key_ == 'seed':
-            dict_['SIMULATION'][key_] = np.random.randint(1, 10000)
+            dict_['SIMULATION'][key_] = SEED
         elif key_ == 'agents':
             dict_['SIMULATION'][key_] = AGENTS
         else:
@@ -82,8 +78,11 @@ def generate_random_dict(constraints_dict=None):
     dict_['DIST'] = {}
 
     # Variance and covariance parameters
-    A = np.random.rand(3, 3)
-    B = np.dot(A, A.transpose())
+    if not is_deterministic:
+        A = np.random.rand(3, 3)
+        B = np.dot(A, A.transpose())
+    else:
+        B = np.zeros((3, 3))
 
     dict_['DIST']['coeff'] = []
 
@@ -103,8 +102,6 @@ def print_dict(dict_, file_name='test'):
     """Creates an init file from a given dictionary"""
 
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
-
-
 
     with open(file_name + '.grmpy.ini', 'w') as file_:
 

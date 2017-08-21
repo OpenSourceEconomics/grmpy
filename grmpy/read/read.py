@@ -2,12 +2,12 @@
 
 import shlex
 
-from grmpy.read.read_auxiliary import _auxiliary
-from grmpy.read.read_auxiliary import _process
+from grmpy.read.read_auxiliary import auxiliary
+from grmpy.read.read_auxiliary import process
 
 
 def read(file_):
-    '''reads the initialization file and provides an dictionary with parameters for the simulation'''
+    """reads the initialization file and provides an dictionary with parameters for the simulation"""
     dict_ = {}
     for line in open(file_).readlines():
 
@@ -28,9 +28,9 @@ def read(file_):
             dict_[keyword] = {}
             continue
 
-        _process(list_, dict_, keyword)
+        process(list_, dict_, keyword)
 
-    dict_ = _auxiliary(dict_)
+    dict_ = auxiliary(dict_)
 
     return dict_
 

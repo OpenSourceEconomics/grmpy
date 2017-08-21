@@ -4,11 +4,16 @@ from grmpy.simulation.simulation_auxiliary import simulate_unobservables
 from grmpy.simulation.simulation_auxiliary import simulate_outcomes
 from grmpy.simulation.simulation_auxiliary import write_output
 from grmpy.simulation.simulation_auxiliary import print_info
+from grmpy.read.read import read
 
 
-def simulate(init_dict):
+def simulate(init_file):
     """ This function simulated a user-specified version of the generalized Roy model
     """
+
+    # Transform init file to dictionary
+
+    init_dict = read(init_file)
     # Distribute information
     is_deterministic = init_dict['DETERMINISTIC']
     num_agents = init_dict['SIMULATION']['agents']
@@ -29,18 +34,14 @@ def simulate(init_dict):
     num_covars_cost = C_coeffs.shape[0]
 
     # Simulate observables
-    if not is_deterministic:
-        means = np.tile(0.0, num_covars_out)
-        covs = np.identity(num_covars_out)
-        X = np.random.multivariate_normal(means, covs, num_agents)
+    means = np.tile(.0, num_covars_out)
+    covs = np.identity(num_covars_out)
+    X = np.random.multivariate_normal(means, covs, num_agents)
 
-        means = np.tile(0.0, num_covars_cost)
-        covs = np.identity(num_covars_cost)
-        Z = np.random.multivariate_normal(means, covs, num_agents)
-        Z[:, 0], X[:, 0] = 1.0, 1.0
-    else:
-        X = np.array([])
-        Z = np.array([])
+    means = np.tile(.0, num_covars_cost)
+    covs = np.identity(num_covars_cost)
+    Z = np.random.multivariate_normal(means, covs, num_agents)
+    Z[:, 0], X[:, 0] = 1.0, 1.0
 
     # Simulate unobservables
     # Read information about the distribution and the specific means from the init dic
