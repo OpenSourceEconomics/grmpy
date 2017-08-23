@@ -1,5 +1,3 @@
 .cache/
 __pxcache__/
 *.pyc
-*.xml
-grmpy/Scripts/
