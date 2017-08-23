@@ -3,5 +3,13 @@ python:
   - "2.7"
   - "3.6"
 
-install: "pip install -r requirements.txt"
-script: pytest
+install:
+    - pip install -r requirements.txt
+    - pip install pytest-cov
+    - pip install codecov
+
+script:
+    - py.test --cov=grmpy
+
+after_success:
+    - codecov
