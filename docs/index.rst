@@ -27,6 +27,7 @@ We build on the following main references:
     tutorial
     reliability
     software_engineering
+    contributing
     credits
     changes
     bibliography
