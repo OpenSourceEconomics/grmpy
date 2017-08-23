@@ -1,2 +1,2 @@
 exclude_paths:
-  - development/working
+  - development/working/*
