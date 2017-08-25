@@ -23,6 +23,7 @@ We build on the following main references:
 .. toctree::
     :maxdepth: 1
 
+    economics
     installation
     tutorial
     reliability
