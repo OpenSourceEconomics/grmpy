@@ -1,4 +1,5 @@
-
+"""The module contains the main function of the init file import process
+"""
 
 import shlex
 
@@ -7,7 +8,8 @@ from grmpy.read.read_auxiliary import process
 
 
 def read(file_):
-    """reads the initialization file and provides an dictionary with parameters for the simulation"""
+    """The function reads the initialization file and returns a dictionary with parameters for the simulation
+    """
     dict_ = {}
     for line in open(file_).readlines():
 

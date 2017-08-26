@@ -1,9 +1,12 @@
+"""The module provides the simulation process.
+"""
 import numpy as np
+import os.path
 
-from grmpy.simulation.simulation_auxiliary import simulate_unobservables
-from grmpy.simulation.simulation_auxiliary import simulate_outcomes
-from grmpy.simulation.simulation_auxiliary import write_output
-from grmpy.simulation.simulation_auxiliary import print_info
+from grmpy.simulate.simulate_auxiliary import simulate_unobservables
+from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.simulate.simulate_auxiliary import write_output
+from grmpy.simulate.simulate_auxiliary import print_info
 from grmpy.read.read import read
 
 
@@ -12,8 +15,10 @@ def simulate(init_file):
     """
 
     # Transform init file to dictionary
-
+    assert isinstance(init_file, str)
+    assert os.path.isfile(init_file)
     init_dict = read(init_file)
+
     # Distribute information
     is_deterministic = init_dict['DETERMINISTIC']
     num_agents = init_dict['SIMULATION']['agents']
@@ -44,17 +49,15 @@ def simulate(init_file):
     Z[:, 0], X[:, 0] = 1.0, 1.0
 
     # Simulate unobservables
-    # Read information about the distribution and the specific means from the init dic
-
     U, V = simulate_unobservables(covar_, vars_, num_agents)
 
     # Simulate endogeneous variables
-
     Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
 
     # Write output file
-    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source, is_deterministic)
+    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V],
+                      source, is_deterministic)
 
     print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
 
-    return df, Y, Y_1, Y_0, D, X, Z, U, V
+    return df

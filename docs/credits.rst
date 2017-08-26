@@ -14,9 +14,10 @@ Development Lead
 Contributors
 ^^^^^^^^^^^^
 
-`Sebastian Becker <https://github.com/sebecker>`_
+`Tobias Raabe <https://github.com/tobiasraabe>`_, `Sebastian Becker <https://github.com/sebecker>`_
 
 Acknowledgments
 ^^^^^^^^^^^^^^^
 
-We appreciate the financial support of the `AXA Research Fund <https://www.axa-research.org/>`_ and the  `University of Bonn <https://www.uni-bonn.de>`_. We are indebted to the open source community as we build on top of numerous open source tools such as the `SciPy Stack <https://www.scipy.org>`_ and `statsmodels <http://statsmodels.sourceforge.net/>`.
+We appreciate the financial support of the `AXA Research Fund <https://www.axa-research.org/>`_ and the  `University of Bonn <https://www.uni-bonn.de>`_. We are indebted to the open source community as we build on top of numerous open source tools such as the `SciPy Stack <https://www.scipy.org>`_ and
+`statsmodels <http://statsmodels.sourceforge.net/>`_.

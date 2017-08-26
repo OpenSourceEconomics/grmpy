@@ -1,6 +1,9 @@
-import numpy as np
+"""The module provides a random dictionary generating process for test purposes.
+"""
+
 import random
 import string
+import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
@@ -35,12 +38,12 @@ def generate_random_dict(constraints_dict=None):
 
     is_zero = constraints_dict['IS_ZERO']
 
-    AGENTS = constraints_dict['AGENTS']
+    agents = constraints_dict['AGENTS']
 
-    SEED = constraints_dict['SEED']
+    seed = constraints_dict['SEED']
 
-    SOURCE = ''.join(
-        [random.choice(string.ascii_letters + string.digits) for n in range(8)]
+    source = ''.join(
+        [random.choice(string.ascii_letters + string.digits) for _ in range(8)]
     )
 
     dict_ = {}
@@ -69,29 +72,29 @@ def generate_random_dict(constraints_dict=None):
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
         if key_ == 'seed':
-            dict_['SIMULATION'][key_] = SEED
+            dict_['SIMULATION'][key_] = seed
         elif key_ == 'agents':
-            dict_['SIMULATION'][key_] = AGENTS
+            dict_['SIMULATION'][key_] = agents
         else:
-            dict_['SIMULATION'][key_] = SOURCE
+            dict_['SIMULATION'][key_] = source
 
     dict_['DIST'] = {}
 
     # Variance and covariance parameters
     if not is_deterministic:
-        A = np.random.rand(3, 3)
-        B = np.dot(A, A.transpose())
+        a = np.random.rand(3, 3)
+        b = np.dot(A, A.transpose())
     else:
-        B = np.zeros((3, 3))
+        b = np.zeros((3, 3))
 
     dict_['DIST']['coeff'] = []
 
     for i in range(3):
-        dict_['DIST']['coeff'].append(B[i, i])
+        dict_['DIST']['coeff'].append(b[i, i])
 
-    dict_['DIST']['coeff'].append(B[1, 0])
-    dict_['DIST']['coeff'].append(B[2, 0])
-    dict_['DIST']['coeff'].append(B[2, 1])
+    dict_['DIST']['coeff'].append(b[1, 0])
+    dict_['DIST']['coeff'].append(b[2, 0])
+    dict_['DIST']['coeff'].append(b[2, 1])
 
     dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff'])
 

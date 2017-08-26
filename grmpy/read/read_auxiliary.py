@@ -1,8 +1,11 @@
+"""This module provides auxiliary functions for the import process of the init file.
+"""
+
 import numpy as np
 
 
 def process(list_, dict_, keyword):
-    """processes keyword parameters"""
+    """The function processes keyword parameters and creates dictionary elements."""
     name, val = list_[0], list_[1]
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
@@ -25,7 +28,8 @@ def process(list_, dict_, keyword):
 
 
 def auxiliary(dict_):
-    """
+    """The function creates an new dictionary entry 'AUX' that includes starting values of
+    each parameter and the number of covariates.
     """
     dict_['AUX'] = {}
     if dict_['DIST']['coeff'] == [0.0] * len(dict_['DIST']['coeff']):
@@ -40,8 +44,6 @@ def auxiliary(dict_):
         else:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
-
-    # Create keys that contain all standard deviation and covariance parameters
 
     # Number of covariates
     num_covars_out = len(dict_['TREATED']['all'])
