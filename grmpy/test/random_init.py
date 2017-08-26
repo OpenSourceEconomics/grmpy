@@ -83,7 +83,7 @@ def generate_random_dict(constraints_dict=None):
     # Variance and covariance parameters
     if not is_deterministic:
         a = np.random.rand(3, 3)
-        b = np.dot(A, A.transpose())
+        b = np.dot(a, a.transpose())
     else:
         b = np.zeros((3, 3))
 
