@@ -23,7 +23,7 @@ Key         Value       Interpretation
 =======     ======      ==================
 agents      int         number of individuals
 seed        int         seed for the specific simulation
-source      str         name for output files
+source      str         specified name for the simulation output files
 =======     ======      ==================
 
 **TREATED & UNTREATED**
@@ -58,22 +58,20 @@ coeff       float       coefficient of the second covariate
 
 **DIST**
 
-The *DIST* Section determines distributional characteristics regarding the unobservables.
-
-*Note:* The coefficients
-
-=======     ======      ==================
-Key         Value       Interpretation
-=======     ======      ==================
-coeff       float      :math:`\sigma_{1}`
-coeff       float      :math:`\sigma_{12}`
-coeff       float      :math:`\sigma_{13}`
-coeff       float      :math:`\sigma_{2}`
-coeff       float      :math:`\sigma_{23}`
-coeff       float      :math:`\sigma_{3}`
-=======     ======      ==================
+This Section determines the distributional characteristics of the unobservable variables.
+The indices *0* and *1* denote the error for the untreated and treated observations whereas *C* denotes the error term for the costs.
 
 
+======= ======      ==========================
+Key     Value       Interpretation
+======= ======      ==========================
+coeff    float      :math:`\sigma_{0}`
+coeff    float      :math:`\sigma_{01}`
+coeff    float      :math:`\sigma_{0C}`
+coeff    float      :math:`\sigma_{1}`
+coeff    float      :math:`\sigma_{1C}`
+coeff    float      :math:`\sigma_{C}`
+======= ======      ==========================
 
 
 
