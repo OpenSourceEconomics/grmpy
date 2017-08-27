@@ -1,4 +1,4 @@
-"""Provides unit tests to check the
+"""The module provides unit tests for different aspects of the simulation process.
 """
 import os
 import glob
