@@ -18,7 +18,6 @@ def simulate(init_file):
     init_dict = read(init_file)
 
     # Distribute information
-    is_deterministic = init_dict['DETERMINISTIC']
     num_agents = init_dict['SIMULATION']['agents']
     source = init_dict['SIMULATION']['source']
 
