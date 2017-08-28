@@ -7,11 +7,13 @@ import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
+    """The constraints function returns an dictionary that provides specific characteristics for the random dictionary
+    generating process.
+    """
     constraints_dict = dict()
     constraints_dict['DETERMINISTIC'] = random.random() < probability
     if not constraints_dict['DETERMINISTIC'] and is_zero:
-        constraints_dict['IS_ZERO'] = random.random() < (
-                                                            probability) / (1 - probability)
+        constraints_dict['IS_ZERO'] = random.random() < probability / (1 - probability)
     else:
         constraints_dict['IS_ZERO'] = False
     if agents is None:
@@ -27,7 +29,7 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
 
 
 def generate_random_dict(constraints_dict=None):
-    """generates a random initialization dictionary"""
+    """The function generates a random initialization dictionary."""
 
     if constraints_dict is not None:
         assert isinstance(constraints_dict, dict)
@@ -102,7 +104,7 @@ def generate_random_dict(constraints_dict=None):
 
 
 def print_dict(dict_, file_name='test'):
-    """Creates an init file from a given dictionary"""
+    """The function creates an init file from a given dictionary."""
 
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
 

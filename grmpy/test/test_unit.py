@@ -1,7 +1,6 @@
-"""The module provides unit tests for different aspects of the simulation process.
-"""
-import os
+"""The module provides unit tests for different aspects of the simulation process."""
 import glob
+import os
 
 import pandas as pd
 import numpy as np
@@ -16,7 +15,7 @@ from grmpy.read.read import read
 
 class TestClass:
     def test1(self):
-        """Testing relations in simulated dataset."""
+        """The first test tests whether the relationships in the simulated datasets are appropriate."""
         constr = constraints(probability=0.0)
         for _ in range(10):
             dict_ = generate_random_dict(constr)
@@ -39,7 +38,7 @@ class TestClass:
                 os.remove(f)
 
     def test2(self):
-        """Testing if relationships hold if the process is deterministic."""
+        """The second test checks whether the relationships hold if the process is deterministic."""
         constr = constraints(probability=1.)
         for _ in range(10):
             dict_ = generate_random_dict(constr)
@@ -61,7 +60,7 @@ class TestClass:
                 os.remove(f)
 
     def test3(self):
-        """Testing if relationships hold if coefficients are zero in different setups"""
+        """The third test  checks whether the relationships hold if the coefficients are zero in different setups"""
         for _ in range(10):
 
             # All Coefficients
@@ -157,21 +156,23 @@ class TestClass:
                 os.remove(f)
 
     def test4(self):
-        """Tests if simulation process works if there are only treated or
-        untreated Agents by setting the number of agents to one"""
+        """The fourth test checks whether the simulation process works if there are only treated or
+        untreated Agents by setting the number of agents to one
+        """
         constr = constraints(probability=0.0, agents=1)
         for _ in range(10):
             dict_ = generate_random_dict(constr)
             print_dict(dict_)
 
-            df = simulate('test.grmpy.ini')
+            simulate('test.grmpy.ini')
 
             for f in glob.glob("*.grmpy.*"):
                 os.remove(f)
 
     def test5(self):
-        """Tests the generating and import process by generating a random dictionary,
-        printing it as an init file, importing it again and comparing the entries in the related dictionaries. """
+        """The fifth test tests the random init file generating process and the  import process. It generates an random
+        init file, imports it again and compares the entries in the both dictionaries.
+        """
         for _ in range(10):
             gen_dict = generate_random_dict()
             init_file_name = gen_dict['SIMULATION']['source']

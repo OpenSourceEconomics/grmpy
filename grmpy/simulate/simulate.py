@@ -1,7 +1,7 @@
-"""The module provides the simulation process.
-"""
-import numpy as np
+"""The module provides the simulation process."""
 import os.path
+
+import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
@@ -11,9 +11,7 @@ from grmpy.read.read import read
 
 
 def simulate(init_file):
-    """ This function simulated a user-specified version of the generalized Roy model
-    """
-
+    """ This function simulates a user-specified version of the generalized Roy model"""
     # Transform init file to dictionary
     assert isinstance(init_file, str)
     assert os.path.isfile(init_file)
@@ -56,7 +54,7 @@ def simulate(init_file):
 
     # Write output file
     df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V],
-                      source, is_deterministic)
+                      source)
 
     print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
 
