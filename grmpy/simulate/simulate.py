@@ -36,11 +36,11 @@ def simulate(init_file):
     num_covars_cost = C_coeffs.shape[0]
 
     # Simulate observables
-    means = np.tile(.0, num_covars_out)
+    means = np.tile(0.0, num_covars_out)
     covs = np.identity(num_covars_out)
     X = np.random.multivariate_normal(means, covs, num_agents)
 
-    means = np.tile(.0, num_covars_cost)
+    means = np.tile(0.0, num_covars_cost)
     covs = np.identity(num_covars_cost)
     Z = np.random.multivariate_normal(means, covs, num_agents)
     Z[:, 0], X[:, 0] = 1.0, 1.0

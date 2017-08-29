@@ -95,7 +95,8 @@ def collect_information(data_frame):
         'Number of Agents': indiv, 'Treated Agents': treated_num, 'Untreated Agents': untreated_num,
         'Mean Untreated': mean_untreat, 'Mean Treated': mean_treat, 'Mean Overall': mean_over,
         'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles Overall':
-        quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat, 'Std Overall': sd_over,
+        quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat,
+        'Std Overall': sd_over,
         'ate': ate, 'tut': tut, 'tt': tt,
     }
 
@@ -290,6 +291,5 @@ def calculate_tt(df, quant, q):
 def calculate_tut(df, quant, q):
     """The function calculates the treatment on untreated effect for a given quantile."""
     tut = np.mean(df.Y1[(df.D == 0) & (df.Y <= quant.loc[q])]) \
-        - np.mean(df.Y0[(df.D == 0) & (df.Y <= quant.loc[q])])
+          - np.mean(df.Y0[(df.D == 0) & (df.Y <= quant.loc[q])])
     return tut
-
