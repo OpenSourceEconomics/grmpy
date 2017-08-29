@@ -103,8 +103,7 @@ class TestClass:
             # Only Treated
             constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
-            dict_['TREATED']['coeff'] = np.array(
-                [0.] * len(dict_['TREATED']['coeff']))
+            dict_['TREATED']['coeff'] = np.array([0.] * len(dict_['TREATED']['coeff']))
             print_dict(dict_)
             dict_ = read('test.grmpy.ini')
 
