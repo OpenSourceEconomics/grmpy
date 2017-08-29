@@ -1,5 +1,4 @@
 """The module includes an integeration test for the simulation process."""
-
 import glob
 import os
 
@@ -10,8 +9,8 @@ from grmpy.simulate.simulate import simulate
 
 class TestClass:
     def test1(self):
-        """The test runs a loop to check the consistency of the random init file generating process and the following
-        simulation.
+        """The test runs a loop to check the consistency of the random init file generating process
+        and the following simulation.
         """
         for _ in range(10):
 

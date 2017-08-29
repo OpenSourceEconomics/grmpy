@@ -1,5 +1,6 @@
-"""This module provides auxiliary functions for the simulate.py module. It includes simulation processes
-of the unobservable and endogeneous variables of the model as well as functions regarding the info file output.
+""" This module provides auxiliary functions for the simulate.py module. It includes simulation pro-
+cesses of the unobservable and endogeneous variables of the model as well as functions regarding the
+info file output.
 """
 import pandas as pd
 import numpy as np
@@ -7,7 +8,6 @@ import numpy as np
 
 def simulate_unobservables(covar, vars_, num_agents):
     """The function simulates the unobservable error terms."""
-
     # Create a Covariance matrix
     cov_ = np.diag(vars_)
 
@@ -25,10 +25,8 @@ def simulate_outcomes(exog, err, coeff):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
-
     # Expected values for individuals
     exp_y0, exp_y1 = np.dot(coeff[0], exog[0].T), np.dot(coeff[1], exog[0].T)
-
     cost_exp = np.dot(coeff[2], exog[1].T)
 
     # Calculate expected benefit and the resulting treatment dummy
@@ -48,15 +46,16 @@ def simulate_outcomes(exog, err, coeff):
 
 
 def write_output(end, exog, err, source):
-    """The function converts the simulated variables to a panda data frame and saves the data in a txt and a pickle file
+    """The function converts the simulated variables to a panda data frame and saves the data in a
+    txt and a pickle file
     """
     column = ['Y', 'D']
 
     # Stack arrays
     data = np.column_stack((end[0], end[1], exog[0], exog[1], end[2], end[3]))
     data = np.column_stack((data, err[0][0:, 0], err[0][0:, 1], err[0][0:, 2], err[1]))
-    # List of column names
 
+    # List of column names
     for i in range(exog[0].shape[1]):
         str_ = 'X_' + str(i)
         column.append(str_)
@@ -77,8 +76,7 @@ def write_output(end, exog, err, source):
 
 
 def collect_information(data_frame):
-    """The function collects the required information for the info file"""
-
+    """The function collects the required information for the info file."""
     # Number of individuals:
     indiv = len(data_frame)
 
@@ -90,14 +88,15 @@ def collect_information(data_frame):
         treated_num, untreated_num)
     # Average Treatment Effect
 
-    ate, tt, tut, mean_over, sd_over, quant_over, mean_treat, sd_treat, quant_treat, mean_untreat, sd_untreat, \
-    quant_untreat = _calc_parameters(data_frame, no_treatment, all_treatment)
+    ate, tt, tut, mean_over, sd_over, quant_over, mean_treat, sd_treat, quant_treat, mean_untreat, \
+    sd_untreat, quant_untreat = _calc_parameters(data_frame, no_treatment, all_treatment)
 
     data = {
         'Number of Agents': indiv, 'Treated Agents': treated_num, 'Untreated Agents': untreated_num,
         'Mean Untreated': mean_untreat, 'Mean Treated': mean_treat, 'Mean Overall': mean_over,
-        'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles Overall': quant_over,
-        'Std Untreated': sd_untreat, 'Std Treated': sd_treat, 'Std Overall': sd_over, 'ate': ate, 'tut': tut, 'tt': tt,
+        'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles Overall':
+        quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat, 'Std Overall': sd_over,
+        'ate': ate, 'tut': tut, 'tt': tt,
     }
 
     return data
@@ -138,12 +137,11 @@ def print_info(data_frame, coeffs, file_name):
 
 
 def _print_effects(data_, file_name):
-    """The function writes the effect information to the init file"""
+    """The function writes the effect information to the init file."""
     structure = ['ate', 'tt', 'tut']
     sub_structure = ['', '_01', '_025', '_05', '_075', '_09']
-
-    str_ = '{0:>10} {1:>18} {2:>18} {3:>18} {4:>18} {5:>18} {6:>18}\n\n'.format('Effect', 'Overall', '0.1', '0.25',
-                                                                                '0.5', '0.75', '0.9')
+    str_ = '{0:>10} {1:>18} {2:>18} {3:>18} {4:>18} {5:>18} {6:>18}\n\n'.format \
+        ('Effect', 'Overall', '0.1', '0.25', '0.5', '0.75', '0.9')
     file_name.write(str_)
 
     for label in structure:
@@ -158,9 +156,9 @@ def _print_effects(data_, file_name):
 
 
 def _print_dist(data_, file_name):
-    """The function writes the distributional information to the init file"""
-    str_ = '{0:>10} {1:>20} {2:>20} {3:>20} {4:>20} {5:>20}\n\n'.format('Case', 'Mean', 'Std-Dev.', '2.Decile',
-                                                                        '5.Decile', '8.Decile')
+    """The function writes the distributional information to the init file."""
+    str_ = '{0:>10} {1:>20} {2:>20} {3:>20} {4:>20} {5:>20}\n\n'.format \
+        ('Case', 'Mean', 'Std-Dev.', '2.Decile', '5.Decile', '8.Decile')
     file_name.write(str_)
 
     labels = ['Overall', 'Treated', 'Untreated']
@@ -192,25 +190,21 @@ def _print_dist(data_, file_name):
 
 
 def _calc_parameters(data_frame, no_treatment, all_treatment):
-    """The function calculates the distributional information and effects for the info file.
-    The calculation depends on the specific case that occurs (no treated agents,
-    no untreated agents or treated and untreated agents
+    """The function calculates the distributional information and effects for the info file. The
+    calculation depends on the specific case that occurs (no treated agents, no untreated agents or
+    treated and untreated agents).
     """
     out_quant = data_frame.Y.quantile([0.1, 0.25, 0.5, 0.75, 0.9])
 
     # Average Treatment effect
     ate_ = np.mean(data_frame.Y1 - data_frame.Y0)
-    ate_01 = np.mean(data_frame.Y1[data_frame.Y <= out_quant.loc[0.1]] - \
-                     data_frame.Y0[data_frame.Y <= out_quant.loc[0.1]])
-    ate_025 = np.mean(data_frame.Y1[data_frame.Y <= out_quant.loc[0.25]] - \
-                      data_frame.Y0[data_frame.Y <= out_quant.loc[0.25]])
-    ate_05 = np.mean(data_frame.Y1[data_frame.Y <= out_quant.loc[0.5]] - \
-                     data_frame.Y0[data_frame.Y <= out_quant.loc[0.5]])
-    ate_075 = np.mean(data_frame.Y1[data_frame.Y <= out_quant.loc[0.75]] - \
-                      data_frame.Y0[data_frame.Y <= out_quant.loc[0.75]])
-    ate_09 = np.mean(data_frame.Y1[data_frame.Y <= out_quant.loc[0.9]] - \
-                     data_frame.Y0[data_frame.Y <= out_quant.loc[0.9]])
-    ate = {'ate': ate_, 'ate_01': ate_01, 'ate_025': ate_025, 'ate_05': ate_05, 'ate_075': ate_075, 'ate_09': ate_09}
+    ate_01 = calculate_ate(data_frame, out_quant, 0.1)
+    ate_025 = calculate_ate(data_frame, out_quant, 0.25)
+    ate_05 = calculate_ate(data_frame, out_quant, 0.5)
+    ate_075 = calculate_ate(data_frame, out_quant, 0.75)
+    ate_09 = calculate_ate(data_frame, out_quant, 0.9)
+    ate = {'ate': ate_, 'ate_01': ate_01, 'ate_025': ate_025, 'ate_05': ate_05, 'ate_075': ate_075,
+           'ate_09': ate_09}
 
     # Treatment on the Treated
     if no_treatment:
@@ -220,17 +214,13 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
         quant_treat = "---"
     else:
         tt_ = np.mean(data_frame.Y1[data_frame.D == 1]) - np.mean(data_frame.Y0[data_frame.D == 1])
-        tt_01 = np.mean(data_frame.Y1[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.1])]) - \
-                np.mean(data_frame.Y0[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.1])])
-        tt_025 = np.mean(data_frame.Y1[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.25])]) - \
-                 np.mean(data_frame.Y0[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.25])])
-        tt_05 = np.mean(data_frame.Y1[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.5])]) - \
-                np.mean(data_frame.Y0[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.5])])
-        tt_075 = np.mean(data_frame.Y1[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.75])]) - \
-                 np.mean(data_frame.Y0[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.75])])
-        tt_09 = np.mean(data_frame.Y1[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.9])]) - \
-                np.mean(data_frame.Y0[(data_frame.D == 1) & (data_frame.Y <= out_quant.loc[0.9])])
-        tt = {'tt': tt_, 'tt_01': tt_01, 'tt_025': tt_025, 'tt_05': tt_05, 'tt_075': tt_075, 'tt_09': tt_09}
+        tt_01 = calculate_tt(data_frame, out_quant, 0.1)
+        tt_025 = calculate_tt(data_frame, out_quant, 0.25)
+        tt_05 = calculate_tt(data_frame, out_quant, 0.5)
+        tt_075 = calculate_tt(data_frame, out_quant, 0.75)
+        tt_09 = calculate_tt(data_frame, out_quant, 0.9)
+        tt = {'tt': tt_, 'tt_01': tt_01, 'tt_025': tt_025, 'tt_05': tt_05, 'tt_075': tt_075,
+              'tt_09': tt_09}
         mean_treat = np.mean(data_frame.Y[data_frame.D == 1])
         sd_treat = np.std(data_frame.Y[data_frame.D == 1])
         quant_treat = data_frame.Y[data_frame.D == 1].quantile([0.2, 0.5, 0.8])
@@ -243,17 +233,13 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
         sd_untreat = "---"
     else:
         tut_ = np.mean(data_frame.Y1[data_frame.D == 0]) - np.mean(data_frame.Y0[data_frame.D == 0])
-        tut_01 = np.mean(data_frame.Y1[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.1])]) - \
-                 np.mean(data_frame.Y0[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.1])])
-        tut_025 = np.mean(data_frame.Y1[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.25])]) - \
-                  np.mean(data_frame.Y0[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.25])])
-        tut_05 = np.mean(data_frame.Y1[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.5])]) - \
-                 np.mean(data_frame.Y0[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.5])])
-        tut_075 = np.mean(data_frame.Y1[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.75])]) - \
-                  np.mean(data_frame.Y0[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.75])])
-        tut_09 = np.mean(data_frame.Y1[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.9])]) - \
-                 np.mean(data_frame.Y0[(data_frame.D == 0) & (data_frame.Y <= out_quant.loc[0.9])])
-        tut = {'tut': tut_, 'tut_01': tut_01, 'tut_025': tut_025, 'tut_05': tut_05, 'tut_075': tut_075,
+        tut_01 = calculate_tut(data_frame, out_quant, 0.1)
+        tut_025 = calculate_tut(data_frame, out_quant, 0.25)
+        tut_05 = calculate_tut(data_frame, out_quant, 0.5)
+        tut_075 = calculate_tut(data_frame, out_quant, 0.75)
+        tut_09 = calculate_tut(data_frame, out_quant, 0.9)
+        tut = {'tut': tut_, 'tut_01': tut_01, 'tut_025': tut_025, 'tut_05': tut_05,
+               'tut_075': tut_075,
                'tut_09': tut_09}
         mean_untreat = np.mean(data_frame.Y[data_frame.D == 0])
         quant_untreat = data_frame.Y[data_frame.D == 0].quantile([
@@ -265,12 +251,14 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
     sd_over = np.std(data_frame.Y)
     quant_over = data_frame.Y.quantile([0.2, 0.5, 0.8])
 
-    return ate, tt, tut, mean_over, sd_over, quant_over, mean_treat, sd_treat, quant_treat, mean_untreat, sd_untreat, \
-           quant_untreat
+    return ate, tt, tut, mean_over, sd_over, quant_over, mean_treat, sd_treat, quant_treat, \
+           mean_untreat, sd_untreat, quant_untreat
 
 
 def _adjust_collecting(treated_num, untreated_num):
-    """The function determines if there are only treated, only untreated or treated and untreated individuals."""
+    """The function determines if there are only treated, only untreated or treated and untreated
+    individuals.
+    """
     if treated_num == 0:
         no_treatment = True
     else:
@@ -284,3 +272,24 @@ def _adjust_collecting(treated_num, untreated_num):
     assert no_treatment != all_treatment or no_treatment == all_treatment is False
 
     return no_treatment, all_treatment
+
+
+def calculate_ate(df, quant, q):
+    """The function calculates the average treatment effect for a given quantile."""
+    ate = np.mean(df.Y1[df.Y <= quant.loc[q]] - df.Y0[df.Y <= quant.loc[q]])
+    return ate
+
+
+def calculate_tt(df, quant, q):
+    """The function calculates the treatment on treated effect for a given quantile."""
+    tt = np.mean(df.Y1[(df.D == 1) & (df.Y <= quant.loc[q])]) \
+         - np.mean(df.Y0[(df.D == 1) & (df.Y <= quant.loc[q])])
+    return tt
+
+
+def calculate_tut(df, quant, q):
+    """The function calculates the treatment on untreated effect for a given quantile."""
+    tut = np.mean(df.Y1[(df.D == 0) & (df.Y <= quant.loc[q])]) \
+        - np.mean(df.Y0[(df.D == 0) & (df.Y <= quant.loc[q])])
+    return tut
+

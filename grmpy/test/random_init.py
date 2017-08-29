@@ -1,14 +1,13 @@
-"""The module provides a random dictionary generating process for test purposes.
-"""
-
+"""The module provides a random dictionary generating process for test purposes."""
 import random
 import string
+
 import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
-    """The constraints function returns an dictionary that provides specific characteristics for the random dictionary
-    generating process.
+    """The constraints function returns an dictionary that provides specific characteristics for the
+    random dictionary generating process.
     """
     constraints_dict = dict()
     constraints_dict['DETERMINISTIC'] = random.random() < probability

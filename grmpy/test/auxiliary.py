@@ -1,5 +1,4 @@
 """This module provides some auxilary functions for the testing process."""
-
 from pandas.util.testing import assert_series_equal
 
 

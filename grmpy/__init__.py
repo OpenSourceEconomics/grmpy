@@ -1,18 +1,12 @@
-"""The module allows to run tests from inside the interpreter
-"""
+"""The module allows to run tests from inside the interpreter."""
 import os
 
-try:
-    import pytest
-except ImportError:
-    pass
-
-__version__ = '1.0.0'
+# version as in setup
+__version__ = '0.1'
 
 
 def test():
-    """ Run PYTEST for the package.
-    """
+    """The function allows to run the tests from inside the interpreter."""
 
     package_directory = os.path.dirname(os.path.realpath(__file__))
     current_directory = os.getcwd()

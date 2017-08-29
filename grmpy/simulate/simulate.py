@@ -11,7 +11,7 @@ from grmpy.read.read import read
 
 
 def simulate(init_file):
-    """ This function simulates a user-specified version of the generalized Roy model"""
+    """This function simulates a user-specified version of the Generalized Roy Model."""
     # Transform init file to dictionary
     assert isinstance(init_file, str)
     assert os.path.isfile(init_file)
@@ -52,8 +52,7 @@ def simulate(init_file):
     Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
 
     # Write output file
-    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V],
-                      source)
+    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source)
 
     print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
 

@@ -1,5 +1,4 @@
 """This module provides auxiliary functions for the import process of the init file."""
-
 import numpy as np
 
 
@@ -27,8 +26,8 @@ def process(list_, dict_, keyword):
 
 
 def auxiliary(dict_):
-    """The function creates an new dictionary entry 'AUX' that includes starting values of each parameter and the number
-    of covariates.
+    """The function creates an new dictionary entry 'AUX' that includes starting values of each
+    parameter and the number of covariates.
     """
     dict_['AUX'] = {}
     if dict_['DIST']['coeff'] == [0.0] * len(dict_['DIST']['coeff']):

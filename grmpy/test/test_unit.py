@@ -6,16 +6,17 @@ import pandas as pd
 import numpy as np
 
 from grmpy.test.random_init import generate_random_dict
-from grmpy.simulate.simulate import simulate
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.test.auxiliary import check_series
+from grmpy.simulate.simulate import simulate
 from grmpy.read.read import read
 
 
 class TestClass:
     def test1(self):
-        """The first test tests whether the relationships in the simulated datasets are appropriate."""
+        """The first test tests whether the relationships in the simulated datasets are appropriate.
+        """
         constr = constraints(probability=0.0)
         for _ in range(10):
             dict_ = generate_random_dict(constr)
@@ -60,7 +61,9 @@ class TestClass:
                 os.remove(f)
 
     def test3(self):
-        """The third test  checks whether the relationships hold if the coefficients are zero in different setups"""
+        """The third test  checks whether the relationships hold if the coefficients are zero in
+        different setups.
+        """
         for _ in range(10):
 
             # All Coefficients
@@ -136,8 +139,7 @@ class TestClass:
             # Only Cost
             constr = constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
-            dict_['COST']['coeff'] = np.array(
-                [0.] * len(dict_['COST']['coeff']))
+            dict_['COST']['coeff'] = np.array([0.] * len(dict_['COST']['coeff']))
             print_dict(dict_)
             dict_ = read('test.grmpy.ini')
 
@@ -157,7 +159,7 @@ class TestClass:
 
     def test4(self):
         """The fourth test checks whether the simulation process works if there are only treated or
-        untreated Agents by setting the number of agents to one
+        untreated Agents by setting the number of agents to one.
         """
         constr = constraints(probability=0.0, agents=1)
         for _ in range(10):
@@ -170,8 +172,9 @@ class TestClass:
                 os.remove(f)
 
     def test5(self):
-        """The fifth test tests the random init file generating process and the  import process. It generates an random
-        init file, imports it again and compares the entries in the both dictionaries.
+        """The fifth test tests the random init file generating process and the  import process. It
+        generates an random init file, imports it again and compares the entries in the both dictio-
+        naries.
         """
         for _ in range(10):
             gen_dict = generate_random_dict()
@@ -180,13 +183,9 @@ class TestClass:
             imp_dict = read(init_file_name + '.grmpy.ini')
 
             for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                assert np.array_equal(
-                    np.around(
-                        gen_dict[key_]['coeff'], 4), imp_dict[key_]['all']
-                )
+                assert np.array_equal(np.around(gen_dict[key_]['coeff'], 4), imp_dict[key_]['all'])
             for key_ in ['source', 'agents', 'seed']:
-                assert gen_dict['SIMULATION'][key_] == \
-                       imp_dict['SIMULATION'][key_]
+                assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
 
             for f in glob.glob("*.grmpy.*"):
                 os.remove(f)
