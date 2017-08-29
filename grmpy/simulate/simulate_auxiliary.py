@@ -47,7 +47,7 @@ def simulate_outcomes(exog, err, coeff):
 
 def write_output(end, exog, err, source):
     """The function converts the simulated variables to a panda data frame and saves the data in a
-    txt and a pickle file
+    txt and a pickle file.
     """
     column = ['Y', 'D']
 
