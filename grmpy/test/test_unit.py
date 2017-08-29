@@ -70,8 +70,7 @@ class TestClass:
             constr = constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
-                dict_[key_]['coeff'] = np.array(
-                    [0.] * len(dict_[key_]['coeff']))
+                dict_[key_]['coeff'] = np.array([0.] * len(dict_[key_]['coeff']))
 
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
@@ -86,8 +85,7 @@ class TestClass:
             constr = constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
             for key_ in ['TREATED', 'UNTREATED']:
-                dict_[key_]['coeff'] = np.array(
-                    [0.] * len(dict_[key_]['coeff']))
+                dict_[key_]['coeff'] = np.array([0.] * len(dict_[key_]['coeff']))
             print_dict(dict_)
 
             df = simulate('test.grmpy.ini')
@@ -120,8 +118,7 @@ class TestClass:
             # Only Untreated
             constr = constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
-            dict_['UNTREATED']['coeff'] = np.array(
-                [0.] * len(dict_['UNTREATED']['coeff']))
+            dict_['UNTREATED']['coeff'] = np.array([0.] * len(dict_['UNTREATED']['coeff']))
             print_dict(dict_)
             dict_ = read('test.grmpy.ini')
 
