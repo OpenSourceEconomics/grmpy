@@ -25,7 +25,7 @@ The generalized Roy model (Roy, 1951; Heckman & Vytlacil, 2005) provides a coher
 :math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`C` denotes the subjective cost of treatment participation. Any subjective benefits, e.g. job amenities, are included (as a negative contribution) in the subjective cost of treatment. Agents take up treatment :math:`D` if they expect the objective benefit to outweigh the subjective cost. In that case, their subjective evaluation, i.e. the expected surplus from participation :math:`S`, is positive. I denotes the agent’s information set at the time of the participation decision. The observed outcome :math`Y` is determined in a switching-regime fashion (Quandt, 1958, 1972). If agents take up treatment, then the observed outcome :math:`Y` corresponds to the outcome in the presence of treatment :math:`Y_1`. Otherwise, :math:`Y_0` is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and :math:`(U_1, U_0) ∼ N (0, \Sigma)`, then the generalized Roy model corresponds to the original
 Roy model (Roy, 1951).
 
-From the perspective of the econometrician, :math:`(X, Z)` are observable while :math:`(U_1, U_0, U_C)` are not. :math:`X` are the observed determinants of potential outcomes :math:`(Y_1, Y_0)`, and :math:`Z` are the observed determinants of the cost of treatment :math:`C`. Potential outcomes and cost are decomposed into their means :math:`(\mu_1(X), \mu_0(X), \mu_C(Z)) and their deviations from the mean :math:`(U_1, U_0, U_C)`. :math:`(X, Z)` might have common elements. Observables and unobservables jointly determine program participation :math:`D`.
+From the perspective of the econometrician, :math:`(X, Z)` are observable while :math:`(U_1, U_0, U_C)` are not. :math:`X` are the observed determinants of potential outcomes :math:`(Y_1, Y_0)`, and :math:`Z` are the observed determinants of the cost of treatment :math:`C`. Potential outcomes and cost are decomposed into their means :math:`(\mu_1(X), \mu_0(X), \mu_C(Z))` and their deviations from the mean :math:`(U_1, U_0, U_C)`. :math:`(X, Z)` might have common elements. Observables and unobservables jointly determine program participation :math:`D`.
 
 If their ex ante surplus :math:`S` from participation is positive, then agents select into treatment. Yet, this does not require their expected objective returns to be positive as well. Subjective cost :math:`C` might be negative such that agents which expect negative returns still participate. Moreover, in the case of imperfect information, an agent’s ex ante evaluation of treatment is potentially different from their ex post assessment.
 
@@ -64,9 +64,9 @@ It is common to summarize the average benefits of treatment for different subset
 treated (TT) or untreated (TUT).
 
 .. math::
-    ATE = E [Y_1 − Y_0]
-    TT = E [Y_1 − Y_0 | D = 1]
-    TUT = E [Y_1 − Y_0 | D = 0]
+    ATE = E [Y_1 − Y_0]\\
+    TT = E [Y_1 − Y_0 | D = 1]\\
+    TUT = E [Y_1 − Y_0 | D = 0]\\
 
 The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus TT > TUT. If agents select their treatment status at random, then all parameters are equal. The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The ATE is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The TT is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
 compulsory participation, then the T UT is the policy relevant parameter. To ensure a tight link between the posed policy question and the parameter of interest, Heckman
@@ -74,7 +74,7 @@ and Vytlacil (2001b) propose the policy-relevant treatment effect (PRTE). They c
 respectively. Then, observed outcomes are determined as
 
 .. math::
-    Y_B = D_BY_1 + (1 − D_B)Y_0
+    Y_B = D_BY_1 + (1 − D_B)Y_0\\
     Y_A = D_AY_1 + (1 − D_A)Y_0.
 
 A policy change induces some agents to change their treatment status (DB != DA), while others are unaffected. More formally, the PRTE is then defined as
@@ -108,7 +108,7 @@ The MTE provides the underlying structure for all average effect parameters prev
 Parameter :math:`j, \Delta j (x)``, can be written as
 .. math::
 
-    \Delta j (x) = Z_1
+    \Delta j (x) = Z_1\\\\
 
     MTE(x, u_S)hj (x, u_S) du_S,
 
