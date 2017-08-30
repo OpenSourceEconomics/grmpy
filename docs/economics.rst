@@ -106,6 +106,7 @@ The MTE is the average benefit for persons with observable characteristics :math
 The MTE provides the underlying structure for all average effect parameters previously discussed. These can be derived as weighted averages of the MTE (Heckman and Vytlacil, 2005).
 
 Parameter :math:`j, \Delta j (x)`, can be written as
+
 .. math::
     \Delta j (x) = Z_1 \\
     MTE(x, u_S)hj (x, u_S) du_S,
