@@ -20,7 +20,7 @@ The generalized Roy model (Roy, 1951; Heckman & Vytlacil, 2005) provides a coher
     C & = \mu_C(Z) + U_C \\
     & \\
     \text{Observed Outcome} &  \\
-    Y & = D Y_1 + (1 - D) Y_0ma
+    Y & = D Y_1 + (1 - D) Y_0
 
 :math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`C` denotes the subjective cost of treatment participation. Any subjective benefits, e.g. job amenities, are included (as a negative contribution) in the subjective cost of treatment. Agents take up treatment :math:`D` if they expect the objective benefit to outweigh the subjective cost. In that case, their subjective evaluation, i.e. the expected surplus from participation :math:`S`, is positive. I denotes the agent’s information set at the time of the participation decision. The observed outcome :math`Y` is determined in a switching-regime fashion (Quandt, 1958, 1972). If agents take up treatment, then the observed outcome :math:`Y` corresponds to the outcome in the presence of treatment :math:`Y_1`. Otherwise, :math:`Y_0` is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and :math:`(U_1, U_0) ∼ N (0, \Sigma)`, then the generalized Roy model corresponds to the original
 Roy model (Roy, 1951).
@@ -89,7 +89,7 @@ Local Average Treatment Effect
 ------------------------------
 
 The Local Average Treatment Effect (LATE) was introduced by Imbens (1994). They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
-%
+
 Unfortunately, the people induced to go into state 1 :math:`(D=1)` by a change in any particular instrument need not to be the same as the people induced to to go to state 1 by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may bot be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, IV estimates using the components of :math:`Z` as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. Heckman develops this argument in detail (2010d).
 
 The average effect of a policy and the average effect of a treatment are linked by the marginal treatment effect (MTE). The MTE was introduced into the literature by Björklund and Moffitt (1987) and extended in Heckman and Vytlacil (2001a, 2005, 2007b).
@@ -97,7 +97,7 @@ The average effect of a policy and the average effect of a treatment are linked 
 Marginal Treatment Effect
 --------------------------
 
-The MTE is the treatment effect parameter that conditions on the unobserved desire to select into treatment. Let :math:`V = E[U_C − (U_1 − U_0) | I ]` summarize the expectations about all unobservables determining treatment choice and let :math:`U_S = FV (V)`. Then, the MTE is defined as
+The MTE is the treatment effect parameter that conditions on the unobserved desire to select into treatment. Let :math:`V = E[U_C − (U_1 − U_0) | I ]` summarize the expectations about all unobservables determining treatment choice and let :math:`U_S = F_V (V)`. Then, the MTE is defined as
 
 .. math::
     MTE(x, u_S) = E [ Y_1 − Y_0 | X = x, U_S = u_S] .
