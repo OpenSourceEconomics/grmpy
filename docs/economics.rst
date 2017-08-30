@@ -6,7 +6,7 @@ This section provides a general discussion of the generalized Roy model and sele
 Generalized Roy Model
 *********************
 
-The generalized Roy model (Roy, 1951; Heckman & Vytlacil, 2005) provides a coherent framework to explore the econometrics of policy evaluation. Its parametric version is characterized by the following set of equations.
+The generalized Roy model (:cite:`Roy51`; :cite:`HecVyt05`) provides a coherent framework to explore the econometrics of policy evaluation. Its parametric version is characterized by the following set of equations.
 
 
 .. math::
@@ -22,14 +22,14 @@ The generalized Roy model (Roy, 1951; Heckman & Vytlacil, 2005) provides a coher
     \text{Observed Outcome} &  \\
     Y & = D Y_1 + (1 - D) Y_0
 
-:math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`C` denotes the subjective cost of treatment participation. Any subjective benefits, e.g. job amenities, are included (as a negative contribution) in the subjective cost of treatment. Agents take up treatment D if they expect the objective benefit to outweigh the subjective cost. In that case, their subjective evaluation, i.e. the expected surplus from participation S, is positive. I denotes the agent’s information set at the time of the participation decision. The observed outcome Y is determined in a switching-regime fashion (Quandt, 1958, 1972). If agents take up treatment, then the observed outcome Y corresponds to the outcome in the presence of treatment Y1. Otherwise, Y0 is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and (U1, U0) ∼ N (0, Σ), then the generalized Roy model corresponds to the original
+:math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`C` denotes the subjective cost of treatment participation. Any subjective benefits, e.g. job amenities, are included (as a negative contribution) in the subjective cost of treatment. Agents take up treatment :math:`D` if they expect the objective benefit to outweigh the subjective cost. In that case, their subjective evaluation, i.e. the expected surplus from participation :math:`S`, is positive. I denotes the agent’s information set at the time of the participation decision. The observed outcome :math`Y` is determined in a switching-regime fashion (Quandt, 1958, 1972). If agents take up treatment, then the observed outcome :math:`Y` corresponds to the outcome in the presence of treatment :math:`Y_1`. Otherwise, :math`Y_0` is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and :math`(U_1, U_0) ∼ N (0, \Sigma)`, then the generalized Roy model corresponds to the original
 Roy model (Roy, 1951).
 
-From the perspective of the econometrician, (X, Z) are observable while (U1, U0, UC) are not. X are the observed determinants of potential outcomes (Y1, Y0), and Z are the observed determinants of the cost of treatment C. Potential outcomes and cost are decomposed into their means (µ1(X), µ0(X), µC(Z)) and their deviations from the mean (U1, U0, UC). (X, Z) might have common elements. Observables and unobservables jointly determine program participation D.
+From the perspective of the econometrician, :math:`(X, Z)` are observable while ::math:`(U_1, U_0, U_C)` are not. :math:`X` are the observed determinants of potential outcomes :math`(Y_1, Y_0)`, and :math:`Z` are the observed determinants of the cost of treatment :math:`C`. Potential outcomes and cost are decomposed into their means :math:`(\mu_1(X), \mu_0(X), \mu_C(Z)) and their deviations from the mean :math:`(U_1, U_0, U_C)`. :math:`(X, Z)` might have common elements. Observables and unobservables jointly determine program participation :math:`D`.
 
-If their ex ante surplus S from participation is positive, then agents select into treatment. Yet, this does not require their expected objective returns to be positive as well. Subjective cost C might be negative such that agents which expect negative returns still participate. Moreover, in the case of imperfect information, an agent’s ex ante evaluation of treatment is potentially different from their ex post assessment.
+If their ex ante surplus :math:`S` from participation is positive, then agents select into treatment. Yet, this does not require their expected objective returns to be positive as well. Subjective cost :math:`C` might be negative such that agents which expect negative returns still participate. Moreover, in the case of imperfect information, an agent’s ex ante evaluation of treatment is potentially different from their ex post assessment.
 
-The evaluation problem arises because either Y1 or Y0 is observed. Thus, the effect of treatment cannot be determined on an individual level. If the treatment choice D depends on the potential outcomes, then there is also a selection problem. If that is the case, then the treated and untreated differ not only in their treatment status but in other characteristics as well. A naive comparison of the treated and untreated leads to misleading conclusions. Jointly, the evaluation and selection problem are the two fundamental problems of causal inference (Holland, 1986).
+The evaluation problem arises because either :math:`Y_1` or :math:`Y_0` is observed. Thus, the effect of treatment cannot be determined on an individual level. If the treatment choice :math`D` depends on the potential outcomes, then there is also a selection problem. If that is the case, then the treated and untreated differ not only in their treatment status but in other characteristics as well. A naive comparison of the treated and untreated leads to misleading conclusions. Jointly, the evaluation and selection problem are the two fundamental problems of causal inference (Holland, 1986).
 
 Selected Issues
 ***************
@@ -41,7 +41,7 @@ Agent Heterogeneity
 
 What gives rise to variation in choices and outcomes among, from the econometrician’s perspective, otherwise observationally identical agents? This is the central question in all econometric policy analyses (Browning et al., 1999; Heckman, 2001).
 
-The individual benefit of treatment is defined as B = Y1 − Y0 = (µ1(X) − µ0(X)) + (U1 − U0). From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics (U1 − U0). However, (U1 − U0) might be (at least partly) included in the agent’s information set I and thus known to the agent at the time of the treatment decision.
+The individual benefit of treatment is defined as :math:`B = Y_1 − Y_0 = (\mu_1(X) − \mu_0(X)) + (U_1 − U_0)`. From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 − U_0)`. However, :math:`(U_1 − U_0)` might be (at least partly) included in the agent’s information set I and thus known to the agent at the time of the treatment decision.
 
 As a result, unobservable treatment effect heterogeneity can be distinguished into private information and uncertainty. Private information is only known to the agent but not the econometrician; uncertainty refers to variability that is unpredictable by both.
 
@@ -57,39 +57,37 @@ Objects of Interest
 
 Treatment effect heterogeneity requires to be precise about the effect being discussed. There is no single effect of neither a policy nor a treatment. For each specific policy question, the object of interest must be carefully defined (Heckman and Vytlacil, 2005, 2007a,b). We present several potential objects of interest and discuss what question they are suited to answer. We start with the average effect parameters. However, these neglect possible effect heterogeneity. Therefore, we explore their distributional counterparts as well.
 
-Treatment effect heterogeneity requires to be precise about the effect being discussed. There is no single effect of neither a policy nor a treatment. For each specific policy question, the object of interest must be carefully defined (Heckman and Vytlacil, 2005, 2007a,b). We present several potential objects of interest and discuss what question they are suited to answer. We start with the average effect parameters. However, these neglect possible effect heterogeneity. Therefore, we explore their distributional counterparts as well.
-
 Conventional Average Treatment Effects
 --------------------------------------
 
-It is common to summarize the average benefits of treatment for different subsets of the population. In general, the focus is on the average effect in the whole population, the average treatment effect (AT E), or the average effect on the
-treated (T T) or untreated (T UT).
+It is common to summarize the average benefits of treatment for different subsets of the population. In general, the focus is on the average effect in the whole population, the average treatment effect (ATE), or the average effect on the
+treated (TT) or untreated (TUT).
 
-AT E = E [Y1 − Y0]
-T T = E [Y1 − Y0 | D = 1]
-T UT = E [Y1 − Y0 | D = 0]
+.. math::
+    ATE = E [Y_1 − Y_0]
+    TT = E [Y_1 − Y_0 | D = 1]
+    TUT = E [Y_1 − Y_0 | D = 0]
 
-The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus T T > T UT. If agents select their treatment status at random, then all parameters are equal. The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The AT E is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The T T is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
+The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus TT > TUT. If agents select their treatment status at random, then all parameters are equal. The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The ATE is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The TT is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
 compulsory participation, then the T UT is the policy relevant parameter. To ensure a tight link between the posed policy question and the parameter of interest, Heckman
-and Vytlacil (2001b) propose the policy-relevant treatment effect (P RT E). They consider policies that do not change potential outcomes, but only affect individual choices. Thus, they account for voluntary program participation. Policy-Relevant Average Treatment Effects The P RT E captures the average change in outcomes per net person shifted by a change from a baseline state B to an alternative policy A. Let DB and DA denote the choice taken under the baseline and the alternative policy regime
+and Vytlacil (2001b) propose the policy-relevant treatment effect (PRTE). They consider policies that do not change potential outcomes, but only affect individual choices. Thus, they account for voluntary program participation. Policy-Relevant Average Treatment Effects The PRTE captures the average change in outcomes per net person shifted by a change from a baseline state :math:`B` to an alternative policy :math:`A`. Let :math:`D_B` and :math:`D_A` denote the choice taken under the baseline and the alternative policy regime
 respectively. Then, observed outcomes are determined as
 
-YB = DBY1 + (1 − DB)Y0
-YA = DAY1 + (1 − DA)Y0.
+.. math::
+    Y_B = D_BY_1 + (1 − D_B)Y_0
+    Y_A = D_AY_1 + (1 − D_A)Y_0.
 
-A policy change induces some agents to change their treatment status (DB 6= DA), while others are unaffected. More formally, the P RT E is then defined as
-
-P RT E =
-E [DA] − E [DB]
-(E [YA] − E [YB]).
+A policy change induces some agents to change their treatment status (DB 6= DA), while others are unaffected. More formally, the PRTE is then defined as
+.. math::
+    PRTE = E[D_A] − E[D_B](E[Y_A] − E[Y_B]).
 
 In our empirical illustration, in which we consider education policies, the lack of policy relevance of the conventional effect parameters is particularly evident. Rather than directly assigning individuals a certain level of education, policy makers can only indirectly affect schooling choices, e.g. by altering tuition cost through subsidies. The individuals drawn into treatment by such a policy will neither be a random sample of the whole population, nor the whole population of
-the previously (un-)treated. That is why we estimate the policy-relevant effects of alternative education policies and contrast them with the conventional treatment effect parameters. We also show how the P RT E varies for alternative policy proposals as different agents are induced to change their treatment status.
+the previously (un-)treated. That is why we estimate the policy-relevant effects of alternative education policies and contrast them with the conventional treatment effect parameters. We also show how the PRTE varies for alternative policy proposals as different agents are induced to change their treatment status.
 
 Local Average Treatment Effect
 ------------------------------
 
-The Local Average Treatment Effect (LATE) was introduced by \citet{Imbens.1994}. They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.\\\newline
+The Local Average Treatment Effect (LATE) was introduced by {Imbens.1994}. They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.\\\newline
 %
 Unfortunately, the people induced to go into state 1 $(D=1)$ by a change in any particular instrument need not to be the same as the people induced to to go to state 1 by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may bot be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, IV estimates using the components of $Z$ as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. \citet{Heckman.2010d} develops this argument in detail.
 
