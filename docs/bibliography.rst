@@ -13,6 +13,8 @@ Cochran, W. G. and Rubin, D. B. (1972). Controlling Bias in Observational Studie
 
 Heckman, J. J. (2001). Micro Data, Heterogeneity, and the Evaluation of Public Policy: Nobel Lecture. *Journal of Political Economy*, 109(4):673-748.
 
+Heckman, J. J. (2010). Building Bridges between Structural and Program Evaluation Approaches to Evaluating Policy, *Journal of Economic Literature*, 48(2):356-398
+
 Heckman, J. J. (1997)., Smith, J., and Clements, J. (1997).  Making the Most Out of Programme Evaluations and Social Experiments: Accounting for Heterogeneity in Programme Impacts. *The Review of Economic Studies*, 64(4):487-535
 
 Heckman, J. J., Ichimura, H., Smith, J., and Todd, P. E. (1998). Characterizing Selection Bias Using Experimental Data. *Econometrica*, 66(5):1017-1098.
@@ -25,7 +27,7 @@ Heckman, J. J., and Vyrlacil, E. J. (2007a). Econometric Evaluation of Social Pr
 
 Heckman, J. J., and Vyrlacil, E. J. (2007b). Econometric Evaluation of Social Programs, Part II: Using the Marginal Treatment Effect to Organize Alternative Economic Estimators to Evaluate Social Programs and to Forcast their Effects in New Enviroments. In Heckman, J. J. and Leamer, E. E., editors, *Handbook of Econometrics*, volume 6B, pages 4875-5144. Elsevier Science, Amsterdam, Netherlands.
 
-Heckman, J. J., Urzua, S., and Vytlacil, E. J. (2006b). Understanding Instrumental Variables in Models with Essential Heterogeneity. *The Review of Economcs and Statistics*, 88(3):389-432.
+Heckman, J. J., Urzua, S., and Vytlacil, E. J. (2006). Understanding Instrumental Variables in Models with Essential Heterogenity. *The Review of Economcs and Statistics*, 88(3):389-432.
 
 Holland, P. W. (1986). Statistics and Causal Inference. *Journal of the American Statistical Association*, 81(396):945-960.
 
