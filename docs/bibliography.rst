@@ -11,9 +11,9 @@ Browning, A. Heckman, J. J., and Hansen, L. P. (1999). Micro Data and General Eq
 
 Cochran, W. G. and Rubin, D. B. (1972). Controlling Bias in Observational Studies: A Review. *Sankhya: The Indian Journal of Statistics Series A*, 34(4):417-446.
 
-Heckman, J. J. (1997).
-
 Heckman, J. J. (2001). Micro Data, Heterogeneity, and the Evaluation of Public Policy: Nobel Lecture. *Journal of Political Economy*, 109(4):673-748.
+
+Heckman, J. J. (1997)., Smith, J., and Clements, J. (1997).  Making the Most Out of Programme Evaluations and Social Experiments: Accounting for Heterogeneity in Programme Impacts. *The Review of Economic Studies*, 64(4):487-535
 
 Heckman, J. J., Ichimura, H., Smith, J., and Todd, P. E. (1998). Characterizing Selection Bias Using Experimental Data. *Econometrica*, 66(5):1017-1098.
 
