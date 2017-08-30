@@ -30,8 +30,6 @@ source      str         specified name for the simulation output files
 
 The *TREATED* and *UNTREATED* paragraph are similar regarding their structure. Both contain the parameters that determine the expected wage dependent on the treatment status. There can be added as many covariates as wished, but the number has to be the same for both cases.
 
-*Note:* The first coefficient is interpreted as an intercept.
-
 =======     ======      ==================
 Key         Value       Interpretation
 =======     ======      ==================
@@ -45,8 +43,6 @@ coeff       float       coefficient of the second covariate
 
 *COST* includes parameters related to the cost function.
 
-*Note:* The first coefficient is interpreted as an intercept.
-
 =======     ======      ==================
 Key         Value       Interpretation
 =======     ======      ==================
@@ -56,10 +52,17 @@ coeff       float       coefficient of the second covariate
  ...
 =======     ======      ==================
 
+.. Warning::
+
+    - The first coefficient in the *TREATED*, *UNTREATED* and *COST* section is interpreted as an intercept.
+
+    - You can add a desired number of different coefficients to all three sections. It should be noted however that the number of coefficients in the *TREATED* and *UNTREATED* sections has to be the same.
+
+
 **DIST**
 
 This Section determines the distributional characteristics of the unobservable variables.
-The indices *0* and *1* denote the error for the untreated and treated observations whereas *C* denotes the error term for the costs.
+The indices *0* and *1* denote the distributional information for the error terms of the potential untreated and treated outcomes, whereas *C* denotes the distributional characteristics related to the cost function error terms.
 
 
 ======= ======      ==========================
@@ -72,7 +75,3 @@ coeff    float      :math:`\sigma_{1}`
 coeff    float      :math:`\sigma_{1C}`
 coeff    float      :math:`\sigma_{C}`
 ======= ======      ==========================
-
-
-
-

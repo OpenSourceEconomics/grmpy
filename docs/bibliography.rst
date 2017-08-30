@@ -7,11 +7,11 @@ Abbring, J. and Heckman, J.J. (2007). `Econometric Evaluation of Social Programs
 
 Björklund, A.m and Moffitt, R. (1987). `The Estimation of Wage Gains and Welfare Gains in Self-Selection Models. <https://www.jstor.org/stable/1937899>`_ *The Review of Economics and Statistics*, 69(1):42-49.
 
-Browning, A. Heckman, J. J., and Hansen, L. P. (1999). `Micro Data and General Equilibrium Models.<http://www.sciencedirect.com/science/article/pii/S1574004899010113>`_ In Taylor, J. B. and Woodford, M. editors, *Handbook of Microeconomics*, volume 1A, pages 543-633. Elservier Science, Amsterdam, Netherlands
+Browning, A. Heckman, J. J., and Hansen, L. P. (1999). `Micro Data and General Equilibrium Models. <http://www.sciencedirect.com/science/article/pii/S1574004899010113>`_ In Taylor, J. B. and Woodford, M. editors, *Handbook of Microeconomics*, volume 1A, pages 543-633. Elservier Science, Amsterdam, Netherlands
 
-Cochran, W. G. and Rubin, D. B. (1972). `Controlling Bias in Observational Studies: A Review.<https://www.jstor.org/stable/25049893>`_ *Sankhya: The Indian Journal of Statistics Series A*, 34(4):417-446.
+Cochran, W. G. and Rubin, D. B. (1972). `Controlling Bias in Observational Studies: A Review. <https://www.jstor.org/stable/25049893>`_ *Sankhya: The Indian Journal of Statistics Series A*, 34(4):417-446.
 
-Heckman, J. J. (2001). `Micro Data, Heterogeneity, and the Evaluation of Public Policy: Nobel Lecture.<http://www.jstor.org/stable/10.1086/322086>`_ *Journal of Political Economy*, 109(4):673-748.
+Heckman, J. J. (2001). `Micro Data, Heterogeneity, and the Evaluation of Public Policy: Nobel Lecture. <http://www.jstor.org/stable/10.1086/322086>`_ *Journal of Political Economy*, 109(4):673-748.
 
 Heckman, J. J. (2010). `Building Bridges between Structural and Program Evaluation Approaches to Evaluating Policy. <https://www.aeaweb.org/articles?id=10.1257/jel.48.2.356>`_ *Journal of Economic Literature*, 48(2):356-398
 
@@ -25,7 +25,7 @@ Heckman, J. J., and Vyrlacil, E. J. (2005). `Structural Equations, Treatment Eff
 
 Heckman, J. J., and Vyrlacil, E. J. (2007a). `Econometric Evaluation of Social Programs, Part I: Causal Effects, Structural Models and Econometric Policy Evaluation. <http://www.sciencedirect.com/science/article/pii/S1573441207060709>`_ In Heckman, J. J. and Leamer, E. E., editors, *Handbook of Econometrics*, volume 6B, pages 4779-4874, Elsevier Science, Amsterdam, Netherlands
 
-Heckman, J. J., and Vyrlacil, E. J. (2007b). `Econometric Evaluation of Social Programs, Part II: Using the Marginal Treatment Effect to Organize Alternative Economic Estimators to Evaluate Social Programs and to Forcast their Effects in New Enviroments.<http://www.sciencedirect.com/science/article/pii/S1573441207060710>`_ In Heckman, J. J. and Leamer, E. E., editors, *Handbook of Econometrics*, volume 6B, pages 4875-5144. Elsevier Science, Amsterdam, Netherlands.
+Heckman, J. J., and Vyrlacil, E. J. (2007b). `Econometric Evaluation of Social Programs, Part II: Using the Marginal Treatment Effect to Organize Alternative Economic Estimators to Evaluate Social Programs and to Forcast their Effects in New Enviroments. <http://www.sciencedirect.com/science/article/pii/S1573441207060710>`_ In Heckman, J. J. and Leamer, E. E., editors, *Handbook of Econometrics*, volume 6B, pages 4875-5144. Elsevier Science, Amsterdam, Netherlands.
 
 Heckman, J. J., Urzua, S., and Vytlacil, E. J. (2006). `Understanding Instrumental Variables in Models with Essential Heterogenity. <http://www.mitpressjournals.org/doi/abs/10.1162/rest.88.3.389>`_ *The Review of Economcs and Statistics*, 88(3):389-432.
 
