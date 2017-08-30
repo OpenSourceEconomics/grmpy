@@ -33,7 +33,7 @@ Horwitz, R. I., Singer, B., Makuch, R. W., and Viscoli, C. M. (1996). Can Treatm
 
 Horwitz, R. I., Singer, B., Makuch, R. W., and Viscoli, C. M. (1997). Reaching the Tunnel at the End of the Light. *Journal of Clinical Epidemiology*, 50(7):753-755.
 
-Imbens, G. W. (1994). Transition models in a non-stationary enviroment. *The Review of Economics and Statistics*, 76(4):703-720.
+Imbens, G. W., Angrist, J. D. (1994). Identification and Estimation of Local Average Treatment Effects. *Econometrica*, 62(2):467-475.
 
 Quandt, R. E. (1958). The Estimation of the Parameters of a Linear Regression System Obeying two Seperate Regimes. *Journal of the American Statistical Association*, 53(284):873-880.
 
