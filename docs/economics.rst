@@ -42,8 +42,9 @@ Agent Heterogeneity
 What gives rise to variation in choices and outcomes among, from the econometrician’s perspective, otherwise observationally identical agents? This is the central question in all econometric policy analyses (Browning et al., 1999 :cite:`BrHecHa07`; Heckman, 2001 :cite:`Heckman2001`).
 
 The individual benefit of treatment is defined as
+
   .. math::
-       B  = Y_1 − Y_0 = (\mu_1(X) − \mu_0(X)) + (U_1 − U_0)
+       B  = Y_1 − Y_0 = (\mu_1(X) − \mu_0(X)) + (U_1 − U_0).
 
 From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 − U_0)`. However, :math:`(U_1 − U_0)` might be (at least partly) included in the agent’s information set I and thus known to the agent at the time of the treatment decision.
 
