@@ -107,9 +107,7 @@ The MTE provides the underlying structure for all average effect parameters prev
 
 Parameter :math:`j, \Delta j (x)``, can be written as
 .. math::
-
-    \Delta j (x) = Z_1\\\\
-
+    \Delta j (x) = Z_1 \\
     MTE(x, u_S)hj (x, u_S) du_S,
 
 where the weights :math:`hj (x, u_S)`` are specific to parameter j, integrate to one, and can be constructed from data. All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
