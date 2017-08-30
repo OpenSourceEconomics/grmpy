@@ -105,7 +105,7 @@ The MTE is the treatment effect parameter that conditions on the unobserved desi
 The MTE is the average benefit for persons with observable characteristics :math:`X = x` and unobservables :math:`U_S = u_S`. By construction, :math:`U_S` denotes the different quantiles of :math:`V` . So, when varying :math:`U_S` but keeping :math:`X` fixed, then the MTE shows how the average benefit varies along the distribution of :math:`V` . For :math:`u_S` evaluation points close to zero, the MTE is the average effect of treatment for individuals with a value of :math:`V` that makes them most likely to participate. The opposite is true for high values of :math:`u_S`.
 The MTE provides the underlying structure for all average effect parameters previously discussed. These can be derived as weighted averages of the MTE (Heckman and Vytlacil, 2005).
 
-Parameter :math:`j, \Delta j (x)``, can be written as
+Parameter :math:`j, \Delta j (x)`, can be written as
 .. math::
     \Delta j (x) = Z_1 \\
     MTE(x, u_S)hj (x, u_S) du_S,
