@@ -78,14 +78,13 @@ def write_output(end, exog, err, source):
 def collect_information(data_frame):
     """The function collects the required information for the info file."""
     # Number of individuals:
-    indiv = len(data_frame)
+    indiv = data_frame.shape[0]
 
     # Counts by treatment status
-    treated_num = data_frame[data_frame.D == 1].count()['D']
+    treated_num = data_frame[data_frame.D == 1].shape[0]
     untreated_num = indiv - treated_num
 
-    no_treatment, all_treatment = _adjust_collecting(
-        treated_num, untreated_num)
+    no_treatment, all_treatment = _adjust_collecting(treated_num, untreated_num)
     # Average Treatment Effect
 
     ate, tt, tut, mean_over, sd_over, quant_over, mean_treat, sd_treat, quant_treat, mean_untreat, \
@@ -95,7 +94,7 @@ def collect_information(data_frame):
         'Number of Agents': indiv, 'Treated Agents': treated_num, 'Untreated Agents': untreated_num,
         'Mean Untreated': mean_untreat, 'Mean Treated': mean_treat, 'Mean Overall': mean_over,
         'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles Overall':
-        quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat,
+            quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat,
         'Std Overall': sd_over,
         'ate': ate, 'tut': tut, 'tt': tt,
     }
@@ -140,9 +139,9 @@ def print_info(data_frame, coeffs, file_name):
 def _print_effects(data_, file_name):
     """The function writes the effect information to the init file."""
     structure = ['ate', 'tt', 'tut']
-    sub_structure = ['', '_01', '_025', '_05', '_075', '_09']
-    str_ = '{0:>10} {1:>18} {2:>18} {3:>18} {4:>18} {5:>18} {6:>18}\n\n'.format \
-        ('Effect', 'Overall', '0.1', '0.25', '0.5', '0.75', '0.9')
+    sub_structure = ['', '_0.1', '_0.25', '_0.5', '_0.75', '_0.9']
+    str_ = '{0:>10} {1:>18} {2:>18} {3:>18} {4:>18} {5:>18} {6:>18}\n\n'.format(
+        'Effect', 'Overall', '0.1', '0.25', '0.5', '0.75', '0.9')
     file_name.write(str_)
 
     for label in structure:
@@ -199,13 +198,9 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
 
     # Average Treatment effect
     ate_ = np.mean(data_frame.Y1 - data_frame.Y0)
-    ate_01 = calculate_ate(data_frame, out_quant, 0.1)
-    ate_025 = calculate_ate(data_frame, out_quant, 0.25)
-    ate_05 = calculate_ate(data_frame, out_quant, 0.5)
-    ate_075 = calculate_ate(data_frame, out_quant, 0.75)
-    ate_09 = calculate_ate(data_frame, out_quant, 0.9)
-    ate = {'ate': ate_, 'ate_01': ate_01, 'ate_025': ate_025, 'ate_05': ate_05, 'ate_075': ate_075,
-           'ate_09': ate_09}
+    ate = {'ate': ate_}
+    for i in [0.1, 0.25, 0.5, 0.75, 0.9]:
+        ate['ate_' + str(i)] = calculate_ate(data_frame, out_quant, i)
 
     # Treatment on the Treated
     if no_treatment:
@@ -215,13 +210,9 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
         quant_treat = "---"
     else:
         tt_ = np.mean(data_frame.Y1[data_frame.D == 1]) - np.mean(data_frame.Y0[data_frame.D == 1])
-        tt_01 = calculate_tt(data_frame, out_quant, 0.1)
-        tt_025 = calculate_tt(data_frame, out_quant, 0.25)
-        tt_05 = calculate_tt(data_frame, out_quant, 0.5)
-        tt_075 = calculate_tt(data_frame, out_quant, 0.75)
-        tt_09 = calculate_tt(data_frame, out_quant, 0.9)
-        tt = {'tt': tt_, 'tt_01': tt_01, 'tt_025': tt_025, 'tt_05': tt_05, 'tt_075': tt_075,
-              'tt_09': tt_09}
+        tt = {'tt': tt_}
+        for i in [0.1, 0.25, 0.5, 0.75, 0.9]:
+            tt['tt_' + str(i)] = calculate_tt(data_frame, out_quant, i)
         mean_treat = np.mean(data_frame.Y[data_frame.D == 1])
         sd_treat = np.std(data_frame.Y[data_frame.D == 1])
         quant_treat = data_frame.Y[data_frame.D == 1].quantile([0.2, 0.5, 0.8])
@@ -234,14 +225,9 @@ def _calc_parameters(data_frame, no_treatment, all_treatment):
         sd_untreat = "---"
     else:
         tut_ = np.mean(data_frame.Y1[data_frame.D == 0]) - np.mean(data_frame.Y0[data_frame.D == 0])
-        tut_01 = calculate_tut(data_frame, out_quant, 0.1)
-        tut_025 = calculate_tut(data_frame, out_quant, 0.25)
-        tut_05 = calculate_tut(data_frame, out_quant, 0.5)
-        tut_075 = calculate_tut(data_frame, out_quant, 0.75)
-        tut_09 = calculate_tut(data_frame, out_quant, 0.9)
-        tut = {'tut': tut_, 'tut_01': tut_01, 'tut_025': tut_025, 'tut_05': tut_05,
-               'tut_075': tut_075,
-               'tut_09': tut_09}
+        tut = {'tut': tut_}
+        for i in [0.1, 0.25, 0.5, 0.75, 0.9]:
+            tut['tut_' + str(i)] = calculate_tt(data_frame, out_quant, i)
         mean_untreat = np.mean(data_frame.Y[data_frame.D == 0])
         quant_untreat = data_frame.Y[data_frame.D == 0].quantile([
             0.2, 0.5, 0.8])

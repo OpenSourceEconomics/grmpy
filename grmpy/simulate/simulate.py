@@ -13,7 +13,6 @@ from grmpy.read.read import read
 def simulate(init_file):
     """This function simulates a user-specified version of the Generalized Roy Model."""
     # Transform init file to dictionary
-    assert isinstance(init_file, str)
     assert os.path.isfile(init_file)
     init_dict = read(init_file)
 
@@ -29,7 +28,7 @@ def simulate(init_file):
     U0_sd, U1_sd, V_sd = init_dict['DIST']['all'][:3]
     vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
     U01, U0_V, U1_V = init_dict['DIST']['all'][3:]
-    covar_ = [U01**2, U0_V**2, U1_V**2]
+    covar_ = [U01 ** 2, U0_V ** 2, U1_V ** 2]
     Dist_coeffs = init_dict['DIST']['all']
 
     num_covars_out = Y1_coeffs.shape[0]

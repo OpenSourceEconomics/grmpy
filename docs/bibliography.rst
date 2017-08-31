@@ -4,5 +4,5 @@
     ============
 
     .. bibliography:: refs.bib
-        :cited:
+        :all:
         :style: plain

@@ -12,7 +12,7 @@ class TestClass:
         """The test runs a loop to check the consistency of the random init file generating process
         and the following simulation.
         """
-        for _ in range(10):
+        for _ in range(1):
 
             dict_ = generate_random_dict()
             print_dict(dict_)
