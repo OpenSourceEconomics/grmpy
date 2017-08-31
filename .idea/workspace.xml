@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e683862a-ce2e-4427-a3c4-7cea23c9d652" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/refs.bib" afterPath="$PROJECT_DIR$/docs/refs.bib" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/software_engineering.rst" afterPath="$PROJECT_DIR$/docs/software_engineering.rst" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,18 +22,6 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="18" column="5" lean-forward="false" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="5" />
-              <folding>
-                <element signature="e#50#64#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="simulate_auxiliary.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
           <provider selected="true" editor-type-id="text-editor">
@@ -68,16 +56,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_integration.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="14" column="24" lean-forward="false" selection-start-line="14" selection-start-column="24" selection-end-line="14" selection-end-column="24" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="bibliography.rst" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/docs/bibliography.rst">
           <provider selected="true" editor-type-id="text-editor">
@@ -88,7 +66,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="refs.bib" pinned="false" current-in-tab="true">
+      <file leaf-file-name="refs.bib" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/docs/refs.bib">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
@@ -98,33 +76,51 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="random_init.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+      <file leaf-file-name="credits.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/credits.rst">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="71" column="5" lean-forward="false" selection-start-line="71" selection-start-column="4" selection-end-line="71" selection-end-column="5" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="read.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/read/read.py">
+      <file leaf-file-name="contributing.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/contributing.rst">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
-              <caret line="0" column="73" lean-forward="false" selection-start-line="0" selection-start-column="73" selection-end-line="0" selection-end-column="73" />
-              <folding>
-                <element signature="e#77#89#0" expanded="true" />
-              </folding>
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="read_auxiliary.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
+      <file leaf-file-name="changes.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/changes.rst">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="629">
-              <caret line="59" column="24" lean-forward="true" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="24" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="reliability.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/reliability.rst">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="software_engineering.rst" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/docs/software_engineering.rst">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="316">
+              <caret line="31" column="11" lean-forward="true" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -190,6 +186,7 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/grmpy/test/test_unit.py" />
         <option value="$PROJECT_DIR$/docs/refs.bib" />
+        <option value="$PROJECT_DIR$/docs/software_engineering.rst" />
       </list>
     </option>
   </component>
@@ -696,11 +693,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/mBMAfvvn.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/oJISIFaV.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/fIfWduTD.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/9WJcx3a7.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/2SqCEZyc.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/hphs4Mhp.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/eny2tV2v.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/JK1S9PDy.grmpy.info" />
@@ -973,6 +965,46 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/credits.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/contributing.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/changes.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/reliability.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/software_engineering.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="316">
+          <caret line="31" column="11" lean-forward="true" selection-start-line="31" selection-start-column="11" selection-end-line="31" selection-end-column="11" />
           <folding />
         </state>
       </provider>
