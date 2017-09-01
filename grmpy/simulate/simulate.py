@@ -1,5 +1,6 @@
 """The module provides the simulation process."""
 import os.path
+import random
 
 import numpy as np
 
@@ -19,6 +20,8 @@ def simulate(init_file):
     # Distribute information
     num_agents = init_dict['SIMULATION']['agents']
     source = init_dict['SIMULATION']['source']
+    seed = init_dict['SIMULATION']['seed']
+    np.random.seed(seed)
 
     Y1_coeffs = init_dict['TREATED']['all']
     Y0_coeffs = init_dict['UNTREATED']['all']

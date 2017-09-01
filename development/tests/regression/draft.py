@@ -1,6 +1,7 @@
 """The module serves as a first draft for a regression tests battery."""
 import random
 import json
+import os
 
 import numpy as np
 
@@ -18,33 +19,27 @@ np.random.seed(123)
 random.seed(123)
 seeds = np.random.randint(0, 1000, size=NUM_TESTS)
 
+if not os.path.exists("grmpy/test/regression_test/"):
+    os.makedirs("grmpy/test/regression_test")
+
 if True:
     tests = []
     for seed in seeds:
 
         np.random.seed(seed)
         dict_ = generate_random_dict()
-        print_dict(dict_)
-
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
 
-        # TODO: Can we simply move from array's to list in the random generation procedure?
-        for key in dict_.keys():
-            if 'coeff' in dict_[key].keys():
-                dict_[key]['coeff'] = dict_[key]['coeff'].tolist()
-
         tests += [(stat, dict_)]
 
-    json.dump(tests, open('regression_vault.grmpy.json', 'w'))
+    json.dump(tests, open('grmpy/test/regression_test/regression_vault.grmpy.json', 'w'))
 
 if True:
-    tests = json.load(open('regression_vault.grmpy.json', 'r'))
+    tests = json.load(open('grmpy/test/regression_test/regression_vault.grmpy.json', 'r'))
 
     for test in tests:
         stat, dict_ = test
-
-        print_dict(dict_)
         df = simulate('test.grmpy.ini')
 
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
@@ -52,5 +47,4 @@ if True:
 
 
 
-    print(tests)
 

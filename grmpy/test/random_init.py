@@ -1,6 +1,5 @@
 """The module provides a random dictionary generating process for test purposes."""
-import random
-import string
+import uuid
 
 import numpy as np
 
@@ -10,17 +9,17 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
     random dictionary generating process.
     """
     constraints_dict = dict()
-    constraints_dict['DETERMINISTIC'] = random.random() < probability
+    constraints_dict['DETERMINISTIC'] = np.random.random_sample() < probability
     if not constraints_dict['DETERMINISTIC'] and is_zero:
-        constraints_dict['IS_ZERO'] = random.random() < probability / (1 - probability)
+        constraints_dict['IS_ZERO'] = np.random.random_sample() < probability / (1 - probability)
     else:
         constraints_dict['IS_ZERO'] = False
     if agents is None:
-        constraints_dict['AGENTS'] = random.randint(1, 1000)
+        constraints_dict['AGENTS'] = np.random.randint(1, 1000)
     else:
         constraints_dict['AGENTS'] = agents
     if seed is None:
-        constraints_dict['SEED'] = random.randint(1, 10000)
+        constraints_dict['SEED'] = np.random.randint(1, 10000)
     else:
         constraints_dict['SEED'] = seed
 
@@ -43,9 +42,7 @@ def generate_random_dict(constraints_dict=None):
 
     seed = constraints_dict['SEED']
 
-    source = ''.join(
-        [random.choice(string.ascii_letters + string.digits) for _ in range(8)]
-    )
+    source = my_random_string(8)
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
@@ -59,15 +56,15 @@ def generate_random_dict(constraints_dict=None):
 
             if not is_zero:
                 dict_[key_]['coeff'] = np.random.normal(
-                    0.0, 2., [treated_num])
+                    0.0, 2., [treated_num]).tolist()
             else:
-                dict_[key_]['coeff'] = np.array([0] * treated_num)
+                dict_[key_]['coeff'] = np.array([0] * treated_num).tolist()
         else:
 
             if not is_zero:
-                dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num])
+                dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num]).tolist()
             else:
-                dict_[key_]['coeff'] = np.array([0] * cost_num)
+                dict_[key_]['coeff'] = np.array([0] * cost_num).tolist()
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -97,7 +94,9 @@ def generate_random_dict(constraints_dict=None):
     dict_['DIST']['coeff'].append(b[2, 0])
     dict_['DIST']['coeff'].append(b[2, 1])
 
-    dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff'])
+    dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff']).tolist()
+
+    print_dict(dict_)
 
     return dict_
 
@@ -137,3 +136,11 @@ def print_dict(dict_, file_name='test'):
                     file_.write(str_.format(key_, dict_[label]['coeff'][i]))
 
             file_.write('\n')
+
+
+def my_random_string(string_length=10):
+    """Returns a random string of length string_length."""
+    random = str(uuid.uuid4()) # Convert UUID format to a Python string.
+    random = random.upper() # Make all characters uppercase.
+    random = random.replace("-","") # Remove the UUID '-'.
+    return random[0:string_length] # Return the random string.

@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e683862a-ce2e-4427-a3c4-7cea23c9d652" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/development/tests/regression/draft.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/development/tests/regression/draft.py" afterPath="$PROJECT_DIR$/development/tests/regression/draft.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/contributing.rst" afterPath="$PROJECT_DIR$/docs/contributing.rst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/refs.bib" afterPath="$PROJECT_DIR$/docs/refs.bib" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/simulate/simulate.py" afterPath="$PROJECT_DIR$/grmpy/simulate/simulate.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/test/random_init.py" afterPath="$PROJECT_DIR$/grmpy/test/random_init.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/test/test_integration.py" afterPath="$PROJECT_DIR$/grmpy/test/test_integration.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/test/test_unit.py" afterPath="$PROJECT_DIR$/grmpy/test/test_unit.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,20 +19,22 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/grmpy$r.coverage" NAME="r Coverage Results" MODIFIED="1504180168233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
     <SUITE FILE_PATH="coverage/grmpy$run_te.coverage" NAME="runte Coverage Results" MODIFIED="1504171745193" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
     <SUITE FILE_PATH="coverage/grmpy$run.coverage" NAME="run Coverage Results" MODIFIED="1504171465929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
-    <SUITE FILE_PATH="coverage/grmpy$r.coverage" NAME="r Coverage Results" MODIFIED="1504180168233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
+    <SUITE FILE_PATH="coverage/grmpy$selftest.coverage" NAME="selftest Coverage Results" MODIFIED="1504276352191" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/test" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="draft.py" pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="draft.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/development/tests/regression/draft.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="312">
-              <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
+            <state relative-caret-position="510">
+              <caret line="44" column="17" lean-forward="false" selection-start-line="44" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
               <folding>
                 <element signature="e#73#86#0" expanded="true" />
               </folding>
@@ -34,23 +42,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="random_init.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="494">
-              <caret line="46" column="9" lean-forward="false" selection-start-line="46" selection-start-column="9" selection-end-line="46" selection-end-column="9" />
-              <folding />
+            <state relative-caret-position="585">
+              <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
+              <folding>
+                <element signature="e#50#64#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_unit.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/test/test_unit.py">
+      <file leaf-file-name="simulate_auxiliary.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1118">
-              <caret line="62" column="25" lean-forward="false" selection-start-line="62" selection-start-column="25" selection-end-line="62" selection-end-column="25" />
+            <state relative-caret-position="105">
+              <caret line="8" column="51" lean-forward="false" selection-start-line="8" selection-start-column="51" selection-end-line="8" selection-end-column="51" />
               <folding>
-                <element signature="e#86#97#0" expanded="true" />
+                <element signature="e#224#243#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -59,9 +69,63 @@
       <file leaf-file-name="test_integration.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
           <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="381">
+              <caret line="32" column="42" lean-forward="false" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
+              <folding>
+                <element signature="e#91#102#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="contributing.rst" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/docs/contributing.rst">
+          <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="refs.bib" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/docs/refs.bib">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2333">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="read_auxiliary.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="615">
+              <caret line="41" column="13" lean-forward="false" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="conftest.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grmpy/test/conftest.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="test_unit.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grmpy/test/test_unit.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-654">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#86#97#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -87,6 +151,7 @@
       <find>is_deterministic</find>
       <find>check</find>
       <find>#</find>
+      <find>random</find>
     </findStrings>
     <replaceStrings>
       <replace>quant_untreat</replace>
@@ -117,18 +182,21 @@
         <option value="$PROJECT_DIR$/grmpy/simulate/runte.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/r.py" />
         <option value="$PROJECT_DIR$/docs/bibliography.rst" />
-        <option value="$PROJECT_DIR$/grmpy/test/test_integration.py" />
-        <option value="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/grmpy/test/test_unit.py" />
-        <option value="$PROJECT_DIR$/docs/refs.bib" />
         <option value="$PROJECT_DIR$/docs/software_engineering.rst" />
         <option value="$PROJECT_DIR$/grmpy/__init__.py" />
         <option value="$PROJECT_DIR$/grmpy/__version__.py" />
         <option value="$PROJECT_DIR$/setup.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/test_unit.py" />
+        <option value="$PROJECT_DIR$/docs/refs.bib" />
+        <option value="$PROJECT_DIR$/docs/contributing.rst" />
         <option value="$PROJECT_DIR$/grmpy/test/random_init.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/selftest.py" />
         <option value="$PROJECT_DIR$/development/tests/regression/draft.py" />
+        <option value="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/simulate.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/test_folder.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/test_integration.py" />
       </list>
     </option>
   </component>
@@ -138,11 +206,11 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="x" value="65" />
-    <option name="y" value="220" />
-    <option name="width" value="1613" />
-    <option name="height" value="1046" />
+    <option name="y" value="24" />
+    <option name="width" value="1855" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -178,54 +246,50 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="ProjectPane" />
       <pane id="Scope">
         <subPane subId="Project Files">
-          <expand>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="development" type="cbb8eebc:String" user="development" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="development" type="cbb8eebc:String" user="development" />
-              <item name="tests" type="cbb8eebc:String" user="tests" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="development" type="cbb8eebc:String" user="development" />
-              <item name="tests" type="cbb8eebc:String" user="tests" />
-              <item name="regression" type="cbb8eebc:String" user="regression" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="simulate" type="cbb8eebc:String" user="simulate" />
-            </path>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="grmpy" type="cbb8eebc:String" user="grmpy" />
-              <item name="test" type="cbb8eebc:String" user="test" />
-            </path>
-          </expand>
-          <select />
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="grmpy">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="grmpy">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="docs">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="grmpy">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="development">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -252,14 +316,78 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.r">
-    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
-      <node-interpreter>project</node-interpreter>
-      <node-options />
-      <gulpfile />
-      <tasks />
-      <arguments />
-      <envs />
+  <component name="RunManager" selected="Python.selftest">
+    <configuration default="false" name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="grmpy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/run.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="runte" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="grmpy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/run_te.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="r" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="grmpy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/r.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="selftest" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="grmpy" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/test/test_folder.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
     </configuration>
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -365,6 +493,15 @@
       <option name="docutils_params" value="" />
       <option name="docutils_task" value="" />
       <option name="docutils_open_in_browser" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
@@ -484,70 +621,18 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <configuration name="r" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="grmpy" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/r.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-    </configuration>
-    <configuration name="run" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="grmpy" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/run.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-    </configuration>
-    <configuration name="runte" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/grmpy/simulate" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="grmpy" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/grmpy/simulate/run_te.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-    </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Python.run" />
       <item index="1" class="java.lang.String" itemvalue="Python.runte" />
       <item index="2" class="java.lang.String" itemvalue="Python.r" />
+      <item index="3" class="java.lang.String" itemvalue="Python.selftest" />
     </list>
     <recent_temporary>
-      <list size="3">
-        <item index="0" class="java.lang.String" itemvalue="Python.r" />
-        <item index="1" class="java.lang.String" itemvalue="Python.runte" />
-        <item index="2" class="java.lang.String" itemvalue="Python.run" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.selftest" />
+        <item index="1" class="java.lang.String" itemvalue="Python.r" />
+        <item index="2" class="java.lang.String" itemvalue="Python.runte" />
+        <item index="3" class="java.lang.String" itemvalue="Python.run" />
       </list>
     </recent_temporary>
   </component>
@@ -565,7 +650,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="220" width="1855" height="1084" extended-state="6" />
+    <frame x="65" y="24" width="1855" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1412399" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -577,7 +662,6 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -585,9 +669,10 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925585" sideWeight="0.49811321" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32721713" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32925585" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39959225" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -613,21 +698,18 @@
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="processedProjectFiles" value="true" />
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="3" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/q1YIGQ8I.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/OEzTmJnq.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/fvpSUekH.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/AFyqAave.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/7LlOOfsd.grmpy.info" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/ES3LGrpf.grmpy.info" />
@@ -668,13 +750,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/RkXScJ5o.grmpy.info" />
-    <entry file="file://$PROJECT_DIR$/grmpy/test/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/__init__.py" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/RkXScJ5o.grmpy.txt" />
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/r.py" />
@@ -690,7 +766,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
           <caret line="11" column="10" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -708,29 +783,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="629">
-          <caret line="59" column="24" lean-forward="true" selection-start-line="59" selection-start-column="24" selection-end-line="59" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/test/auxiliary.py" />
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="78">
           <caret line="3" column="6" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5304">
-          <caret line="204" column="6" lean-forward="false" selection-start-line="204" selection-start-column="6" selection-end-line="204" selection-end-column="6" />
-          <folding>
-            <element signature="e#224#243#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -741,21 +798,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/docs/refs.bib">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/docs/credits.rst">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/docs/contributing.rst">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -783,31 +826,14 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/conftest.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.codacy.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="0">
-            <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md" />
     <entry file="file://$PROJECT_DIR$/grmpy/__version__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="26">
@@ -833,42 +859,35 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
           <caret line="8" column="92" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding>
-            <element signature="e#77#89#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test.grmpy.ini" />
+    <entry file="file://$PROJECT_DIR$/grmpy/test/C0DB6A82.grmpy.info" />
+    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/test_unit.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1118">
-          <caret line="62" column="25" lean-forward="false" selection-start-line="62" selection-start-column="25" selection-end-line="62" selection-end-column="25" />
           <folding>
-            <element signature="e#86#97#0" expanded="true" />
+            <element signature="e#84#95#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+    <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="494">
-          <caret line="46" column="9" lean-forward="false" selection-start-line="46" selection-start-column="9" selection-end-line="46" selection-end-column="9" />
-          <folding />
+        <state relative-caret-position="105">
+          <caret line="8" column="51" lean-forward="false" selection-start-line="8" selection-start-column="51" selection-end-line="8" selection-end-column="51" />
+          <folding>
+            <element signature="e#224#243#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="21" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+        <state relative-caret-position="585">
+          <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
           <folding>
             <element signature="e#50#64#0" expanded="true" />
           </folding>
@@ -877,11 +896,71 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/development/tests/regression/draft.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
+        <state relative-caret-position="510">
+          <caret line="44" column="17" lean-forward="false" selection-start-line="44" selection-start-column="0" selection-end-line="45" selection-end-column="0" />
           <folding>
             <element signature="e#73#86#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="41" column="13" lean-forward="false" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/conftest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="11" column="18" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test_folder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="765">
+          <caret line="51" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test_unit.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-654">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#86#97#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="381">
+          <caret line="32" column="42" lean-forward="false" selection-start-line="32" selection-start-column="42" selection-end-line="32" selection-end-column="42" />
+          <folding>
+            <element signature="e#91#102#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/contributing.rst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/refs.bib">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2333">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

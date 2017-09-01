@@ -18,9 +18,7 @@ class TestClass:
         """
         constr = constraints(probability=0.0)
         for _ in range(10):
-            dict_ = generate_random_dict(constr)
-            print_dict(dict_)
-
+            generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
 
@@ -41,9 +39,7 @@ class TestClass:
         """The second test checks whether the relationships hold if the process is deterministic."""
         constr = constraints(probability=1.)
         for _ in range(10):
-            dict_ = generate_random_dict(constr)
-            print_dict(dict_)
-
+            generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
             x_ = [col for col in df if col.startswith('X')]
@@ -123,9 +119,7 @@ class TestClass:
         """
         constr = constraints(probability=0.0, agents=1)
         for _ in range(10):
-            dict_ = generate_random_dict(constr)
-            print_dict(dict_)
-
+            generate_random_dict(constr)
             simulate('test.grmpy.ini')
 
             for f in glob.glob("*.grmpy.*"):
