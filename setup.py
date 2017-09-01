@@ -5,8 +5,8 @@ setup(name='grmpy',
       description='grmpy is a package for simulation and analysis of economic aspects of the \
             Generalized Roy Model',
       url='https://github.com/grmToolbox/grmpy',
-      author='Phillip Eisenhauer',
+      author='Philip Eisenhauer',
       author_email='eisenhauer@policy-lab.org',
       license='MIT',
-      packages=['numpy', 'scipy', 'pytest', 'pandas', 'statsmodels'],
+      install_requires=['numpy', 'scipy', 'pytest', 'pandas', 'statsmodels'],
       zip_safe=False)
