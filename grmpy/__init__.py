@@ -1,8 +1,7 @@
 """The module allows to run tests from inside the interpreter."""
 import os
 
-# version as in setup
-__version__ = '0.1'
+import pytest
 
 
 def test():
