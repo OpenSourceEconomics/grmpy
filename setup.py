@@ -35,7 +35,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 # Load the package's __version__.py module as a dictionary.
 about = {}
 with open(os.path.join(here, NAME, '__version__.py')) as f:
-    exec (f.read(), about)
+    exec(f.read(), about)
 
 
 class PublishCommand(Command):
@@ -69,6 +69,7 @@ class PublishCommand(Command):
         os.system('twine upload dist/*')
 
         sys.exit()
+
 
 setup(
     name=NAME,

@@ -100,7 +100,7 @@ Unfortunately, the people induced to go into state 1 :math:`(D=1)` by a change i
 The average effect of a policy and the average effect of a treatment are linked by the marginal treatment effect (MTE). The MTE was introduced into the literature by Björklund and Moffitt (1987 :cite:`BjöMof87`) and extended in Heckman and Vytlacil (2001 :cite:`HecVyr01`,2005 :cite:`HecVyr05`, 2007b :cite:`HecVyr07b`).
 
 Marginal Treatment Effect
---------------------------
+-------------------------
 
 The MTE is the treatment effect parameter that conditions on the unobserved desire to select into treatment. Let :math:`V = E[U_C − (U_1 − U_0) | I ]` summarize the expectations about all unobservables determining treatment choice and let :math:`U_S = F_V (V)`. Then, the MTE is defined as
 

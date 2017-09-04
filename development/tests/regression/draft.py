@@ -6,23 +6,17 @@ the dataframe, sums it up again and compares the sum from the first step with th
 second step.
  """
 
-
 import glob
 import json
 import os
 
-
 import numpy as np
-
-
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 
-
 NUM_TESTS = 100
-
 
 np.random.seed(1234235)
 seeds = np.random.randint(0, 1000, size=NUM_TESTS)
@@ -55,4 +49,3 @@ if True:
 
 for f in glob.glob("*.grmpy.*"):
     os.remove(f)
-

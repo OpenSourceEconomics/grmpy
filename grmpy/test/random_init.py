@@ -52,7 +52,6 @@ def generate_random_dict(constraints_dict=None):
 
         dict_[key_] = {}
 
-
         if key_ in ['UNTREATED', 'TREATED']:
             if not is_zero:
                 dict_[key_]['coeff'] = np.random.normal(0., 2., [treated_num]).tolist()
@@ -61,9 +60,9 @@ def generate_random_dict(constraints_dict=None):
                     for i in range(len(dict_[key_]['types'])):
                         if np.random.random_sample() < 0.1:
                             if i is not 0:
-                                dict_[key_]['types'][i]= 'binary'
+                                dict_[key_]['types'][i] = 'binary'
                 else:
-                    dict_[key_]['types'] =  dict_['UNTREATED']['types']
+                    dict_[key_]['types'] = dict_['UNTREATED']['types']
             else:
                 dict_[key_]['coeff'] = np.array([0] * treated_num).tolist()
         else:
@@ -136,7 +135,8 @@ def print_dict(dict_, file_name='test'):
                 for i in range(len(dict_[label]['coeff'])):
                     if 'types' in dict_[label].keys():
                         str_ = '{0:<10} {1:20.4f} {2:>18}\n'
-                        file_.write(str_.format('coeff', dict_[label]['coeff'][i], dict_[label]['types'][i]))
+                        file_.write(str_.format('coeff', dict_[label]['coeff'][i],
+                                                dict_[label]['types'][i]))
                     else:
                         str_ = '{0:<10} {1:20.4f}\n'
                         file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
@@ -145,7 +145,7 @@ def print_dict(dict_, file_name='test'):
 
 def my_random_string(string_length=10):
     """Returns a random string of length string_length."""
-    random = str(uuid.uuid4()) # Convert UUID format to a Python string.
-    random = random.upper() # Make all characters uppercase.
-    random = random.replace("-","") # Remove the UUID '-'.
-    return random[0:string_length] # Return the random string.
+    random = str(uuid.uuid4())
+    random = random.upper()
+    random = random.replace("-", "")
+    return random[0:string_length]

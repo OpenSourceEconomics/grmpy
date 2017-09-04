@@ -5,7 +5,8 @@ info file output.
 import pandas as pd
 import numpy as np
 
-def simulate_covariates(init_dict, cov_type, num_agents ):
+
+def simulate_covariates(init_dict, cov_type, num_agents):
     """The function simulates the covariate variables for the cost and the output."""
     num_covar = init_dict[cov_type]['all'].shape[0]
 
@@ -21,7 +22,6 @@ def simulate_covariates(init_dict, cov_type, num_agents ):
                 binary = np.random.binomial(1, frac, size=num_agents)
                 X[:, i] = binary
     return X
-
 
 
 def simulate_unobservables(covar, vars_, num_agents):

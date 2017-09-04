@@ -6,7 +6,7 @@ Great, you are interesting in contributing to the package.
 To get acquainted with the code base, you can check out our `issue tracker <https://github.com/grmToolbox/grmpy/issues>`_ for some immediate and clearly defined tasks. For more involved contributions, please see our roadmap below.
 
 Roadmap
---------
+-------
 
 We aim for improvements to the ``grmpy`` package in three domains: Objects of Interest, Estimation Methods, and Numerical Methods.
 
