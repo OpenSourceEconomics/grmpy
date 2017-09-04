@@ -5,6 +5,7 @@ import random
 import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
+from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 from grmpy.simulate.simulate_auxiliary import write_output
 from grmpy.simulate.simulate_auxiliary import print_info
@@ -34,18 +35,9 @@ def simulate(init_file):
     covar_ = [U01 ** 2, U0_V ** 2, U1_V ** 2]
     Dist_coeffs = init_dict['DIST']['all']
 
-    num_covars_out = Y1_coeffs.shape[0]
-    num_covars_cost = C_coeffs.shape[0]
-
     # Simulate observables
-    means = np.tile(0.0, num_covars_out)
-    covs = np.identity(num_covars_out)
-    X = np.random.multivariate_normal(means, covs, num_agents)
-
-    means = np.tile(0.0, num_covars_cost)
-    covs = np.identity(num_covars_cost)
-    Z = np.random.multivariate_normal(means, covs, num_agents)
-    Z[:, 0], X[:, 0] = 1.0, 1.0
+    X = simulate_covariates(init_dict, 'TREATED', num_agents)
+    Z = simulate_covariates(init_dict, 'COST', num_agents)
 
     # Simulate unobservables
     U, V = simulate_unobservables(covar_, vars_, num_agents)

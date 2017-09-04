@@ -52,17 +52,28 @@ def generate_random_dict(constraints_dict=None):
 
         dict_[key_] = {}
 
-        if key_ in ['UNTREATED', 'TREATED']:
 
+        if key_ in ['UNTREATED', 'TREATED']:
             if not is_zero:
-                dict_[key_]['coeff'] = np.random.normal(
-                    0.0, 2., [treated_num]).tolist()
+                dict_[key_]['coeff'] = np.random.normal(0., 2., [treated_num]).tolist()
+                if key_ == 'UNTREATED':
+                    dict_[key_]['types'] = ['nonbinary'] * treated_num
+                    for i in range(len(dict_[key_]['types'])):
+                        if np.random.random_sample() < 0.1:
+                            if i is not 0:
+                                dict_[key_]['types'][i]= 'binary'
+                else:
+                    dict_[key_]['types'] =  dict_['UNTREATED']['types']
             else:
                 dict_[key_]['coeff'] = np.array([0] * treated_num).tolist()
         else:
-
             if not is_zero:
                 dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num]).tolist()
+                dict_[key_]['types'] = ['nonbinary'] * cost_num
+                for i in range(len(dict_[key_]['types'])):
+                    if np.random.random_sample() < 0.1:
+                        if i is not 0:
+                            dict_[key_]['types'][i] = 'binary'
             else:
                 dict_[key_]['coeff'] = np.array([0] * cost_num).tolist()
 
@@ -95,7 +106,6 @@ def generate_random_dict(constraints_dict=None):
     dict_['DIST']['coeff'].append(b[2, 1])
 
     dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff']).tolist()
-
     print_dict(dict_)
 
     return dict_
@@ -103,9 +113,7 @@ def generate_random_dict(constraints_dict=None):
 
 def print_dict(dict_, file_name='test'):
     """The function creates an init file from a given dictionary."""
-
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
-
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
         for label in labels:
@@ -117,24 +125,21 @@ def print_dict(dict_, file_name='test'):
                 structure = ['agents', 'seed', 'source']
 
                 for key_ in structure:
-
                     if key_ == 'source':
                         str_ = '{0:<25} {1:20}\n'
-
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
                         str_ = '{0:<10} {1:20}\n'
-
-                        file_.write(str_.format(
-                            key_, dict_['SIMULATION'][key_]))
+                        file_.write(str_.format(key_, dict_['SIMULATION'][key_]))
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                key_ = 'coeff'
-
-                for i in range(len(dict_[label][key_])):
-                    str_ = '{0:<10} {1:20.4f}\n'
-                    file_.write(str_.format(key_, dict_[label]['coeff'][i]))
-
+                for i in range(len(dict_[label]['coeff'])):
+                    if 'types' in dict_[label].keys():
+                        str_ = '{0:<10} {1:20.4f} {2:>18}\n'
+                        file_.write(str_.format('coeff', dict_[label]['coeff'][i], dict_[label]['types'][i]))
+                    else:
+                        str_ = '{0:<10} {1:20.4f}\n'
+                        file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
             file_.write('\n')
 
 

@@ -80,6 +80,7 @@ setup(
     packages=find_packages(exclude=('tests',)),
     install_requires=REQUIRED,
     license='MIT',
+    include_package_data=True,
     cmdclass={
         'publish': PublishCommand,
     },

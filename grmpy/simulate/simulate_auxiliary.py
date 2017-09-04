@@ -5,6 +5,24 @@ info file output.
 import pandas as pd
 import numpy as np
 
+def simulate_covariates(init_dict, cov_type, num_agents ):
+    """The function simulates the covariate variables for the cost and the output."""
+    num_covar = init_dict[cov_type]['all'].shape[0]
+
+    means = np.tile(0.0, num_covar)
+    covs = np.identity(num_covar)
+    X = np.random.multivariate_normal(means, covs, num_agents)
+    X[:, 0] = 1.0
+
+    if 'binary' in init_dict[cov_type]['types']:
+        for i in range(num_covar):
+            if init_dict[cov_type]['types'][i] == 'binary':
+                frac = np.random.uniform(0, 1)
+                binary = np.random.binomial(1, frac, size=num_agents)
+                X[:, i] = binary
+    return X
+
+
 
 def simulate_unobservables(covar, vars_, num_agents):
     """The function simulates the unobservable error terms."""

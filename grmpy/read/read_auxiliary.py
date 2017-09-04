@@ -4,10 +4,23 @@ import numpy as np
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
-    name, val = list_[0], list_[1]
+    if len(list_) == 3:
+        name, val, type_ = list_[0], list_[1], list_[2]
+    else:
+        name, val = list_[0], list_[1]
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []
+
+
+    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
+        dict_[keyword]['types'] = []
+    if keyword in ['TREATED', 'UNTREATED', 'COST']:
+        if len(list_) == 3:
+            dict_[keyword]['types'] += [type_]
+        else:
+            dict_[keyword]['types'] += ['nonbinary']
+
     # Type conversion
     if name in ['agents', 'seed']:
         val = int(val)
@@ -15,11 +28,14 @@ def process(list_, dict_, keyword):
         val = str(val)
     else:
         val = float(val)
-
     if name in ['coeff']:
         dict_[keyword][name] += [val]
     else:
         dict_[keyword][name] = val
+
+
+
+
 
     # Finishing.
     return dict_
@@ -60,7 +76,7 @@ def auxiliary(dict_):
         dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
 
         for j in sorted(dict_[key_].keys()):
-            if j in ['all']:
+            if j in ['all', 'types']:
                 pass
             else:
                 del dict_[key_][j]
