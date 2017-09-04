@@ -11,8 +11,6 @@ def process(list_, dict_, keyword):
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []
-
-
     if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
         dict_[keyword]['types'] = []
     if keyword in ['TREATED', 'UNTREATED', 'COST']:
@@ -32,11 +30,6 @@ def process(list_, dict_, keyword):
         dict_[keyword][name] += [val]
     else:
         dict_[keyword][name] = val
-
-
-
-
-
     # Finishing.
     return dict_
 
