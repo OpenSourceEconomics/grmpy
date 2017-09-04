@@ -1,7 +1,8 @@
 """The module includes an integration and a regression test for the simulation process."""
 import glob
-import os
 import json
+import os
+
 
 import numpy as np
 
@@ -25,40 +26,30 @@ class TestClass:
                 os.remove(f)
 
     def test2(self):
-        """The test provides a regression test battery. In the first step it loops over 100
-        different seeds, generates a random init file for each seed, simulates the resulting data-
-        frame, sums it up and saves the sum and the generated dictionary in /grmpy/test/regress-
-        ion_test/ dir as a json file. In the second step it reads the json file, prints an init
-        file, simulates the dataframe, sums it up again and compares the sum from the first step
-        with the one from the second step.
-         """
-        NUM_TESTS = 100
+        """The test takes a subsample of 5 random entries from the regression battery test list
+        (resources/regression_vault.grmpy.json), simulates the specific output again, sums the
+        resulting data frame up and checks if the sum is equal to the regarding entry in the test
+        list eement.
+        """
+        tests = json.load(open('grmpy/test/resources/regression_vault.grmpy.json', 'r'))
 
-        np.random.seed(1234235)
-        seeds = np.random.randint(0, 1000, size=NUM_TESTS)
-        testdir = os.path.dirname('grmpy/test/regression_test/')
-        if not os.path.exists(testdir):
-            os.makedirs(testdir)
+        subsample_indices = np.random.choice(len(tests), 5)
+        subsample = []
+        for i in subsample_indices:
+            subsample += [tests[i]]
 
-        if True:
-            tests = []
-            for seed in seeds:
-                np.random.seed(seed)
-                dict_ = generate_random_dict()
-                df = simulate('test.grmpy.ini')
-                stat = np.sum(df.sum())
-                tests += [(stat, dict_)]
-
-            json.dump(tests, open('grmpy/test/regression_test/regression_vault.grmpy.json', 'w'))
-
-        if True:
-            tests = json.load(open('grmpy/test/regression_test/regression_vault.grmpy.json', 'r'))
-
-            for test in tests:
-                stat, dict_ = test
-                print_dict(dict_)
-                df = simulate('test.grmpy.ini')
-                np.testing.assert_almost_equal(np.sum(df.sum()), stat)
+        for test in subsample:
+            stat, dict_ = test
+            print_dict(dict_)
+            df = simulate('test.grmpy.ini')
+            np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
         for f in glob.glob("*.grmpy.*"):
             os.remove(f)
+
+
+
+
+
+
+
