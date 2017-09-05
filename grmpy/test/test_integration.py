@@ -31,7 +31,8 @@ class TestClass:
         resulting data frame up and checks if the sum is equal to the regarding entry in the test
         list eement.
         """
-        tests = json.load(open('grmpy/test/resources/regression_vault.grmpy.json', 'r'))
+        tests = json.load(
+            open('{}'.format(os.getcwd()) + '/test/resources/regression_vault.grmpy.json', 'r'))
 
         subsample_indices = np.random.choice(len(tests), 5)
         subsample = []

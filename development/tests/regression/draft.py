@@ -21,11 +21,7 @@ NUM_TESTS = 100
 np.random.seed(1234235)
 seeds = np.random.randint(0, 1000, size=NUM_TESTS)
 dir = os.path.dirname(__file__)
-test_dir = os.path.join(dir, '../../../grmpy/test/resources')
-file_dir = os.path.join(test_dir, 'regression_vault.grmpy.json')
-
-if not os.path.exists(test_dir):
-    os.makedirs(test_dir)
+file_dir = os.path.join(dir, 'regression_vault.grmpy.json')
 
 if True:
     tests = []
@@ -48,4 +44,7 @@ if True:
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
 for f in glob.glob("*.grmpy.*"):
-    os.remove(f)
+    if f.startswith('regression'):
+        pass
+    else:
+        os.remove(f)
