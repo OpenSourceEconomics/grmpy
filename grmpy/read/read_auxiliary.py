@@ -46,8 +46,8 @@ def auxiliary(dict_):
 
     for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
         if key_ in ['UNTREATED', 'TREATED', 'COST']:
-                dict_[key_]['all'] = dict_[key_]['coeff']
-                dict_[key_]['all'] = np.array(dict_[key_]['all'])
+            dict_[key_]['all'] = dict_[key_]['coeff']
+            dict_[key_]['all'] = np.array(dict_[key_]['all'])
         else:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
@@ -77,6 +77,7 @@ def auxiliary(dict_):
     dict_ = check_types(dict_)
 
     return dict_
+
 
 def check_types(dict_):
     if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:

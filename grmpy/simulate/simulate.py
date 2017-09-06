@@ -1,6 +1,5 @@
 """The module provides the simulation process."""
 import os.path
-import random
 
 import numpy as np
 
