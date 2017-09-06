@@ -133,6 +133,7 @@ def my_random_string(string_length=10):
     random = random.replace("-", "")
     return random[0:string_length]
 
+
 def generate_coeff(num, key_, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
     if not is_zero:
