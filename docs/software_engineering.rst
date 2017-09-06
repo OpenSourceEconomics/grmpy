@@ -19,6 +19,12 @@ We use `pytest <http://docs.pytest.org>`_ as our test runner. We broadly group o
 
     We conduct numerous Monte Carlo exercises to ensure that we can recover the true underlying parameterization with an estimation. Also by varying the tuning parameters of the estimation (e.g. random draws for integration) and the optimizers, we learn about their effect on estimation performance.
 
+* **regression testing**
+
+    We provide a regression test. For this purpose we generated random model parameterizations, simulated the coresponding outputs, summed them up and saved both, the parameters and the sums in a json file.
+    The json file is part of the package. Through this the provided test is able to draw parameterizations randomly from the json file. In the next step the test simulates the output variables and compares the sum of the simulated output with the associated json file information.
+    This ensures that the package work accurate even after an update to a new version.
+
 Documentation
 -------------
 
