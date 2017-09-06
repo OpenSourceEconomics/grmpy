@@ -57,7 +57,7 @@ def generate_random_dict(constraints_dict=None):
             if key_ == 'TREATED':
                 dict_[key_]['types'] = dict_['UNTREATED']['types']
         else:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
+            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -88,6 +88,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['DIST']['coeff'].append(b[2, 1])
 
     dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff']).tolist()
+
     print_dict(dict_)
 
     return dict_
@@ -96,6 +97,7 @@ def generate_random_dict(constraints_dict=None):
 def print_dict(dict_, file_name='test'):
     """The function creates an init file from a given dictionary."""
     labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
+    write_nonbinary = np.random.random_sample() < 0.5
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
         for label in labels:
@@ -117,9 +119,23 @@ def print_dict(dict_, file_name='test'):
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i in range(len(dict_[label]['coeff'])):
                     if 'types' in dict_[label].keys():
-                        str_ = '{0:<10} {1:20.4f} {2:>18}\n'
-                        file_.write(str_.format('coeff', dict_[label]['coeff'][i],
-                                                dict_[label]['types'][i]))
+                        if isinstance(dict_[label]['types'][i], list):
+                            str_ = '{0:<10} {1:20.4f} {2:>18} {3:5.4f}\n'
+                            file_.write(
+                                str_.format(
+                                    'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
+                                    dict_[label]['types'][i][1])
+                            )
+
+                        else:
+                            if write_nonbinary:
+                                str_ = '{0:<10} {1:20.4f} {2:>18}\n'
+                                file_.write(str_.format('coeff', dict_[label]['coeff'][i],
+                                                        dict_[label]['types'][i]))
+                            else:
+                                str_ = '{0:<10} {1:20.4f}\n'
+                                file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+
                     else:
                         str_ = '{0:<10} {1:20.4f}\n'
                         file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
@@ -143,11 +159,12 @@ def generate_coeff(num, key_, is_zero):
             for i in range(len(binary_list)):
                 if np.random.random_sample() < 0.1:
                     if i is not 0:
-                        binary_list[i] = 'binary'
+                        frac = np.random.uniform(0, 1)
+                        binary_list[i] = ['binary', frac]
         else:
             binary_list = []
     else:
-        binary_list = [''] * num
+        binary_list = ['nonbinary'] * num
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list

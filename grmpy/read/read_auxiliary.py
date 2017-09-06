@@ -4,8 +4,8 @@ import numpy as np
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
-    if len(list_) == 3:
-        name, val, type_ = list_[0], list_[1], list_[2]
+    if len(list_) == 4:
+        name, val, type_, frac_ = list_[0], list_[1], list_[2], list_[3]
     else:
         name, val = list_[0], list_[1]
 
@@ -14,8 +14,8 @@ def process(list_, dict_, keyword):
     if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
         dict_[keyword]['types'] = []
     if keyword in ['TREATED', 'UNTREATED', 'COST']:
-        if len(list_) == 3:
-            dict_[keyword]['types'] += [type_]
+        if len(list_) == 4:
+            dict_[keyword]['types'] += [[type_, float(frac_)]]
         else:
             dict_[keyword]['types'] += ['nonbinary']
 
@@ -82,9 +82,9 @@ def auxiliary(dict_):
 def check_types(dict_):
     if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
         for i in range(len(dict_['UNTREATED']['types'])):
-            if dict_['TREATED']['types'][i] == 'binary':
+            if isinstance(dict_['TREATED']['types'][i], list):
                 dict_['UNTREATED']['types'][i] = dict_['TREATED']['types'][i]
-            if dict_['UNTREATED']['types'][i] == 'binary':
+            if  isinstance(dict_['UNTREATED']['types'][i], list):
                 dict_['TREATED']['types'][i] = dict_['UNTREATED']['types'][i]
 
     return dict_

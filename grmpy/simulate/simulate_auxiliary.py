@@ -14,16 +14,14 @@ def simulate_covariates(init_dict, cov_type, num_agents):
     covs = np.identity(num_covar)
     X = np.random.multivariate_normal(means, covs, num_agents)
     X[:, 0] = 1.0
-
-    if 'binary' in init_dict[cov_type]['types']:
-        for i in range(num_covar):
-            if init_dict[cov_type]['types'][i] == 'binary':
-                if i != 0:
-                    frac = np.random.uniform(0, 1)
-                    binary = np.random.binomial(1, frac, size=num_agents)
-                    X[:, i] = binary
-                else:
-                    pass
+    for i in range(num_covar):
+        if isinstance(init_dict[cov_type]['types'][i], list):
+            if i != 0:
+                frac = init_dict[cov_type]['types'][i][1]
+                binary = np.random.binomial(1, frac, size=num_agents)
+                X[:, i] = binary
+            else:
+                pass
     return X
 
 

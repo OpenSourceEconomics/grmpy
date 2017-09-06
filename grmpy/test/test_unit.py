@@ -132,6 +132,7 @@ class TestClass:
         """
         for _ in range(10):
             gen_dict = generate_random_dict()
+            print(gen_dict)
             init_file_name = gen_dict['SIMULATION']['source']
             print_dict(gen_dict, init_file_name)
             imp_dict = read(init_file_name + '.grmpy.ini')
@@ -139,6 +140,15 @@ class TestClass:
             for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 np.testing.assert_array_almost_equal(gen_dict[key_]['coeff'], imp_dict[key_]['all'],
                                                      decimal=4)
+                if key_ in ['TREATED', 'UNTREATED', 'COST']:
+                    for i in range(len(gen_dict[key_]['types'])):
+                        if isinstance(gen_dict[key_]['types'][i], str):
+                            assert gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]
+                        elif isinstance(gen_dict[key_]['types'][i], list):
+                            assert gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]
+                            np.testing.assert_array_almost_equal(
+                                gen_dict[key_]['types'][i][1],imp_dict[key_]['types'][i][1], 4)
+
             for key_ in ['source', 'agents', 'seed']:
                 assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
 
