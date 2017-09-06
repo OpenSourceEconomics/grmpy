@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e683862a-ce2e-4427-a3c4-7cea23c9d652" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" afterPath="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/read/read_auxiliary.py" afterPath="$PROJECT_DIR$/grmpy/read/read_auxiliary.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,7 +22,7 @@
     <SUITE FILE_PATH="coverage/grmpy$run.coverage" NAME="run Coverage Results" MODIFIED="1504171465929" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
     <SUITE FILE_PATH="coverage/grmpy$selftest.coverage" NAME="selftest Coverage Results" MODIFIED="1504276352191" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/test" />
     <SUITE FILE_PATH="coverage/grmpy$draft.coverage" NAME="draft Coverage Results" MODIFIED="1504626528357" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/development/tests/regression" />
-    <SUITE FILE_PATH="coverage/grmpy$binary_issues.coverage" NAME="binary_issues Coverage Results" MODIFIED="1504699798215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
+    <SUITE FILE_PATH="coverage/grmpy$binary_issues.coverage" NAME="binary_issues Coverage Results" MODIFIED="1504704241346" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/grmpy/simulate" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -32,8 +33,8 @@
       <file leaf-file-name="simulate_auxiliary.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="25" column="24" lean-forward="false" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
+            <state relative-caret-position="-45">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
                 <element signature="e#224#243#0" expanded="true" />
               </folding>
@@ -56,11 +57,19 @@
       <file leaf-file-name="test_integration.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="11" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-              <folding>
-                <element signature="e#91#102#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="120">
+              <caret line="8" column="27" lean-forward="false" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="read_auxiliary.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="492">
+              <caret line="86" column="56" lean-forward="false" selection-start-line="86" selection-start-column="56" selection-end-line="86" selection-end-column="56" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -68,28 +77,18 @@
       <file leaf-file-name="read.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/read/read.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="45">
+              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="simulate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="read_auxiliary.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-45">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="15">
+              <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="34" selection-end-column="45" />
               <folding />
             </state>
           </provider>
@@ -98,9 +97,11 @@
       <file leaf-file-name="binary_issues.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/simulate/binary_issues.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" column="44" lean-forward="true" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
-              <folding />
+            <state relative-caret-position="255">
+              <caret line="17" column="31" lean-forward="false" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+              <folding>
+                <element signature="e#1#12#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -108,8 +109,8 @@
       <file leaf-file-name="test.grmpy.ini" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
-              <caret line="32" column="50" lean-forward="false" selection-start-line="32" selection-start-column="50" selection-end-line="32" selection-end-column="50" />
+            <state relative-caret-position="195">
+              <caret line="16" column="31" lean-forward="true" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -119,7 +120,7 @@
         <entry file="file://$PROJECT_DIR$/grmpy/__version__.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
-              <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="20" selection-end-line="0" selection-end-column="20" />
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -129,7 +130,7 @@
         <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1679">
-              <caret line="152" column="0" lean-forward="true" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
+              <caret line="153" column="0" lean-forward="false" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -160,6 +161,7 @@
       <find>all</find>
       <find>print</find>
       <find>types</find>
+      <find>'types</find>
     </findStrings>
     <replaceStrings>
       <replace>quant_untreat</replace>
@@ -183,7 +185,6 @@
         <option value="$PROJECT_DIR$/development/working/run.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/run_te.py" />
         <option value="$PROJECT_DIR$/grmpy/test/conftest.py" />
-        <option value="$PROJECT_DIR$/grmpy/read/read.py" />
         <option value="$PROJECT_DIR$/grmpy/test/auxiliary.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/runte.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/r.py" />
@@ -198,10 +199,8 @@
         <option value="$PROJECT_DIR$/grmpy/test/choice.py" />
         <option value="$PROJECT_DIR$/MANIFEST.in" />
         <option value="$PROJECT_DIR$/grmpy/read/tes_file.txt" />
-        <option value="$PROJECT_DIR$/grmpy/simulate/simulate.py" />
         <option value="$PROJECT_DIR$/grmpy/read/shlex_test.py" />
         <option value="$PROJECT_DIR$/grmpy/read/test.grmpy.ini" />
-        <option value="$PROJECT_DIR$/grmpy/read/read_auxiliary.py" />
         <option value="$PROJECT_DIR$/grmpy/test/test.grmpy.ini" />
         <option value="$PROJECT_DIR$/grmpy/test/loop.py" />
         <option value="$PROJECT_DIR$/grmpy/test/delete.py" />
@@ -209,13 +208,16 @@
         <option value="$PROJECT_DIR$/docs/economics.rst" />
         <option value="$PROJECT_DIR$/docs/contributing.rst" />
         <option value="$PROJECT_DIR$/development/tests/regression/draft.py" />
-        <option value="$PROJECT_DIR$/grmpy/test/random_init.py" />
         <option value="$PROJECT_DIR$/grmpy/test/test_integration.py" />
-        <option value="$PROJECT_DIR$/grmpy/__version__.py" />
         <option value="$PROJECT_DIR$/docs/software_engineering.rst" />
-        <option value="$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini" />
         <option value="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" />
+        <option value="$PROJECT_DIR$/grmpy/__version__.py" />
+        <option value="$PROJECT_DIR$/grmpy/simulate/simulate.py" />
+        <option value="$PROJECT_DIR$/grmpy/read/read.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/random_init.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/binary_issues.py" />
+        <option value="$PROJECT_DIR$/grmpy/read/read_auxiliary.py" />
+        <option value="$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini" />
       </list>
     </option>
   </component>
@@ -808,7 +810,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925585" sideWeight="0.5018868" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32925585" sideWeight="0.49811321" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32925585" sideWeight="0.49811321" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1412399" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection Results" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32721713" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -1006,37 +1008,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/__version__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="20" selection-end-line="0" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1679">
-          <caret line="152" column="0" lean-forward="true" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/test/resources/regression_vault.grmpy.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-          <folding>
-            <element signature="e#91#102#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1050,23 +1026,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="32" column="50" lean-forward="false" selection-start-line="32" selection-start-column="50" selection-end-line="32" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-45">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/read/read.py">
+    <entry file="file://$PROJECT_DIR$/grmpy/__version__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1076,26 +1036,68 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="25" column="24" lean-forward="false" selection-start-line="25" selection-start-column="24" selection-end-line="25" selection-end-column="24" />
+        <state relative-caret-position="-45">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#224#243#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/simulate/binary_issues.py">
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
-          <caret line="8" column="44" lean-forward="true" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
+          <caret line="8" column="27" lean-forward="false" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1679">
+          <caret line="153" column="0" lean-forward="false" selection-start-line="153" selection-start-column="0" selection-end-line="153" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="15">
+          <caret line="12" column="0" lean-forward="true" selection-start-line="12" selection-start-column="0" selection-end-line="34" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/read/read.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/simulate/binary_issues.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="31" lean-forward="false" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+          <folding>
+            <element signature="e#1#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/simulate/test.grmpy.ini">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="16" column="31" lean-forward="true" selection-start-line="16" selection-start-column="31" selection-end-line="16" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/read/read_auxiliary.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="492">
+          <caret line="86" column="56" lean-forward="false" selection-start-line="86" selection-start-column="56" selection-end-line="86" selection-end-column="56" />
           <folding />
         </state>
       </provider>

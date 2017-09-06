@@ -74,5 +74,16 @@ def auxiliary(dict_):
             else:
                 del dict_[key_][j]
     dict_['DETERMINISTIC'] = is_deterministic
+    dict_ = check_types(dict_)
+
+    return dict_
+
+def check_types(dict_):
+    if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
+        for i in range(len(dict_['UNTREATED']['types'])):
+            if dict_['TREATED']['types'][i] == 'binary':
+                dict_['UNTREATED']['types'][i] = dict_['TREATED']['types'][i]
+            if dict_['UNTREATED']['types'][i] == 'binary':
+                dict_['TREATED']['types'][i] = dict_['UNTREATED']['types'][i]
 
     return dict_
