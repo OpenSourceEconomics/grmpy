@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e683862a-ce2e-4427-a3c4-7cea23c9d652" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/development/tests/regression/draft.py" afterPath="$PROJECT_DIR$/development/tests/regression/draft.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/__version__.py" afterPath="$PROJECT_DIR$/grmpy/__version__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/test/random_init.py" afterPath="$PROJECT_DIR$/grmpy/test/random_init.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grmpy/test/test_integration.py" afterPath="$PROJECT_DIR$/grmpy/test/test_integration.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -58,8 +57,8 @@
       <file leaf-file-name="test_integration.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+            <state relative-caret-position="90">
+              <caret line="24" column="44" lean-forward="true" selection-start-line="24" selection-start-column="44" selection-end-line="24" selection-end-column="44" />
               <folding>
                 <element signature="e#91#102#0" expanded="true" />
               </folding>
@@ -79,7 +78,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="__version__.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="__version__.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grmpy/__version__.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
@@ -97,6 +96,16 @@
               <folding>
                 <element signature="e#516#527#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="random_init.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1679">
+              <caret line="152" column="0" lean-forward="true" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -125,6 +134,7 @@
       <find>include</find>
       <find>all</find>
       <find>print</find>
+      <find>types</find>
     </findStrings>
     <replaceStrings>
       <replace>quant_untreat</replace>
@@ -171,12 +181,12 @@
         <option value="$PROJECT_DIR$/grmpy/test/test.grmpy.ini" />
         <option value="$PROJECT_DIR$/grmpy/test/loop.py" />
         <option value="$PROJECT_DIR$/grmpy/test/delete.py" />
-        <option value="$PROJECT_DIR$/grmpy/test/random_init.py" />
         <option value="$PROJECT_DIR$/setup.py" />
         <option value="$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py" />
         <option value="$PROJECT_DIR$/docs/economics.rst" />
         <option value="$PROJECT_DIR$/docs/contributing.rst" />
         <option value="$PROJECT_DIR$/development/tests/regression/draft.py" />
+        <option value="$PROJECT_DIR$/grmpy/test/random_init.py" />
         <option value="$PROJECT_DIR$/grmpy/test/test_integration.py" />
         <option value="$PROJECT_DIR$/grmpy/__version__.py" />
       </list>
@@ -870,14 +880,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/build/lib/grmpy/test/test_integration.py" />
-    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2205">
-          <caret line="149" column="31" lean-forward="false" selection-start-line="149" selection-start-column="31" selection-end-line="149" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/build/lib/grmpy/test/random_init.py" />
     <entry file="file://$PROJECT_DIR$/setup.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -945,16 +947,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="0" lean-forward="true" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding>
-            <element signature="e#91#102#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/grmpy/simulate/simulate_auxiliary.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
@@ -969,6 +961,24 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="20" selection-end-line="0" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/test_integration.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="24" column="44" lean-forward="true" selection-start-line="24" selection-start-column="44" selection-end-line="24" selection-end-column="44" />
+          <folding>
+            <element signature="e#91#102#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grmpy/test/random_init.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1679">
+          <caret line="152" column="0" lean-forward="true" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
           <folding />
         </state>
       </provider>

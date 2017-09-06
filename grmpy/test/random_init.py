@@ -53,28 +53,11 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            if not is_zero:
-                dict_[key_]['coeff'] = np.random.normal(0., 2., [treated_num]).tolist()
-                if key_ == 'UNTREATED':
-                    dict_[key_]['types'] = ['nonbinary'] * treated_num
-                    for i in range(len(dict_[key_]['types'])):
-                        if np.random.random_sample() < 0.1:
-                            if i is not 0:
-                                dict_[key_]['types'][i] = 'binary'
-                else:
-                    dict_[key_]['types'] = dict_['UNTREATED']['types']
-            else:
-                dict_[key_]['coeff'] = np.array([0] * treated_num).tolist()
+            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
+            if key_ == 'TREATED':
+                dict_[key_]['types'] = dict_['UNTREATED']['types']
         else:
-            if not is_zero:
-                dict_[key_]['coeff'] = np.random.normal(0., 2., [cost_num]).tolist()
-                dict_[key_]['types'] = ['nonbinary'] * cost_num
-                for i in range(len(dict_[key_]['types'])):
-                    if np.random.random_sample() < 0.1:
-                        if i is not 0:
-                            dict_[key_]['types'][i] = 'binary'
-            else:
-                dict_[key_]['coeff'] = np.array([0] * cost_num).tolist()
+            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -149,3 +132,21 @@ def my_random_string(string_length=10):
     random = random.upper()
     random = random.replace("-", "")
     return random[0:string_length]
+
+def generate_coeff(num, key_, is_zero):
+    """The function generates random coefficients for creating the random init dictionary."""
+    if not is_zero:
+        list_ = np.random.normal(0., 2., [num]).tolist()
+        if key_ in ['UNTREATED', 'COST']:
+            binary_list = ['nonbinary'] * num
+            for i in range(len(binary_list)):
+                if np.random.random_sample() < 0.1:
+                    if i is not 0:
+                        binary_list[i] = 'binary'
+        else:
+            binary_list = []
+    else:
+        binary_list = [''] * num
+        list_ = np.array([0] * num).tolist()
+
+    return list_, binary_list
