@@ -18,9 +18,12 @@ def simulate_covariates(init_dict, cov_type, num_agents):
     if 'binary' in init_dict[cov_type]['types']:
         for i in range(num_covar):
             if init_dict[cov_type]['types'][i] == 'binary':
-                frac = np.random.uniform(0, 1)
-                binary = np.random.binomial(1, frac, size=num_agents)
-                X[:, i] = binary
+                if i != 0:
+                    frac = np.random.uniform(0, 1)
+                    binary = np.random.binomial(1, frac, size=num_agents)
+                    X[:, i] = binary
+                else:
+                    pass
     return X
 
 
