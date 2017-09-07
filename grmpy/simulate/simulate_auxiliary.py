@@ -110,10 +110,9 @@ def collect_information(data_frame):
 
     data = {
         'Number of Agents': indiv, 'Treated Agents': treated_num, 'Untreated Agents': untreated_num,
-        'Mean Untreated': mean_untreat, 'Mean Treated': mean_treat, 'Mean Overall': mean_over,
-        'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles Overall':
-            quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat,
-        'Std Overall': sd_over,
+        'Mean Untreated': mean_untreat, 'Mean Treated': mean_treat, 'Mean All': mean_over,
+        'Quantiles Untreated': quant_untreat, 'Quantiles Treated': quant_treat, 'Quantiles All':
+        quant_over, 'Std Untreated': sd_untreat, 'Std Treated': sd_treat, 'Std All': sd_over,
         'ate': ate, 'tut': tut, 'tt': tt,
     }
 
@@ -121,9 +120,12 @@ def collect_information(data_frame):
 
 
 def print_info(data_frame, coeffs, file_name):
-    """The function writes an info file for the specififc data frame."""
+    """The function writes an info file for the specific data frame."""
     data_ = collect_information(data_frame)
-    labels = ['Simulation', 'Additional Information', 'Effects', 'Model Parameterization']
+
+    labels = []
+    labels += ['Simulation', 'Distribution of Outcomes', 'Distribution of Effects']
+    labels += ['Model Parameterization']
 
     with open(file_name + '.grmpy.info', 'w') as file_:
 
@@ -138,10 +140,10 @@ def print_info(data_frame, coeffs, file_name):
 
                     file_.write(str_.format(s + ':', data_[s]))
 
-            elif label == 'Additional Information':
+            elif label == 'Distribution of Outcomes':
                 _print_dist(data_, file_)
 
-            elif label == 'Effects':
+            elif label == 'Distribution of Effects':
                 _print_effects(data_, file_)
 
             else:
@@ -170,18 +172,18 @@ def _print_effects(data_, file_name):
                 str_ += '{0:>19}'.format(data_[label])
             else:
                 str_ += '{0:>19.4f}'.format(data_[label][entry])
-        file_name.write(str_ + '\n\n')
+        file_name.write(str_ + '\n')
 
 
 def _print_dist(data_, file_name):
     """The function writes the distributional information to the init file."""
-    str_ = '{0:>10} {1:>20} {2:>20} {3:>20} {4:>20} {5:>20}\n\n'.format \
-        ('Case', 'Mean', 'Std-Dev.', '2.Decile', '5.Decile', '8.Decile')
-    file_name.write(str_)
+    fmt = '  {:<10}' + ' {:>20}' * 5 + '\n\n'
+    args = ['Group', 'Mean', 'Std-Dev.', '2.Decile', '5.Decile', '8.Decile']
+    file_name.write( fmt.format(*args))
 
-    labels = ['Overall', 'Treated', 'Untreated']
+    labels = ['All', 'Treated', 'Untreated']
     for label in labels:
-        str_ = '{0:>10}'.format(label)
+        str_ = '  {0:<10}'.format(label)
 
         structure = ['Mean ', 'Std ', 'Quantiles ']
 
@@ -197,14 +199,14 @@ def _print_dist(data_, file_name):
                     q02 = data_[s].loc[0.2]
                     q05 = data_[s].loc[0.5]
                     q08 = data_[s].loc[0.8]
-                    str_ += '{0:>20.4f} {1:>20.4f} {2:>20.4f}'.format(q02, q05, q08)
+                    str_ += ' {0:>20.4f} {1:>20.4f} {2:>20.4f}'.format(q02, q05, q08)
             else:
                 if isinstance(data_[s], float):
                     str_ += '{0:>21.4f}'.format(data_[s])
                 else:
                     str_ += '{0:>20}'.format(data_[s])
 
-        file_name.write(str_ + '\n\n')
+        file_name.write(str_ + '\n')
 
 
 def _calc_parameters(data_frame, no_treatment, all_treatment):
