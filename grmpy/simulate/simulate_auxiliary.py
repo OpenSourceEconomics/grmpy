@@ -20,8 +20,6 @@ def simulate_covariates(init_dict, cov_type, num_agents):
                 frac = init_dict[cov_type]['types'][i][1]
                 binary = np.random.binomial(1, frac, size=num_agents)
                 X[:, i] = binary
-            else:
-                pass
     return X
 
 
@@ -34,6 +32,7 @@ def simulate_unobservables(covar, vars_, num_agents):
     cov_[0, 2], cov_[2, 0] = covar[1], covar[1]
     cov_[1, 2], cov_[2, 1] = covar[2], covar[2]
 
+    assert np.all(np.linalg.eigvals(cov_) >= 0)
     U = np.random.multivariate_normal([0.0, 0.0, 0.0], cov_, num_agents)
 
     V = U[0:, 2] - U[0:, 1] + U[0:, 0]
