@@ -32,3 +32,13 @@ We build on the following main references:
     credits
     changes
     bibliography
+
+
+.. todo::
+
+
+    This `todoList` is just a random collection of future features to be implemented. It is not printed on Read the Docs.
+
+    * We need to include a custom error class that checks the user initialization file. The goal is that there are no hard terminations after the file is checked.
+
+    * If the interaction with pypi gets too cumbersome, we can consider using bumpversion, zest.releaser, or hatch ... 
