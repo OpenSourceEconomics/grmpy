@@ -4,6 +4,7 @@ the info file output.
 """
 import pandas as pd
 import numpy as np
+from scipy.stats import norm
 
 
 def simulate_covariates(init_dict, cov_type, num_agents):
@@ -43,25 +44,19 @@ def simulate_outcomes(exog, err, coeff):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
-    # Expected values for individuals
-    exp_y0, exp_y1 = np.dot(coeff[0], exog[0].T), np.dot(coeff[1], exog[0].T)
-    cost_exp = np.dot(coeff[2], exog[1].T)
+    # individual outcomes
+    Y_0, Y_1 = np.add(
+        np.dot(coeff[0], exog[0].T), err[0:,0]), np.add(np.dot(coeff[1], exog[0].T), err[0:, 1])
+    cost = np.add(np.dot(coeff[2], exog[1].T), err[0:, 2])
 
     # Calculate expected benefit and the resulting treatment dummy
-    expected_benefits = np.subtract(exp_y1, exp_y0)
-
-    cost = np.add(cost_exp, err[0:, 2])
-
-    D = np.array((expected_benefits - cost > 0).astype(int))
-
-    # Realized outcome in both cases for each individual
-    Y_0, Y_1 = np.add(exp_y0, err[0:, 0]), np.add(exp_y1, err[0:, 1])
+    benefits = np.subtract(Y_1, Y_0)
+    D = np.array((benefits - cost > 0).astype(int))
 
     # Observed outcomes
     Y = D * Y_1.T + (1 - D) * Y_0.T
 
     return Y, D, Y_1, Y_0
-
 
 def write_output(end, exog, err, source):
     """The function converts the simulated variables to a panda data frame and saves the data in a
@@ -102,14 +97,14 @@ def print_info(data_frame, coeffs, file_name):
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
 
-        info = [data_frame.shape[0], (data_frame['D'] == 1).sum(), (data_frame['D'] == 0).sum()]
+        info_ = [data_frame.shape[0], (data_frame['D'] == 1).sum(), (data_frame['D'] == 0).sum()]
 
         fmt = '  {:<10}' + ' {:>20}' * 1 + '\n\n'
         file_.write(fmt.format(*['', 'Count']))
 
         for i, label in enumerate(['All', 'Treated', 'Untreated']):
             str_ = '  {:<10} {:20}\n'
-            file_.write(str_.format(*[label, info[i]]))
+            file_.write(str_.format(*[label, info_[i]]))
 
         # Second, we describe the distribution of outcomes and effects.
         for label in ['Outcomes', 'Effects']:
@@ -136,12 +131,43 @@ def print_info(data_frame, coeffs, file_name):
                     object = object[data_frame['D'] == 0]
                 else:
                     pass
-
                 fmt = '  {:<10}' + ' {:>20.4f}' * 5 + '\n'
                 info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
-                file_.write(fmt.format(* [group] + info))
+                if 0 in info_:
+                    for i in range(2):
+                        if i == 0:
+                            zero = 'Treated'
+                        elif i == 1:
+                            zero= 'Untreated'
+                        if info_[i+1] == 0:
+                            if group == zero:
+                                fmt = '  {:<10}' + ' {:>20}' * 5 + '\n'
+                                info = ['---'] * 5
+                            else:
+                                fmt = '  {:<10}' + ' {:>20.4f}' + ' {:>20}' + ' {:>20.4f}' * 3 \
+                                      + '\n'
+                                info[1] = '---'
+                            file_.write(fmt.format(*[group] + info))
+                else:
+                    file_.write(fmt.format(* [group] + info))
 
-        # Third we write out the parametrization of the model.
+        # Implement MTE information
+        header ='\n\n MTE Information \n\n'
+        file_.write(header)
+        fmt = '  {:<10}' + ' {:>20}' * 21 + '\n\n'
+        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
+        args = ['']
+        for i in quantiles:
+            args += [str(i) + '%']
+        file_.write(fmt.format(*args))
+        quantiles = [i * 0.01 for i in quantiles]
+        x = data_frame.filter(regex=r'^X\_', axis=1)
+        values = mte_information(coeffs[:2], coeffs[3][3:], coeffs[3][:3], quantiles, x)
+        values = ['MTE'] + values
+        fmt = '  {:<10}' + ' {:>20.4f}' * 21 + '\n\n'
+        file_.write(fmt.format(*values))
+
+        # Next we write out the parametrization of the model.
         header = '\n\n Parametrization \n\n'
         file_.write(header)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Identifier', 'Value')
@@ -152,3 +178,19 @@ def print_info(data_frame, coeffs, file_name):
         for i in range(len_):
             file_.write('  {0:>10} {1:>20.4f}\n'.format(str(i), value[i]))
 
+
+def mte_information(para, cov, var, quantiles, x):
+    """The function calculates the marginal treatment effect for pre specified quantiles of the
+    collected unobservable variables.
+    """
+    MTE = []
+    # Calculate the variance of V:
+    var_v = var[0] + var[1] + var[2] + - 2 + cov[0] - 2 * cov[2] + 2* cov[1]
+    cov_v1 =  (cov[0] + cov[2] - var[1]) / var_v
+    cov_v0 =  (cov[1] + var[0] - cov[0]) / var_v
+    para_diff = para[1] - para[0]
+
+    for i in quantiles:
+        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov_v1 - cov_v0) * norm.ppf(i)]
+
+    return MTE

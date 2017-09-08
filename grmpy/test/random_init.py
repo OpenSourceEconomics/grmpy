@@ -77,7 +77,6 @@ def generate_random_dict(constraints_dict=None):
         b = np.dot(a, a.transpose())
     else:
         b = np.zeros((3, 3))
-
     dict_['DIST']['coeff'] = []
 
     for i in range(3):

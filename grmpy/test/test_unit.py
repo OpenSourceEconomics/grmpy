@@ -22,9 +22,9 @@ class TestClass:
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
 
-            x_ = [col for col in df if col.startswith('X')]
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * df[x_], axis=1) + df.U1
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * df[x_], axis=1) + df.U0
+            x = df.filter(regex=r'^X\_', axis=1)
+            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
+            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
@@ -42,9 +42,9 @@ class TestClass:
             generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
-            x_ = [col for col in df if col.startswith('X')]
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * df[x_], axis=1)
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * df[x_], axis=1)
+            x = df.filter(regex=r'^X\_', axis=1)
+            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1)
+            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1)
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
@@ -86,23 +86,21 @@ class TestClass:
                     assert np.array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
                     assert np.array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
                 elif i == 'TREATED':
-                    x_ = [col for col in df if col.startswith('X')]
-                    y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * df[x_],
-                                                   axis=1) + df.U0
+                    x = df.filter(regex=r'^X\_', axis=1)
+                    y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
                     np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
                     assert np.array_equal(df.Y1, df.U1)
 
                 elif i == 'UNTREATED':
-                    x_ = [col for col in df if col.startswith('X')]
-                    y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * df[x_], axis=1) + df.U1
+                    x = df.filter(regex=r'^X\_', axis=1)
+                    y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
 
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                     assert np.array_equal(df.Y0, df.U0)
                 else:
-                    x_ = [col for col in df if col.startswith('X')]
-                    y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * df[x_], axis=1) + df.U1
-                    y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * df[x_],
-                                                   axis=1) + df.U0
+                    x = df.filter(regex=r'^X\_', axis=1)
+                    y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
+                    y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                     np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
 
