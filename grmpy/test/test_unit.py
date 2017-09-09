@@ -28,16 +28,14 @@ class TestClass:
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            assert np.array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            assert np.array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            assert np.array_equal(df.V, (df.UC - df.U1 + df.U0))
+            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+            np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
 
     def test2(self):
         """The second test checks whether the relationships hold if the process is deterministic."""
-        constr = constraints(probability=1.)
+        constr = constraints(probability=1.0)
         for _ in range(10):
             generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
@@ -48,12 +46,10 @@ class TestClass:
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            assert np.array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            assert np.array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            assert np.array_equal(df.V, (df.UC - df.U1 + df.U0))
+            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+            np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
 
     def test3(self):
         """The third test  checks whether the relationships hold if the coefficients are zero in
@@ -78,25 +74,25 @@ class TestClass:
                 df = simulate('test.grmpy.ini')
 
                 if i == 'ALL':
-                    assert np.array_equal(df.Y1, df.U1)
-                    assert np.array_equal(df.Y0, df.U0)
+                    np.testing.assert_array_equal(df.Y1, df.U1)
+                    np.testing.assert_array_equal(df.Y0, df.U0)
                 elif i == 'TREATED & UNTREATED':
-                    assert np.array_equal(df.Y1, df.U1)
-                    assert np.array_equal(df.Y0, df.U0)
-                    assert np.array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
-                    assert np.array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
+                    np.testing.assert_array_equal(df.Y1, df.U1)
+                    np.testing.assert_array_equal(df.Y0, df.U0)
+                    np.testing.assert_array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
+                    np.testing.assert_array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
                 elif i == 'TREATED':
                     x = df.filter(regex=r'^X\_', axis=1)
                     y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
                     np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-                    assert np.array_equal(df.Y1, df.U1)
+                    np.testing.assert_array_equal(df.Y1, df.U1)
 
                 elif i == 'UNTREATED':
                     x = df.filter(regex=r'^X\_', axis=1)
                     y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
 
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
-                    assert np.array_equal(df.Y0, df.U0)
+                    np.testing.assert_array_equal(df.Y0, df.U0)
                 else:
                     x = df.filter(regex=r'^X\_', axis=1)
                     y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
@@ -104,12 +100,10 @@ class TestClass:
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                     np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
 
-                assert np.array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-                assert np.array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-                assert np.array_equal(df.V, (df.UC - df.U1 + df.U0))
+                np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+                np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+                np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
 
     def test4(self):
         """The fourth test checks whether the simulation process works if there are only treated or
@@ -120,8 +114,6 @@ class TestClass:
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
 
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
 
     def test5(self):
         """The fifth test tests the random init file generating process and the  import process. It
@@ -130,7 +122,6 @@ class TestClass:
         """
         for _ in range(10):
             gen_dict = generate_random_dict()
-            print(gen_dict)
             init_file_name = gen_dict['SIMULATION']['source']
             print_dict(gen_dict, init_file_name)
             imp_dict = read(init_file_name + '.grmpy.ini')
@@ -150,5 +141,5 @@ class TestClass:
             for key_ in ['source', 'agents', 'seed']:
                 assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
 
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
+    for f in glob.glob("*.grmpy.*"):
+        os.remove(f)
