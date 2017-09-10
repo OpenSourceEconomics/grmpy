@@ -9,6 +9,7 @@ from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
+from grmpy.test.random_init import cleanup
 from grmpy.read.read import read
 
 
@@ -59,6 +60,7 @@ class TestClass:
                 print_dict(dict_)
                 dict_ = read('test.grmpy.ini')
                 df = simulate('test.grmpy.ini')
+                x = df.filter(regex=r'^X\_', axis=1)
 
                 if i == 'ALL':
                     np.testing.assert_array_equal(df.Y1, df.U1)
@@ -69,19 +71,15 @@ class TestClass:
                     np.testing.assert_array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
                     np.testing.assert_array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
                 elif i == 'TREATED':
-                    x = df.filter(regex=r'^X\_', axis=1)
                     y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
                     np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
                     np.testing.assert_array_equal(df.Y1, df.U1)
 
                 elif i == 'UNTREATED':
-                    x = df.filter(regex=r'^X\_', axis=1)
                     y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
-
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                     np.testing.assert_array_equal(df.Y0, df.U0)
                 else:
-                    x = df.filter(regex=r'^X\_', axis=1)
                     y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
                     y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
                     np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
@@ -126,5 +124,4 @@ class TestClass:
             for key_ in ['source', 'agents', 'seed']:
                 assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
 
-    for f in glob.glob("*.grmpy.*"):
-        os.remove(f)
+        cleanup()

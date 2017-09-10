@@ -15,7 +15,7 @@ The package focuses on the linear form of the generalized roy model for reasons 
 
 .. math::
     Y_1 & = X \beta_1 + U_1 \\
-    Y_2 & = X \beta_0 + U_0 \\
+    Y_0 & = X \beta_0 + U_0 \\
 
 **Costs**
 
@@ -49,7 +49,8 @@ The surplus can be rewritten as:
 
 **Selecting Process**
 
-.. to do:: implement the self selection process
+.. todo::
+    implement the self selection process
 
 **Realized Outcome**
 
