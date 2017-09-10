@@ -151,31 +151,25 @@ def print_info(data_frame, coeffs, file_name):
                     file_.write(fmt.format(* [group] + info))
 
         # Implement MTE information
-        header ='\n\n MTE Information \n\n'
-        file_.write(header)
-        fmt = '  {:<10}' + ' {:>20}' * 21 + '\n\n'
-        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-        args = ['']
-        for i in quantiles:
-            args += [str(i) + '%']
-        file_.write(fmt.format(*args))
-        quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame.filter(regex=r'^X\_', axis=1)
-        values = mte_information(coeffs[:2], coeffs[3][3:], coeffs[3][:3], quantiles, x)
-        values = ['MTE'] + values
-        fmt = '  {:<10}' + ' {:>20.4f}' * 21 + '\n\n'
-        file_.write(fmt.format(*values))
+        for label in ['MTE Information', 'Paramterizationn']:
+            header = '\n\n {} \n\n'.format(label)
+            file_.write(header)
+            if label =='MTE Information':
+                quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
+                args = [str(i) + '%' for i in quantiles]
+                quantiles = [ i* 0.01 for i in quantiles]
+                x = data_frame.filter(regex=r'^X\_', axis=1)
+                value = mte_information(coeffs[:2], coeffs[3][3:], coeffs[3][:3], quantiles, x)
+                str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
 
-        # Next we write out the parametrization of the model.
-        header = '\n\n Parametrization \n\n'
-        file_.write(header)
-        str_ = '  {0:>10} {1:>20}\n\n'.format('Identifier', 'Value')
-        file_.write(str_)
-
-        value = np.append(np.append(coeffs[0], coeffs[1]), np.append(coeffs[2], coeffs[3]))
-        len_ = len(value) - 1
-        for i in range(len_):
-            file_.write('  {0:>10} {1:>20.4f}\n'.format(str(i), value[i]))
+            else:
+                value = np.append(np.append(coeffs[0], coeffs[1]), np.append(coeffs[2], coeffs[3]))
+                str_ = '  {0:>10} {1:>20}\n\n'.format('Identifier', 'Value')
+                args =  list(range(len(value)-1))
+            file_.write(str_)
+            len_ = len(value) - 1
+            for i in range(len_):
+                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 
 def mte_information(para, cov, var, quantiles, x):
@@ -188,8 +182,8 @@ def mte_information(para, cov, var, quantiles, x):
     cov_v1 =  (cov[0] + cov[2] - var[1]) / var_v
     cov_v0 =  (cov[1] + var[0] - cov[0]) / var_v
     para_diff = para[1] - para[0]
-
     for i in quantiles:
         MTE += [np.mean(np.dot(para_diff, x.T)) - (cov_v1 - cov_v0) * norm.ppf(i)]
+        print(MTE)
 
     return MTE

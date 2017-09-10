@@ -14,44 +14,32 @@ from grmpy.read.read import read
 
 class TestClass:
     def test1(self):
-        """The first test tests whether the relationships in the simulated datasets are appropriate.
+        """The first test tests whether the relationships in the simulated datasets are appropriate
+        in a deterministic and an undeterministic setting.<
         """
-        constr = constraints(probability=0.0)
-        for _ in range(10):
-            generate_random_dict(constr)
-            df = simulate('test.grmpy.ini')
-            dict_ = read('test.grmpy.ini')
+        for case in ['deterministic', 'nondeterministic']:
+            if case == 'deterministic':
+                prob = 1.0
+            else:
+                prob = 0.0
+            constr = constraints(probability=prob)
+            for _ in range(10):
+                generate_random_dict(constr)
+                df = simulate('test.grmpy.ini')
+                dict_ = read('test.grmpy.ini')
 
-            x = df.filter(regex=r'^X\_', axis=1)
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
+                x = df.filter(regex=r'^X\_', axis=1)
+                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
+                y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
 
-            np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
-            np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
+                np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
+                np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
+                np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+                np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+                np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
 
     def test2(self):
-        """The second test checks whether the relationships hold if the process is deterministic."""
-        constr = constraints(probability=1.0)
-        for _ in range(10):
-            generate_random_dict(constr)
-            df = simulate('test.grmpy.ini')
-            dict_ = read('test.grmpy.ini')
-            x = df.filter(regex=r'^X\_', axis=1)
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1)
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1)
-
-            np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
-            np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
-
-
-    def test3(self):
         """The third test  checks whether the relationships hold if the coefficients are zero in
         different setups.
         """
@@ -105,7 +93,7 @@ class TestClass:
                 np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
 
-    def test4(self):
+    def test3(self):
         """The fourth test checks whether the simulation process works if there are only treated or
         untreated Agents by setting the number of agents to one.
         """
@@ -115,7 +103,7 @@ class TestClass:
             simulate('test.grmpy.ini')
 
 
-    def test5(self):
+    def test4(self):
         """The fifth test tests the random init file generating process and the  import process. It
         generates an random init file, imports it again and compares the entries in the both dictio-
         naries.
