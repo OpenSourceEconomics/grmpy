@@ -1,5 +1,7 @@
 """The module provides a random dictionary generating process for test purposes."""
 import uuid
+import glob
+import os
 
 import numpy as np
 
@@ -77,7 +79,6 @@ def generate_random_dict(constraints_dict=None):
         b = np.dot(a, a.transpose())
     else:
         b = np.zeros((3, 3))
-
     dict_['DIST']['coeff'] = []
 
     for i in range(3):
@@ -168,3 +169,9 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list
+
+
+def cleanup():
+    for f in glob.glob("*.grmpy.*"):
+        os.remove(f)
+
