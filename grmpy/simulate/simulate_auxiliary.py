@@ -2,9 +2,9 @@
 processes of the unobservable and endogeneous variables of the model as well as functions regarding
 the info file output.
 """
+from scipy.stats import norm
 import pandas as pd
 import numpy as np
-from scipy.stats import norm
 
 
 def simulate_covariates(init_dict, cov_type, num_agents):
@@ -45,7 +45,7 @@ def simulate_outcomes(exog, err, coeff):
     """
     # individual outcomes
     Y_0, Y_1 = np.add(
-        np.dot(coeff[0], exog[0].T), err[0:,0]), np.add(np.dot(coeff[1], exog[0].T), err[0:, 1])
+        np.dot(coeff[0], exog[0].T), err[0:, 0]), np.add(np.dot(coeff[1], exog[0].T), err[0:, 1])
     cost = np.add(np.dot(coeff[2], exog[1].T), err[0:, 2])
 
     # Calculate expected benefit and the resulting treatment dummy
@@ -56,6 +56,7 @@ def simulate_outcomes(exog, err, coeff):
     Y = D * Y_1.T + (1 - D) * Y_0.T
 
     return Y, D, Y_1, Y_0
+
 
 def write_output(end, exog, err, source):
     """The function converts the simulated variables to a panda data frame and saves the data in a
@@ -137,8 +138,8 @@ def print_info(data_frame, coeffs, file_name):
                         if i == 0:
                             zero = 'Treated'
                         elif i == 1:
-                            zero= 'Untreated'
-                        if info_[i+1] == 0:
+                            zero = 'Untreated'
+                        if info_[i + 1] == 0:
                             if group == zero:
                                 fmt = '  {:<10}' + ' {:>20}' * 5 + '\n'
                                 info = ['---'] * 5
@@ -148,16 +149,16 @@ def print_info(data_frame, coeffs, file_name):
                                 info[1] = '---'
                             file_.write(fmt.format(*[group] + info))
                 else:
-                    file_.write(fmt.format(* [group] + info))
+                    file_.write(fmt.format(*[group] + info))
 
         # Implement MTE information
         for label in ['MTE Information', 'Paramterizationn']:
             header = '\n\n {} \n\n'.format(label)
             file_.write(header)
-            if label =='MTE Information':
+            if label == 'MTE Information':
                 quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
                 args = [str(i) + '%' for i in quantiles]
-                quantiles = [ i* 0.01 for i in quantiles]
+                quantiles = [i * 0.01 for i in quantiles]
                 x = data_frame.filter(regex=r'^X\_', axis=1)
                 value = mte_information(coeffs[:2], coeffs[3][3:], coeffs[3][:3], quantiles, x)
                 str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
@@ -165,7 +166,7 @@ def print_info(data_frame, coeffs, file_name):
             else:
                 value = np.append(np.append(coeffs[0], coeffs[1]), np.append(coeffs[2], coeffs[3]))
                 str_ = '  {0:>10} {1:>20}\n\n'.format('Identifier', 'Value')
-                args =  list(range(len(value)-1))
+                args = list(range(len(value) - 1))
             file_.write(str_)
             len_ = len(value) - 1
             for i in range(len_):
@@ -178,9 +179,9 @@ def mte_information(para, cov, var, quantiles, x):
     """
     MTE = []
     # Calculate the variance of V:
-    var_v = var[0] + var[1] + var[2] + - 2 + cov[0] - 2 * cov[2] + 2* cov[1]
-    cov_v1 =  (cov[0] + cov[2] - var[1]) / var_v
-    cov_v0 =  (cov[1] + var[0] - cov[0]) / var_v
+    var_v = var[0] + var[1] + var[2] + - 2 + cov[0] - 2 * cov[2] + 2 * cov[1]
+    cov_v1 = (cov[0] + cov[2] - var[1]) / var_v
+    cov_v0 = (cov[1] + var[0] - cov[0]) / var_v
     para_diff = para[1] - para[0]
     for i in quantiles:
         MTE += [np.mean(np.dot(para_diff, x.T)) - (cov_v1 - cov_v0) * norm.ppf(i)]

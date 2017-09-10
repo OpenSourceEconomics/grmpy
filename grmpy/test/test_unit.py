@@ -38,7 +38,6 @@ class TestClass:
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
                 np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
-
     def test2(self):
         """The third test  checks whether the relationships hold if the coefficients are zero in
         different setups.
@@ -92,7 +91,6 @@ class TestClass:
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
                 np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
 
-
     def test3(self):
         """The fourth test checks whether the simulation process works if there are only treated or
         untreated Agents by setting the number of agents to one.
@@ -101,7 +99,6 @@ class TestClass:
         for _ in range(10):
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
-
 
     def test4(self):
         """The fifth test tests the random init file generating process and the  import process. It
@@ -124,7 +121,7 @@ class TestClass:
                         elif isinstance(gen_dict[key_]['types'][i], list):
                             assert gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]
                             np.testing.assert_array_almost_equal(
-                                gen_dict[key_]['types'][i][1],imp_dict[key_]['types'][i][1], 4)
+                                gen_dict[key_]['types'][i][1], imp_dict[key_]['types'][i][1], 4)
 
             for key_ in ['source', 'agents', 'seed']:
                 assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]

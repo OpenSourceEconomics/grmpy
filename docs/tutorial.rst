@@ -11,20 +11,18 @@ The package focuses on the linear form of the generalized roy model for reasons 
 
 **Outcome**
 
-`m:math:`Y_1` and :math:`Y_0` represent the ex post outcome for each individual depending on treatment status.
+:math:`Y_1` and :math:`Y_0` represent the ex post outcome for each individual depending on treatment status.
 
 .. math::
     Y_1 & = X \beta_1 + U_1 \\
     Y_2 & = X \beta_0 + U_0 \\
-    :label: output
 
 **Costs**
 
 The cost function illustrates the costs of an individual for selecting in the treatment group.
 
 .. math::
-    C & = Z \gamma + U_C
-    :label: cost
+        C & = Z \gamma + U_C \\
 
 **Choice Parameters**
 
@@ -32,21 +30,20 @@ Individuals have an incentive to select themselves in the treatment group if the
 Their specific choice is defined as a dummy variable :math:`D`.
 
 .. math::
-    S & = Y_1 - Y_0 - C\\
-    D & = I{S>0}
-    :label: surplus
+        S & = Y_1 - Y_0 - C\\
+        D & = I\{S>0\}
 
 **Unobservables**
 
 The parameter :math:`V` denotes the collected unobservable variables :math:`U_1`, :math:`U_0` and :math:`U_C`.
 
 .. math::
-    V & = U_C -(U_1 - U_0)
+        V & = U_C -(U_1 - U_0)\\
 
 The surplus can be rewritten as:
 
 .. math::
-    S & = X (\beta_1 - \beta_0) - Z \gamma - V
+        S & = X (\beta_1 - \beta_0) - Z \gamma - V\\
 
 
 
@@ -57,7 +54,7 @@ The surplus can be rewritten as:
 **Realized Outcome**
 
 .. math::
-        Y = D Y_1 + (1-D) Y_0
+        Y = D Y_1 + (1-D) Y_0\\
 
 Model Specification
 -------------------
