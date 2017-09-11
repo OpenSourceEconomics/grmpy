@@ -169,7 +169,7 @@ During this process the functions returns the following output files:
 
     - ######.grmpy.info:
         An information file that provides information about
-            * The number of all, only treated and only untreated individuals
+            * The number of all, treated and untreated individuals
             * The outcome distribution
             * The distribution of effects of interest
             * MTE by quantile
