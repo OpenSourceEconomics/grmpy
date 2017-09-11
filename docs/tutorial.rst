@@ -79,39 +79,44 @@ source      str         specified name for the simulation output files
 
 The *TREATED* and *UNTREATED* paragraph are similar regarding their structure. Both contain the parameters that determine the expected wage dependent on the treatment status. There can be added as many covariates as wished, but the number has to be the same for both cases.
 
-=======     ======      ==================
-Key         Value       Interpretation
-=======     ======      ==================
-coeff       float       intercept coefficient
-coeff       float       coefficient of the first covariate
-coeff       float       coefficient of the second covariate
+=======     ======  =======  =========   ==================
+Key         Value    Type    Fraction    Interpretation
+=======     ======  =======  =========   ==================
+coeff       float    ---      ---         intercept coefficient
+coeff       float   string    float       coefficient of the first covariate
+coeff       float   string    float       coefficient of the second covariate
  ...
-=======     ======      ==================
+=======     ======  =======  =========   ==================
 
 **COST**
 
 The *COST* section includes parameters related to the cost function.
 
-=======     ======      ==================
-Key         Value       Interpretation
-=======     ======      ==================
-coeff       float       intercept coefficient
-coeff       float       coefficient of the first covariate
-coeff       float       coefficient of the second covariate
+=======     ======  =======  =========   ==================
+Key         Value    Type    Fraction    Interpretation
+=======     ======  =======  =========   ==================
+coeff       float    ---      ---         intercept coefficient
+coeff       float   string    float       coefficient of the first covariate
+coeff       float   string    float       coefficient of the second covariate
  ...
-=======     ======      ==================
+=======     ======  =======  =========   ==================
 
 .. Warning::
 
-    - The first coefficient in the *TREATED*, *UNTREATED* and *COST* section is interpreted as an intercept.
+    - The first coefficient in the **TREATED**, **UNTREATED** and **COST** section is interpreted as an intercept.
 
-    - You can add a desired number of different coefficients to all three sections. It should be noted however that the number of coefficients in the *TREATED* and *UNTREATED* sections has to be the same.
+    - You can add a desired number of different coefficients to all three sections. However it should be noted that the number of coefficients in the **TREATED** and **UNTREATED** sections has to be the same.
 
+    - The **Type** column allows to set covariates to binary variables. For this purpose you just have to insert **binary** behind the coefficient value. The default value is **nonbinary**.
+
+    - Note that if you want to create a binary in the **TREATED** and the **UNTREATED** section it is sufficent to implement the option in one of the sections. Further note that setting an intercept coefficient to **binary** will be ignored in the simulation process.
+
+    - The **Fraction** column allows to set a specific rate for which the binary variable is one by adding a float value between 0 and 1. If no argument is inserted, the simulation process will define a random rate.
 
 **DIST**
 
 This Section determines the distributional characteristics of the unobservable variables.
-The indices *0* and *1* denote the distributional information for the error terms of the untreated and treated outcomes :math:`(Y_0, Y_1)`, whereas *C* denotes the distributional characteristics related to the cost function error terms.
+The indices *0* and *1* denote the distributional information for the error terms of the untreated and treated outcomes :math:`(Y_0, Y_1)`, whereas *V* denotes the distributional characteristics of the collected unobservable variables.
 
 
 ======= ======      ==========================
@@ -119,8 +124,68 @@ Key     Value       Interpretation
 ======= ======      ==========================
 coeff    float      :math:`\sigma_{0}`
 coeff    float      :math:`\sigma_{01}`
-coeff    float      :math:`\sigma_{0C}`
+coeff    float      :math:`\sigma_{0V}`
 coeff    float      :math:`\sigma_{1}`
-coeff    float      :math:`\sigma_{1C}`
-coeff    float      :math:`\sigma_{C}`
+coeff    float      :math:`\sigma_{1V}`
+coeff    float      :math:`\sigma_{V}`
 ======= ======      ==========================
+
+Examples
+--------
+.. todo::
+    - Ask Phillip why we can't use functions from the package by importing it via ``import grmpy``.
+
+In the following chapter we explore the basic features of the ``grmpy`` package. Firstly you have to import the package and the related functions.
+::
+
+
+    from grmpy.simulate.simulate import simulate
+
+    from grmpy.test.random_init import generate_random_dict()
+
+**Specifiying Simulation Characteristics**
+
+In the first step we determine the parametrization of our model. For this purpose you could create a initialization file by your own preferences. For information relating the structure of the initialization file see the **Model Specification** chapter above.
+In our specific example we will generate a random initialization file by using the included ``generate_random_dict()`` function.
+::
+
+
+    generate_random_dict()
+
+
+The function creates a random initialization file like the one below.
+
+.. todo::
+    insert example image of an initialization file
+
+**Simulation**
+
+Next we simulate a sample according to our pre specified characteristics.
+::
+
+    simulate('test.grmpy.ini)
+
+During this process the functions returns the following output files:
+
+    - ######.grmpy.info:
+        An information file that provides information about
+            * The number of all, only treated and only untreated individuals
+            * The outcome distribution
+            * The distribution of effects of interest
+            * MTE by quantile
+            * The parametrization.
+
+    - ######.grmpy.txt: The simulated data frame as a txt file.
+
+    - ######.grmpy.pkl: The simulated data frame as a pickle file.
+
+
+.. Warning::
+
+    - Note that you have to insert the name of your initialization file as an input in the simulate function, if you generate a random initialization file the name is fixed to *test.grmpy.ini*.
+
+    - Besides the ``.grmpy.txt`` the function is able to return a dataframe directly by setting ``data_frame = simulate('test.grmpy.ini')``
+
+
+
+

@@ -1,16 +1,13 @@
 """The module includes an integration and a regression test for the simulation process."""
-import glob
 import json
 import os
-
 
 import numpy as np
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
-from grmpy.test.random_init import cleanup
-
+from grmpy.test.auxiliary import cleanup
 
 
 class TestClass:
@@ -19,7 +16,6 @@ class TestClass:
         and the following simulation.
         """
         for _ in range(10):
-
             dict_ = generate_random_dict()
             print_dict(dict_)
             simulate('test.grmpy.ini')
@@ -48,9 +44,3 @@ class TestClass:
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
         cleanup()
-
-
-
-
-
-

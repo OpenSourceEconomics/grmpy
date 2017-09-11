@@ -1,7 +1,5 @@
 """The module provides a random dictionary generating process for test purposes."""
 import uuid
-import glob
-import os
 
 import numpy as np
 
@@ -171,7 +169,4 @@ def generate_coeff(num, key_, is_zero):
     return list_, binary_list
 
 
-def cleanup():
-    for f in glob.glob("*.grmpy.*"):
-        os.remove(f)
 

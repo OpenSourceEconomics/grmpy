@@ -35,7 +35,8 @@ def simulate_unobservables(covar, vars_, num_agents):
 
     U = np.random.multivariate_normal([0.0, 0.0, 0.0], cov_, num_agents)
 
-    V = U[0:, 2] - U[0:, 1] + U[0:, 0]
+    V = np.array([i for i in U[0:, 2]])
+    U[0:, 2] = V - U[0:, 0] + U[0:, 1]
     return U, V
 
 
@@ -133,26 +134,17 @@ def print_info(data_frame, coeffs, file_name):
                     pass
                 fmt = '  {:<10}' + ' {:>20.4f}' * 5 + '\n'
                 info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
-                if 0 in info_:
-                    for i in range(2):
-                        if i == 0:
-                            zero = 'Treated'
-                        elif i == 1:
-                            zero = 'Untreated'
-                        if info_[i + 1] == 0:
-                            if group == zero:
-                                fmt = '  {:<10}' + ' {:>20}' * 5 + '\n'
-                                info = ['---'] * 5
-                            else:
-                                fmt = '  {:<10}' + ' {:>20.4f}' + ' {:>20}' + ' {:>20.4f}' * 3 \
-                                      + '\n'
-                                info[1] = '---'
-                            file_.write(fmt.format(*[group] + info))
-                else:
-                    file_.write(fmt.format(*[group] + info))
+                if pd.isnull(info).all():
+                    fmt = '  {:<10}' + ' {:>20}' * 5 + '\n'
+                    info = ['---'] * 5
+                elif pd.isnull(info[1]):
+                    info[1] = '---'
+                    fmt = '  {:<10}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
 
-        # Implement MTE information
-        for label in ['MTE Information', 'Paramterizationn']:
+                file_.write(fmt.format(*[group] + info))
+
+        # Implement MTE and Parameterization
+        for label in ['MTE Information', 'Parametrization']:
             header = '\n\n {} \n\n'.format(label)
             file_.write(header)
             if label == 'MTE Information':
@@ -160,7 +152,7 @@ def print_info(data_frame, coeffs, file_name):
                 args = [str(i) + '%' for i in quantiles]
                 quantiles = [i * 0.01 for i in quantiles]
                 x = data_frame.filter(regex=r'^X\_', axis=1)
-                value = mte_information(coeffs[:2], coeffs[3][3:], coeffs[3][:3], quantiles, x)
+                value = mte_information(coeffs[:2], coeffs[3][:3], quantiles, x)
                 str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
 
             else:
@@ -173,18 +165,13 @@ def print_info(data_frame, coeffs, file_name):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 
-def mte_information(para, cov, var, quantiles, x):
+def mte_information(para, cov, quantiles, x):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
     """
     MTE = []
-    # Calculate the variance of V:
-    var_v = var[0] + var[1] + var[2] + - 2 + cov[0] - 2 * cov[2] + 2 * cov[1]
-    cov_v1 = (cov[0] + cov[2] - var[1]) / var_v
-    cov_v0 = (cov[1] + var[0] - cov[0]) / var_v
     para_diff = para[1] - para[0]
     for i in quantiles:
-        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov_v1 - cov_v0) * norm.ppf(i)]
-        print(MTE)
+        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov[2] - cov[1]) * norm.ppf(i)]
 
     return MTE

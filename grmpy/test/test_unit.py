@@ -1,15 +1,13 @@
 """The module provides unit tests for different aspects of the simulation process."""
-import glob
-import os
-
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
-from grmpy.test.random_init import cleanup
+from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
 
@@ -37,7 +35,7 @@ class TestClass:
                 np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
                 np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-                np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
+                np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0), decimal=7)
 
     def test2(self):
         """The third test  checks whether the relationships hold if the coefficients are zero in
@@ -87,7 +85,7 @@ class TestClass:
 
                 np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-                np.testing.assert_array_equal(df.V, (df.UC - df.U1 + df.U0))
+                np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0))
 
     def test3(self):
         """The fourth test checks whether the simulation process works if there are only treated or
@@ -123,5 +121,26 @@ class TestClass:
 
             for key_ in ['source', 'agents', 'seed']:
                 assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
+
+    def test5(self):
+        """The tests checks if the simulation process works even if the covariance between U1 and V
+        and U0 and V is equal. Further the test ensures that the mte_information function returns
+        the same value for each quantile.
+        """
+        dict_ = generate_random_dict()
+        sd1 = dict_['DIST']['coeff'][0]
+        sdv = dict_['DIST']['coeff'][2]
+        rho = np.random.uniform(-1, 1)
+        cov = rho / (sd1 * sdv)
+        dict_['DIST']['coeff'][4:6] = [cov, cov]
+        print_dict(dict_)
+        df = simulate('test.grmpy.ini')
+
+        quantiles = [0.1] + np.arange(0.05, 1, 0.05).tolist() + [0.99]
+        para = np.array([dict_['TREATED']['coeff'], dict_['UNTREATED']['coeff']])
+        x = df.filter(regex=r'^X\_', axis=1)
+        mte = mte_information(para, dict_['DIST']['coeff'][3:], quantiles, x)
+        for i in mte:
+            np.testing.assert_array_equal(i, mte[0])
 
         cleanup()
