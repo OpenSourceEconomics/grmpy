@@ -1,14 +1,13 @@
 """The module includes an integration and a regression test for the simulation process."""
-import glob
 import json
 import os
-
 
 import numpy as np
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup
 
 
 class TestClass:
@@ -17,13 +16,9 @@ class TestClass:
         and the following simulation.
         """
         for _ in range(10):
-
             dict_ = generate_random_dict()
             print_dict(dict_)
             simulate('test.grmpy.ini')
-
-            for f in glob.glob("*.grmpy.*"):
-                os.remove(f)
 
     def test2(self):
         """The test takes a subsample of 5 random entries from the regression battery test list
@@ -48,12 +43,4 @@ class TestClass:
             df = simulate('test.grmpy.ini')
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
-        for f in glob.glob("*.grmpy.*"):
-            os.remove(f)
-
-
-
-
-
-
-
+        cleanup()
