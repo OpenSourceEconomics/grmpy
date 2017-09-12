@@ -27,7 +27,7 @@ The cost function illustrates the costs of an individual for selecting in the tr
 **Choice Parameters**
 
 Individuals have an incentive to select themselves in the treatment group if their associated surplus is positive. The surplus :math:`S` is defined as the  difference between their outputs :math:`Y_1` and :math:`Y_0` minus the subjective costs :math:`C` for selecting into treatment.
-Their specific choice is defined as a dummy variable :math:`D`.
+Their specific choice is illustrated as a dummy variable :math:`D`.
 
 .. math::
         S & = Y_1 - Y_0 - C\\
@@ -49,8 +49,10 @@ The surplus can be rewritten as:
 
 **Selecting Process**
 
-.. todo::
-    implement the self selection process
+.. math::
+        P(X,Z) & = Pr(D=1|X,Z) = F_V (X (\beta_1 - \beta_0) -Z \gamma)\\
+        U_S & = F_V(V)\\
+        D & = \mathbb{1}\{P(X,Z) > U_S\}
 
 **Realized Outcome**
 
@@ -109,7 +111,9 @@ coeff       float   string    float       coefficient of the second covariate
 
     - The **Type** column allows to set covariates to binary variables. For this purpose you just have to insert **binary** behind the coefficient value. The default value is **nonbinary**.
 
-    - Note that if you want to create a binary in the **TREATED** and the **UNTREATED** section it is sufficent to implement the option in one of the sections. Further note that setting an intercept coefficient to **binary** will be ignored in the simulation process.
+    - Note that if you want to implement a binary covariate in the **TREATED** and the **UNTREATED** section it is sufficent to implement the option in only one of the sections.
+
+    - Further note that setting an intercept coefficient to **binary** will be ignored in the simulation process.
 
     - The **Fraction** column allows to set a specific rate for which the binary variable is one by adding a float value between 0 and 1. If no argument is inserted, the simulation process will define a random rate.
 
@@ -135,7 +139,7 @@ Examples
 .. todo::
     - Ask Phillip why we can't use functions from the package by importing it via ``import grmpy``.
 
-In the following chapter we explore the basic features of the ``grmpy`` package. Firstly you have to import the package and the related functions.
+In the following chapter we explore the basic features of the ``grmpy`` package. Firstly you have to import the package.
 ::
 
 
@@ -182,9 +186,11 @@ During this process the functions returns the following output files:
 
 .. Warning::
 
-    - Note that you have to insert the name of your initialization file as an input in the simulate function, if you generate a random initialization file the name is fixed to *test.grmpy.ini*.
+    - The prefix of the output files is determined by the given **source** entry in the **SIMULATION** section of your initialization file.
 
-    - Besides the ``.grmpy.txt`` the function is able to return a dataframe directly by setting ``data_frame = simulate('test.grmpy.ini')``
+    - Note that you have to provide the name of your initialization file as an input in the simulate function. If you generate a random initialization file, the name is fixed to *test.grmpy.ini*.
+
+    - The function is able to return a dataframe directly by setting ``data_frame = simulate('test.grmpy.ini')``
 
 
 
