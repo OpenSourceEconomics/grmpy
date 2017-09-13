@@ -1,73 +1,28 @@
 Tutorial
 ========
 
-We now illustrate the basic capabilities of the ``grmpy`` package. We start with the model parametrization and specification before turning to some example use cases.
+We now illustrate the basic capabilities of the ``grmpy`` package. We start with the assumptions about functional form and the distribution of unobservables and then turn to some simple use cases.
 
+Assumptions
+------------
 
-Parametric Assumptions
-----------------------
-
-The package focuses on the linear form of the generalized roy model for reasons of simplicity. The model is characterized by the following equations:
-
-**Outcome**
-
-:math:`Y_1` and :math:`Y_0` represent the ex post outcome for each individual depending on treatment status.
+The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the cost associated with treatment participations :math:`(Y_1, Y_0, C)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, U_C)`.
 
 .. math::
     Y_1 & = X \beta_1 + U_1 \\
     Y_0 & = X \beta_0 + U_0 \\
+    C   & = Z \gamma + U_C \\
 
-**Costs**
-
-The cost function illustrates the costs of an individual for selecting in the treatment group.
-
-.. math::
-        C & = Z \gamma + U_C \\
-
-**Choice Parameters**
-
-Individuals have an incentive to select themselves in the treatment group if their associated surplus is positive. The surplus :math:`S` is defined as the  difference between their outputs :math:`Y_1` and :math:`Y_0` minus the subjective costs :math:`C` for selecting into treatment.
-Their specific choice is illustrated as a dummy variable :math:`D`.
-
-.. math::
-        S & = Y_1 - Y_0 - C\\
-        D & = I\{S>0\}
-
-**Unobservables**
-
-The parameter :math:`V` denotes the collected unobservable variables :math:`U_1`, :math:`U_0` and :math:`U_C`.
-
-.. math::
-        V & = U_C -(U_1 - U_0)\\
-
-The surplus can be rewritten as:
-
-.. math::
-        S & = X (\beta_1 - \beta_0) - Z \gamma - V\\
-
-
-
-**Selecting Process**
-
-.. math::
-        P(X,Z) & = Pr(D=1|X,Z) = F_V (X (\beta_1 - \beta_0) -Z \gamma)\\
-        U_S & = F_V(V)\\
-        D & = \mathbb{1}\{P(X,Z) > U_S\}
-
-**Realized Outcome**
-
-.. math::
-        Y = D Y_1 + (1-D) Y_0\\
+We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into treatment if their surplus from doing so is positive :math:`S = Y_1 - Y_0 - C`. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
 
 Model Specification
 -------------------
 
-The model is specified in an initialization file. The file includes the following sections:
-
+You can specify the details of the model in an initialization file (`example <https://github.com/restudToolbox/package/blob/master/respy/tests/resources/kw_data_one.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
-The *SIMULATION* part contains basic configurations that determine the simulation and output process.
+The *SIMULATION* block contains some basic information about the simulation request.
 
 =======     ======      ==================
 Key         Value       Interpretation
@@ -77,121 +32,74 @@ seed        int         seed for the specific simulation
 source      str         specified name for the simulation output files
 =======     ======      ==================
 
-**TREATED & UNTREATED**
+**TREATED**
 
-The *TREATED* and *UNTREATED* paragraph are similar regarding their structure. Both contain the parameters that determine the expected wage dependent on the treatment status. There can be added as many covariates as wished, but the number has to be the same for both cases.
+The *TREATED* block specifies the number of covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
 
-=======     ======  =======  =========   ==================
-Key         Value    Type    Fraction    Interpretation
-=======     ======  =======  =========   ==================
-coeff       float    ---      ---         intercept coefficient
-coeff       float   string    float       coefficient of the first covariate
-coeff       float   string    float       coefficient of the second covariate
+=======     ======  ==================
+Key         Value   Interpretation
+=======     ======  ==================
+coeff       float   intercept coefficient
+coeff       float   coefficient of the first covariate
+coeff       float   coefficient of the second covariate
  ...
-=======     ======  =======  =========   ==================
+=======     ======  ==================
+
+**UNTREATED**
+
+The *UNTREATED* block specifies the number of covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. Note that the covariates need to be identical to the *TREATED* block.
+
+=======     ======  ==================
+Key         Value   Interpretation
+=======     ======  ==================
+coeff       float   intercept coefficient
+coeff       float   coefficient of the first covariate
+coeff       float   coefficient of the second covariate
+ ...
+=======     ======  ==================
 
 **COST**
 
-The *COST* section includes parameters related to the cost function.
+The *COST* block specifies the number of covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
 
-=======     ======  =======  =========   ==================
-Key         Value    Type    Fraction    Interpretation
-=======     ======  =======  =========   ==================
-coeff       float    ---      ---         intercept coefficient
-coeff       float   string    float       coefficient of the first covariate
-coeff       float   string    float       coefficient of the second covariate
+=======     ======  ==================
+Key         Value   Interpretation
+=======     ======  ==================
+coeff       float   intercept coefficient
+coeff       float   coefficient of the first covariate
+coeff       float   coefficient of the second covariate
  ...
-=======     ======  =======  =========   ==================
-
-.. Warning::
-
-    - The first coefficient in the **TREATED**, **UNTREATED** and **COST** section is interpreted as an intercept.
-
-    - You can add a desired number of different coefficients to all three sections. However it should be noted that the number of coefficients in the **TREATED** and **UNTREATED** sections has to be the same.
-
-    - The **Type** column allows to set covariates to binary variables. For this purpose you just have to insert **binary** behind the coefficient value. The default value is **nonbinary**.
-
-    - Note that if you want to implement a binary covariate in the **TREATED** and the **UNTREATED** section it is sufficent to implement the option in only one of the sections.
-
-    - Further note that setting an intercept coefficient to **binary** will be ignored in the simulation process.
-
-    - The **Fraction** column allows to set a specific rate for which the binary variable is one by adding a float value between 0 and 1. If no argument is inserted, the simulation process will define a random rate.
+=======     ======  ==================
 
 **DIST**
 
-This Section determines the distributional characteristics of the unobservable variables.
-The indices *0* and *1* denote the distributional information for the error terms of the untreated and treated outcomes :math:`(Y_0, Y_1)`, whereas *V* denotes the distributional characteristics of the collected unobservable variables.
-
+The *DIST* block specifies the distribution of the unobservables.
 
 ======= ======      ==========================
 Key     Value       Interpretation
 ======= ======      ==========================
-coeff    float      :math:`\sigma_{0}`
-coeff    float      :math:`\sigma_{01}`
-coeff    float      :math:`\sigma_{0V}`
-coeff    float      :math:`\sigma_{1}`
-coeff    float      :math:`\sigma_{1V}`
+coeff    float      :math:`\sigma_{U_0}`
+coeff    float      :math:`\sigma_{U_1,U_0}`
+coeff    float      :math:`\sigma_{U_0,V}`
+coeff    float      :math:`\sigma_{U_1}`
+coeff    float      :math:`\sigma_{U_1,V}`
 coeff    float      :math:`\sigma_{V}`
 ======= ======      ==========================
 
 Examples
 --------
-.. todo::
-    - Ask Phillip why we can't use functions from the package by importing it via ``import grmpy``.
 
-In the following chapter we explore the basic features of the ``grmpy`` package. Firstly you have to import the package.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/pei_doc/docs/tutorial>`_. So far you can only simulate the sample from the generalized Roy model as specified in the initialization file.
+
 ::
 
+    import grmpy
 
-    from grmpy.simulate.simulate import simulate
-
-    from grmpy.test.random_init import generate_random_dict()
-
-**Specifiying Simulation Characteristics**
-
-In the first step we determine the parametrization of our model. For this purpose you could create a initialization file by your own preferences. For information relating the structure of the initialization file see the **Model Specification** chapter above.
-In our specific example we will generate a random initialization file by using the included ``generate_random_dict()`` function.
-::
+    grmpy.simulate('tutorial.grmpy.ini')
 
 
-    generate_random_dict()
+This creates a number of output files that contains information about the resulting simulated sample.
 
-
-The function creates a random initialization file like the one below.
-
-.. todo::
-    insert example image of an initialization file
-
-**Simulation**
-
-Next we simulate a sample according to our pre specified characteristics.
-::
-
-    simulate('test.grmpy.ini)
-
-During this process the functions returns the following output files:
-
-    - ######.grmpy.info:
-        An information file that provides information about
-            * The number of all, treated and untreated individuals
-            * The outcome distribution
-            * The distribution of effects of interest
-            * MTE by quantile
-            * The parametrization.
-
-    - ######.grmpy.txt: The simulated data frame as a txt file.
-
-    - ######.grmpy.pkl: The simulated data frame as a pickle file.
-
-
-.. Warning::
-
-    - The prefix of the output files is determined by the given **source** entry in the **SIMULATION** section of your initialization file.
-
-    - Note that you have to provide the name of your initialization file as an input in the simulate function. If you generate a random initialization file, the name is fixed to *test.grmpy.ini*.
-
-    - The function is able to return a dataframe directly by setting ``data_frame = simulate('test.grmpy.ini')``
-
-
-
-
+* **data.respy.info**, basic information about the simulated sample
+* **data.grmpy.txt**, simulated sample in a simple text file
+* **data.grmpy.pkl**, simulated sample as a pandas data frame
