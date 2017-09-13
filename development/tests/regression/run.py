@@ -42,7 +42,8 @@ def create_vault(num_tests=100, seed=123):
 
 def check_vault():
     """This function checks the complete regression vault that is distributed as part of the
-    package."""
+    package.
+    """
     import grmpy
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/regression_vault.grmpy.json'
     tests = json.load(open(fname))

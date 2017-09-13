@@ -1,5 +1,5 @@
 """ This module provides auxiliary functions for the simulate.py module. It includes simulation
-processes of the unobservable and endogeneous variables of the model as well as functions regarding
+processes of the unobservable and endogenous variables of the model as well as functions regarding
 the info file output.
 """
 from scipy.stats import norm
@@ -8,19 +8,23 @@ import numpy as np
 
 
 def simulate_covariates(init_dict, cov_type, num_agents):
-    """The function simulates the covariate variables for the cost and the output."""
-    num_covar = init_dict[cov_type]['all'].shape[0]
+    """The function simulates the covariates for the cost and the output functions."""
+    num_covars = init_dict[cov_type]['all'].shape[0]
 
-    means = np.tile(0.0, num_covar)
-    covs = np.identity(num_covar)
+    # As our baseline we simulate covariates from a standard normal distribution.
+    means = np.tile(0.0, num_covars)
+    covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
+
+    # We now perform some selective replacements.
     X[:, 0] = 1.0
-    for i in range(num_covar):
+    for i in range(num_covars):
         if isinstance(init_dict[cov_type]['types'][i], list):
             if i != 0:
                 frac = init_dict[cov_type]['types'][i][1]
                 binary = np.random.binomial(1, frac, size=num_agents)
                 X[:, i] = binary
+
     return X
 
 
@@ -91,7 +95,6 @@ def write_output(end, exog, err, source):
 
 def print_info(data_frame, coeffs, file_name):
     """The function writes an info file for the specific data frame."""
-
     with open(file_name + '.grmpy.info', 'w') as file_:
 
         # First we note some basic information ab out the dataset.

@@ -1,13 +1,15 @@
 """The module contains the main function of the init file import process."""
 import shlex
 
+from grmpy.check.check import check_initialization_dict
 from grmpy.read.read_auxiliary import auxiliary
 from grmpy.read.read_auxiliary import process
 
 
 def read(file_):
     """The function reads the initialization file and returns a dictionary with parameters for the
-    simulation."""
+    simulation.
+    """
     dict_ = {}
     for line in open(file_).readlines():
 
@@ -31,6 +33,9 @@ def read(file_):
         process(list_, dict_, keyword)
 
     dict_ = auxiliary(dict_)
+
+    # We perform some basic consistency checks regarding the user's request.
+    check_initialization_dict(dict_)
 
     return dict_
 
