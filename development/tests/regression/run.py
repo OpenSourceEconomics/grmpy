@@ -1,54 +1,72 @@
-"""The test provides a regression test battery. In the first step it loops over 100 different seeds,
-generates a random init file for each seed, simulates the resulting dataframe, sums it up and saves
-the sum and the generated dictionary in /grmpy/test/resources/ as a json file. In the second step it
-reads the json file, and loops over all entries. For each element it prints an init file, simulates
-the dataframe, sums it up again and compares the sum from the first step with the one from the
-second step."""
-
-import glob
+#!/usr/bin/env python
+"""The test provides the basic capabilities to work with the regression tests of the package."""
+import argparse
 import json
 import os
 
 import numpy as np
 
-import grmpy
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup
 
-PACKAGE_DIR = os.path.dirname(grmpy.__file__)
 
-NUM_TESTS = 100
+def process_arguments(parser):
+    """This function parses the input arguments."""
+    args = parser.parse_args()
 
-np.random.seed(1234235)
-seeds = np.random.randint(0, 1000, size=NUM_TESTS)
-dir = os.path.dirname(__file__)
-file_dir = os.path.join(dir, 'regression_vault.grmpy.json')
+    # Distribute input arguments
+    request = args.request
 
-if False:
+    # Test validity of input arguments
+    assert request in ['check', 'create']
+
+    return request
+
+
+def create_vault(num_tests=100, seed=123):
+    """This function creates a new regression vault."""
+    np.random.seed(seed)
+
     tests = []
-    for seed in seeds:
-        np.random.seed(seed)
+    for _ in range(num_tests):
         dict_ = generate_random_dict()
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
         tests += [(stat, dict_)]
+        cleanup()
 
-    json.dump(tests, open(file_dir, 'w'))
+    json.dump(tests, open('regression_vault.grmpy.json', 'w'))
 
-if True:
 
-    fname = PACKAGE_DIR + '/test/resources/regression_vault.grmpy.json'
-    tests = json.load(open(fname, 'r'))
+def check_vault():
+    """This function checks the complete regression vault that is distributed as part of the
+    package."""
+    import grmpy
+    fname = os.path.dirname(grmpy.__file__) + '/test/resources/regression_vault.grmpy.json'
+    tests = json.load(open(fname))
 
     for test in tests:
         stat, dict_ = test
         print_dict(dict_)
         df = simulate('test.grmpy.ini')
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
-#
-# for f in glob.glob("*.grmpy.*"):
-#     if f.startswith('regression'):
-#         pass
-#     else:
-#         os.remove(f)
+        cleanup()
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Work with regression tests for package.')
+
+    parser.add_argument('--request', action='store', dest='request', required=True,
+        help='request (valid: check, create)')
+
+    request = process_arguments(parser)
+
+    if request == 'check':
+        check_vault()
+    elif request == 'create':
+        create_vault()
+
+
