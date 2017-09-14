@@ -2,6 +2,7 @@
 import uuid
 
 import numpy as np
+from scipy.stats import wishart
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
@@ -73,23 +74,18 @@ def generate_random_dict(constraints_dict=None):
 
     # Variance and covariance parameters
     if not is_deterministic:
-        a = np.random.rand(3, 3)
-        b = np.dot(a, a.transpose())
+        x = np.identity(3)
+        b = wishart.rvs(df=10, scale=x, size=1, random_state=seed)
     else:
         b = np.zeros((3, 3))
     dict_['DIST']['coeff'] = []
-
-    for i in range(3):
-        dict_['DIST']['coeff'].append(b[i, i])
-
-    dict_['DIST']['coeff'].append(b[1, 0])
-    dict_['DIST']['coeff'].append(b[2, 0])
+    dict_['DIST']['coeff'].append(b[0, 0] ** 0.5)
+    dict_['DIST']['coeff'].append(b[0, 1])
+    dict_['DIST']['coeff'].append(b[0, 2])
+    dict_['DIST']['coeff'].append(b[1, 1] ** 0.5)
     dict_['DIST']['coeff'].append(b[2, 1])
-
-    dict_['DIST']['coeff'] = np.asarray(dict_['DIST']['coeff']).tolist()
-
+    dict_['DIST']['coeff'].append(b[2, 2] ** 0.5)
     print_dict(dict_)
-
     return dict_
 
 
@@ -165,6 +161,3 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list
-
-
-
