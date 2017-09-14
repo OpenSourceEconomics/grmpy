@@ -28,19 +28,14 @@ def simulate_covariates(init_dict, cov_type, num_agents):
     return X
 
 
-def simulate_unobservables(covar, vars_, num_agents):
+def simulate_unobservables(cov, num_agents):
     """The function simulates the unobservable error terms."""
-    # Create a Covariance matrix
-    cov_ = np.diag(vars_)
+    U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
+    V = np.array(U[0:, 2])
 
-    cov_[0, 1], cov_[1, 0] = covar[0], covar[0]
-    cov_[0, 2], cov_[2, 0] = covar[1], covar[1]
-    cov_[1, 2], cov_[2, 1] = covar[2], covar[2]
-
-    U = np.random.multivariate_normal([0.0, 0.0, 0.0], cov_, num_agents)
-
-    V = np.array([i for i in U[0:, 2]])
+    # Here we keep track of the implied value for U_C.
     U[0:, 2] = V - U[0:, 0] + U[0:, 1]
+
     return U, V
 
 
@@ -178,3 +173,13 @@ def mte_information(para, cov, quantiles, x):
         MTE += [np.mean(np.dot(para_diff, x.T)) - (cov[2] - cov[1]) * norm.ppf(i)]
 
     return MTE
+
+
+def construct_covariance_matrix(init_dict):
+    """This function constructs the covariance matrix based on the user's initialization file"""
+    cov = np.zeros((3, 3))
+    cov[np.triu_indices(3)] = init_dict['DIST']['all']
+    cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
+    cov[np.diag_indices(3)] **= 2
+
+    return cov
