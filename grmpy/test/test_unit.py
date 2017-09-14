@@ -129,8 +129,7 @@ class TestClass:
         """
         for _ in range(10):
             dict_ = generate_random_dict()
-            cov = 0
-            dict_['DIST']['coeff'][4:6] = [cov, cov]
+            dict_['DIST']['coeff'][4] = dict_['DIST']['coeff'][5]
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
 
