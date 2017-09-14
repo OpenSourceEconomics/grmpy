@@ -7,8 +7,12 @@ import pandas as pd
 import numpy as np
 
 
-def simulate_covariates(init_dict, cov_type, num_agents):
+def simulate_covariates(init_dict, cov_type):
     """The function simulates the covariates for the cost and the output functions."""
+    # Distribute information
+    num_agents = init_dict['SIMULATION']['agents']
+
+    # Construct auxiliary information
     num_covars = init_dict[cov_type]['all'].shape[0]
 
     # As our baseline we simulate covariates from a standard normal distribution.
@@ -65,21 +69,22 @@ def simulate_outcomes(init_dict, X, Z, U):
     return Y, D, Y_1, Y_0
 
 
-def write_output(end, exog, err, source):
+def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     """The function converts the simulated variables to a panda data frame and saves the data in a
     txt and a pickle file.
     """
-    column = ['Y', 'D']
+    # Distribute information
+    source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((end[0], end[1], exog[0], exog[1], end[2], end[3]))
-    data = np.column_stack((data, err[0][0:, 0], err[0][0:, 1], err[0][0:, 2], err[1]))
+    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U, V))
 
-    # List of column names
-    for i in range(exog[0].shape[1]):
+    # Construct list of column labels
+    column = ['Y', 'D']
+    for i in range(X.shape[1]):
         str_ = 'X_' + str(i)
         column.append(str_)
-    for i in range(exog[1].shape[1]):
+    for i in range(Z.shape[1]):
         str_ = 'Z_' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U0', 'U1', 'UC', 'V']
@@ -90,7 +95,7 @@ def write_output(end, exog, err, source):
     df.to_pickle(source + '.grmpy.pkl')
 
     with open(source + '.grmpy.txt', 'w') as file_:
-        df.to_string(file_, index=False, header=True, na_rep='.', col_space=15)
+        df.to_string(file_, index=False, na_rep='.', col_space=15)
 
     return df
 

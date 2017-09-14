@@ -1,6 +1,4 @@
 """The module provides the simulation process."""
-import os
-
 import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
@@ -16,14 +14,14 @@ def simulate(init_file):
     init_dict = read(init_file)
 
     # Distribute information
-    num_agents = init_dict['SIMULATION']['agents']
-    source = init_dict['SIMULATION']['source']
     seed = init_dict['SIMULATION']['seed']
+
+    # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
     # Simulate observables of the model
-    X = simulate_covariates(init_dict, 'TREATED', num_agents)
-    Z = simulate_covariates(init_dict, 'COST', num_agents)
+    X = simulate_covariates(init_dict, 'TREATED')
+    Z = simulate_covariates(init_dict, 'COST')
 
     # Simulate unobservables of the model
     U, V = simulate_unobservables(init_dict)
@@ -32,7 +30,7 @@ def simulate(init_file):
     Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, Z, U)
 
     # Write output file
-    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source)
+    df = write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V)
 
     print_info(init_dict, df)
 
