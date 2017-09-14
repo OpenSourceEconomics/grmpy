@@ -3,7 +3,6 @@ import os
 
 import numpy as np
 
-from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
@@ -22,28 +21,19 @@ def simulate(init_file):
     seed = init_dict['SIMULATION']['seed']
     np.random.seed(seed)
 
-    # Construct covariance matrix directly from the initialization file.
-    cov = construct_covariance_matrix(init_dict)
-
-    Y1_coeffs = init_dict['TREATED']['all']
-    Y0_coeffs = init_dict['UNTREATED']['all']
-    C_coeffs = init_dict['COST']['all']
-    coeffs = [Y0_coeffs, Y1_coeffs, C_coeffs]
-    Dist_coeffs = init_dict['DIST']['all']
-
-    # Simulate observables
+    # Simulate observables of the model
     X = simulate_covariates(init_dict, 'TREATED', num_agents)
     Z = simulate_covariates(init_dict, 'COST', num_agents)
 
-    # Simulate unobservables
-    U, V = simulate_unobservables(cov, num_agents)
+    # Simulate unobservables of the model
+    U, V = simulate_unobservables(init_dict)
 
-    # Simulate endogeneous variables
-    Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
+    # Simulate endogeneous variables of the model
+    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, Z, U)
 
     # Write output file
     df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], source)
 
-    print_info(df, [Y0_coeffs, Y1_coeffs, C_coeffs, Dist_coeffs], source)
+    print_info(init_dict, df)
 
     return df

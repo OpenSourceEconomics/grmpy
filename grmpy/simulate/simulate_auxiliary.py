@@ -28,32 +28,39 @@ def simulate_covariates(init_dict, cov_type, num_agents):
     return X
 
 
-def simulate_unobservables(cov, num_agents):
+def simulate_unobservables(init_dict):
     """The function simulates the unobservable error terms."""
+    num_agents = init_dict['SIMULATION']['agents']
+    cov = construct_covariance_matrix(init_dict)
+
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
     V = np.array(U[0:, 2])
 
     # Here we keep track of the implied value for U_C.
-    U[0:, 2] = V - U[0:, 0] + U[0:, 1]
+    U[:, 2] = V - U[:, 0] + U[:, 1]
 
     return U, V
 
 
-def simulate_outcomes(exog, err, coeff):
+def simulate_outcomes(init_dict, X, Z, U):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
-    # individual outcomes
-    Y_0, Y_1 = np.add(
-        np.dot(coeff[0], exog[0].T), err[0:, 0]), np.add(np.dot(coeff[1], exog[0].T), err[0:, 1])
-    cost = np.add(np.dot(coeff[2], exog[1].T), err[0:, 2])
+    # Distribute information
+    coeffs_untreated = init_dict['UNTREATED']['all']
+    coeffs_treated = init_dict['TREATED']['all']
+    coeffs_cost = init_dict['COST']['all']
+
+    # Calculate potential outcomes and costs
+    Y_1 = np.dot(coeffs_treated, X.T) + U[:, 1]
+    Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 0]
+    C = np.dot(coeffs_cost, Z.T) + U[:, 2]
 
     # Calculate expected benefit and the resulting treatment dummy
-    benefits = np.subtract(Y_1, Y_0)
-    D = np.array((benefits - cost > 0).astype(int))
+    D = np.array((Y_1 - Y_0 - C > 0).astype(int))
 
     # Observed outcomes
-    Y = D * Y_1.T + (1 - D) * Y_0.T
+    Y = D * Y_1 + (1 - D) * Y_0
 
     return Y, D, Y_1, Y_0
 
@@ -88,9 +95,27 @@ def write_output(end, exog, err, source):
     return df
 
 
-def print_info(data_frame, coeffs, file_name):
+def construct_all_coefficients(init_dict):
+    """This function constructs all coefficients from the initialization dictionary."""
+    coeffs_all = []
+    for label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+        coeffs_all += init_dict[label]['all'].tolist()
+
+    return coeffs_all
+
+
+def print_info(init_dict, data_frame):
     """The function writes an info file for the specific data frame."""
-    with open(file_name + '.grmpy.info', 'w') as file_:
+    # Distribute information
+    coeffs_untreated = init_dict['TREATED']['all']
+    coeffs_treated = init_dict['TREATED']['all']
+    source = init_dict['SIMULATION']['source']
+
+    # Construct auxiliary information
+    coeffs_all = construct_all_coefficients(init_dict)
+    cov = construct_covariance_matrix(init_dict)
+
+    with open(source + '.grmpy.info', 'w') as file_:
 
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
@@ -142,35 +167,36 @@ def print_info(data_frame, coeffs, file_name):
                 file_.write(fmt.format(*[group] + info))
 
         # Implement MTE and Parameterization
-        for label in ['MTE Information', 'Parametrization']:
-            header = '\n\n {} \n\n'.format(label)
-            file_.write(header)
-            if label == 'MTE Information':
-                quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-                args = [str(i) + '%' for i in quantiles]
-                quantiles = [i * 0.01 for i in quantiles]
-                x = data_frame.filter(regex=r'^X\_', axis=1)
-                value = mte_information(coeffs[:2], coeffs[3][:3], quantiles, x)
-                str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
+        header = '\n\n {} \n\n'.format('MTE Information')
+        file_.write(header)
+        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
+        args = [str(i) + '%' for i in quantiles]
+        quantiles = [i * 0.01 for i in quantiles]
+        x = data_frame.filter(regex=r'^X\_', axis=1)
+        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
+        str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
+        file_.write(str_)
+        len_ = len(value) - 1
+        for i in range(len_):
+            file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
-            else:
-                value = np.append(np.append(coeffs[0], coeffs[1]), np.append(coeffs[2], coeffs[3]))
-                str_ = '  {0:>10} {1:>20}\n\n'.format('Identifier', 'Value')
-                args = list(range(len(value) - 1))
-            file_.write(str_)
-            len_ = len(value) - 1
-            for i in range(len_):
-                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
+        # Write out parameterization of the model.
+        file_.write('\n\n {} \n\n'.format('Parameterization'))
+        file_.write('  {:>10} {:>20}\n\n'.format('Identifier', 'Value'))
+        for i, coeff in enumerate(coeffs_all):
+            file_.write('  {0:>10} {1:>20.4f}\n'.format(i, coeff))
 
 
-def mte_information(para, cov, quantiles, x):
+def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
     """
+    # Construct auxiliary information
+    para_diff = coeffs_treated - coeffs_untreated
+
     MTE = []
-    para_diff = para[1] - para[0]
     for i in quantiles:
-        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov[2] - cov[1]) * norm.ppf(i)]
+        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov[1, 2] - cov[0, 2]) * norm.ppf(i)]
 
     return MTE
 
