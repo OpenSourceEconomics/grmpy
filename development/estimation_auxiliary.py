@@ -37,7 +37,7 @@ def log_likelihood(data_frame, init_dict, rslt):
 
 
 def _prepare_arguments(rslt, init_dict):
-    """The function delegates the cofficients for the logliklihood estimation."""
+    """The function prepares the coefficients for the logliklihood function."""
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
     gamma = np.array(rslt['COST']['all'])
@@ -103,7 +103,7 @@ def start_values(init_dict, data_frame, option):
     return x0
 
 
-def optimizing_target(start_values, init_dict):
+def distribute_parameters(start_values, init_dict):
     """The function generates a dictionary for the representation of the optimization output."""
     num_covars_out = init_dict['AUX']['num_covars_out']
     rslt = dict()
@@ -137,7 +137,7 @@ def optimizing_target(start_values, init_dict):
 def minimizing_interface(start_values, data_frame, init_dict):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = optimizing_target(start_values, init_dict)
+    rslt = distribute_parameters(start_values, init_dict)
 
     # Calculate liklihood for pre specified arguments
     likl = log_likelihood(data_frame, init_dict, rslt)
