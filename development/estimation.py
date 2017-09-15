@@ -13,12 +13,11 @@ from grmpy.read.read import read
 
 def estimate(init_file, type):
     """The function estimates the coefficients of the simulated data set."""
-    assert os.path.isfile(init_file)
     # Import init file as dictionary
+    assert os.path.isfile(init_file)
     dict_ = read(init_file)
 
     data_file = dict_['SIMULATION']['source'] + '.grmpy.txt'
-
     assert os.path.isfile(data_file)
 
     # Read data frame
