@@ -5,9 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-
-
-def log_likelihood(data_frame, init_dict, rslt ):
+def log_likelihood(data_frame, init_dict, rslt):
     """The function provides the logliklihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(rslt, init_dict)
@@ -23,8 +21,8 @@ def log_likelihood(data_frame, init_dict, rslt ):
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
-        part1 = (target['Y'] - np.dot(beta, X.T))/sd
-        part2 = (choice_ -rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
+        part1 = (target['Y'] - np.dot(beta, X.T)) / sd
+        part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
 
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
 
@@ -35,12 +33,10 @@ def log_likelihood(data_frame, init_dict, rslt ):
         likl[observation] = contrib
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
 
-
     return likl
 
 
 def _prepare_arguments(rslt, init_dict):
-
     """The function delegates the cofficients for the logliklihood estimation."""
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
@@ -55,7 +51,7 @@ def _prepare_arguments(rslt, init_dict):
     return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
 
 
-def _start_values(init_dict, data_frame,  option):
+def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
     assert isinstance(init_dict, dict)
@@ -79,7 +75,7 @@ def _start_values(init_dict, data_frame,  option):
         beta = []
         sd_ = []
         for i in [0.0, 1.0]:
-            Y,X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
+            Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
                 data_frame.D == i]
             ols_results = sm.OLS(Y, X).fit()
             beta += [ols_results.params]
@@ -106,8 +102,6 @@ def _start_values(init_dict, data_frame,  option):
 
     return x0
 
-def write_estimation_outpu():
-    """"""
 
 def optimizing_target(start_values, init_dict):
     """The function generates a dictionary for the representation of the optimization output."""
@@ -145,11 +139,10 @@ def minimizing_interface(start_values, data_frame, init_dict):
     # Collect arguments
     rslt = optimizing_target(start_values, init_dict)
 
-    #Calculate liklihood for pre specified arguments
+    # Calculate liklihood for pre specified arguments
     likl = log_likelihood(data_frame, init_dict, rslt)
 
     return likl
-
 
 
 def _transform_start(x):

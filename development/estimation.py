@@ -7,7 +7,7 @@ import pandas as pd
 
 from development.estimation_auxiliary import minimizing_interface
 from development.estimation_auxiliary import optimizing_target
-from development.estimation_auxiliary import _start_values
+from development.estimation_auxiliary import start_values
 from grmpy.read.read import read
 
 
@@ -26,7 +26,7 @@ def estimate(init_file, type):
 
     # define starting values
     x0 = _start_values(dict_, data, type)
-    opts = {'maxiter' : 100}
+    opts = {'maxiter': 100}
 
     opt_rslt = minimize(minimizing_interface, x0, args=(data, dict_), method='BFGS', options=opts)
     x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
@@ -38,8 +38,3 @@ def estimate(init_file, type):
 
     # Finishing
     return rslt
-
-
-
-
-
