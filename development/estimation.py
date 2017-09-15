@@ -25,7 +25,7 @@ def estimate(init_file, type):
     data = pd.read_table(data_file, delim_whitespace=True, header=0)
 
     # define starting values
-    x0 = _start_values(dict_, data, type)
+    x0 = start_values(dict_, data, type)
     opts = {'maxiter': 100}
 
     opt_rslt = minimize(minimizing_interface, x0, args=(data, dict_), method='BFGS', options=opts)
