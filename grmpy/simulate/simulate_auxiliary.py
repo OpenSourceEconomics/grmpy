@@ -84,7 +84,7 @@ def write_output(end, exog, err, source):
     df.to_pickle(source + '.grmpy.pkl')
 
     with open(source + '.grmpy.txt', 'w') as file_:
-        df.to_string(file_, index=False, header=True, na_rep='.', col_space=15)
+        df.to_string(file_, index=True, header=True, na_rep='.', col_space=5, justify='left')
 
     return df
 
