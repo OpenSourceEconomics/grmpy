@@ -5,9 +5,9 @@ import os
 from scipy.optimize import minimize
 import pandas as pd
 
-from development.estimation_auxiliary import minimizing_interface
-from development.estimation_auxiliary import distribute_parameters
-from development.estimation_auxiliary import start_values
+from grmpy.estimate.estimate_auxiliary import minimizing_interface
+from grmpy.estimate.estimate_auxiliary import distribute_parameters
+from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.read.read import read
 
 
