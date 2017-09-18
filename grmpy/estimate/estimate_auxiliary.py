@@ -95,7 +95,7 @@ def start_values(init_dict, data_frame, option):
         x0 = np.concatenate((x0, [0.00, 0.00]))
         x0 = _transform_start(x0)
         x0 = np.array(x0)
-        init_dict['AUX']['starting_values'] = x0
+    init_dict['AUX']['starting_values'] = x0
 
     return x0
 
@@ -161,3 +161,42 @@ def _transform_start(x):
 
     # Finishing
     return x
+
+def calculate_criteria(start_values, init_dict, data_frame):
+    rslt = distribute_parameters(start_values, init_dict)
+    init_dict['AUX']['criteria'] = log_likelihood(data_frame, init_dict, rslt)
+
+
+
+def print_logfile(rslt, init_dict):
+    with open('est.grmpy.info', 'w') as file_:
+
+        for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
+            header = '\n \n  {:<10}\n\n'.format(label)
+            file_.write(header)
+            if label == 'Optimization Information':
+                for section in ['Success', 'Status', 'Number of Evaluations', 'F-value', 'Message']:
+                    fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
+                    if section == 'Number of Evaluations':
+                        file_.write(fmt.format('', section + ':', rslt['nfev']))
+                    elif section == 'F-value':
+                        fmt = '  {:<10}' + ' {:<20}' + '       {:>20.4f}\n\n'
+                        file_.write(fmt.format('', section + ':', rslt['fval']))
+                    else:
+                        file_.write(fmt.format('', section + ':', rslt[section.lower()]))
+            elif label == 'Criterion Function':
+                fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
+                file_.write(fmt.format('', '', 'Start', 'Current') )
+                file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
+
+            else:
+                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current'])+ '\n\n')
+                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
+                for i in range(len(rslt['AUX']['x_internal'])):
+                    file_.write('{0}\n'.format(
+                        fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
+                                   rslt['AUX']['x_internal'][i])))
+
+
+
+

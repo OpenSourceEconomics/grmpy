@@ -28,7 +28,10 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
     else:
         constraints_dict['MAXFUN'] = maxfun
     if sample is None:
-        constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
+        if agents != 1:
+            constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
+        else:
+            constraints_dict['SAMPLE_SIZE'] = 1
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
 

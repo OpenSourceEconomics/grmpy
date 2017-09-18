@@ -154,7 +154,7 @@ class TestClass:
             dict_ = read('test.grmpy.ini')
             true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
             results = estimate('test.grmpy.ini', 'true_values')
-            np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2])
+            np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2], decimal=3)
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
 

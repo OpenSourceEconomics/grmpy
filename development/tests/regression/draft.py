@@ -6,13 +6,15 @@ the dataframe, sums it up again and compares the sum from the first step with th
 second step.
  """
 
-import glob
 import json
 import os
 
 import numpy as np
 
+from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
+from grmpy.test.auxiliary import cleanup
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 
@@ -42,9 +44,4 @@ if True:
         print_dict(dict_)
         df = simulate('test.grmpy.ini')
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
-
-for f in glob.glob("*.grmpy.*"):
-    if f.startswith('regression'):
-        pass
-    else:
-        os.remove(f)
+cleanup('regression')

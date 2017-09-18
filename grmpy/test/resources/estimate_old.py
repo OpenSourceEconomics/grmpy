@@ -71,10 +71,11 @@ def estimate_old(init_file, option):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts = {'maxiter': 10}
+    opts = {'maxiter': dict_['ESTIMATION']['maxfun']}
+    method = dict_['ESTIMATION']['optimizer'].split('-')[1]
 
     opt_rslt = minimize(
-        minimizing_interface_old, x0, args=(data, dict_), method='BFGS', options=opts)
+        minimizing_interface_old, x0, args=(data, dict_), method=method, options=opts)
     x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
     success = opt_rslt['success']
 
