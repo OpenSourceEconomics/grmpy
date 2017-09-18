@@ -6,33 +6,30 @@ import numpy as np
 
 
 def log_likelihood(data_frame, init_dict, rslt):
-    """The function provides the logliklihood function for the minimization process."""
+    """The function provides the loglikelihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(rslt, init_dict)
-    likl = np.tile(np.nan, data_frame.shape[0])
-
-    for observation in range(data_frame.shape[0]):
-        target = data_frame.loc[observation]
-        X = target.filter(regex=r'^X\_')
-        Z = target.filter(regex=r'^Z\_')
-        g = pd.concat((X, Z))
-        choice_ = np.dot(choice, g)
-        if target['D'] == 1.00:
+    likl = []
+    for i in [0.0, 1.0]:
+        if i == 1.00:
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
-        part1 = (target['Y'] - np.dot(beta, X.T)) / sd
+        data = data_frame[data_frame['D'] == i]
+        X = data.filter(regex=r'^X\_')
+        Z = data.filter(regex=r'^Z\_')
+        g = pd.concat((X, Z), axis=1)
+        choice_ = pd.DataFrame.sum(choice * g, axis =1)
+        part1 =  (data['Y'] - pd.DataFrame.sum(beta * X, axis=1))/sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
-
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
-
-        if target['D'] == 1.00:
+        if i == 1.00:
             contrib = (1.0 / sd) * dist_1 * dist_2
         else:
             contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
-        likl[observation] = contrib
+        likl.append(contrib)
+    likl = np.append(likl[0], likl[1])
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
-
     return likl
 
 
@@ -85,7 +82,7 @@ def start_values(init_dict, data_frame, option):
         X = data_frame.filter(regex=r'^X\_')
         Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
         XZ = np.concatenate((X, Z), axis=1)
-        probitRslt = sm.Probit(data_frame.D, XZ).fit()
+        probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
         sd = init_dict['DIST']['all'][5]
         gamma = probitRslt.params * sd
         gamma_const = beta[1][0] - beta[0][0] - gamma[0]

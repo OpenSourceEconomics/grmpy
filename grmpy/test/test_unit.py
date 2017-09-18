@@ -3,12 +3,15 @@ import pandas as pd
 import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.test.resources.estimate_old import estimate_old
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
+from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
+
 
 
 class TestClass:
@@ -139,5 +142,33 @@ class TestClass:
             mte = mte_information(para, dict_['DIST']['coeff'][3:], quantiles, x)
             for i in mte:
                 np.testing.assert_array_equal(i, mte[0])
+
+    def test6(self):
+        """The test ensures that the estimation process returns values that are approximately equal
+        to the true values if the true values are set as start values for the estimation.
+        """
+        for i in range(10):
+            constr = constraints(agents=1000, probability=0.0)
+            generate_random_dict(constr)
+            simulate('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
+            true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
+            results = estimate('test.grmpy.ini', 'true_values')
+            np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2])
+            for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
+
+
+    def test7(self):
+        """The test compares the estimation results from the old estimation process with the results
+        of the new one.
+        """
+        constr = constraints(agents=100, probability=0.0)
+        generate_random_dict(constr)
+        simulate('test.grmpy.ini')
+        results_old = estimate_old('test.grmpy.ini', 'true_values')
+        results = estimate('test.grmpy.ini', 'true_values')
+        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+            np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'])
 
         cleanup()
