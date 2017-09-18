@@ -20,9 +20,9 @@ def process(list_, dict_, keyword):
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
-    if name in ['agents', 'seed']:
+    if name in ['agents', 'seed', 'maxfun']:
         val = int(val)
-    elif name in ['source']:
+    elif name in ['source', 'file', 'optimizer']:
         val = str(val)
     else:
         val = float(val)

@@ -5,7 +5,7 @@ import numpy as np
 from scipy.stats import wishart
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -23,6 +23,14 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None):
         constraints_dict['SEED'] = np.random.randint(1, 10000)
     else:
         constraints_dict['SEED'] = seed
+    if maxfun is None:
+        constraints_dict['MAXFUN'] = np.random.randint(1, 100)
+    else:
+        constraints_dict['MAXFUN'] = maxfun
+    if sample is None:
+        constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
+    else:
+        constraints_dict['SAMPLE_SIZE'] = sample
 
     return constraints_dict
 
@@ -42,6 +50,10 @@ def generate_random_dict(constraints_dict=None):
     agents = constraints_dict['AGENTS']
 
     seed = constraints_dict['SEED']
+
+    maxfun = constraints_dict['MAXFUN']
+
+    agents_sample = constraints_dict['SAMPLE_SIZE']
 
     source = my_random_string(8)
 
@@ -69,6 +81,17 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = agents
         else:
             dict_['SIMULATION'][key_] = source
+    # Estimation parameters
+    dict_['ESTIMATION'] = {}
+    for key_ in ['agents', 'file', 'maxfun', 'optimizer']:
+        if key_ == 'agents':
+            dict_['ESTIMATION'][key_] = agents_sample
+        elif key_ == 'file':
+            dict_['ESTIMATION'][key_] = source + '.grmpy.txt'
+        elif key_ == 'maxfun':
+            dict_['ESTIMATION'][key_] = maxfun
+        else:
+            dict_['ESTIMATION'][key_] = 'SCIPY-BFGS'
 
     dict_['DIST'] = {}
 
@@ -91,7 +114,7 @@ def generate_random_dict(constraints_dict=None):
 
 def print_dict(dict_, file_name='test'):
     """The function creates an init file from a given dictionary."""
-    labels = ['SIMULATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
+    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
     write_nonbinary = np.random.random_sample() < 0.5
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
@@ -99,17 +122,19 @@ def print_dict(dict_, file_name='test'):
 
             file_.write(label + '\n\n')
 
-            if label == 'SIMULATION':
-
-                structure = ['agents', 'seed', 'source']
+            if label in ['SIMULATION', 'ESTIMATION']:
+                if label == 'SIMULATION':
+                    structure = ['agents', 'seed', 'source']
+                else:
+                    structure = ['agents', 'maxfun', 'optimizer', 'file']
 
                 for key_ in structure:
-                    if key_ == 'source':
+                    if key_ in['source', 'file', 'optimizer']:
                         str_ = '{0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
                         str_ = '{0:<10} {1:20}\n'
-                        file_.write(str_.format(key_, dict_['SIMULATION'][key_]))
+                        file_.write(str_.format(key_, dict_[label][key_]))
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i in range(len(dict_[label]['coeff'])):
