@@ -164,7 +164,8 @@ def _transform_start(x):
 
 def calculate_criteria(start_values, init_dict, data_frame):
     rslt = distribute_parameters(start_values, init_dict)
-    init_dict['AUX']['criteria'] = log_likelihood(data_frame, init_dict, rslt)
+    criteria = log_likelihood(data_frame, init_dict, rslt)
+    return criteria
 
 
 

@@ -3,11 +3,13 @@ import json
 import os
 
 import numpy as np
-
+from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
+from grmpy.read.read import read
 
 
 class TestClass:
@@ -38,9 +40,16 @@ class TestClass:
             subsample += [tests[i]]
 
         for test in subsample:
-            stat, dict_ = test
+            if len(test) == 2:
+                stat, dict_ = test
+            else:
+                stat, dict_, criteria = test
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
-
+            if len(test) == 3:
+                init_dict = read('test.grmpy.ini')
+                start = start_values(init_dict, df, 'true_values')
+                criteria_ = calculate_criteria(start, init_dict, df)
+                np.testing.assert_array_almost_equal(criteria, criteria_)
         cleanup()

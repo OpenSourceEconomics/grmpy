@@ -29,7 +29,7 @@ def estimate(init_file, option):
     x0 = start_values(dict_, data, option)
     opts = {'maxiter': dict_['ESTIMATION']['maxfun']}
     method = dict_['ESTIMATION']['optimizer'].split('-')[1]
-    calculate_criteria(x0,dict_, data)
+    dict_['AUX']['criteria'] = calculate_criteria(x0,dict_, data)
 
     opt_rslt = minimize(minimizing_interface, x0, args=(data, dict_), method=method, options=opts)
     x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
