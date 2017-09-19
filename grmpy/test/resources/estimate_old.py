@@ -7,8 +7,10 @@ from scipy.stats import norm
 import pandas as pd
 import numpy as np
 
-from grmpy.estimate.estimate_auxiliary import _prepare_arguments
 from grmpy.estimate.estimate_auxiliary import distribute_parameters
+from grmpy.estimate.estimate_auxiliary import _prepare_arguments
+from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_auxiliary import optimizer_options
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.read.read import read
 
@@ -69,17 +71,20 @@ def estimate_old(init_file, option):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts = {'maxiter': dict_['ESTIMATION']['maxfun']}
-    method = dict_['ESTIMATION']['optimizer'].split('-')[1]
+    opts, method = optimizer_options(dict_)
+    if opts['maxiter'] == 0:
+        rslt = distribute_parameters(x0, dict_)
+        fun, success, status = calculate_criteria(x0, dict_, data), False, 2
+        message, nfev = '---', 0
+    else:
+        opt_rslt = minimize(
+            minimizing_interface_old, x0, args=(data, dict_), method=method, options=opts)
+        x_rslt, fun, success = opt_rslt['x'], opt_rslt['fun'], opt_rslt['success']
+        status, nfev, message = opt_rslt['status'], opt_rslt['nfev'], opt_rslt['message']
+        rslt = distribute_parameters(x_rslt, dict_)
 
-    opt_rslt = minimize(
-        minimizing_interface_old, x0, args=(data, dict_), method=method, options=opts)
-    x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
-    success = opt_rslt['success']
-
-    rslt = distribute_parameters(x_rslt, dict_)
-
-    rslt['fval'], rslt['success'] = fun, success
+    rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
+    rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun
 
     # Finishing
     return rslt

@@ -31,16 +31,18 @@ def estimate(init_file, option):
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
     dict_['AUX']['criteria'] = calculate_criteria(x0, dict_, data)
-
-    opt_rslt = minimize(minimizing_interface, x0, args=(data, dict_), method=method, options=opts)
-    x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
-    success, message = opt_rslt['success'], opt_rslt['message']
-    status, nfev = opt_rslt['status'], opt_rslt['nfev']
-    crit_opt = opt_rslt['fun']
-    rslt = distribute_parameters(x_rslt, dict_)
-
+    if opts['maxiter'] == 0:
+        rslt = distribute_parameters(x0, dict_)
+        fun, success, status = calculate_criteria(x0, dict_, data), False, 2
+        message, nfev = '---', 0
+    else:
+        opt_rslt = minimize(
+            minimizing_interface, x0, args=(data, dict_), method=method, options=opts)
+        x_rslt, fun, success = opt_rslt['x'], opt_rslt['fun'], opt_rslt['success']
+        status, nfev, message = opt_rslt['status'], opt_rslt['nfev'], opt_rslt['message']
+        rslt = distribute_parameters(x_rslt, dict_)
     rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
-    rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, crit_opt
+    rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun
 
     # Print Output files
     print_logfile(rslt, dict_)

@@ -1,8 +1,8 @@
 """The module provides a random dictionary generating process for test purposes."""
 import uuid
 
-import numpy as np
 from scipy.stats import wishart
+import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None):
@@ -24,11 +24,11 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
     else:
         constraints_dict['SEED'] = seed
     if maxfun is None:
-        constraints_dict['MAXFUN'] = np.random.randint(1, 100)
+        constraints_dict['MAXFUN'] = np.random.randint(0, 100)
     else:
         constraints_dict['MAXFUN'] = maxfun
     if sample is None:
-        if agents != 1:
+        if constraints_dict['AGENTS'] != 1:
             constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
         else:
             constraints_dict['SAMPLE_SIZE'] = 1

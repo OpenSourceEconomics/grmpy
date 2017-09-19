@@ -13,7 +13,6 @@ from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
 
-
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
@@ -158,7 +157,6 @@ class TestClass:
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
 
-
     def test7(self):
         """The test compares the estimation results from the old estimation process with the results
         of the new one.
@@ -169,6 +167,7 @@ class TestClass:
         results_old = estimate_old('test.grmpy.ini', 'true_values')
         results = estimate('test.grmpy.ini', 'true_values')
         for key_ in ['TREATED', 'UNTREATED', 'COST']:
-            np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'])
+            np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'],
+                                                 decimal=3)
 
         cleanup()
