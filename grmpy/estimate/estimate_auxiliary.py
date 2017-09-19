@@ -4,6 +4,11 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import simulate_unobservables
+from grmpy.simulate.simulate_auxiliary import simulate_covariates
+from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.simulate.simulate_auxiliary import write_output
+
 
 def log_likelihood(data_frame, init_dict, rslt):
     """The function provides the loglikelihood function for the minimization process."""
@@ -19,8 +24,8 @@ def log_likelihood(data_frame, init_dict, rslt):
         X = data.filter(regex=r'^X\_')
         Z = data.filter(regex=r'^Z\_')
         g = pd.concat((X, Z), axis=1)
-        choice_ = pd.DataFrame.sum(choice * g, axis =1)
-        part1 =  (data['Y'] - pd.DataFrame.sum(beta * X, axis=1))/sd
+        choice_ = pd.DataFrame.sum(choice * g, axis=1)
+        part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
         if i == 1.00:
@@ -144,7 +149,6 @@ def minimizing_interface(start_values, data_frame, init_dict):
 
 def _transform_start(x):
     """ Transform starting values to cover the whole real line."""
-
     # Coefficients
     x[:(-4)] = x[:(-4)]
 
@@ -162,11 +166,12 @@ def _transform_start(x):
     # Finishing
     return x
 
+
 def calculate_criteria(start_values, init_dict, data_frame):
+    """The function calculates the criteria function value."""
     rslt = distribute_parameters(start_values, init_dict)
     criteria = log_likelihood(data_frame, init_dict, rslt)
     return criteria
-
 
 
 def print_logfile(rslt, init_dict):
@@ -187,11 +192,11 @@ def print_logfile(rslt, init_dict):
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
-                file_.write(fmt.format('', '', 'Start', 'Current') )
+                file_.write(fmt.format('', '', 'Start', 'Current'))
                 file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
 
             else:
-                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current'])+ '\n\n')
+                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current']) + '\n\n')
                 fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
@@ -199,5 +204,127 @@ def print_logfile(rslt, init_dict):
                                    rslt['AUX']['x_internal'][i])))
 
 
+def optimizer_options(dict_):
+    """The function provides the optimizer options given the initialization dictionary."""
+    if dict_['ESTIMATION']['optimizer'] == 'SCIPY-BFGS':
+        method = 'BFGS'
+        opt_dict = {'maxiter': dict_['ESTIMATION']['maxfun'], 'gtol': dict_['ESTIMATION']['gtol']}
+
+    return opt_dict, method
 
 
+def simulate_estimation(rslt, init_dict):
+    """The function simulates a new sample based on the estimated coefficients."""
+
+    dict_ = process_results(rslt, init_dict)
+
+    # Distribute information
+    num_agents = dict_['SIMULATION']['agents']
+    Y1_coeffs = dict_['TREATED']['all']
+    Y0_coeffs = dict_['UNTREATED']['all']
+    C_coeffs = dict_['COST']['all']
+    coeffs = [Y0_coeffs, Y1_coeffs, C_coeffs]
+
+    U0_sd, U1_sd, V_sd = dict_['DIST']['all'][0], dict_['DIST']['all'][3], dict_['DIST']['all'][5]
+    vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
+    U01, U0_V, U1_V = dict_['DIST']['all'][1], dict_['DIST']['all'][2], dict_['DIST']['all'][4]
+    covar_ = [U01, U0_V, U1_V]
+
+    # Simulate observables
+    X = simulate_covariates(init_dict, 'TREATED', num_agents)
+    Z = simulate_covariates(init_dict, 'COST', num_agents)
+
+    # Simulate unobservables
+    U, V = simulate_unobservables(covar_, vars_, num_agents)
+
+    # Simulate endogeneous variables
+    Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
+
+    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], None)
+
+    return df
+
+
+def process_results(rslt, init_dict):
+    """The function processes the results dictionary for the following simulation."""
+    dict_ = {}
+
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        dict_[key_] = {}
+        dict_[key_]['types'] = init_dict[key_]['types']
+        dict_[key_]['all'] = rslt[key_]['all']
+    dict_['SIMULATION'] = {}
+    dict_['SIMULATION']['agents'] = init_dict['SIMULATION']['agents']
+
+    sdv = init_dict['DIST']['all'][5]
+    cov1V = rslt['DIST']['all'][3] * sdv * rslt['DIST']['all'][1]
+    cov0V = rslt['DIST']['all'][2] * sdv * rslt['DIST']['all'][0]
+    dist = [rslt['DIST']['all'][0], 0.00, cov0V, rslt['DIST']['all'][1], cov1V, sdv]
+    dict_['DIST'] = {}
+    dict_['DIST']['all'] = dist
+
+    return dict_
+
+
+def write_descriptives(df1, rslt, init_dict):
+    """The fucntion writes the info file including the descriptives of the original and the
+    estimated sample.
+    """
+    df2 = simulate_estimation(rslt, init_dict)
+    with open('descriptives.grmpy.info', 'w') as file_:
+        # First we note some basic information ab out the dataset.
+        header = '\n\n Number of Observations \n\n'
+        file_.write(header)
+        info_ = []
+        for i, label in enumerate([df1, df2]):
+            info_ += [[label.shape[0], (label['D'] == 1).sum(), (label['D'] == 0).sum()]]
+
+        fmt = '  {:<10}' + ' {:>20}' * 2 + '\n\n'
+        file_.write(fmt.format(*['', 'Sample', 'Estimated Sample']))
+
+        for i, label in enumerate(['All', 'Treated', 'Untreated']):
+            str_ = '  {:<10}' + ' {:20}' * 2 + '\n'
+            file_.write(str_.format(label, info_[0][i], info_[1][i]))
+
+        for label in ['Outcomes', 'Effects']:
+
+            header = '\n\n Distribution of ' + label + '\n\n'
+            file_.write(header)
+
+            for data in ['Sample', 'Estimated Sample']:
+                header = '\n\n ' '  {:<10}'.format(data) + '\n\n'
+                file_.write(header)
+
+                fmt = '    {:<10}' + ' {:>20}' * 5 + '\n\n'
+                args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
+                file_.write(fmt.format(*args))
+
+                if data == 'Sample':
+                    data_frame = df1
+                else:
+                    data_frame = df2
+                for group in ['All', 'Treated', 'Untreated']:
+
+                    if label == 'Outcomes':
+                        object = data_frame['Y']
+                    elif label == 'Effects':
+                        object = data_frame['Y1'] - data_frame['Y0']
+                    else:
+                        raise AssertionError
+
+                    if group == 'Treated':
+                        object = object[data_frame['D'] == 1]
+                    elif group == 'Untreated':
+                        object = object[data_frame['D'] == 0]
+                    else:
+                        pass
+                    fmt = '    {:<10}' + ' {:>20.4f}' * 5 + '\n'
+                    info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
+                    if pd.isnull(info).all():
+                        fmt = '    {:<10}' + ' {:>20}' * 5 + '\n'
+                        info = ['---'] * 5
+                    elif pd.isnull(info[1]):
+                        info[1] = '---'
+                        fmt = '    {:<10}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
+
+                    file_.write(fmt.format(*[group] + info))

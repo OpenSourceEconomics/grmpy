@@ -18,6 +18,7 @@ from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
+
 NUM_TESTS = 100
 
 np.random.seed(1234235)

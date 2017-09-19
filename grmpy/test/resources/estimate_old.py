@@ -7,7 +7,6 @@ from scipy.stats import norm
 import pandas as pd
 import numpy as np
 
-
 from grmpy.estimate.estimate_auxiliary import _prepare_arguments
 from grmpy.estimate.estimate_auxiliary import distribute_parameters
 from grmpy.estimate.estimate_auxiliary import start_values
@@ -43,7 +42,6 @@ def log_likelihood_old(data_frame, init_dict, rslt):
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
 
     return likl
-
 
 
 def minimizing_interface_old(start_values, data_frame, init_dict):
@@ -85,9 +83,3 @@ def estimate_old(init_file, option):
 
     # Finishing
     return rslt
-
-
-
-
-
-

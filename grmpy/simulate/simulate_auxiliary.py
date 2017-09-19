@@ -81,10 +81,11 @@ def write_output(end, exog, err, source):
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
     df['D'] = df['D'].apply(np.int64)
-    df.to_pickle(source + '.grmpy.pkl')
+    if source is not None:
+        df.to_pickle(source + '.grmpy.pkl')
 
-    with open(source + '.grmpy.txt', 'w') as file_:
-        df.to_string(file_, index=True, header=True, na_rep='.', col_space=5, justify='left')
+        with open(source + '.grmpy.txt', 'w') as file_:
+            df.to_string(file_, index=True, header=True, na_rep='.', col_space=5, justify='left')
 
     return df
 

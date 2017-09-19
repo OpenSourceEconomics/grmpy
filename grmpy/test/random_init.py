@@ -86,19 +86,20 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    for key_ in ['agents', 'file', 'maxfun', 'optimizer']:
+    for key_ in ['agents', 'file', 'maxfun', 'optimizer', 'gtol']:
         if key_ == 'agents':
             dict_['ESTIMATION'][key_] = agents_sample
         elif key_ == 'file':
             dict_['ESTIMATION'][key_] = source + '.grmpy.txt'
         elif key_ == 'maxfun':
             dict_['ESTIMATION'][key_] = maxfun
+        elif key_ == 'gtol':
+            dict_['ESTIMATION'][key_] = np.random.uniform(0.001, 0.002)
         else:
             dict_['ESTIMATION'][key_] = 'SCIPY-BFGS'
 
-    dict_['DIST'] = {}
-
     # Variance and covariance parameters
+    dict_['DIST'] = {}
     if not is_deterministic:
         x = np.identity(3)
         b = wishart.rvs(df=10, scale=x, size=1, random_state=seed)
@@ -129,11 +130,14 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['agents', 'seed', 'source']
                 else:
-                    structure = ['agents', 'maxfun', 'optimizer', 'file']
+                    structure = ['agents', 'optimizer', 'maxfun', 'gtol', 'file']
 
                 for key_ in structure:
-                    if key_ in['source', 'file', 'optimizer']:
+                    if key_ in ['source', 'file', 'optimizer']:
                         str_ = '{0:<25} {1:20}\n'
+                        file_.write(str_.format(key_, dict_[label][key_]))
+                    elif key_ == 'gtol':
+                        str_ = '{0:<13} {1:20.6f}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
                         str_ = '{0:<10} {1:20}\n'

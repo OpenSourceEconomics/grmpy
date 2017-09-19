@@ -8,6 +8,8 @@ import pandas as pd
 from grmpy.estimate.estimate_auxiliary import distribute_parameters
 from grmpy.estimate.estimate_auxiliary import minimizing_interface
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_auxiliary import write_descriptives
+from grmpy.estimate.estimate_auxiliary import optimizer_options
 from grmpy.estimate.estimate_auxiliary import print_logfile
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.read.read import read
@@ -27,9 +29,8 @@ def estimate(init_file, option):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts = {'maxiter': dict_['ESTIMATION']['maxfun']}
-    method = dict_['ESTIMATION']['optimizer'].split('-')[1]
-    dict_['AUX']['criteria'] = calculate_criteria(x0,dict_, data)
+    opts, method = optimizer_options(dict_)
+    dict_['AUX']['criteria'] = calculate_criteria(x0, dict_, data)
 
     opt_rslt = minimize(minimizing_interface, x0, args=(data, dict_), method=method, options=opts)
     x_rslt, fun = opt_rslt['x'], opt_rslt['fun']
@@ -40,8 +41,9 @@ def estimate(init_file, option):
 
     rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
     rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, crit_opt
+
+    # Print Output files
     print_logfile(rslt, dict_)
+    write_descriptives(data, rslt, dict_)
 
-
-    # Finishing
     return rslt

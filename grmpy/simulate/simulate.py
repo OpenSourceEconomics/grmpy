@@ -28,7 +28,7 @@ def simulate(init_file):
     C_coeffs = init_dict['COST']['all']
     coeffs = [Y0_coeffs, Y1_coeffs, C_coeffs]
 
-    U0_sd, U1_sd, V_sd = init_dict['DIST']['all'][0], init_dict['DIST']['all'][3],\
+    U0_sd, U1_sd, V_sd = init_dict['DIST']['all'][0], init_dict['DIST']['all'][3], \
                          init_dict['DIST']['all'][5]
     vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
     U01, U0_V, U1_V = init_dict['DIST']['all'][1], init_dict['DIST']['all'][2], \
