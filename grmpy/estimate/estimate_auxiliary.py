@@ -11,7 +11,7 @@ from grmpy.simulate.simulate_auxiliary import write_output
 
 
 def log_likelihood(data_frame, init_dict, rslt):
-    """The function provides the loglikelihood function for the minimization process."""
+    """The function provides the log-likelihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(rslt, init_dict)
     likl = []
@@ -39,7 +39,7 @@ def log_likelihood(data_frame, init_dict, rslt):
 
 
 def _prepare_arguments(rslt, init_dict):
-    """The function prepares the coefficients for the logliklihood function."""
+    """The function prepares the coefficients for the log-liklihood function."""
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
     gamma = np.array(rslt['COST']['all'])
@@ -148,7 +148,7 @@ def minimizing_interface(start_values, data_frame, init_dict):
 
 
 def _transform_start(x):
-    """ Transform starting values to cover the whole real line."""
+    """The function transforms the starting values to cover the whole real line."""
     # Coefficients
     x[:(-4)] = x[:(-4)]
 
@@ -175,6 +175,7 @@ def calculate_criteria(start_values, init_dict, data_frame):
 
 
 def print_logfile(rslt, init_dict):
+    """The function writes the log file for the estimation process."""
     with open('est.grmpy.info', 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
@@ -267,7 +268,7 @@ def process_results(rslt, init_dict):
 
 
 def write_descriptives(df1, rslt, init_dict):
-    """The fucntion writes the info file including the descriptives of the original and the
+    """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
     df2 = simulate_estimation(rslt, init_dict)

@@ -26,7 +26,7 @@ class TestClass:
         """The test takes a subsample of 5 random entries from the regression battery test list
         (resources/regression_vault.grmpy.json), simulates the specific output again, sums the
         resulting data frame up and checks if the sum is equal to the regarding entry in the test
-        list eement.
+        list element.
         """
         if os.path.isfile(os.getcwd() + '/test/resources/regression_vault.grmpy.json'):
             tests = json.load(
@@ -40,16 +40,13 @@ class TestClass:
             subsample += [tests[i]]
 
         for test in subsample:
-            if len(test) == 2:
-                stat, dict_ = test
-            else:
-                stat, dict_, criteria = test
+            stat, dict_, criteria = test
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
+            init_dict = read('test.grmpy.ini')
+            start = start_values(init_dict, df, 'true_values')
+            criteria_ = calculate_criteria(start, init_dict, df)
+            np.testing.assert_array_almost_equal(criteria, criteria_)
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
-            if len(test) == 3:
-                init_dict = read('test.grmpy.ini')
-                start = start_values(init_dict, df, 'true_values')
-                criteria_ = calculate_criteria(start, init_dict, df)
-                np.testing.assert_array_almost_equal(criteria, criteria_)
+
         cleanup()

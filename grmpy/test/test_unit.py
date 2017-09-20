@@ -16,7 +16,7 @@ from grmpy.read.read import read
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
-        in a deterministic and an undeterministic setting.<
+        in a deterministic and an nondeterministic setting.
         """
         for case in ['deterministic', 'nondeterministic']:
             if case == 'deterministic':
