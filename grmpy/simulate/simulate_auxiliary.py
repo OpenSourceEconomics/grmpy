@@ -67,7 +67,7 @@ def write_output(end, exog, err, source):
 
     # Stack arrays
     data = np.column_stack((end[0], end[1], exog[0], exog[1], end[2], end[3]))
-    data = np.column_stack((data, err[0][0:, 0], err[0][0:, 1], err[0][0:, 2], err[1]))
+    data = np.column_stack((data, err[0][0:, 1], err[0][0:, 0], err[0][0:, 2], err[1]))
 
     # List of column names
     for i in range(exog[0].shape[1]):
@@ -76,7 +76,7 @@ def write_output(end, exog, err, source):
     for i in range(exog[1].shape[1]):
         str_ = 'Z_' + str(i)
         column.append(str_)
-    column += ['Y1', 'Y0', 'U0', 'U1', 'UC', 'V']
+    column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
 
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
@@ -153,7 +153,8 @@ def print_info(data_frame, coeffs, file_name):
                 args = [str(i) + '%' for i in quantiles]
                 quantiles = [i * 0.01 for i in quantiles]
                 x = data_frame.filter(regex=r'^X\_', axis=1)
-                value = mte_information(coeffs[:2], coeffs[3][:3], quantiles, x)
+                cov = [coeffs[3][2], coeffs[3][4], coeffs[3][5]]
+                value = mte_information(coeffs[:2], cov, quantiles, x)
                 str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
 
             else:
@@ -163,8 +164,10 @@ def print_info(data_frame, coeffs, file_name):
             file_.write(str_)
             len_ = len(value) - 1
             for i in range(len_):
-                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
-
+                if isinstance(value[i], str):
+                    file_.write('  {0:>10} {1:>20}\n'.format(str(args[i]), value[i]))
+                else:
+                    file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 def mte_information(para, cov, quantiles, x):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
@@ -173,6 +176,9 @@ def mte_information(para, cov, quantiles, x):
     MTE = []
     para_diff = para[1] - para[0]
     for i in quantiles:
-        MTE += [np.mean(np.dot(para_diff, x.T)) - (cov[2] - cov[1]) * norm.ppf(i)]
+        if all(cov) == 0.00:
+            MTE += ['---']
+        else:
+            MTE += [np.mean(np.dot(para_diff, x.T)) - ((cov[1] - cov[0]) / cov[2]) * norm.ppf(i)]
 
     return MTE
