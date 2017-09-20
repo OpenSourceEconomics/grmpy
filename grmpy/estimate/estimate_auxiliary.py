@@ -182,11 +182,12 @@ def print_logfile(rslt, init_dict):
             header = '\n \n  {:<10}\n\n'.format(label)
             file_.write(header)
             if label == 'Optimization Information':
-                for section in ['Success', 'Status', 'Number of Evaluations', 'F-value', 'Message']:
+                for section in ['Success', 'Status', 'Number of Evaluations', 'Criteria',
+                                'Message']:
                     fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
                     if section == 'Number of Evaluations':
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
-                    elif section == 'F-value':
+                    elif section == 'Criteria':
                         fmt = '  {:<10}' + ' {:<20}' + '       {:>20.4f}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['fval']))
                     else:
@@ -287,45 +288,39 @@ def write_descriptives(df1, rslt, init_dict):
             str_ = '  {:<10}' + ' {:20}' * 2 + '\n'
             file_.write(str_.format(label, info_[0][i], info_[1][i]))
 
-        for label in ['Outcomes', 'Effects']:
 
-            header = '\n\n Distribution of ' + label + '\n\n'
+        header = '\n\n Distribution of Outcomes\n\n'
+        file_.write(header)
+
+        for data in ['Sample', 'Estimated Sample']:
+            header = '\n\n ' '  {:<10}'.format(data) + '\n\n'
             file_.write(header)
 
-            for data in ['Sample', 'Estimated Sample']:
-                header = '\n\n ' '  {:<10}'.format(data) + '\n\n'
-                file_.write(header)
+            fmt = '    {:<10}' + ' {:>20}' * 5 + '\n\n'
+            args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
+            file_.write(fmt.format(*args))
 
-                fmt = '    {:<10}' + ' {:>20}' * 5 + '\n\n'
-                args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
-                file_.write(fmt.format(*args))
+            if data == 'Sample':
+                data_frame = df1
+            else:
+                data_frame = df2
+            for group in ['All', 'Treated', 'Untreated']:
 
-                if data == 'Sample':
-                    data_frame = df1
+                object = data_frame['Y']
+
+                if group == 'Treated':
+                    object = object[data_frame['D'] == 1]
+                elif group == 'Untreated':
+                    object = object[data_frame['D'] == 0]
                 else:
-                    data_frame = df2
-                for group in ['All', 'Treated', 'Untreated']:
+                    pass
+                fmt = '    {:<10}' + ' {:>20.4f}' * 5 + '\n'
+                info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
+                if pd.isnull(info).all():
+                    fmt = '    {:<10}' + ' {:>20}' * 5 + '\n'
+                    info = ['---'] * 5
+                elif pd.isnull(info[1]):
+                    info[1] = '---'
+                    fmt = '    {:<10}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
 
-                    if label == 'Outcomes':
-                        object = data_frame['Y']
-                    elif label == 'Effects':
-                        object = data_frame['Y1'] - data_frame['Y0']
-                    else:
-                        raise AssertionError
-
-                    if group == 'Treated':
-                        object = object[data_frame['D'] == 1]
-                    elif group == 'Untreated':
-                        object = object[data_frame['D'] == 0]
-                    else:
-                        pass
-                    fmt = '    {:<10}' + ' {:>20.4f}' * 5 + '\n'
-                    info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
-                    if pd.isnull(info).all():
-                        fmt = '    {:<10}' + ' {:>20}' * 5 + '\n'
-                        info = ['---'] * 5
-                    elif pd.isnull(info[1]):
-                        info[1] = '---'
-                        fmt = '    {:<10}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
-
-                    file_.write(fmt.format(*[group] + info))
+                file_.write(fmt.format(*[group] + info))

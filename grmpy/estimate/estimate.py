@@ -21,7 +21,7 @@ def estimate(init_file, option):
     assert os.path.isfile(init_file)
     dict_ = read(init_file)
 
-    data_file = dict_['SIMULATION']['source'] + '.grmpy.txt'
+    data_file = dict_['ESTIMATION']['file']
     assert os.path.isfile(data_file)
 
     # Read data frame
