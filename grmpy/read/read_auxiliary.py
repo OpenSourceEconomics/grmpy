@@ -80,6 +80,7 @@ def auxiliary(dict_):
 
 
 def check_types(dict_):
+    """This function ensures that the variable types agree across the two treatment states."""
     if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
         for i in range(len(dict_['UNTREATED']['types'])):
             if isinstance(dict_['TREATED']['types'][i], list):
