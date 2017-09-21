@@ -211,6 +211,10 @@ def optimizer_options(dict_):
     if dict_['ESTIMATION']['optimizer'] == 'SCIPY-BFGS':
         method = 'BFGS'
         opt_dict = {'maxiter': dict_['ESTIMATION']['maxfun'], 'gtol': dict_['ESTIMATION']['gtol']}
+    elif dict_['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
+        method = 'POWELL'
+        opt_dict= {'maxiter': dict_['ESTIMATION']['maxfun'], 'xtol': dict_['ESTIMATION']['gtol']}
+
 
     return opt_dict, method
 

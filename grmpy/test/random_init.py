@@ -5,7 +5,8 @@ from scipy.stats import wishart
 import numpy as np
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None):
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None,
+                optimizer=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -34,6 +35,11 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
             constraints_dict['SAMPLE_SIZE'] = 1
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
+    if optimizer is None:
+        constraints_dict['OPTIMIZER'] = 'SCIPY-BFGS'
+    else:
+        constraints_dict['OPTIMIZER'] = 'SCIPY-POWELL'
+
 
     return constraints_dict
 
@@ -57,6 +63,8 @@ def generate_random_dict(constraints_dict=None):
     maxfun = constraints_dict['MAXFUN']
 
     agents_sample = constraints_dict['SAMPLE_SIZE']
+
+    optimizer = constraints_dict['OPTIMIZER']
 
     source = my_random_string(8)
 
@@ -96,7 +104,7 @@ def generate_random_dict(constraints_dict=None):
         elif key_ == 'gtol':
             dict_['ESTIMATION'][key_] = np.random.uniform(0.001, 0.002)
         else:
-            dict_['ESTIMATION'][key_] = 'SCIPY-BFGS'
+            dict_['ESTIMATION'][key_] = optimizer
 
     # Variance and covariance parameters
     dict_['DIST'] = {}
