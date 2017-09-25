@@ -85,7 +85,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
-        dict_[key_]['disp'] = np.random.choice(a=[True, False], p=[0.5, 0.5])
+        dict_[key_]['disp'] = np.random.randint(0, 1)
         dict_[key_]['maxiter'] = np.random.randint(0, 10000)
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(0.0001, 1.00)

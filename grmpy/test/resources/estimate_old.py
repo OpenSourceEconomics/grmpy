@@ -57,7 +57,7 @@ def minimizing_interface_old(start_values, data_frame, init_dict):
     return likl
 
 
-def estimate_old(init_file, option):
+def estimate_old(init_file, option, optimizer):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     assert os.path.isfile(init_file)
@@ -71,7 +71,7 @@ def estimate_old(init_file, option):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts, method = optimizer_options(dict_)
+    opts, method = optimizer_options(dict_, optimizer)
     if opts['maxiter'] == 0:
         rslt = distribute_parameters(x0, dict_)
         fun, success, status = calculate_criteria(x0, dict_, data), False, 2

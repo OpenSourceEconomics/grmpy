@@ -20,7 +20,7 @@ def process(list_, dict_, keyword):
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
-    if name in ['agents', 'seed', 'maxiter']:
+    if name in ['agents', 'seed', 'maxiter', 'disp']:
         val = int(val)
     elif name in ['source', 'file',]:
         val = str(val)

@@ -152,7 +152,7 @@ class TestClass:
             simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
             true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
-            results = estimate('test.grmpy.ini', 'true_values')
+            results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
             np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2], decimal=3)
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
@@ -164,8 +164,8 @@ class TestClass:
         constr = constraints(agents=100, probability=0.0)
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
-        results_old = estimate_old('test.grmpy.ini', 'true_values')
-        results = estimate('test.grmpy.ini', 'true_values')
+        results_old = estimate_old('test.grmpy.ini', 'true_values', 'BFGS')
+        results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
         for key_ in ['TREATED', 'UNTREATED', 'COST']:
             np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'],
                                                  decimal=3)
