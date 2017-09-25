@@ -2,6 +2,7 @@
 processes of the unobservable and endogenous variables of the model as well as functions regarding
 the info file output.
 """
+from scipy.stats import norm
 import pandas as pd
 import numpy as np
 
@@ -38,10 +39,8 @@ def simulate_unobservables(init_dict):
 
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
     V = np.array(U[0:, 2])
-
     # Here we keep track of the implied value for U_C.
     U[:, 2] = V - U[:, 0] + U[:, 1]
-
     return U, V
 
 
@@ -76,7 +75,7 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U, V))
+    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:,1], U[:,0], U[:,2], V))
 
     # Construct list of column labels
     column = ['Y', 'D']
@@ -180,7 +179,10 @@ def print_info(init_dict, data_frame):
         file_.write(str_)
         len_ = len(value) - 1
         for i in range(len_):
-            file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
+            if isinstance(value[i], float):
+                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
+            else:
+                file_.write('  {0:>10} {1:>20.4}\n'.format(str(args[i]), value[i]))
 
         # Write out parameterization of the model.
         file_.write('\n\n {} \n\n'.format('Parameterization'))
@@ -198,7 +200,7 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
     para_diff = coeffs_treated - coeffs_untreated
     MTE = []
     for i in quantiles:
-        if all(cov) == 0.00:
+        if cov[2,2] == 0.00:
             MTE += ['---']
         else:
             MTE += [np.mean(np.dot(para_diff, x.T)) - ((cov[2,1] - cov[2,0]) / cov[2,2]) * norm.ppf(i)]

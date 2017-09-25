@@ -1,20 +1,16 @@
 """The module provides auxiliary functions for the estimation process"""
 from scipy.stats import norm
 import statsmodels.api as sm
-from scipy import optimize
 import pandas as pd
 import numpy as np
 
-from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
-from grmpy.simulate.simulate_auxiliary import simulate_outcomes
-from grmpy.simulate.simulate_auxiliary import write_output
 
 
-def log_likelihood(data_frame, init_dict, rslt):
+def log_likelihood(init_dict, data_frame, rslt):
     """The function provides the log-likelihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
-        _prepare_arguments(rslt, init_dict)
+        _prepare_arguments(init_dict, rslt)
     likl = []
     for i in [0.0, 1.0]:
         if i == 1.00:
@@ -39,7 +35,7 @@ def log_likelihood(data_frame, init_dict, rslt):
     return likl
 
 
-def _prepare_arguments(rslt, init_dict):
+def _prepare_arguments(init_dict, rslt):
     """The function prepares the coefficients for the log-liklihood function."""
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
@@ -106,7 +102,7 @@ def start_values(init_dict, data_frame, option):
     return x0
 
 
-def distribute_parameters(start_values, init_dict):
+def distribute_parameters(init_dict, start_values):
     """The function generates a dictionary for the representation of the optimization output."""
     num_covars_out = init_dict['AUX']['num_covars_out']
     rslt = dict()
@@ -137,13 +133,13 @@ def distribute_parameters(start_values, init_dict):
     return rslt
 
 
-def minimizing_interface(start_values, data_frame, init_dict):
+def minimizing_interface(start_values, init_dict, data_frame):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = distribute_parameters(start_values, init_dict)
+    rslt = distribute_parameters(init_dict, start_values,)
 
     # Calculate liklihood for pre specified arguments
-    likl = log_likelihood(data_frame, init_dict, rslt)
+    likl = log_likelihood(init_dict, data_frame, rslt)
 
     return likl
 
@@ -168,14 +164,14 @@ def _transform_start(x):
     return x
 
 
-def calculate_criteria(start_values, init_dict, data_frame):
+def calculate_criteria(init_dict, data_frame, start_values):
     """The function calculates the criteria function value."""
-    rslt = distribute_parameters(start_values, init_dict)
-    criteria = log_likelihood(data_frame, init_dict, rslt)
+    rslt = distribute_parameters(init_dict, start_values)
+    criteria = log_likelihood(init_dict, data_frame, rslt)
     return criteria
 
 
-def print_logfile(rslt, init_dict):
+def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     with open('est.grmpy.info', 'w') as file_:
 
@@ -207,47 +203,33 @@ def print_logfile(rslt, init_dict):
                                    rslt['AUX']['x_internal'][i])))
 
 
-def optimizer_options(dict_, optimizer):
+def optimizer_options(init_dict_, optimizer):
     """The function provides the optimizer options given the initialization dictionary."""
     method = optimizer
-    opt_dict = dict_['SCIPY-' + method]
+    opt_dict = init_dict_['SCIPY-' + method]
 
     return opt_dict, method
 
 
-def simulate_estimation(rslt, init_dict):
+def simulate_estimation(init_dict, rslt):
     """The function simulates a new sample based on the estimated coefficients."""
 
-    dict_ = process_results(rslt, init_dict)
-
-    # Distribute information
-    num_agents = dict_['SIMULATION']['agents']
-    Y1_coeffs = dict_['TREATED']['all']
-    Y0_coeffs = dict_['UNTREATED']['all']
-    C_coeffs = dict_['COST']['all']
-    coeffs = [Y0_coeffs, Y1_coeffs, C_coeffs]
-
-    U0_sd, U1_sd, V_sd = dict_['DIST']['all'][0], dict_['DIST']['all'][3], dict_['DIST']['all'][5]
-    vars_ = [U0_sd ** 2, U1_sd ** 2, V_sd ** 2]
-    U01, U0_V, U1_V = dict_['DIST']['all'][1], dict_['DIST']['all'][2], dict_['DIST']['all'][4]
-    covar_ = [U01, U0_V, U1_V]
+    dict_ = process_results(init_dict, rslt)
 
     # Simulate observables
-    X = simulate_covariates(init_dict, 'TREATED', num_agents)
-    Z = simulate_covariates(init_dict, 'COST', num_agents)
+    X = simulate_covariates(dict_, 'TREATED')
+    Z = simulate_covariates(dict_, 'COST')
 
     # Simulate unobservables
-    U, V = simulate_unobservables(covar_, vars_, num_agents)
-
     # Simulate endogeneous variables
-    Y, D, Y_1, Y_0 = simulate_outcomes([X, Z], U, coeffs)
+    Y, D, Y_1, Y_0 = simulate_outcomes_estimation(init_dict, X, Z)
 
-    df = write_output([Y, D, Y_1, Y_0], [X, Z], [U, V], None)
+    df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
 
     return df
 
 
-def process_results(rslt, init_dict):
+def process_results(init_dict, rslt):
     """The function processes the results dictionary for the following simulation."""
     dict_ = {}
 
@@ -256,23 +238,16 @@ def process_results(rslt, init_dict):
         dict_[key_]['types'] = init_dict[key_]['types']
         dict_[key_]['all'] = rslt[key_]['all']
     dict_['SIMULATION'] = {}
-    dict_['SIMULATION']['agents'] = init_dict['SIMULATION']['agents']
-
-    sdv = init_dict['DIST']['all'][5]
-    cov1V = rslt['DIST']['all'][3] * sdv * rslt['DIST']['all'][1]
-    cov0V = rslt['DIST']['all'][2] * sdv * rslt['DIST']['all'][0]
-    dist = [rslt['DIST']['all'][0], 0.00, cov0V, rslt['DIST']['all'][1], cov1V, sdv]
-    dict_['DIST'] = {}
-    dict_['DIST']['all'] = dist
+    dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
 
     return dict_
 
 
-def write_descriptives(df1, rslt, init_dict):
+def write_descriptives(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
-    df2 = simulate_estimation(rslt, init_dict)
+    df2 = simulate_estimation(init_dict, rslt)
     with open('descriptives.grmpy.info', 'w') as file_:
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
@@ -324,3 +299,47 @@ def write_descriptives(df1, rslt, init_dict):
                     fmt = '    {:<10}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
 
                 file_.write(fmt.format(*[group] + info))
+
+
+def simulate_outcomes_estimation(init_dict, X, Z):
+    """The function simulates the outcome Y, the resulting treatment dummy."""
+    # Distribute information
+    coeffs_untreated = init_dict['UNTREATED']['all']
+    coeffs_treated = init_dict['TREATED']['all']
+    coeffs_cost = init_dict['COST']['all']
+
+    # Calculate potential outcomes and costs
+    Y_1 = np.dot(coeffs_treated, X.T)
+    Y_0 = np.dot(coeffs_untreated, X.T)
+    C = np.dot(coeffs_cost, Z.T)
+
+    # Calculate expected benefit and the resulting treatment dummy
+    D = np.array((Y_1 - Y_0 - C > 0).astype(int))
+
+    # Observed outcomes
+    Y = D * Y_1 + (1 - D) * Y_0
+
+    return Y, D, Y_1, Y_0
+
+def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
+    """The function converts the simulated variables to a panda data frame and saves the data in a
+    txt and a pickle file.
+    """
+
+    # Stack arrays
+    data = np.column_stack((Y, D, X, Z, Y_1, Y_0))
+
+    # Construct list of column labels
+    column = ['Y', 'D']
+    for i in range(X.shape[1]):
+        str_ = 'X_' + str(i)
+        column.append(str_)
+    for i in range(Z.shape[1]):
+        str_ = 'Z_' + str(i)
+        column.append(str_)
+    column += ['Y1', 'Y0']
+
+    # Generate data frame
+    df = pd.DataFrame(data=data, columns=column)
+    df['D'] = df['D'].apply(np.int64)
+    return df

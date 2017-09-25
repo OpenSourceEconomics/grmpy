@@ -18,7 +18,7 @@ from grmpy.read.read import read
 def log_likelihood_old(data_frame, init_dict, rslt):
     """The function provides the loglikelihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
-        _prepare_arguments(rslt, init_dict)
+        _prepare_arguments(init_dict, rslt)
     likl = np.tile(np.nan, data_frame.shape[0])
 
     for observation in range(data_frame.shape[0]):
@@ -49,7 +49,7 @@ def log_likelihood_old(data_frame, init_dict, rslt):
 def minimizing_interface_old(start_values, data_frame, init_dict):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = distribute_parameters(start_values, init_dict)
+    rslt = distribute_parameters(init_dict, start_values)
 
     # Calculate liklihood for pre specified arguments
     likl = log_likelihood_old(data_frame, init_dict, rslt)
@@ -73,15 +73,15 @@ def estimate_old(init_file, option, optimizer):
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_, optimizer)
     if opts['maxiter'] == 0:
-        rslt = distribute_parameters(x0, dict_)
-        fun, success, status = calculate_criteria(x0, dict_, data), False, 2
+        rslt = distribute_parameters(dict_, x0)
+        fun, success, status = calculate_criteria(dict_, data, x0), False, 2
         message, nfev = '---', 0
     else:
         opt_rslt = minimize(
             minimizing_interface_old, x0, args=(data, dict_), method=method, options=opts)
         x_rslt, fun, success = opt_rslt['x'], opt_rslt['fun'], opt_rslt['success']
         status, nfev, message = opt_rslt['status'], opt_rslt['nfev'], opt_rslt['message']
-        rslt = distribute_parameters(x_rslt, dict_)
+        rslt = distribute_parameters(dict_, x_rslt)
 
     rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
     rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun

@@ -30,22 +30,22 @@ def estimate(init_file, option, optimizer):
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_, optimizer)
-    dict_['AUX']['criteria'] = calculate_criteria(x0, dict_, data)
+    dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
     if opts['maxiter'] == 0:
         rslt = distribute_parameters(x0, dict_)
-        fun, success, status = calculate_criteria(x0, dict_, data), False, 2
+        fun, success, status = calculate_criteria(dict_, data, x0), False, 2
         message, nfev = '---', 0
     else:
         opt_rslt = minimize(
-            minimizing_interface, x0, args=(data, dict_), method=method, options=opts)
+            minimizing_interface, x0, args=(dict_, data), method=method, options=opts)
         x_rslt, fun, success = opt_rslt['x'], opt_rslt['fun'], opt_rslt['success']
         status, nfev, message = opt_rslt['status'], opt_rslt['nfev'], opt_rslt['message']
-        rslt = distribute_parameters(x_rslt, dict_)
+        rslt = distribute_parameters(dict_, x_rslt)
     rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
     rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun
 
     # Print Output files
-    print_logfile(rslt, dict_)
-    write_descriptives(data, rslt, dict_)
+    print_logfile(dict_, rslt)
+    write_descriptives(dict_, data, rslt)
 
     return rslt

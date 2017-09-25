@@ -10,6 +10,7 @@ from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
+import grmpy
 
 
 class TestClass:
@@ -35,7 +36,7 @@ class TestClass:
             df = simulate('test.grmpy.ini')
             init_dict = read('test.grmpy.ini')
             start = start_values(init_dict, df, 'true_values')
-            criteria_ = calculate_criteria(start, init_dict, df)
+            criteria_ = calculate_criteria(init_dict, df, start)
             np.testing.assert_array_almost_equal(criteria, criteria_)
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
             cleanup()
