@@ -131,14 +131,15 @@ class TestClass:
         """
         for _ in range(10):
             dict_ = generate_random_dict()
-            dict_['DIST']['coeff'][4] = dict_['DIST']['coeff'][5]
+            dict_['DIST']['coeff'][2] = dict_['DIST']['coeff'][4]
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
 
             quantiles = [0.1] + np.arange(0.05, 1, 0.05).tolist() + [0.99]
             para = np.array([dict_['TREATED']['coeff'], dict_['UNTREATED']['coeff']])
             x = df.filter(regex=r'^X\_', axis=1)
-            mte = mte_information(para, dict_['DIST']['coeff'][3:], quantiles, x)
+            cov = [dict_['DIST']['coeff'][2], dict_['DIST']['coeff'][4], dict_['DIST']['coeff'][5]]
+            mte = mte_information(para, cov , quantiles, x)
             for i in mte:
                 np.testing.assert_array_equal(i, mte[0])
 
