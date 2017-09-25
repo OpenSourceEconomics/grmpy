@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.test.resources.estimate_old import estimate_old
 from grmpy.test.random_init import generate_random_dict
@@ -16,9 +17,9 @@ from grmpy.read.read import read
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
-        in a deterministic and an nondeterministic setting.
+        in a deterministic and an undeterministic setting. 
         """
-        for case in ['deterministic', 'nondeterministic']:
+        for case in ['deterministic', 'undeterministic']:
             if case == 'deterministic':
                 prob = 1.0
             else:
@@ -130,18 +131,28 @@ class TestClass:
         the same value for each quantile.
         """
         for _ in range(10):
-            dict_ = generate_random_dict()
-            dict_['DIST']['coeff'][2] = dict_['DIST']['coeff'][4]
-            print_dict(dict_)
-            df = simulate('test.grmpy.ini')
 
-            quantiles = [0.1] + np.arange(0.05, 1, 0.05).tolist() + [0.99]
-            para = np.array([dict_['TREATED']['coeff'], dict_['UNTREATED']['coeff']])
+            generate_random_dict()
+            init_dict = read('test.grmpy.ini')
+
+            # We impose that the covariance between the random components of the potential
+            # outcomes and the random component determining choice is identical.
+            init_dict['DIST']['all'][2] = init_dict['DIST']['all'][4]
+
+            # Distribute information
+            coeffs_untreated = init_dict['UNTREATED']['all']
+            coeffs_treated = init_dict['TREATED']['all']
+
+            # Construct auxiliary information
+            cov = construct_covariance_matrix(init_dict)
+
+            df = simulate('test.grmpy.ini')
             x = df.filter(regex=r'^X\_', axis=1)
-            cov = [dict_['DIST']['coeff'][2], dict_['DIST']['coeff'][4], dict_['DIST']['coeff'][5]]
-            mte = mte_information(para, cov , quantiles, x)
-            for i in mte:
-                np.testing.assert_array_equal(i, mte[0])
+            q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
+            mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x)
+
+            # We simply test that there is a single unique value for the marginal treatment effect.
+            np.testing.assert_equal(len(set(mte)), 1)
 
     def test6(self):
         """The test ensures that the estimation process returns values that are approximately equal
