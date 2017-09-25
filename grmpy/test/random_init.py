@@ -5,8 +5,7 @@ from scipy.stats import wishart
 import numpy as np
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None,
-                optimizer=None):
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -24,10 +23,6 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
         constraints_dict['SEED'] = np.random.randint(1, 10000)
     else:
         constraints_dict['SEED'] = seed
-    if maxfun is None:
-        constraints_dict['MAXFUN'] = np.random.randint(0, 100)
-    else:
-        constraints_dict['MAXFUN'] = maxfun
     if sample is None:
         if constraints_dict['AGENTS'] != 1:
             constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
@@ -35,10 +30,6 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
             constraints_dict['SAMPLE_SIZE'] = 1
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
-    if optimizer is None:
-        constraints_dict['OPTIMIZER'] = 'SCIPY-BFGS'
-    else:
-        constraints_dict['OPTIMIZER'] = 'SCIPY-POWELL'
 
 
     return constraints_dict
@@ -60,11 +51,7 @@ def generate_random_dict(constraints_dict=None):
 
     seed = constraints_dict['SEED']
 
-    maxfun = constraints_dict['MAXFUN']
-
     agents_sample = constraints_dict['SAMPLE_SIZE']
-
-    optimizer = constraints_dict['OPTIMIZER']
 
     source = my_random_string(8)
 
@@ -94,17 +81,20 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    for key_ in ['agents', 'file', 'maxfun', 'optimizer', 'gtol']:
-        if key_ == 'agents':
-            dict_['ESTIMATION'][key_] = agents_sample
-        elif key_ == 'file':
-            dict_['ESTIMATION'][key_] = source + '.grmpy.txt'
-        elif key_ == 'maxfun':
-            dict_['ESTIMATION'][key_] = maxfun
-        elif key_ == 'gtol':
-            dict_['ESTIMATION'][key_] = np.random.uniform(0.001, 0.002)
+    dict_['ESTIMATION']['agents'] = agents_sample
+    dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
+    for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
+        dict_[key_] = {}
+        dict_[key_]['disp'] = np.random.choice(a=[True, False], p=[0.5, 0.5])
+        dict_[key_]['maxiter'] = np.random.randint(0, 10000)
+        if key_ == 'SCIPY-BFGS':
+            dict_[key_]['gtol'] = np.random.uniform(0.0001, 1.00)
+            dict_[key_]['norm'] = np.random.uniform(-100000.00, 100000.00)
+            dict_[key_]['eps'] = np.random.randint(0, 10000)
         else:
-            dict_['ESTIMATION'][key_] = optimizer
+            dict_[key_]['xtol'] = np.random.uniform(0.0001, 1.00)
+            dict_[key_]['ftol'] = np.random.uniform(0.00001, 1.00)
+            dict_[key_]['direc'] = np.random.uniform(0.00000001, 1.0)
 
     # Variance and covariance parameters
     dict_['DIST'] = {}
@@ -126,7 +116,8 @@ def generate_random_dict(constraints_dict=None):
 
 def print_dict(dict_, file_name='test'):
     """The function creates an init file from a given dictionary."""
-    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'COST', 'DIST']
+    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'COST', 'DIST', 'SCIPY-BFGS',
+              'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
@@ -134,17 +125,20 @@ def print_dict(dict_, file_name='test'):
 
             file_.write(label + '\n\n')
 
-            if label in ['SIMULATION', 'ESTIMATION']:
+            if label in ['SIMULATION', 'ESTIMATION','SCIPY-BFGS', 'SCIPY-POWELL']:
                 if label == 'SIMULATION':
                     structure = ['agents', 'seed', 'source']
+                elif label == 'ESTIMATION':
+                    structure = ['agents', 'file']
+                elif label == 'SCIPY-BFGS':
+                    structure = ['disp', 'maxiter', 'gtol', 'norm', 'eps']
                 else:
-                    structure = ['agents', 'optimizer', 'maxfun', 'gtol', 'file']
-
+                    structure = ['disp', 'maxiter', 'xtol', 'ftol', 'direc']
                 for key_ in structure:
-                    if key_ in ['source', 'file', 'optimizer']:
+                    if key_ in ['source', 'file']:
                         str_ = '{0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
-                    elif key_ == 'gtol':
+                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc'] :
                         str_ = '{0:<13} {1:20.6f}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
@@ -161,7 +155,6 @@ def print_dict(dict_, file_name='test'):
                                     'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
                                     dict_[label]['types'][i][1])
                             )
-
                         else:
                             if write_nonbinary:
                                 str_ = '{0:<10} {1:20.4f} {2:>18}\n'
@@ -170,7 +163,6 @@ def print_dict(dict_, file_name='test'):
                             else:
                                 str_ = '{0:<10} {1:20.4f}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
-
                     else:
                         str_ = '{0:<10} {1:20.4f}\n'
                         file_.write(str_.format('coeff', dict_[label]['coeff'][i]))

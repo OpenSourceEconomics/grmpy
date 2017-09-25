@@ -1,6 +1,7 @@
 """The module provides auxiliary functions for the estimation process"""
 from scipy.stats import norm
 import statsmodels.api as sm
+from scipy import optimize
 import pandas as pd
 import numpy as np
 
@@ -126,7 +127,7 @@ def distribute_parameters(start_values, init_dict):
 
     # Update auxiliary versions
     rslt['AUX'] = dict()
-    rslt['AUX']['x_internal'] = start_values.copy()
+    rslt['AUX']['x_internal'] = start_values[:]
     rslt['AUX']['x_internal'][-4] = start_values[(-4)]
     rslt['AUX']['x_internal'][-3] = start_values[(-3)]
     rslt['AUX']['x_internal'][-2] = -1.0 + 2.0 / (1.0 + float(np.exp(-start_values[-2])))
@@ -206,15 +207,10 @@ def print_logfile(rslt, init_dict):
                                    rslt['AUX']['x_internal'][i])))
 
 
-def optimizer_options(dict_):
+def optimizer_options(dict_, optimizer):
     """The function provides the optimizer options given the initialization dictionary."""
-    if dict_['ESTIMATION']['optimizer'] == 'SCIPY-BFGS':
-        method = 'BFGS'
-        opt_dict = {'maxiter': dict_['ESTIMATION']['maxfun'], 'gtol': dict_['ESTIMATION']['gtol']}
-    elif dict_['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
-        method = 'POWELL'
-        opt_dict= {'maxiter': dict_['ESTIMATION']['maxfun'], 'xtol': dict_['ESTIMATION']['gtol']}
-
+    method = optimizer
+    opt_dict = dict_['SCIPY-' + method]
 
     return opt_dict, method
 

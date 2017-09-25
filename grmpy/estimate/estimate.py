@@ -15,7 +15,7 @@ from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.read.read import read
 
 
-def estimate(init_file, option):
+def estimate(init_file, option, optimizer):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     assert os.path.isfile(init_file)
@@ -29,7 +29,7 @@ def estimate(init_file, option):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts, method = optimizer_options(dict_)
+    opts, method = optimizer_options(dict_, optimizer)
     dict_['AUX']['criteria'] = calculate_criteria(x0, dict_, data)
     if opts['maxiter'] == 0:
         rslt = distribute_parameters(x0, dict_)
