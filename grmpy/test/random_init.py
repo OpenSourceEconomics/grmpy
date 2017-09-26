@@ -98,8 +98,7 @@ def generate_random_dict(constraints_dict=None):
     # Variance and covariance parameters
     dict_['DIST'] = {}
     if not is_deterministic:
-        x = np.identity(3)
-        b = wishart.rvs(df=10, scale=x, size=1, random_state=seed)
+        b = wishart.rvs(df=10, scale=np.identity(3), size=1)
     else:
         b = np.zeros((3, 3))
     dict_['DIST']['coeff'] = []
@@ -107,7 +106,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['DIST']['coeff'].append(b[0, 1])
     dict_['DIST']['coeff'].append(b[0, 2])
     dict_['DIST']['coeff'].append(b[1, 1] ** 0.5)
-    dict_['DIST']['coeff'].append(b[2, 1])
+    dict_['DIST']['coeff'].append(b[1, 2])
     dict_['DIST']['coeff'].append(b[2, 2] ** 0.5)
     print_dict(dict_)
     return dict_
