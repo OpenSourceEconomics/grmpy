@@ -6,15 +6,19 @@ the dataframe, sums it up again and compares the sum from the first step with th
 second step.
  """
 
-import glob
 import json
 import os
 
 import numpy as np
 
+from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
+from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup
+from grmpy.read.read import read
 
 NUM_TESTS = 100
 
@@ -27,24 +31,27 @@ if True:
     tests = []
     for seed in seeds:
         np.random.seed(seed)
-        dict_ = generate_random_dict()
+        constr = constraints(0.0)
+        dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
-        tests += [(stat, dict_)]
-
+        init_dict = read('test.grmpy.ini')
+        start = start_values(init_dict, df, 'true_values')
+        criteria = calculate_criteria(start, init_dict, df)
+        tests += [(stat, dict_, criteria)]
     json.dump(tests, open(file_dir, 'w'))
 
 if True:
     tests = json.load(open(file_dir, 'r'))
 
     for test in tests:
-        stat, dict_ = test
+        stat, dict_, criteria = test
         print_dict(dict_)
+        init_dict = read('test.grmpy.ini')
         df = simulate('test.grmpy.ini')
+        start = start_values(init_dict, df, 'true_values')
+        criteria_ = calculate_criteria(start, init_dict, df)
+        np.testing.assert_array_almost_equal(criteria, criteria_)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
-for f in glob.glob("*.grmpy.*"):
-    if f.startswith('regression'):
-        pass
-    else:
-        os.remove(f)
+cleanup('regression')
