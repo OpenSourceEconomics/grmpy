@@ -5,6 +5,7 @@ import json
 import os
 
 import numpy as np
+import grmpy
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
@@ -44,16 +45,15 @@ def check_vault():
     """This function checks the complete regression vault that is distributed as part of the
     package.
     """
-    import grmpy
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/regression_vault.grmpy.json'
     tests = json.load(open(fname))
 
     for test in tests:
-        stat, dict_ = test
+        stat, dict_, criteria = test
         print_dict(dict_)
         df = simulate('test.grmpy.ini')
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
-        cleanup()
+        cleanup('regression')
 
 
 if __name__ == '__main__':
