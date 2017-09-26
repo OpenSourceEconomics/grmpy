@@ -2,10 +2,13 @@
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.test.resources.estimate_old import estimate_old
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
+from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
@@ -14,9 +17,9 @@ from grmpy.read.read import read
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
-        in a deterministic and an undeterministic setting.<
+        in a deterministic and an undeterministic setting. 
         """
-        for case in ['deterministic', 'nondeterministic']:
+        for case in ['deterministic', 'undeterministic']:
             if case == 'deterministic':
                 prob = 1.0
             else:
@@ -128,16 +131,55 @@ class TestClass:
         the same value for each quantile.
         """
         for _ in range(10):
-            dict_ = generate_random_dict()
-            dict_['DIST']['coeff'][4] = dict_['DIST']['coeff'][5]
-            print_dict(dict_)
-            df = simulate('test.grmpy.ini')
 
-            quantiles = [0.1] + np.arange(0.05, 1, 0.05).tolist() + [0.99]
-            para = np.array([dict_['TREATED']['coeff'], dict_['UNTREATED']['coeff']])
+            generate_random_dict()
+            init_dict = read('test.grmpy.ini')
+
+            # We impose that the covariance between the random components of the potential
+            # outcomes and the random component determining choice is identical.
+            init_dict['DIST']['all'][2] = init_dict['DIST']['all'][4]
+
+            # Distribute information
+            coeffs_untreated = init_dict['UNTREATED']['all']
+            coeffs_treated = init_dict['TREATED']['all']
+
+            # Construct auxiliary information
+            cov = construct_covariance_matrix(init_dict)
+
+            df = simulate('test.grmpy.ini')
             x = df.filter(regex=r'^X\_', axis=1)
-            mte = mte_information(para, dict_['DIST']['coeff'][3:], quantiles, x)
-            for i in mte:
-                np.testing.assert_array_equal(i, mte[0])
+            q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
+            mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x)
+
+            # We simply test that there is a single unique value for the marginal treatment effect.
+            np.testing.assert_equal(len(set(mte)), 1)
+
+    def test6(self):
+        """The test ensures that the estimation process returns values that are approximately equal
+        to the true values if the true values are set as start values for the estimation.
+        """
+        for i in range(10):
+            constr = constraints(agents=1000, probability=0.0)
+            generate_random_dict(constr)
+            simulate('test.grmpy.ini')
+            dict_ = read('test.grmpy.ini')
+            true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
+            results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
+            np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2], decimal=3)
+            for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
+
+    def test7(self):
+        """The test compares the estimation results from the old estimation process with the results
+        of the new one.
+        """
+        constr = constraints(agents=100, probability=0.0)
+        generate_random_dict(constr)
+        simulate('test.grmpy.ini')
+        results_old = estimate_old('test.grmpy.ini', 'true_values', 'BFGS')
+        results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
+        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+            np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'],
+                                                 decimal=3)
 
         cleanup()
