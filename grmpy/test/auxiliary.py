@@ -3,7 +3,15 @@ import glob
 import os
 
 
-def cleanup():
+def cleanup(options=None):
     """The function deletes package related output files."""
-    for f in glob.glob("*.grmpy.*"):
-        os.remove(f)
+    if options is None:
+        for f in glob.glob("*.grmpy.*"):
+            os.remove(f)
+    elif options == 'regression':
+        for f in glob.glob("*.grmpy.*"):
+            if f.startswith('regression'):
+                pass
+            else:
+                os.remove(f)
+
