@@ -136,7 +136,7 @@ def distribute_parameters(init_dict, start_values):
 def minimizing_interface(start_values, init_dict, data_frame):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = distribute_parameters(init_dict, start_values,)
+    rslt = distribute_parameters(init_dict, start_values, )
 
     # Calculate liklihood for pre specified arguments
     likl = log_likelihood(init_dict, data_frame, rslt)
@@ -263,7 +263,6 @@ def write_descriptives(init_dict, df1, rslt):
             str_ = '  {:<10}' + ' {:20}' * 2 + '\n'
             file_.write(str_.format(label, info_[0][i], info_[1][i]))
 
-
         header = '\n\n Distribution of Outcomes\n\n'
         file_.write(header)
 
@@ -321,10 +320,9 @@ def simulate_outcomes_estimation(init_dict, X, Z):
 
     return Y, D, Y_1, Y_0
 
+
 def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
-    """The function converts the simulated variables to a panda data frame and saves the data in a
-    txt and a pickle file.
-    """
+    """The function converts the simulated variables to a panda data frame."""
 
     # Stack arrays
     data = np.column_stack((Y, D, X, Z, Y_1, Y_0))

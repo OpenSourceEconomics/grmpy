@@ -31,7 +31,6 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
 
-
     return constraints_dict
 
 
@@ -125,7 +124,7 @@ def print_dict(dict_, file_name='test'):
 
             file_.write(label + '\n\n')
 
-            if label in ['SIMULATION', 'ESTIMATION','SCIPY-BFGS', 'SCIPY-POWELL']:
+            if label in ['SIMULATION', 'ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL']:
                 if label == 'SIMULATION':
                     structure = ['agents', 'seed', 'source']
                 elif label == 'ESTIMATION':
@@ -138,7 +137,7 @@ def print_dict(dict_, file_name='test'):
                     if key_ in ['source', 'file']:
                         str_ = '{0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
-                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc'] :
+                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc']:
                         str_ = '{0:<13} {1:20.6f}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:

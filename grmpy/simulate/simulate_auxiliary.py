@@ -75,7 +75,7 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:,1], U[:,0], U[:,2], V))
+    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
 
     # Construct list of column labels
     column = ['Y', 'D']
@@ -191,7 +191,6 @@ def print_info(init_dict, data_frame):
             file_.write('  {0:>10} {1:>20.4f}\n'.format(i, coeff))
 
 
-
 def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
@@ -200,10 +199,12 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
     para_diff = coeffs_treated - coeffs_untreated
     MTE = []
     for i in quantiles:
-        if cov[2,2] == 0.00:
+        if cov[2, 2] == 0.00:
             MTE += ['---']
         else:
-            MTE += [np.mean(np.dot(para_diff, x.T)) - ((cov[2,1] - cov[2,0]) / cov[2,2]) * norm.ppf(i)]
+            MTE += [
+                np.mean(np.dot(para_diff, x.T)) - ((cov[2, 1] - cov[2, 0]) / cov[2, 2]) * norm.ppf(
+                    i)]
 
     return MTE
 

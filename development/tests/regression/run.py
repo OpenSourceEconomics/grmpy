@@ -61,7 +61,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Work with regression tests for package.')
 
     parser.add_argument('--request', action='store', dest='request', required=True,
-        help='request (valid: check, create)')
+                        help='request (valid: check, create)')
 
     request = process_arguments(parser)
 
@@ -69,5 +69,3 @@ if __name__ == '__main__':
         check_vault()
     elif request == 'create':
         create_vault()
-
-
