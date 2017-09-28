@@ -15,3 +15,14 @@ def cleanup(options=None):
             else:
                 os.remove(f)
 
+
+def save_output(file, option):
+    """The function renames a given file and moves it in an output directory."""
+    assert os.path.isfile(file)
+    dir = os.path.join(os.getcwd(),'estimation_output')
+    os.rename(file, option +'.grmpy.info')
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+    os.rename(os.path.join(os.getcwd(), option + '.grmpy.info'),
+              os.path.join(dir, option + '.grmpy.info'))
+

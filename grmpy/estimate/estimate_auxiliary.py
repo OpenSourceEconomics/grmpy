@@ -7,7 +7,8 @@ import numpy as np
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 
 
-def log_likelihood(init_dict, data_frame, rslt):
+
+def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
     beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
@@ -32,6 +33,10 @@ def log_likelihood(init_dict, data_frame, rslt):
         likl.append(contrib)
     likl = np.append(likl[0], likl[1])
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
+    if dict_ is None:
+        passes  
+    else:
+        dict_['crit'][str(len(dict_['crit']))] = likl
     return likl
 
 
@@ -89,21 +94,27 @@ def start_values(init_dict, data_frame, option):
         gamma = probitRslt.params * sd
         gamma_const = beta[1][0] - beta[0][0] - gamma[0]
         gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+        rho = [0.00, 0.00]
 
         # Arange starting values
         x0 = np.concatenate((beta[1], beta[0]))
         x0 = np.concatenate((x0, gamma))
         x0 = np.concatenate((x0, sd_))
-        x0 = np.concatenate((x0, [0.00, 0.00]))
+        x0 = np.concatenate((x0, rho))
         x0 = _transform_start(x0)
-        x0 = np.array(x0)
+    x0 = np.array(x0)
     init_dict['AUX']['starting_values'] = x0
 
     return x0
 
 
-def distribute_parameters(init_dict, start_values):
+def distribute_parameters(init_dict, start_values, dict_=None):
     """The function generates a dictionary for the representation of the optimization output."""
+    if dict_ is None:
+        pass
+    else:
+        dict_['parameter'][str(len(dict_['parameter']))] = start_values
+
     num_covars_out = init_dict['AUX']['num_covars_out']
     rslt = dict()
 
@@ -133,13 +144,13 @@ def distribute_parameters(init_dict, start_values):
     return rslt
 
 
-def minimizing_interface(start_values, init_dict, data_frame):
+def minimizing_interface(start_values, init_dict, data_frame, dict_):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = distribute_parameters(init_dict, start_values, )
+    rslt = distribute_parameters(init_dict, start_values, dict_)
 
     # Calculate liklihood for pre specified arguments
-    likl = log_likelihood(init_dict, data_frame, rslt)
+    likl = log_likelihood(init_dict, data_frame, rslt, dict_)
 
     return likl
 
@@ -186,7 +197,7 @@ def print_logfile(init_dict, rslt):
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
                     elif section == 'Criteria':
                         fmt = '  {:<10}' + ' {:<20}' + '       {:>20.4f}\n\n'
-                        file_.write(fmt.format('', section + ':', rslt['fval']))
+                        file_.write(fmt.format('', section + ':', rslt['crit']))
                     else:
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
@@ -203,9 +214,9 @@ def print_logfile(init_dict, rslt):
                                    rslt['AUX']['x_internal'][i])))
 
 
-def optimizer_options(init_dict_, optimizer):
+def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization dictionary."""
-    method = optimizer
+    method = init_dict_['ESTIMATION']['optimizer'].split('-')[1]
     opt_dict = init_dict_['SCIPY-' + method]
 
     return opt_dict, method
@@ -341,3 +352,43 @@ def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
     df = pd.DataFrame(data=data, columns=column)
     df['D'] = df['D'].apply(np.int64)
     return df
+
+
+def process_BFGS_rslt(init_dict, dict_, rslt, start_values):
+    """The function """
+
+    x = min(dict_['crit'], key=dict_['crit'].get)
+    if init_dict['AUX']['criteria'] < rslt['crit']:
+        print(
+            'WARNING: \n'
+            '   The BFGS algorithm has failed to provide the parametrization that leads to the '
+            ' minimal criteria function value.\n'
+            '   The estimation output is automatically adjusted.')
+        if dict_['crit'][str(x)] < init_dict['AUX']['criteria']:
+            rslt['AUX']['x_internal'] = dict_['parameter'][str(x)].tolist()
+            rslt['crit'] = dict_['crit'][str(x)]
+        else:
+            rslt['AUX']['x_internal'] = start_values.tolist()
+            rslt['crit'] = init_dict['AUX']['criteria']
+
+
+
+def bfgs_dict(optimizer):
+    """The function provides a dictionary for tracking the criteria function values if SCIPY-BFGS is
+    the selected optimizer."""
+    if optimizer == 'BFGS':
+        rslt_dict = {'parameter': {}, 'crit':{}}
+        return rslt_dict
+
+
+def adjust_output(opt_rslt, init_dict, start_values, optimizer, dict_=None):
+    """The function """
+    rslt = distribute_parameters(init_dict, start_values)
+    rslt['success'], rslt['status'] =  opt_rslt['success'], opt_rslt['status']
+    rslt['message'], rslt['nfev'], rslt['crit'] = opt_rslt['message'], opt_rslt['nfev'],\
+                                                 opt_rslt['fun']
+    if optimizer == 'BFGS':
+        process_BFGS_rslt(init_dict, dict_, rslt, start_values)
+
+    return rslt
+

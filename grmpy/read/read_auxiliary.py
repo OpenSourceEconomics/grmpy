@@ -22,8 +22,10 @@ def process(list_, dict_, keyword):
     # Type conversion
     if name in ['agents', 'seed', 'maxiter', 'disp']:
         val = int(val)
-    elif name in ['source', 'file']:
+    elif name in ['source', 'file', 'optimizer']:
         val = str(val)
+    elif name in ['direc']:
+        val = None
     else:
         val = float(val)
     if name in ['coeff']:

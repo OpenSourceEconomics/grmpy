@@ -82,18 +82,19 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION'] = {}
     dict_['ESTIMATION']['agents'] = agents_sample
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
+    dict_['ESTIMATION']['optimizer'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],p=[0.5, 0.5])
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         dict_[key_]['disp'] = np.random.randint(0, 1)
         dict_[key_]['maxiter'] = np.random.randint(0, 10000)
         if key_ == 'SCIPY-BFGS':
-            dict_[key_]['gtol'] = np.random.uniform(0.0001, 1.00)
-            dict_[key_]['norm'] = np.random.uniform(-100000.00, 100000.00)
-            dict_[key_]['eps'] = np.random.randint(0, 10000)
+            dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
+            dict_[key_]['norm'] = '-inf'
+            dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
         else:
-            dict_[key_]['xtol'] = np.random.uniform(0.0001, 1.00)
-            dict_[key_]['ftol'] = np.random.uniform(0.00001, 1.00)
-            dict_[key_]['direc'] = np.random.uniform(0.00000001, 1.0)
+            dict_[key_]['xtol'] = np.random.uniform(0.00009, 0.00011)
+            dict_[key_]['ftol'] = np.random.uniform(0.00009, 0.00011)
+            dict_[key_]['direc'] = '---'
 
     # Variance and covariance parameters
     dict_['DIST'] = {}
@@ -127,17 +128,17 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['agents', 'seed', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['agents', 'file']
+                    structure = ['agents', 'file', 'optimizer']
                 elif label == 'SCIPY-BFGS':
                     structure = ['disp', 'maxiter', 'gtol', 'norm', 'eps']
                 else:
                     structure = ['disp', 'maxiter', 'xtol', 'ftol', 'direc']
                 for key_ in structure:
-                    if key_ in ['source', 'file']:
+                    if key_ in ['source', 'file', 'norm', 'optimizer']:
                         str_ = '{0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc']:
-                        str_ = '{0:<13} {1:20.6f}\n'
+                        str_ = '{0:<13} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
                         str_ = '{0:<10} {1:20}\n'
