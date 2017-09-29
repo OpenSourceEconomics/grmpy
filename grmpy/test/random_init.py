@@ -5,7 +5,8 @@ from scipy.stats import wishart
 import numpy as np
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None):
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None,
+                optimizer=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -30,7 +31,10 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
             constraints_dict['SAMPLE_SIZE'] = 1
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
-
+    if optimizer is None:
+        constraints_dict['OPTIMIZER'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'], p=[0.5, 0.5])
+    else:
+        constraints_dict['OPTIMIZER'] = optimizer
     return constraints_dict
 
 
@@ -52,7 +56,10 @@ def generate_random_dict(constraints_dict=None):
 
     agents_sample = constraints_dict['SAMPLE_SIZE']
 
+    optimizer = constraints_dict['OPTIMIZER']
+
     source = my_random_string(8)
+
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
@@ -82,7 +89,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION'] = {}
     dict_['ESTIMATION']['agents'] = agents_sample
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
-    dict_['ESTIMATION']['optimizer'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],p=[0.5, 0.5])
+    dict_['ESTIMATION']['optimizer'] = optimizer
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         dict_[key_]['disp'] = np.random.randint(0, 1)

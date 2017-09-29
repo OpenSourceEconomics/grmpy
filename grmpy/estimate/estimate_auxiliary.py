@@ -10,7 +10,7 @@ from grmpy.simulate.simulate_auxiliary import simulate_covariates
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
-    beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
+    beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = []
     for i in [0.0, 1.0]:
@@ -34,7 +34,7 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     likl = np.append(likl[0], likl[1])
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
     if dict_ is None:
-        passes  
+        pass
     else:
         dict_['crit'][str(len(dict_['crit']))] = likl
     return likl

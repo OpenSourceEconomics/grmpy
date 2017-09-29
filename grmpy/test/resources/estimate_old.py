@@ -17,7 +17,7 @@ from grmpy.read.read import read
 
 def log_likelihood_old(data_frame, init_dict, rslt):
     """The function provides the loglikelihood function for the minimization process."""
-    beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
+    beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = np.tile(np.nan, data_frame.shape[0])
 

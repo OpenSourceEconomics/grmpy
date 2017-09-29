@@ -159,7 +159,7 @@ class TestClass:
         to the true values if the true values are set as start values for the estimation.
         """
         for i in range(10):
-            constr = constraints(agents=1000, probability=0.0)
+            constr = constraints(agents=1000, probability=0.0, optimizer='SCIPY-BFGS')
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
@@ -173,7 +173,7 @@ class TestClass:
         """The test compares the estimation results from the old estimation process with the results
         of the new one.
         """
-        constr = constraints(agents=100, probability=0.0)
+        constr = constraints(agents=100, probability=0.0, optimizer= 'SCIPY-BFGS')
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         results_old = estimate_old('test.grmpy.ini', 'true_values')
