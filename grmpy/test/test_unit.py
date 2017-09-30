@@ -173,7 +173,7 @@ class TestClass:
         """The test compares the estimation results from the old estimation process with the results
         of the new one.
         """
-        constr = constraints(agents=100, probability=0.0, optimizer= 'SCIPY-BFGS')
+        constr = constraints(agents=100, probability=0.0, optimizer='SCIPY-BFGS')
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         results_old = estimate_old('test.grmpy.ini', 'true_values')

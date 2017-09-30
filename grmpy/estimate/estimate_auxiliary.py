@@ -354,15 +354,16 @@ def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
     return df
 
 
-def process_BFGS_rslt(init_dict, dict_, rslt, start_values):
-    """The function """
+def process_rslt(init_dict, dict_, rslt, start_values):
+    """The function checks if the criteria function value is smaller for the optimization output as
+    for the start values.  """
 
     x = min(dict_['crit'], key=dict_['crit'].get)
     if init_dict['AUX']['criteria'] < rslt['crit']:
         print(
             'WARNING: \n'
-            '   The BFGS algorithm has failed to provide the parametrization that leads to the '
-            ' minimal criteria function value.\n'
+            '   The optimization algorithm has failed to provide the parametrization that leads to '
+            ' the minimal criteria function value.\n'
             '   The estimation output is automatically adjusted.')
         if dict_['crit'][str(x)] < init_dict['AUX']['criteria']:
             rslt['AUX']['x_internal'] = dict_['parameter'][str(x)].tolist()
@@ -374,21 +375,21 @@ def process_BFGS_rslt(init_dict, dict_, rslt, start_values):
 
 
 def bfgs_dict(optimizer):
-    """The function provides a dictionary for tracking the criteria function values if SCIPY-BFGS is
-    the selected optimizer."""
-    if optimizer == 'BFGS':
-        rslt_dict = {'parameter': {}, 'crit':{}}
-        return rslt_dict
+    """The function provides a dictionary for tracking the criteria function values and the
+    associated parametrization."""
+    rslt_dict = {'parameter': {}, 'crit':{}}
+    return rslt_dict
 
 
 def adjust_output(opt_rslt, init_dict, start_values, optimizer, dict_=None):
-    """The function """
+    """The function adds different information of the minimization process to the estimation
+    output."""
     rslt = distribute_parameters(init_dict, start_values)
     rslt['success'], rslt['status'] =  opt_rslt['success'], opt_rslt['status']
     rslt['message'], rslt['nfev'], rslt['crit'] = opt_rslt['message'], opt_rslt['nfev'],\
                                                  opt_rslt['fun']
-    if optimizer == 'BFGS':
-        process_BFGS_rslt(init_dict, dict_, rslt, start_values)
+
+    process_rslt(init_dict, dict_, rslt, start_values)
 
     return rslt
 

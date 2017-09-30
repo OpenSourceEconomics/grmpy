@@ -13,7 +13,7 @@ from grmpy.test.auxiliary import cleanup
 cleanup()
 
 # Construct a random dictionary
-constr = constraints(probability=0.0, agents=10000)
+constr = constraints(probability=0.0, agents=1000)
 init_dict = generate_random_dict(constr)
 
 # Convert original init file
@@ -29,18 +29,18 @@ simulate('test.grmpy.ini')
 
 # 1. Estimation with true values as start values
 estimate('test.grmpy.ini', 'true_values')
-save_output('est.grmpy.info', 'OUT_BFGS_true_values')
+save_output('est.grmpy.info', 'OUT_BFGS_true_values.info')
 
 
-# 2. All init file coefficients are zero except intercepts
+# 2. All COST/TREATED/UNTREATED coefficients are zero except intercepts
 estimate('test_intercepts.grmpy.ini', 'true_values')
-save_output('est.grmpy.info', 'OUT_BFGS_intercept_zero')
-save_output('test_intercepts.grmpy.ini', 'INI_BFGS_test_intercepts')
+save_output('est.grmpy.info', 'OUT_BFGS_intercept_zero.info')
+save_output('test_intercepts.grmpy.ini', 'INI_BFGS_test_intercepts.ini')
 
 # 3. AUTO
 estimate('test.grmpy.ini', 'auto')
-save_output('est.grmpy.info', 'OUT_BFGS-auto')
-save_output('test.grmpy.ini', 'INI_BFGS_test')
+save_output('est.grmpy.info', 'OUT_BFGS-auto.info')
+save_output('test.grmpy.ini', 'INI_BFGS_test.ini')
 
 
 # POWELL
@@ -58,15 +58,15 @@ print_dict(dict_, 'test_intercepts')
 estimate('test.grmpy.ini', 'true_values')
 save_output('est.grmpy.info', 'OUT_POWELL_true_values')
 
-# 2. All init file coefficients are zero except intercepts
+# 2. All COST/TREATED/UNTREATED coefficients are zero except intercepts
 estimate('test_intercepts.grmpy.ini', 'true_values')
-save_output('est.grmpy.info', 'OUT_POWELL_intercept_zero')
-save_output('test_intercepts.grmpy.ini', 'INI_POWELL_test_intercepts')
+save_output('est.grmpy.info', 'OUT_POWELL_intercept_zero.info')
+save_output('test_intercepts.grmpy.ini', 'INI_POWELL_test_intercepts.ini')
 
 # 3. AUTO
 estimate('test.grmpy.ini', 'auto')
-save_output('est.grmpy.info', 'OUT_POWELL-auto')
-save_output('test.grmpy.ini', 'INI_POWELL_test')
+save_output('est.grmpy.info', 'OUT_POWELL-auto.info')
+save_output('test.grmpy.ini', 'INI_POWELL_test.ini')
 
 
 
