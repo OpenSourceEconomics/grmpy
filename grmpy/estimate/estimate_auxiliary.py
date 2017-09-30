@@ -101,7 +101,6 @@ def start_values(init_dict, data_frame, option):
         x0 = np.concatenate((x0, gamma))
         x0 = np.concatenate((x0, sd_))
         x0 = np.concatenate((x0, rho))
-        x0 = _transform_start(x0)
     x0 = np.array(x0)
     init_dict['AUX']['starting_values'] = x0
 
@@ -137,8 +136,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['AUX']['x_internal'] = start_values[:]
     rslt['AUX']['x_internal'][-4] = start_values[(-4)]
     rslt['AUX']['x_internal'][-3] = start_values[(-3)]
-    rslt['AUX']['x_internal'][-2] = -1.0 + 2.0 / (1.0 + float(np.exp(-start_values[-2])))
-    rslt['AUX']['x_internal'][-1] = -1.0 + 2.0 / (1.0 + float(np.exp(-start_values[-1])))
+    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
+    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
 
     return rslt
