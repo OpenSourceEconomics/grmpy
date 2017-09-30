@@ -15,6 +15,9 @@ cleanup()
 # Construct a random dictionary
 constr = constraints(probability=0.0, agents=1000)
 init_dict = generate_random_dict(constr)
+print(init_dict['DIST'])
+init_dict['DIST']['coeff'] = [i * 0.1 for i in init_dict['DIST']['coeff']]
+print(init_dict['DIST'])
 
 # Convert original init file
 dict_ = copy.deepcopy(init_dict)
@@ -26,6 +29,7 @@ print_dict(dict_, 'test_intercepts')
 simulate('test.grmpy.ini')
 
 # BFGS
+
 
 # 1. Estimation with true values as start values
 estimate('test.grmpy.ini', 'true_values')
