@@ -15,9 +15,6 @@ cleanup()
 # Construct a random dictionary
 constr = constraints(probability=0.0, agents=1000)
 init_dict = generate_random_dict(constr)
-print(init_dict['DIST'])
-init_dict['DIST']['coeff'] = [i * 0.1 for i in init_dict['DIST']['coeff']]
-print(init_dict['DIST'])
 
 # Convert original init file
 dict_ = copy.deepcopy(init_dict)
@@ -39,12 +36,10 @@ save_output('est.grmpy.info', 'OUT_BFGS_true_values.info')
 # 2. All COST/TREATED/UNTREATED coefficients are zero except intercepts
 estimate('test_intercepts.grmpy.ini', 'true_values')
 save_output('est.grmpy.info', 'OUT_BFGS_intercept_zero.info')
-save_output('test_intercepts.grmpy.ini', 'INI_BFGS_test_intercepts.ini')
 
 # 3. AUTO
 estimate('test.grmpy.ini', 'auto')
 save_output('est.grmpy.info', 'OUT_BFGS-auto.info')
-save_output('test.grmpy.ini', 'INI_BFGS_test.ini')
 
 
 # POWELL
@@ -65,12 +60,10 @@ save_output('est.grmpy.info', 'OUT_POWELL_true_values')
 # 2. All COST/TREATED/UNTREATED coefficients are zero except intercepts
 estimate('test_intercepts.grmpy.ini', 'true_values')
 save_output('est.grmpy.info', 'OUT_POWELL_intercept_zero.info')
-save_output('test_intercepts.grmpy.ini', 'INI_POWELL_test_intercepts.ini')
 
 # 3. AUTO
 estimate('test.grmpy.ini', 'auto')
 save_output('est.grmpy.info', 'OUT_POWELL-auto.info')
-save_output('test.grmpy.ini', 'INI_POWELL_test.ini')
 
 
 

@@ -7,7 +7,6 @@ import numpy as np
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 
 
-
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
     beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
@@ -189,11 +188,14 @@ def print_logfile(init_dict, rslt):
             header = '\n \n  {:<10}\n\n'.format(label)
             file_.write(header)
             if label == 'Optimization Information':
-                for section in ['Success', 'Status', 'Number of Evaluations', 'Criteria',
-                                'Message']:
+                for section in ['Optimizer', 'Success', 'Status', 'Number of Evaluations',
+                                'Criteria', 'Message']:
                     fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
                     if section == 'Number of Evaluations':
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
+                    elif section == 'Optimizer':
+                        file_.write(fmt.format('', section + ':',
+                                               init_dict['ESTIMATION']['optimizer']))
                     elif section == 'Criteria':
                         fmt = '  {:<10}' + ' {:<20}' + '       {:>20.4f}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
@@ -372,11 +374,10 @@ def process_rslt(init_dict, dict_, rslt, start_values):
             rslt['crit'] = init_dict['AUX']['criteria']
 
 
-
 def bfgs_dict(optimizer):
     """The function provides a dictionary for tracking the criteria function values and the
     associated parametrization."""
-    rslt_dict = {'parameter': {}, 'crit':{}}
+    rslt_dict = {'parameter': {}, 'crit': {}}
     return rslt_dict
 
 
@@ -384,11 +385,10 @@ def adjust_output(opt_rslt, init_dict, start_values, optimizer, dict_=None):
     """The function adds different information of the minimization process to the estimation
     output."""
     rslt = distribute_parameters(init_dict, start_values)
-    rslt['success'], rslt['status'] =  opt_rslt['success'], opt_rslt['status']
-    rslt['message'], rslt['nfev'], rslt['crit'] = opt_rslt['message'], opt_rslt['nfev'],\
-                                                 opt_rslt['fun']
+    rslt['success'], rslt['status'] = opt_rslt['success'], opt_rslt['status']
+    rslt['message'], rslt['nfev'], rslt['crit'] = opt_rslt['message'], opt_rslt['nfev'], \
+                                                  opt_rslt['fun']
 
     process_rslt(init_dict, dict_, rslt, start_values)
 
     return rslt
-

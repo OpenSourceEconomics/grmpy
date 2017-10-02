@@ -17,8 +17,6 @@ from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.read.read import read
 
 
-
-
 def estimate(init_file, option):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary

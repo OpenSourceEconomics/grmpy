@@ -32,7 +32,8 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
     else:
         constraints_dict['SAMPLE_SIZE'] = sample
     if optimizer is None:
-        constraints_dict['OPTIMIZER'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'], p=[0.5, 0.5])
+        constraints_dict['OPTIMIZER'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],
+                                                         p=[0.5, 0.5])
     else:
         constraints_dict['OPTIMIZER'] = optimizer
     return constraints_dict
@@ -59,7 +60,6 @@ def generate_random_dict(constraints_dict=None):
     optimizer = constraints_dict['OPTIMIZER']
 
     source = my_random_string(8)
-
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
