@@ -17,7 +17,7 @@ from grmpy.read.read import read
 
 def log_likelihood_old(data_frame, init_dict, rslt):
     """The function provides the loglikelihood function for the minimization process."""
-    beta1, beta0, gamma, sd0, sd1, sdv, rho1v, rho0v, choice = \
+    beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = np.tile(np.nan, data_frame.shape[0])
 
@@ -57,7 +57,7 @@ def minimizing_interface_old(start_values, data_frame, init_dict):
     return likl
 
 
-def estimate_old(init_file, option, optimizer):
+def estimate_old(init_file, option):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     assert os.path.isfile(init_file)
@@ -71,7 +71,7 @@ def estimate_old(init_file, option, optimizer):
 
     # define starting values
     x0 = start_values(dict_, data, option)
-    opts, method = optimizer_options(dict_, optimizer)
+    opts, method = optimizer_options(dict_)
     if opts['maxiter'] == 0:
         rslt = distribute_parameters(dict_, x0)
         fun, success, status = calculate_criteria(dict_, data, x0), False, 2

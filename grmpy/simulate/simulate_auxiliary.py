@@ -108,7 +108,7 @@ def construct_all_coefficients(init_dict):
 def print_info(init_dict, data_frame):
     """The function writes an info file for the specific data frame."""
     # Distribute information
-    coeffs_untreated = init_dict['TREATED']['all']
+    coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     source = init_dict['SIMULATION']['source']
 

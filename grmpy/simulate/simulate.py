@@ -19,12 +19,12 @@ def simulate(init_file):
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
+    # Simulate unobservables of the model
+    U, V = simulate_unobservables(init_dict)
+
     # Simulate observables of the model
     X = simulate_covariates(init_dict, 'TREATED')
     Z = simulate_covariates(init_dict, 'COST')
-
-    # Simulate unobservables of the model
-    U, V = simulate_unobservables(init_dict)
 
     # Simulate endogeneous variables of the model
     Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, Z, U)

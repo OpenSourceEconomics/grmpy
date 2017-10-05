@@ -158,26 +158,27 @@ class TestClass:
         """The test ensures that the estimation process returns values that are approximately equal
         to the true values if the true values are set as start values for the estimation.
         """
-        for i in range(10):
-            constr = constraints(agents=1000, probability=0.0)
+        for i in range(5):
+            constr = constraints(agents=1000, probability=0.0, optimizer='SCIPY-BFGS')
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
             true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
-            results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
+            results = estimate('test.grmpy.ini', 'true_values')
             np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2], decimal=3)
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
-                np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'])
+                np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'],
+                                                     decimal=3)
 
     def test7(self):
         """The test compares the estimation results from the old estimation process with the results
         of the new one.
         """
-        constr = constraints(agents=100, probability=0.0)
+        constr = constraints(agents=100, probability=0.0, optimizer='SCIPY-BFGS')
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
-        results_old = estimate_old('test.grmpy.ini', 'true_values', 'BFGS')
-        results = estimate('test.grmpy.ini', 'true_values', 'BFGS')
+        results_old = estimate_old('test.grmpy.ini', 'true_values')
+        results = estimate('test.grmpy.ini', 'true_values')
         for key_ in ['TREATED', 'UNTREATED', 'COST']:
             np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'],
                                                  decimal=3)
