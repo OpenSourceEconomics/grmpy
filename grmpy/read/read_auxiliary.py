@@ -6,6 +6,8 @@ def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) == 4:
         name, val, type_, frac_ = list_[0], list_[1], list_[2], list_[3]
+    elif list_[0] == 'direc':
+        name, val = list_[0], [list_[i] for i in range(len(list_)) if i > 0]
     else:
         name, val = list_[0], list_[1]
 
@@ -25,7 +27,7 @@ def process(list_, dict_, keyword):
     elif name in ['source', 'file', 'optimizer']:
         val = str(val)
     elif name in ['direc']:
-        val = None
+        val = np.array(val)
     else:
         val = float(val)
     if name in ['coeff']:

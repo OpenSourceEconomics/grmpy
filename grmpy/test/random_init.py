@@ -101,7 +101,7 @@ def generate_random_dict(constraints_dict=None):
         else:
             dict_[key_]['xtol'] = np.random.uniform(0.00009, 0.00011)
             dict_[key_]['ftol'] = np.random.uniform(0.00009, 0.00011)
-            dict_[key_]['direc'] = '---'
+            dict_[key_]['direc'] = direc_randomization(treated_num, cost_num)
 
     # Variance and covariance parameters
     dict_['DIST'] = {}
@@ -144,9 +144,14 @@ def print_dict(dict_, file_name='test'):
                     if key_ in ['source', 'file', 'norm', 'optimizer']:
                         str_ = '        {0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
-                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc']:
+                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps']:
                         str_ = '        {0:<13} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
+                    elif key_ in ['direc']:
+                        str_ = '        {0:<10}'.format(key_)
+                        for i in range(len(dict_['SCIPY-POWELL']['direc'])):
+                            str_ += '{:10.4f}'.format(dict_['SCIPY-POWELL']['direc'][i])
+                        file_.write(str_)
                     else:
                         str_ = '        {0:<10} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
@@ -199,3 +204,10 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list
+
+def direc_randomization(treated_num, cost_num):
+    direc = []
+    variable_num = 2 * treated_num + cost_num + 4
+    for i in range(variable_num):
+        direc += [np.random.uniform(-0.01, 0.01)]
+    return direc
