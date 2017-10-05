@@ -4,7 +4,9 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
+from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
@@ -47,9 +49,8 @@ def _prepare_arguments(init_dict, rslt):
     sd1 = rslt['DIST']['all'][1]
     sd0 = rslt['DIST']['all'][0]
     sdv = init_dict['DIST']['all'][5]
-    rho1 = rslt['DIST']['all'][3]
-    rho0 = rslt['DIST']['all'][2]
-    choice = np.concatenate(((beta1 - beta0), -gamma))
+    rho1, rho0 = rslt['DIST']['all'][3], rslt['DIST']['all'][2]
+    choice = np.concatenate(((np.subtract(beta1, beta0)), -gamma))
 
     return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
 
@@ -91,8 +92,11 @@ def start_values(init_dict, data_frame, option):
         probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
         sd = init_dict['DIST']['all'][5]
         gamma = probitRslt.params * sd
-        gamma_const = beta[1][0] - beta[0][0] - gamma[0]
-        gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+        gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
+        if len(init_dict['COST']['all']) == 1:
+            gamma = [gamma_const]
+        else:
+            gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
         rho = [0.00, 0.00]
 
         # Arange starting values
@@ -100,8 +104,9 @@ def start_values(init_dict, data_frame, option):
         x0 = np.concatenate((x0, gamma))
         x0 = np.concatenate((x0, sd_))
         x0 = np.concatenate((x0, rho))
-    x0 = np.array(x0)
     init_dict['AUX']['starting_values'] = x0
+    x0 = _transform_start(x0)
+    x0 = np.array(x0)
 
     return x0
 
@@ -127,16 +132,18 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
 
     rslt['DIST']['all'] = start_values[-4:]
-    rslt['DIST']['all'][2] = -1.0 + 2.0 / (1.0 + float(np.exp(-start_values[-2])))
-    rslt['DIST']['all'][3] = -1.0 + 2.0 / (1.0 + float(np.exp(-start_values[-1])))
+    rslt['DIST']['all'][0] = start_values[-4]
+    rslt['DIST']['all'][1] = start_values[-3]
+    rslt['DIST']['all'][2] = -1.0 + 2 / (1.0 + np.exp(-start_values[-2]))
+    rslt['DIST']['all'][3] = -1.0 + 2 / (1.0 + np.exp(-start_values[-1]))
 
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
     rslt['AUX']['x_internal'][-4] = start_values[(-4)]
     rslt['AUX']['x_internal'][-3] = start_values[(-3)]
-    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
-    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
+    rslt['AUX']['x_internal'][-2] = -1.0 + 2 / (1.0 + np.exp(-start_values[-2]))
+    rslt['AUX']['x_internal'][-1] = -1.0 + 2 / (1.0 + np.exp(-start_values[-1]))
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
 
     return rslt
@@ -159,8 +166,8 @@ def _transform_start(x):
     x[:(-4)] = x[:(-4)]
 
     # Variances
-    x[(-4)] = np.log(x[(-4)])
-    x[(-3)] = np.log(x[(-3)])
+    x[(-4)] = x[(-4)]
+    x[(-3)] = x[(-3)]
 
     # Correlations
     transform = (x[(-2)] + 1) / 2
@@ -182,6 +189,10 @@ def calculate_criteria(init_dict, data_frame, start_values):
 
 def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
+
+    # Adjust output
+    init_dict, rslt = adjust_print_output(init_dict, rslt)
+
     with open('est.grmpy.info', 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
@@ -189,7 +200,7 @@ def print_logfile(init_dict, rslt):
             file_.write(header)
             if label == 'Optimization Information':
                 for section in ['Optimizer', 'Success', 'Status', 'Number of Evaluations',
-                                'Criteria', 'Message']:
+                                'Criteria', 'Message', 'Warning']:
                     fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
                     if section == 'Number of Evaluations':
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
@@ -228,13 +239,18 @@ def simulate_estimation(init_dict, rslt):
 
     dict_ = process_results(init_dict, rslt)
 
+    # Distribute information
+    seed = dict_['SIMULATION']['seed']
+
+    # Simulate unobservables
+    U, V = simulate_unobservables(dict_)
+
     # Simulate observables
     X = simulate_covariates(dict_, 'TREATED')
     Z = simulate_covariates(dict_, 'COST')
 
-    # Simulate unobservables
     # Simulate endogeneous variables
-    Y, D, Y_1, Y_0 = simulate_outcomes_estimation(init_dict, X, Z)
+    Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
 
     df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
 
@@ -251,6 +267,8 @@ def process_results(init_dict, rslt):
         dict_[key_]['all'] = rslt[key_]['all']
     dict_['SIMULATION'] = {}
     dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
+    dict_['SIMULATION']['seed'] = init_dict['SIMULATION']['seed']
+    dict_ = transform_rslt_DIST(rslt, dict_)
 
     return dict_
 
@@ -360,18 +378,21 @@ def process_rslt(init_dict, dict_, rslt, start_values):
     for the start values.  """
 
     x = min(dict_['crit'], key=dict_['crit'].get)
-    if init_dict['AUX']['criteria'] < rslt['crit']:
-        print(
-            'WARNING: \n'
-            '   The optimization algorithm has failed to provide the parametrization that leads to '
-            ' the minimal criteria function value.\n'
-            '   The estimation output is automatically adjusted.')
+    if init_dict['AUX']['criteria'] <= rslt['crit']:
+        warning = 'The optimization algorithm has failed to provide the parametrization that ' \
+                  'leads to the minimal criteria function value. \n                           ' \
+                  '        The estimation output is automatically adjusted.'
+
+        rslt['warning'] = warning
+
         if dict_['crit'][str(x)] < init_dict['AUX']['criteria']:
             rslt['AUX']['x_internal'] = dict_['parameter'][str(x)].tolist()
             rslt['crit'] = dict_['crit'][str(x)]
         else:
-            rslt['AUX']['x_internal'] = start_values.tolist()
+            rslt['AUX']['x_internal'] = init_dict['AUX']['starting_values']
             rslt['crit'] = init_dict['AUX']['criteria']
+    else:
+        rslt['warning'] = '---'
 
 
 def bfgs_dict(optimizer):
@@ -392,3 +413,74 @@ def adjust_output(opt_rslt, init_dict, start_values, optimizer, dict_=None):
     process_rslt(init_dict, dict_, rslt, start_values)
 
     return rslt
+
+
+def adjust_output_maxiter_zero(init_dict, start_values):
+    """The function returns a result dictionary if the maximum number of evaluations is zero."""
+    num_covars_out = init_dict['AUX']['num_covars_out']
+    rslt = dict()
+
+    rslt['TREATED'] = dict()
+    rslt['UNTREATED'] = dict()
+    rslt['COST'] = dict()
+    rslt['DIST'] = dict()
+
+    # Distribute parameters
+    rslt['TREATED']['all'] = start_values[:num_covars_out]
+    rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
+    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
+
+    rslt['DIST']['all'] = start_values[-4:]
+    rslt['DIST']['all'][2] = start_values[-2]
+    rslt['DIST']['all'][3] = start_values[-1]
+
+    # Update auxiliary versions
+    rslt['AUX'] = dict()
+    rslt['AUX']['x_internal'] = start_values[:]
+    rslt['AUX']['x_internal'][-4] = start_values[(-4)]
+    rslt['AUX']['x_internal'][-3] = start_values[(-3)]
+    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
+    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
+    rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
+
+    rslt['success'], rslt['status'] = False, 2
+    rslt['message'], rslt['nfev'], rslt['crit'] = '---', 0, init_dict['AUX']['criteria']
+
+    return rslt
+
+
+def adjust_print_output(init_dict, rslt):
+    """The function arranges the distributional parameters."""
+
+    rho10 = init_dict['DIST']['all'][1] / (
+    init_dict['DIST']['all'][0] * init_dict['DIST']['all'][3])
+    sdv = init_dict['DIST']['all'][5]
+
+    for dict_ in [init_dict, rslt]:
+        if dict_ == init_dict:
+            key_ = 'starting_values'
+        else:
+            key_ = 'x_internal'
+        if not isinstance(dict_['AUX'][key_], list):
+            dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
+        place_holder = dict_['AUX'][key_][:]
+        dict_['AUX'][key_] = place_holder[:-4] + [place_holder[-4], rho10, place_holder[-2],
+                                                  place_holder[-3], place_holder[-1], sdv]
+        dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
+
+    return init_dict, rslt
+
+
+def transform_rslt_DIST(rslt, dict_):
+    """The function converts the correlation parameters from the estimation outcome to
+    covariances for the simulation of the estimation sample.
+    """
+    dict_['DIST'] = {}
+    place_holder = rslt['AUX']['x_internal'][-6:]
+    cov01 = place_holder[1] * place_holder[0] * place_holder[3]
+    cov0V = place_holder[2] * place_holder[0] * place_holder[5]
+    cov1V = place_holder[4] * place_holder[3] * place_holder[5]
+
+    dict_['DIST']['all'] = [place_holder[0], cov01, cov0V, place_holder[3], cov1V, place_holder[5]]
+
+    return dict_

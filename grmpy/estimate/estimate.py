@@ -5,7 +5,7 @@ import os
 from scipy.optimize import minimize
 import pandas as pd
 
-from grmpy.estimate.estimate_auxiliary import distribute_parameters
+from grmpy.estimate.estimate_auxiliary import adjust_output_maxiter_zero
 from grmpy.estimate.estimate_auxiliary import minimizing_interface
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import write_descriptives
@@ -33,11 +33,7 @@ def estimate(init_file, option):
     opts, method = optimizer_options(dict_)
     dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
     if opts['maxiter'] == 0:
-        rslt = distribute_parameters(x0, dict_)
-        fun, success, status = calculate_criteria(dict_, data, x0), False, 2
-        message, nfev = '---', 0
-        rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
-        rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun
+        rslt = adjust_output_maxiter_zero(dict_, x0)
     else:
         rslt_dict = bfgs_dict(method)
         opt_rslt = minimize(

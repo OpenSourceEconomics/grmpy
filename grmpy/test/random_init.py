@@ -129,7 +129,7 @@ def print_dict(dict_, file_name='test'):
 
         for label in labels:
 
-            file_.write(label + '\n\n')
+            file_.write('   {}'.format(label) + '\n\n')
 
             if label in ['SIMULATION', 'ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL']:
                 if label == 'SIMULATION':
@@ -142,20 +142,20 @@ def print_dict(dict_, file_name='test'):
                     structure = ['disp', 'maxiter', 'xtol', 'ftol', 'direc']
                 for key_ in structure:
                     if key_ in ['source', 'file', 'norm', 'optimizer']:
-                        str_ = '{0:<25} {1:20}\n'
+                        str_ = '        {0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps', 'direc']:
-                        str_ = '{0:<13} {1:20}\n'
+                        str_ = '        {0:<13} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
-                        str_ = '{0:<10} {1:20}\n'
+                        str_ = '        {0:<10} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i in range(len(dict_[label]['coeff'])):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
-                            str_ = '{0:<10} {1:20.4f} {2:>18} {3:5.4f}\n'
+                            str_ = '        {0:<10} {1:20.4f} {2:>18} {3:5.4f}\n'
                             file_.write(
                                 str_.format(
                                     'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
@@ -163,14 +163,14 @@ def print_dict(dict_, file_name='test'):
                             )
                         else:
                             if write_nonbinary:
-                                str_ = '{0:<10} {1:20.4f} {2:>18}\n'
+                                str_ = '        {0:<10} {1:20.4f} {2:>18}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i],
                                                         dict_[label]['types'][i]))
                             else:
-                                str_ = '{0:<10} {1:20.4f}\n'
+                                str_ = '        {0:<10} {1:20.4f}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
                     else:
-                        str_ = '{0:<10} {1:20.4f}\n'
+                        str_ = '        {0:<10} {1:20.4f}\n'
                         file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
             file_.write('\n')
 
