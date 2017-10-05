@@ -205,7 +205,9 @@ def generate_coeff(num, key_, is_zero):
 
     return list_, binary_list
 
+
 def direc_randomization(treated_num, cost_num):
+    """The function provides random values for the SCIPY-POWELL direc specification."""
     direc = []
     variable_num = 2 * treated_num + cost_num + 4
     for i in range(variable_num):

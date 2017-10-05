@@ -454,7 +454,7 @@ def adjust_print_output(init_dict, rslt):
     """The function arranges the distributional parameters."""
 
     rho10 = init_dict['DIST']['all'][1] / (
-    init_dict['DIST']['all'][0] * init_dict['DIST']['all'][3])
+        init_dict['DIST']['all'][0] * init_dict['DIST']['all'][3])
     sdv = init_dict['DIST']['all'][5]
 
     for dict_ in [init_dict, rslt]:

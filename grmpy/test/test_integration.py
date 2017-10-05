@@ -48,7 +48,7 @@ class TestClass:
         sample is equal if both samples include an identical number of individuals.
         """
         for _ in range(5):
-            constr= constraints(probability=0.0, agents=1000, optimizer='SCIPY-BFGS')
+            constr = constraints(probability=0.0, agents=1000, optimizer='SCIPY-BFGS')
             dict_ = generate_random_dict(constr)
             dict_['ESTIMATION']['agents'] = 1000
             print_dict(dict_)
@@ -64,4 +64,3 @@ class TestClass:
                 criteria += [calculate_criteria(init_dict, data, start)]
             np.testing.assert_allclose(criteria[1], criteria[0], rtol=0.1)
             cleanup()
-
