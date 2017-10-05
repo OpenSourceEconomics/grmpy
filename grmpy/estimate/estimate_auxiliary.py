@@ -241,6 +241,7 @@ def simulate_estimation(init_dict, rslt):
 
     # Distribute information
     seed = dict_['SIMULATION']['seed']
+    np.random.seed(seed)
 
     # Simulate unobservables
     U, V = simulate_unobservables(dict_)

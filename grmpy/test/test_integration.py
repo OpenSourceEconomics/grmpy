@@ -47,7 +47,7 @@ class TestClass:
         """The test checks if the criteria function value of the simulated and the 'estimated'
         sample is equal if both samples include an identical number of individuals.
         """
-        for _ in range(10):
+        for _ in range(5):
             constr= constraints(probability=0.0, agents=1000, optimizer='SCIPY-BFGS')
             dict_ = generate_random_dict(constr)
             dict_['ESTIMATION']['agents'] = 1000
