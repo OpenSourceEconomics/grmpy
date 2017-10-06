@@ -7,15 +7,18 @@ from scipy.stats import norm
 import pandas as pd
 import numpy as np
 
+from grmpy.estimate.estimate_auxiliary import adjust_output_maxiter_zero
 from grmpy.estimate.estimate_auxiliary import distribute_parameters
 from grmpy.estimate.estimate_auxiliary import _prepare_arguments
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import optimizer_options
+from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.read.read import read
 
 
-def log_likelihood_old(data_frame, init_dict, rslt):
+def log_likelihood_old(data_frame, init_dict, rslt, dict_=None):
     """The function provides the loglikelihood function for the minimization process."""
     beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
@@ -42,17 +45,22 @@ def log_likelihood_old(data_frame, init_dict, rslt):
             contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
         likl[observation] = contrib
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
+    if dict_ is None:
+        pass
+    else:
+        dict_['crit'][str(len(dict_['crit']))] = likl
+
 
     return likl
 
 
-def minimizing_interface_old(start_values, data_frame, init_dict):
+def minimizing_interface_old(start_values, data_frame, init_dict, dict_):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
-    rslt = distribute_parameters(init_dict, start_values)
+    rslt = distribute_parameters(init_dict, start_values, dict_)
 
     # Calculate liklihood for pre specified arguments
-    likl = log_likelihood_old(data_frame, init_dict, rslt)
+    likl = log_likelihood_old(data_frame, init_dict, rslt, dict_)
 
     return likl
 
@@ -72,19 +80,16 @@ def estimate_old(init_file, option):
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
+    dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
     if opts['maxiter'] == 0:
-        rslt = distribute_parameters(dict_, x0)
-        fun, success, status = calculate_criteria(dict_, data, x0), False, 2
-        message, nfev = '---', 0
+        rslt = adjust_output_maxiter_zero(dict_, x0)
     else:
+        rslt_dict = bfgs_dict(method)
         opt_rslt = minimize(
-            minimizing_interface_old, x0, args=(data, dict_), method=method, options=opts)
-        x_rslt, fun, success = opt_rslt['x'], opt_rslt['fun'], opt_rslt['success']
-        status, nfev, message = opt_rslt['status'], opt_rslt['nfev'], opt_rslt['message']
-        rslt = distribute_parameters(dict_, x_rslt)
+            minimizing_interface_old, x0, args=(data, dict_, rslt_dict), method=method,
+                options=opts)
+        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
 
-    rslt['fval'], rslt['success'], rslt['status'] = fun, success, status
-    rslt['message'], rslt['nfev'], rslt['crit'] = message, nfev, fun
 
     # Finishing
     return rslt
