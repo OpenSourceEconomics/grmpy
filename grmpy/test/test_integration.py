@@ -38,7 +38,7 @@ class TestClass:
             print_dict(dict_)
             df = simulate('test.grmpy.ini')
             init_dict = read('test.grmpy.ini')
-            start = start_values(init_dict, df, 'true_values')
+            start = start_values(init_dict, df, 'init_values')
             criteria_ = calculate_criteria(init_dict, df, start)
             np.testing.assert_array_almost_equal(criteria, criteria_)
             np.testing.assert_almost_equal(np.sum(df.sum()), stat)
@@ -48,19 +48,32 @@ class TestClass:
         sample is equal if both samples include an identical number of individuals.
         """
         for _ in range(5):
-            constr = constraints(probability=0.0, agents=10000, optimizer='SCIPY-BFGS')
+            constr = constraints(probability=0.0, agents=10000, start='init_values',
+                                 optimizer='SCIPY-BFGS')
             dict_ = generate_random_dict(constr)
             dict_['ESTIMATION']['agents'] = 10000
             print_dict(dict_)
 
             df1 = simulate('test.grmpy.ini')
-            rslt = estimate('test.grmpy.ini', 'true_values')
+            rslt = estimate('test.grmpy.ini')
             init_dict = read('test.grmpy.ini')
             df2 = simulate_estimation(init_dict, rslt)
-            start = start_values(init_dict, df1, 'true_values')
+            start = start_values(init_dict, df1, 'init_values')
 
             criteria = []
             for i, data in enumerate([df1, df2]):
                 criteria += [calculate_criteria(init_dict, data, start)]
             np.testing.assert_allclose(criteria[1], criteria[0], rtol=0.1)
-            cleanup()
+
+    def test4(self):
+        """The test checks if the estimation process works if the Powell algorithm is specified as
+        the optimizer option."""
+        for _ in range(5):
+            constr = constraints(probability=0.0, agents=1000,start='init_values',
+                                 optimizer='SCIPY-POWELL')
+            generate_random_dict(constr)
+
+            simulate('test.grmpy.ini')
+            estimate('test.grmpy.ini')
+        cleanup()
+

@@ -65,7 +65,7 @@ def minimizing_interface_old(start_values, data_frame, init_dict, dict_):
     return likl
 
 
-def estimate_old(init_file, option):
+def estimate_old(init_file):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     assert os.path.isfile(init_file)
@@ -73,6 +73,9 @@ def estimate_old(init_file, option):
 
     data_file = dict_['SIMULATION']['source'] + '.grmpy.txt'
     assert os.path.isfile(data_file)
+
+    # Set Start option
+    option = dict_['ESTIMATION']['start']
 
     # Read data frame
     data = pd.read_table(data_file, delim_whitespace=True, header=0)

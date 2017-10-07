@@ -6,7 +6,7 @@ import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None,
-                optimizer=None):
+                optimizer=None, start=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -36,6 +36,10 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
                                                          p=[0.5, 0.5])
     else:
         constraints_dict['OPTIMIZER'] = optimizer
+    if start is None:
+        constraints_dict['START'] = np.random.choice(a=['init_values', 'auto'])
+    else:
+        constraints_dict['START'] = start
     return constraints_dict
 
 
@@ -58,6 +62,8 @@ def generate_random_dict(constraints_dict=None):
     agents_sample = constraints_dict['SAMPLE_SIZE']
 
     optimizer = constraints_dict['OPTIMIZER']
+
+    start = constraints_dict['START']
 
     source = my_random_string(8)
 
@@ -90,6 +96,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION']['agents'] = agents_sample
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     dict_['ESTIMATION']['optimizer'] = optimizer
+    dict_['ESTIMATION']['start'] = start
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         dict_[key_]['disp'] = np.random.randint(0, 1)
@@ -135,13 +142,13 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['agents', 'seed', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['agents', 'file', 'optimizer']
+                    structure = ['agents', 'file', 'optimizer', 'start']
                 elif label == 'SCIPY-BFGS':
                     structure = ['disp', 'maxiter', 'gtol', 'norm', 'eps']
                 else:
                     structure = ['disp', 'maxiter', 'xtol', 'ftol', 'direc']
                 for key_ in structure:
-                    if key_ in ['source', 'file', 'norm', 'optimizer']:
+                    if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
                         str_ = '        {0:<25} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps']:

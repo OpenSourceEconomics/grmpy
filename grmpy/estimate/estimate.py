@@ -17,7 +17,7 @@ from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.read.read import read
 
 
-def estimate(init_file, option):
+def estimate(init_file):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     assert os.path.isfile(init_file)
@@ -25,6 +25,9 @@ def estimate(init_file, option):
 
     data_file = dict_['ESTIMATION']['file']
     assert os.path.isfile(data_file)
+
+    # Start value option
+    option = dict_['ESTIMATION']['start']
 
     # Read data frame
     data = pd.read_table(data_file, delim_whitespace=True, header=0)
@@ -41,6 +44,7 @@ def estimate(init_file, option):
 
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
     # Print Output files
+    print(dict_['AUX']['starting_values'])
     print_logfile(dict_, rslt)
     write_descriptives(dict_, data, rslt)
 

@@ -1,5 +1,7 @@
 import copy
 
+import numpy as np
+
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
@@ -9,6 +11,7 @@ from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 
 
+np.random.seed(1234)
 # Clean directory
 cleanup()
 

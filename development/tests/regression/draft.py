@@ -36,7 +36,7 @@ if True:
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
         init_dict = read('test.grmpy.ini')
-        start = start_values(init_dict, df, 'true_values')
+        start = start_values(init_dict, df, 'init_values')
         criteria = calculate_criteria(init_dict, df, start)
         tests += [(stat, dict_, criteria)]
     json.dump(tests, open(file_dir, 'w'))
@@ -49,7 +49,7 @@ if True:
         print_dict(dict_)
         init_dict = read('test.grmpy.ini')
         df = simulate('test.grmpy.ini')
-        start = start_values(init_dict, df, 'true_values')
+        start = start_values(init_dict, df, 'init_values')
         criteria_ = calculate_criteria(init_dict, df, start)
         np.testing.assert_array_almost_equal(criteria, criteria_)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)

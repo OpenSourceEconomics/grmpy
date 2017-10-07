@@ -61,7 +61,7 @@ def start_values(init_dict, data_frame, option):
     assert isinstance(init_dict, dict)
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
 
-    if option == 'true_values':
+    if option == 'init_values':
         # Set coefficients equal the true init file values
         x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
         x0 += [init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1]]]
@@ -104,7 +104,7 @@ def start_values(init_dict, data_frame, option):
         x0 = np.concatenate((x0, gamma))
         x0 = np.concatenate((x0, sd_))
         x0 = np.concatenate((x0, rho))
-    init_dict['AUX']['starting_values'] = x0
+    init_dict['AUX']['starting_values'] = x0[:]
     x0 = _transform_start(x0)
     x0 = np.array(x0)
 
@@ -145,7 +145,6 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['AUX']['x_internal'][-2] = -1.0 + 2 / (1.0 + np.exp(-start_values[-2]))
     rslt['AUX']['x_internal'][-1] = -1.0 + 2 / (1.0 + np.exp(-start_values[-1]))
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
-
     return rslt
 
 
@@ -199,11 +198,14 @@ def print_logfile(init_dict, rslt):
             header = '\n \n  {:<10}\n\n'.format(label)
             file_.write(header)
             if label == 'Optimization Information':
-                for section in ['Optimizer', 'Success', 'Status', 'Number of Evaluations',
+                for section in ['Optimizer','Start values', 'Success', 'Status', 'Number of Evaluations',
                                 'Criteria', 'Message', 'Warning']:
                     fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
                     if section == 'Number of Evaluations':
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
+                    elif section == 'Start values':
+                        file_.write(fmt.format('', section + ':',
+                                               init_dict['ESTIMATION']['start']))
                     elif section == 'Optimizer':
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
@@ -237,67 +239,91 @@ def optimizer_options(init_dict_):
 def simulate_estimation(init_dict, rslt):
     """The function simulates a new sample based on the estimated coefficients."""
 
-    dict_ = process_results(init_dict, rslt)
+    rslt_dict, start_dict = process_results(init_dict, rslt)
 
     # Distribute information
-    seed = dict_['SIMULATION']['seed']
+    seed = rslt_dict['SIMULATION']['seed']
     np.random.seed(seed)
 
-    # Simulate unobservables
-    U, V = simulate_unobservables(dict_)
+    data_frames = []
 
-    # Simulate observables
-    X = simulate_covariates(dict_, 'TREATED')
-    Z = simulate_covariates(dict_, 'COST')
+    for dict_ in [rslt_dict, start_dict]:
 
-    # Simulate endogeneous variables
-    Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
 
-    df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
+        # Simulate unobservables
+        U, V = simulate_unobservables(dict_)
 
-    return df
+        # Simulate observables
+        X = simulate_covariates(dict_, 'TREATED')
+        Z = simulate_covariates(dict_, 'COST')
+
+        # Simulate endogeneous variables
+        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
+
+        df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
+        data_frames += [df]
+
+
+    return data_frames[0], data_frames[1]
 
 
 def process_results(init_dict, rslt):
     """The function processes the results dictionary for the following simulation."""
-    dict_ = {}
+    rslt_dict = {}
+    start_dict = {}
+    dicts = [rslt_dict, start_dict]
+    for dict_ in dicts:
+        dict_['SIMULATION'] = {}
+        dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
+        dict_['SIMULATION']['seed'] = init_dict['SIMULATION']['seed']
+        if dict_ == rslt_dict:
+            for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                dict_[key_] = {}
+                dict_[key_]['types'] = init_dict[key_]['types']
+                dict_[key_]['all'] = rslt[key_]['all']
+            dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
+        else:
+            num_treated = len(init_dict['TREATED']['all'])
+            for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                dict_[key_] = {}
+                dict_[key_]['types'] = init_dict[key_]['types']
+            dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
+            dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
+                                      num_treated:2 * num_treated]
+            dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
+            dict_['DIST'] = {}
+            dict_['DIST']['all'] = init_dict['AUX']['starting_values'][-6:]
 
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
-        dict_[key_] = {}
-        dict_[key_]['types'] = init_dict[key_]['types']
-        dict_[key_]['all'] = rslt[key_]['all']
-    dict_['SIMULATION'] = {}
-    dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
-    dict_['SIMULATION']['seed'] = init_dict['SIMULATION']['seed']
-    dict_ = transform_rslt_DIST(rslt, dict_)
 
-    return dict_
+
+    return rslt_dict, start_dict
 
 
 def write_descriptives(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
-    df2 = simulate_estimation(init_dict, rslt)
+    df2, df3  = simulate_estimation(init_dict, rslt)
     with open('descriptives.grmpy.info', 'w') as file_:
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
         info_ = []
-        for i, label in enumerate([df1, df2]):
+        for i, label in enumerate([df1, df2, df3]):
             info_ += [[label.shape[0], (label['D'] == 1).sum(), (label['D'] == 0).sum()]]
 
         fmt = '  {:<10}' + ' {:>20}' * 2 + '\n\n'
-        file_.write(fmt.format(*['', 'Sample', 'Estimated Sample']))
+        file_.write(fmt.format(*['', 'Observed Sample', 'Simulated Sample (finish)',
+                                 'Simulated Sample (start)']))
 
         for i, label in enumerate(['All', 'Treated', 'Untreated']):
             str_ = '  {:<10}' + ' {:20}' * 2 + '\n'
-            file_.write(str_.format(label, info_[0][i], info_[1][i]))
+            file_.write(str_.format(label, info_[0][i], info_[1][i], info_[2][i]))
 
         header = '\n\n Distribution of Outcomes\n\n'
         file_.write(header)
 
-        for data in ['Sample', 'Estimated Sample']:
+        for data in ['Observed Sample', 'Simulated Sample (finish)', 'Simulated Sample (start)']:
             header = '\n\n ' '  {:<10}'.format(data) + '\n\n'
             file_.write(header)
 
@@ -305,10 +331,12 @@ def write_descriptives(init_dict, df1, rslt):
             args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
             file_.write(fmt.format(*args))
 
-            if data == 'Sample':
+            if data == 'Observed Sample':
                 data_frame = df1
-            else:
+            elif data == 'Simulated Sample (finish)':
                 data_frame = df2
+            else:
+                data_frame = df3
             for group in ['All', 'Treated', 'Untreated']:
 
                 object = data_frame['Y']
@@ -477,7 +505,7 @@ def transform_rslt_DIST(rslt, dict_):
     covariances for the simulation of the estimation sample.
     """
     dict_['DIST'] = {}
-    place_holder = rslt['AUX']['x_internal'][-6:]
+    place_holder = rslt[-6:]
     cov01 = place_holder[1] * place_holder[0] * place_holder[3]
     cov0V = place_holder[2] * place_holder[0] * place_holder[5]
     cov1V = place_holder[4] * place_holder[3] * place_holder[5]
