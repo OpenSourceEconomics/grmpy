@@ -44,7 +44,6 @@ def estimate(init_file):
 
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
     # Print Output files
-    print(dict_['AUX']['starting_values'])
     print_logfile(dict_, rslt)
     write_descriptives(dict_, data, rslt)
 

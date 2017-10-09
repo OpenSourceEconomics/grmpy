@@ -93,7 +93,7 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    dict_['ESTIMATION']['agents'] = agents_sample
+    dict_['ESTIMATION']['agents'] = agents
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     dict_['ESTIMATION']['optimizer'] = optimizer
     dict_['ESTIMATION']['start'] = start
