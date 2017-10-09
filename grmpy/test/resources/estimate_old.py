@@ -50,7 +50,6 @@ def log_likelihood_old(data_frame, init_dict, rslt, dict_=None):
     else:
         dict_['crit'][str(len(dict_['crit']))] = likl
 
-
     return likl
 
 
@@ -90,9 +89,8 @@ def estimate_old(init_file):
         rslt_dict = bfgs_dict(method)
         opt_rslt = minimize(
             minimizing_interface_old, x0, args=(data, dict_, rslt_dict), method=method,
-                options=opts)
+            options=opts)
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
-
 
     # Finishing
     return rslt

@@ -198,7 +198,8 @@ def print_logfile(init_dict, rslt):
             header = '\n \n  {:<10}\n\n'.format(label)
             file_.write(header)
             if label == 'Optimization Information':
-                for section in ['Optimizer','Start values', 'Success', 'Status', 'Number of Evaluations',
+                for section in ['Optimizer', 'Start values', 'Success', 'Status',
+                                'Number of Evaluations',
                                 'Criteria', 'Message', 'Warning']:
                     fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
                     if section == 'Number of Evaluations':
@@ -256,7 +257,6 @@ def simulate_estimation(init_dict, rslt, start=False):
 
     # Simulate observables
     for dict_ in dicts:
-
         # Simulate unobservables
         U, V = simulate_unobservables(dict_)
 
@@ -295,7 +295,7 @@ def process_results(init_dict, rslt, start=False):
                     dict_[key_]['types'] = init_dict[key_]['types']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
-                                          num_treated:2 * num_treated]
+                                            num_treated:2 * num_treated]
                 dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
                 dict_['DIST'] = {}
                 dict_['DIST']['all'] = init_dict['AUX']['starting_values'][-6:]
@@ -303,11 +303,12 @@ def process_results(init_dict, rslt, start=False):
             else:
                 return rslt_dict
 
+
 def write_descriptives(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
-    df2, df3  = simulate_estimation(init_dict, rslt, True)
+    df2, df3 = simulate_estimation(init_dict, rslt, True)
     with open('descriptives.grmpy.info', 'w') as file_:
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
@@ -333,8 +334,8 @@ def write_descriptives(init_dict, df1, rslt):
             args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
             file_.write(fmt.format(*args))
 
-            for data in ['Observed Sample', 'Simulated Sample (finish)', 'Simulated Sample (start)']:
-
+            for data in ['Observed Sample', 'Simulated Sample (finish)',
+                         'Simulated Sample (start)']:
 
                 if data == 'Observed Sample':
                     data_frame = df1

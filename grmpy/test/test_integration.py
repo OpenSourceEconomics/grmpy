@@ -69,11 +69,10 @@ class TestClass:
         """The test checks if the estimation process works if the Powell algorithm is specified as
         the optimizer option."""
         for _ in range(5):
-            constr = constraints(probability=0.0, agents=1000,start='init_values',
+            constr = constraints(probability=0.0, agents=1000, start='init_values',
                                  optimizer='SCIPY-POWELL')
             generate_random_dict(constr)
 
             simulate('test.grmpy.ini')
             estimate('test.grmpy.ini')
         cleanup()
-
