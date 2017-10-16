@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
+from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 
 
@@ -238,23 +239,26 @@ def optimizer_options(init_dict_):
 
 def simulate_estimation(init_dict, rslt, data_frame, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
+
+    # Distribute information
+    seed = init_dict['SIMULATION']['seed']
+    np.random.seed(seed)
+
+    # Determine parametrization and read in /simulate observables
     if start is True:
         rslt_dict, start_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
+        X = data_frame.filter(regex=r'^X\_')
+        Z = data_frame.filter(regex=r'^Z\_')
+
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
-    # Distribute information
-    seed = rslt_dict['SIMULATION']['seed']
-
-    np.random.seed(seed)
+        X = simulate_covariates(rslt_dict, 'TREATED')
+        Z = simulate_covariates(rslt_dict, 'COST')
 
     data_frames = []
 
-    X = data_frame.filter(regex=r'^X\_')
-    Z = data_frame.filter(regex=r'^Z\_')
-
-    # Simulate observables
     for dict_ in dicts:
         # Simulate unobservables
         U, V = simulate_unobservables(dict_)
