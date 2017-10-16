@@ -38,11 +38,11 @@ def estimate(init_file):
     if opts['maxiter'] == 0:
         rslt = adjust_output_maxiter_zero(dict_, x0)
     else:
-        rslt_dict = bfgs_dict(method)
+        rslt_dict = bfgs_dict()
         opt_rslt = minimize(
             minimizing_interface, x0, args=(dict_, data, rslt_dict), method=method, options=opts)
 
-        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
+        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)
     write_descriptives(dict_, data, rslt)

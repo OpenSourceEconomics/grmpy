@@ -5,7 +5,6 @@ import pandas as pd
 import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 
 
@@ -61,7 +60,7 @@ def start_values(init_dict, data_frame, option):
     assert isinstance(init_dict, dict)
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
 
-    if option == 'init_values':
+    if option == 'init':
         # Set coefficients equal the true init file values
         x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
         x0 += [init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1]]]
@@ -237,11 +236,11 @@ def optimizer_options(init_dict_):
     return opt_dict, method
 
 
-def simulate_estimation(init_dict, rslt, start=False):
+def simulate_estimation(init_dict, rslt, data_frame, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
     if start is True:
         rslt_dict, start_dict = process_results(init_dict, rslt, start)
-        dicts = [rslt_dict, start_dict]
+        dicts = [start_dict, rslt_dict]
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
@@ -252,14 +251,13 @@ def simulate_estimation(init_dict, rslt, start=False):
 
     data_frames = []
 
-    X = simulate_covariates(rslt_dict, 'TREATED')
-    Z = simulate_covariates(rslt_dict, 'COST')
+    X = data_frame.filter(regex=r'^X\_')
+    Z = data_frame.filter(regex=r'^Z\_')
 
     # Simulate observables
     for dict_ in dicts:
         # Simulate unobservables
         U, V = simulate_unobservables(dict_)
-
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
 
@@ -286,7 +284,7 @@ def process_results(init_dict, rslt, start=False):
                 dict_[key_] = {}
                 dict_[key_]['types'] = init_dict[key_]['types']
                 dict_[key_]['all'] = rslt[key_]['all']
-            dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
+                dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
         else:
             if start is True:
                 num_treated = len(init_dict['TREATED']['all'])
@@ -299,7 +297,7 @@ def process_results(init_dict, rslt, start=False):
                 dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
                 dict_['DIST'] = {}
                 dict_['DIST']['all'] = init_dict['AUX']['starting_values'][-6:]
-                return rslt_dict, start_dict
+                return start_dict, rslt_dict
             else:
                 return rslt_dict
 
@@ -308,8 +306,8 @@ def write_descriptives(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
-    df2, df3 = simulate_estimation(init_dict, rslt, True)
-    with open('descriptives.grmpy.info', 'w') as file_:
+    df3, df2 = simulate_estimation(init_dict, rslt, df1, True)
+    with open('descriptives.grmpy.txt', 'w') as file_:
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
@@ -364,27 +362,6 @@ def write_descriptives(init_dict, df1, rslt):
                 file_.write(fmt.format(*[data] + info))
 
 
-def simulate_outcomes_estimation(init_dict, X, Z):
-    """The function simulates the outcome Y, the resulting treatment dummy."""
-    # Distribute information
-    coeffs_untreated = init_dict['UNTREATED']['all']
-    coeffs_treated = init_dict['TREATED']['all']
-    coeffs_cost = init_dict['COST']['all']
-
-    # Calculate potential outcomes and costs
-    Y_1 = np.dot(coeffs_treated, X.T)
-    Y_0 = np.dot(coeffs_untreated, X.T)
-    C = np.dot(coeffs_cost, Z.T)
-
-    # Calculate expected benefit and the resulting treatment dummy
-    D = np.array((Y_1 - Y_0 - C > 0).astype(int))
-
-    # Observed outcomes
-    Y = D * Y_1 + (1 - D) * Y_0
-
-    return Y, D, Y_1, Y_0
-
-
 def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
     """The function converts the simulated variables to a panda data frame."""
 
@@ -409,10 +386,11 @@ def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
 
 def process_rslt(init_dict, dict_, rslt, start_values):
     """The function checks if the criteria function value is smaller for the optimization output as
-    for the start values.  """
+    for the start values.
+    """
 
     x = min(dict_['crit'], key=dict_['crit'].get)
-    if init_dict['AUX']['criteria'] <= rslt['crit']:
+    if dict_['crit'][str(x)] <= rslt['crit']:
         warning = 'The optimization algorithm has failed to provide the parametrization that ' \
                   'leads to the minimal criteria function value. \n                           ' \
                   '        The estimation output is automatically adjusted.'
@@ -429,14 +407,15 @@ def process_rslt(init_dict, dict_, rslt, start_values):
         rslt['warning'] = '---'
 
 
-def bfgs_dict(optimizer):
+def bfgs_dict():
     """The function provides a dictionary for tracking the criteria function values and the
-    associated parametrization."""
+    associated parametrization.
+    """
     rslt_dict = {'parameter': {}, 'crit': {}}
     return rslt_dict
 
 
-def adjust_output(opt_rslt, init_dict, start_values, optimizer, dict_=None):
+def adjust_output(opt_rslt, init_dict, start_values, dict_=None):
     """The function adds different information of the minimization process to the estimation
     output."""
     rslt = distribute_parameters(init_dict, start_values)

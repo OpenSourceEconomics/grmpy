@@ -27,7 +27,7 @@ def process(list_, dict_, keyword):
     elif name in ['source', 'file', 'optimizer', 'start']:
         val = str(val)
     elif name in ['direc']:
-        val = np.array(val)
+        val = list(val)
     else:
         val = float(val)
     if name in ['coeff']:

@@ -4,6 +4,7 @@ import os
 import pytest
 
 from grmpy.simulate.simulate import simulate
+from grmpy.estimate.estimate import estimate
 
 
 def test():

@@ -37,7 +37,7 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=No
     else:
         constraints_dict['OPTIMIZER'] = optimizer
     if start is None:
-        constraints_dict['START'] = np.random.choice(a=['init_values', 'auto'])
+        constraints_dict['START'] = np.random.choice(a=['init', 'auto'])
     else:
         constraints_dict['START'] = start
     return constraints_dict
@@ -103,12 +103,10 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_]['maxiter'] = np.random.randint(0, 10000)
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
-            dict_[key_]['norm'] = '-inf'
             dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
         else:
             dict_[key_]['xtol'] = np.random.uniform(0.00009, 0.00011)
             dict_[key_]['ftol'] = np.random.uniform(0.00009, 0.00011)
-            dict_[key_]['direc'] = direc_randomization(treated_num, cost_num)
 
     # Variance and covariance parameters
     dict_['DIST'] = {}
@@ -144,9 +142,9 @@ def print_dict(dict_, file_name='test'):
                 elif label == 'ESTIMATION':
                     structure = ['agents', 'file', 'optimizer', 'start']
                 elif label == 'SCIPY-BFGS':
-                    structure = ['disp', 'maxiter', 'gtol', 'norm', 'eps']
+                    structure = ['disp', 'maxiter', 'gtol', 'eps']
                 else:
-                    structure = ['disp', 'maxiter', 'xtol', 'ftol', 'direc']
+                    structure = ['disp', 'maxiter', 'xtol', 'ftol']
                 for key_ in structure:
                     if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
                         str_ = '        {0:<25} {1:20}\n'
@@ -154,11 +152,6 @@ def print_dict(dict_, file_name='test'):
                     elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps']:
                         str_ = '        {0:<13} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
-                    elif key_ in ['direc']:
-                        str_ = '        {0:<10}'.format(key_)
-                        for i in range(len(dict_['SCIPY-POWELL']['direc'])):
-                            str_ += '{:10.4f}'.format(dict_['SCIPY-POWELL']['direc'][i])
-                        file_.write(str_)
                     else:
                         str_ = '        {0:<10} {1:20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
