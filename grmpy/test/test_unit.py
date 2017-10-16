@@ -158,9 +158,9 @@ class TestClass:
         """The test ensures that the estimation process returns values that are approximately equal
         to the true values if the true values are set as start values for the estimation.
         """
-        for i in range(5):
+        for _ in range(5):
             constr = constraints(agents=1000, probability=0.0, optimizer='SCIPY-BFGS',
-                                 start='init_values')
+                                 start='init')
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
@@ -176,7 +176,7 @@ class TestClass:
         of the new one.
         """
         constr = constraints(agents=100, probability=0.0, optimizer='SCIPY-BFGS',
-                             start='init_values')
+                             start='init')
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         results_old = estimate_old('test.grmpy.ini')

@@ -6,12 +6,12 @@ from grmpy.test.auxiliary import cleanup
 
 
 for _ in range(500):
-    constr = constraints(probability=0.0, agents=1000, optimizer='SCIPY-POWELL')
+    constr = constraints(probability=0.0, agents=1000, optimizer='SCIPY-POWELL', start='init')
 
     generate_random_dict(constr)
 
     simulate('test.grmpy.ini')
 
-    estimate('test.grmpy.ini', 'true_values')
+    estimate('test.grmpy.ini')
 
     cleanup()

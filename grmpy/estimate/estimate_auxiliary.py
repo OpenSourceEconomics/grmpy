@@ -332,26 +332,26 @@ def write_descriptives(init_dict, df1, rslt):
             args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
             file_.write(fmt.format(*args))
 
-            for data in ['Observed Sample', 'Simulated Sample (finish)',
+            for sample in ['Observed Sample', 'Simulated Sample (finish)',
                          'Simulated Sample (start)']:
 
-                if data == 'Observed Sample':
+                if sample == 'Observed Sample':
                     data_frame = df1
-                elif data == 'Simulated Sample (finish)':
+                elif sample == 'Simulated Sample (finish)':
                     data_frame = df2
                 else:
                     data_frame = df3
 
-                object = data_frame['Y']
+                data = data_frame['Y']
 
                 if group == 'Treated':
-                    object = object[data_frame['D'] == 1]
+                    data = data[data_frame['D'] == 1]
                 elif group == 'Untreated':
-                    object = object[data_frame['D'] == 0]
+                    data = data[data_frame['D'] == 0]
                 else:
                     pass
                 fmt = '    {:<25}' + ' {:>20.4f}' * 5 + '\n'
-                info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
+                info = list(data.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
                 if pd.isnull(info).all():
                     fmt = '    {:<10}' + ' {:>20}' * 5 + '\n'
                     info = ['---'] * 5
@@ -359,7 +359,7 @@ def write_descriptives(init_dict, df1, rslt):
                     info[1] = '---'
                     fmt = '    {:<25}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
 
-                file_.write(fmt.format(*[data] + info))
+                file_.write(fmt.format(*[sample] + info))
 
 
 def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
@@ -384,7 +384,7 @@ def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
     return df
 
 
-def process_rslt(init_dict, dict_, rslt, start_values):
+def process_rslt(init_dict, dict_, rslt):
     """The function checks if the criteria function value is smaller for the optimization output as
     for the start values.
     """
@@ -423,7 +423,7 @@ def adjust_output(opt_rslt, init_dict, start_values, dict_=None):
     rslt['message'], rslt['nfev'], rslt['crit'] = opt_rslt['message'], opt_rslt['nfev'], \
                                                   opt_rslt['fun']
 
-    process_rslt(init_dict, dict_, rslt, start_values)
+    process_rslt(init_dict, dict_, rslt)
 
     return rslt
 

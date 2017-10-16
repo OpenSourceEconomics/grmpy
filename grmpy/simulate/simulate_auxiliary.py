@@ -144,20 +144,20 @@ def print_info(init_dict, data_frame):
             for group in ['All', 'Treated', 'Untreated']:
 
                 if label == 'Outcomes':
-                    object = data_frame['Y']
+                    data = data_frame['Y']
                 elif label == 'Effects':
-                    object = data_frame['Y1'] - data_frame['Y0']
+                    data = data_frame['Y1'] - data_frame['Y0']
                 else:
                     raise AssertionError
 
                 if group == 'Treated':
-                    object = object[data_frame['D'] == 1]
+                    data = data[data_frame['D'] == 1]
                 elif group == 'Untreated':
-                    object = object[data_frame['D'] == 0]
+                    data = data[data_frame['D'] == 0]
                 else:
                     pass
                 fmt = '  {:<10}' + ' {:>20.4f}' * 5 + '\n'
-                info = list(object.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
+                info = list(data.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
                 if pd.isnull(info).all():
                     fmt = '  {:<10}' + ' {:>20}' * 5 + '\n'
                     info = ['---'] * 5

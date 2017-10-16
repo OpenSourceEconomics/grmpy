@@ -86,11 +86,11 @@ def estimate_old(init_file):
     if opts['maxiter'] == 0:
         rslt = adjust_output_maxiter_zero(dict_, x0)
     else:
-        rslt_dict = bfgs_dict(method)
+        rslt_dict = bfgs_dict()
         opt_rslt = minimize(
             minimizing_interface_old, x0, args=(data, dict_, rslt_dict), method=method,
             options=opts)
-        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], method, rslt_dict)
+        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], rslt_dict)
 
     # Finishing
     return rslt

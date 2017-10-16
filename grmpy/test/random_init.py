@@ -5,7 +5,7 @@ from scipy.stats import wishart
 import numpy as np
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, maxfun=None, sample=None,
+def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
                 optimizer=None, start=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
@@ -58,8 +58,6 @@ def generate_random_dict(constraints_dict=None):
     agents = constraints_dict['AGENTS']
 
     seed = constraints_dict['SEED']
-
-    agents_sample = constraints_dict['SAMPLE_SIZE']
 
     optimizer = constraints_dict['OPTIMIZER']
 
@@ -157,7 +155,7 @@ def print_dict(dict_, file_name='test'):
                         file_.write(str_.format(key_, dict_[label][key_]))
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                for i in range(len(dict_[label]['coeff'])):
+                for i, _ in enumerate(dict_[label]['coeff']):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
                             str_ = '        {0:<10} {1:20.4f} {2:>18} {3:5.4f}\n'
@@ -205,11 +203,3 @@ def generate_coeff(num, key_, is_zero):
 
     return list_, binary_list
 
-
-def direc_randomization(treated_num, cost_num):
-    """The function provides random values for the SCIPY-POWELL direc specification."""
-    direc = []
-    variable_num = 2 * treated_num + cost_num + 4
-    for i in range(variable_num):
-        direc += [np.random.uniform(-0.01, 0.01)]
-    return direc
