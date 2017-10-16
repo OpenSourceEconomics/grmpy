@@ -337,7 +337,7 @@ def write_descriptives(init_dict, df1, rslt):
             file_.write(fmt.format(*args))
 
             for sample in ['Observed Sample', 'Simulated Sample (finish)',
-                         'Simulated Sample (start)']:
+                           'Simulated Sample (start)']:
 
                 if sample == 'Observed Sample':
                     data_frame = df1
