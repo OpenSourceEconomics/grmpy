@@ -138,10 +138,6 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
-    rslt['AUX']['x_internal'][-4] = start_values[(-4)]
-    rslt['AUX']['x_internal'][-3] = start_values[(-3)]
-    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
-    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
     return rslt
 
@@ -499,7 +495,3 @@ def transform_rslt_DIST(rslt, dict_):
     dict_['DIST']['all'] = [place_holder[0], cov01, cov0V, place_holder[3], cov1V, place_holder[5]]
 
     return dict_
-
-
-def re_transform_corr(rslt):
-    pass
