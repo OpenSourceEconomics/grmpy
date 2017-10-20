@@ -135,7 +135,6 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['DIST']['all'][2] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][2]))
     rslt['DIST']['all'][3] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][3]))
 
-
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
@@ -462,8 +461,6 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt['message'], rslt['nfev'], rslt['crit'] = '---', 0, init_dict['AUX']['criteria']
     rslt['warning'] = '---'
 
-
-
     return rslt
 
 
@@ -502,6 +499,7 @@ def transform_rslt_DIST(rslt, dict_):
     dict_['DIST']['all'] = [place_holder[0], cov01, cov0V, place_holder[3], cov1V, place_holder[5]]
 
     return dict_
+
 
 def re_transform_corr(rslt):
     pass

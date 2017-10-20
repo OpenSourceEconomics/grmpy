@@ -15,7 +15,7 @@ np.random.seed(1234)
 cleanup()
 
 # Construct a random dictionary
-constr = constraints(probability=0.0, agents=1000, optimizer='SCIPY-BFGS', start='init_values')
+constr = constraints(probability=0.0, agents=10000, optimizer='SCIPY-BFGS', start='init')
 init_dict = generate_random_dict(constr)
 
 # Convert original init file
