@@ -14,6 +14,7 @@ from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import print_logfile
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.estimate.estimate_auxiliary import bfgs_dict
+from grmpy.check.check import check_init_file
 from grmpy.read.read import read
 
 
@@ -22,6 +23,9 @@ def estimate(init_file):
     # Import init file as dictionary
     assert os.path.isfile(init_file)
     dict_ = read(init_file)
+
+    # Check if the initialization file specifications are appropriate for the estimation process
+    check_init_file(dict_)
 
     data_file = dict_['ESTIMATION']['file']
     assert os.path.isfile(data_file)
