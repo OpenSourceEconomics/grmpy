@@ -33,7 +33,7 @@ def check_init_file(dict_):
         msg = 'The distributional characteristics have to be undeterministic.'
         raise UserError(msg)
     elif dict_['DIST']['all'][5] == 0:
-        msg = 'The standard deviation of the collected unobservebales have to be larger than zero.'
+        msg = 'The standard deviation of the collected unobservables have to be larger than zero.'
         raise UserError(msg)
 
 

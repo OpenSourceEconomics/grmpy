@@ -132,18 +132,17 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
 
     rslt['DIST']['all'] = start_values[-4:]
-    rslt['DIST']['all'][0] = start_values[-4]
-    rslt['DIST']['all'][1] = start_values[-3]
-    rslt['DIST']['all'][2] = -1.0 + 2 / (1.0 + np.exp(-start_values[-2]))
-    rslt['DIST']['all'][3] = -1.0 + 2 / (1.0 + np.exp(-start_values[-1]))
+    rslt['DIST']['all'][2] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][2]))
+    rslt['DIST']['all'][3] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][3]))
+
 
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
     rslt['AUX']['x_internal'][-4] = start_values[(-4)]
     rslt['AUX']['x_internal'][-3] = start_values[(-3)]
-    rslt['AUX']['x_internal'][-2] = -1.0 + 2 / (1.0 + np.exp(-start_values[-2]))
-    rslt['AUX']['x_internal'][-1] = -1.0 + 2 / (1.0 + np.exp(-start_values[-1]))
+    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
+    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
     return rslt
 
@@ -436,7 +435,6 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     """The function returns a result dictionary if the maximum number of evaluations is zero."""
     num_covars_out = init_dict['AUX']['num_covars_out']
     rslt = dict()
-
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
     rslt['COST'] = dict()
@@ -458,10 +456,13 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt['AUX']['x_internal'][-3] = start_values[(-3)]
     rslt['AUX']['x_internal'][-2] = start_values[(-2)]
     rslt['AUX']['x_internal'][-1] = start_values[(-1)]
-    rslt['AUX']['init_values'] = init_dict['AUX']['init_values']
 
+    rslt['AUX']['init_values'] = init_dict['AUX']['init_values'][:]
     rslt['success'], rslt['status'] = False, 2
     rslt['message'], rslt['nfev'], rslt['crit'] = '---', 0, init_dict['AUX']['criteria']
+    rslt['warning'] = '---'
+
+
 
     return rslt
 
@@ -501,3 +502,6 @@ def transform_rslt_DIST(rslt, dict_):
     dict_['DIST']['all'] = [place_holder[0], cov01, cov0V, place_holder[3], cov1V, place_holder[5]]
 
     return dict_
+
+def re_transform_corr(rslt):
+    pass
