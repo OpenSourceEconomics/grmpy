@@ -236,11 +236,11 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
-    np.random.seed(seed)
+
 
     # Determine parametrization and read in /simulate observables
     if start is True:
-        rslt_dict, start_dict = process_results(init_dict, rslt, start)
+        start_dict, rslt_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
         X = data_frame.filter(regex=r'^X\_')
         Z = data_frame.filter(regex=r'^Z\_')
@@ -254,6 +254,8 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
     data_frames = []
 
     for dict_ in dicts:
+        # Set seed value
+        np.random.seed(seed)
         # Simulate unobservables
         U, V = simulate_unobservables(dict_)
         # Simulate endogeneous variables
@@ -293,8 +295,7 @@ def process_results(init_dict, rslt, start=False):
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
                                             num_treated:2 * num_treated]
                 dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
-                dict_['DIST'] = {}
-                dict_['DIST']['all'] = init_dict['AUX']['starting_values'][-6:]
+                dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
                 return rslt_dict
