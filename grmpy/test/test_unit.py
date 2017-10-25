@@ -14,6 +14,7 @@ from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
+
 @pytest.mark.usefixtures('fresh_directory', 'set_seed')
 class TestClass:
     def test1(self):
@@ -132,7 +133,6 @@ class TestClass:
         the same value for each quantile.
         """
         for _ in range(10):
-
             generate_random_dict()
             init_dict = read('test.grmpy.ini')
 

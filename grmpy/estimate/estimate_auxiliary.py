@@ -237,7 +237,6 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
 
-
     # Determine parametrization and read in /simulate observables
     if start is True:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)

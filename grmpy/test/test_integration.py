@@ -16,6 +16,7 @@ from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
 
+
 @pytest.mark.usefixtures('fresh_directory', 'set_seed')
 class TestClass:
     def test1(self):
@@ -81,5 +82,3 @@ class TestClass:
         simulate(fname)
         estimate(fname)
         cleanup()
-
-
