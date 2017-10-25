@@ -78,7 +78,10 @@ class TestClass:
             estimate('test.grmpy.ini')
 
     def test5(self):
-        fname = os.path.dirname(grmpy.__file__) + '/test/resources/special_case.grmpy.txt'
-        simulate(fname)
-        estimate(fname)
+
+        for _ in range(5):
+            constr = constraints(probability=0.0, maxiter=0, agents=1000)
+            generate_random_dict(constr)
+            simulate('test.grmpy.ini')
+            estimate('test.grmpy.ini')
         cleanup()

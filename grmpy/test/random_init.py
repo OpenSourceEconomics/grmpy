@@ -6,7 +6,7 @@ import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None):
+                optimizer=None, start=None, maxiter=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -40,6 +40,11 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=No
         constraints_dict['START'] = np.random.choice(a=['init', 'auto'])
     else:
         constraints_dict['START'] = start
+    if maxiter is None:
+        constraints_dict['MAXITER'] = np.random.randint(0, 10000)
+    else:
+        constraints_dict['MAXITER'] = maxiter
+
     return constraints_dict
 
 
@@ -53,17 +58,20 @@ def generate_random_dict(constraints_dict=None):
 
     is_deterministic = constraints_dict['DETERMINISTIC']
 
+    optimizer = constraints_dict['OPTIMIZER']
+
     is_zero = constraints_dict['IS_ZERO']
+
+    maxiter = constraints_dict['MAXITER']
 
     agents = constraints_dict['AGENTS']
 
-    seed = constraints_dict['SEED']
-
-    optimizer = constraints_dict['OPTIMIZER']
-
     start = constraints_dict['START']
 
+    seed = constraints_dict['SEED']
+
     source = my_random_string(8)
+
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
@@ -98,7 +106,7 @@ def generate_random_dict(constraints_dict=None):
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         dict_[key_]['disp'] = np.random.randint(0, 1)
-        dict_[key_]['maxiter'] = np.random.randint(0, 10000)
+        dict_[key_]['maxiter'] = maxiter
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
             dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
