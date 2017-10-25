@@ -72,7 +72,6 @@ def generate_random_dict(constraints_dict=None):
 
     source = my_random_string(8)
 
-
     dict_ = {}
     treated_num = np.random.randint(1, 10)
     cost_num = np.random.randint(1, 10)
@@ -210,4 +209,3 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list
-
