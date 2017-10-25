@@ -244,7 +244,6 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         dicts = [start_dict, rslt_dict]
         X = data_frame.filter(regex=r'^X\_')
         Z = data_frame.filter(regex=r'^Z\_')
-
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
@@ -252,12 +251,12 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         Z = simulate_covariates(rslt_dict, 'COST')
 
     data_frames = []
-
     for dict_ in dicts:
         # Set seed value
         np.random.seed(seed)
         # Simulate unobservables
         U, V = simulate_unobservables(dict_)
+
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
 
@@ -494,5 +493,8 @@ def transform_rslt_DIST(rslt, dict_):
     cov1V = place_holder[4] * place_holder[3] * place_holder[5]
 
     dict_['DIST']['all'] = [place_holder[0], cov01, cov0V, place_holder[3], cov1V, place_holder[5]]
+
+    for i, element in enumerate(dict_['DIST']['all']):
+        dict_['DIST']['all'][i] = round(element, 4)
 
     return dict_

@@ -1,4 +1,5 @@
 """The module includes an integration and a regression test for the simulation process."""
+import pytest
 import json
 import os
 
@@ -15,7 +16,7 @@ from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
 
-
+@pytest.mark.usefixtures('fresh_directory', 'set_seed')
 class TestClass:
     def test1(self):
         """The test runs a loop to check the consistency of the random init file generating process
@@ -74,4 +75,11 @@ class TestClass:
 
             simulate('test.grmpy.ini')
             estimate('test.grmpy.ini')
+
+    def test5(self):
+        fname = os.path.dirname(grmpy.__file__) + '/test/resources/special_case.grmpy.txt'
+        simulate(fname)
+        estimate(fname)
         cleanup()
+
+

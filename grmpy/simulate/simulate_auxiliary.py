@@ -215,5 +215,4 @@ def construct_covariance_matrix(init_dict):
     cov[np.triu_indices(3)] = init_dict['DIST']['all']
     cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
     cov[np.diag_indices(3)] **= 2
-
     return cov

@@ -1,6 +1,7 @@
 """The module provides unit tests for different aspects of the simulation process."""
 import pandas as pd
 import numpy as np
+import pytest
 
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
@@ -13,7 +14,7 @@ from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
-
+@pytest.mark.usefixtures('fresh_directory', 'set_seed')
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
