@@ -185,5 +185,4 @@ class TestClass:
         for key_ in ['TREATED', 'UNTREATED', 'COST']:
             np.testing.assert_array_almost_equal(results[key_]['all'], results_old[key_]['all'],
                                                  decimal=3)
-
         cleanup()

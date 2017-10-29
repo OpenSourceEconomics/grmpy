@@ -12,6 +12,7 @@ from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import read_desc
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
@@ -78,10 +79,34 @@ class TestClass:
             estimate('test.grmpy.ini')
 
     def test5(self):
-
-        for _ in range(5):
-            constr = constraints(probability=0.0, maxiter=0, agents=1000)
+        """The test checks if the estimation process works properly when maxiter is set to
+        zero.
+        """
+        for _ in range(10):
+            constr = constraints(probability=0.0, maxiter=0)
             generate_random_dict(constr)
             simulate('test.grmpy.ini')
             estimate('test.grmpy.ini')
+
+    def test6(self):
+        """ Additionally to test5 this test checks if the descriptives file provides the expected
+        output when maxiter is set to zero and the estimation process uses the initialization file
+        values as start values.
+        """
+        for _ in range(5):
+            constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init')
+            generate_random_dict(constr)
+            simulate('test.grmpy.ini')
+            estimate('test.grmpy.ini')
+            dict_ = read_desc('descriptives.grmpy.txt')
+            print(dict_)
+            for key_ in ['All', 'Treated', 'Untreated']:
+                print(dict_[key_])
+                np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
+                np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
+                                        dict_[key_]['Simulated Sample (finish)'])
+                np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
+                                        dict_[key_]['Simulated Sample (start)'])
         cleanup()
+
+
