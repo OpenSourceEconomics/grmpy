@@ -69,7 +69,8 @@ class TestClass:
 
     def test4(self):
         """The test checks if the estimation process works if the Powell algorithm is specified as
-        the optimizer option."""
+        the optimizer option.
+        """
         for _ in range(5):
             constr = constraints(probability=0.0, agents=1000, start='init',
                                  optimizer='SCIPY-POWELL')
@@ -89,7 +90,7 @@ class TestClass:
             estimate('test.grmpy.ini')
 
     def test6(self):
-        """ Additionally to test5 this test checks if the descriptives file provides the expected
+        """Additionally to test5 this test checks if the descriptives file provides the expected
         output when maxiter is set to zero and the estimation process uses the initialization file
         values as start values.
         """
@@ -104,9 +105,7 @@ class TestClass:
                 print(dict_[key_])
                 np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
                 np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
-                                        dict_[key_]['Simulated Sample (finish)'])
+                                              dict_[key_]['Simulated Sample (finish)'])
                 np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
-                                        dict_[key_]['Simulated Sample (start)'])
+                                              dict_[key_]['Simulated Sample (start)'])
         cleanup()
-
-
