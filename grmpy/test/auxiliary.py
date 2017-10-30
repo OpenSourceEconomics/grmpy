@@ -29,6 +29,9 @@ def save_output(file, option):
 
 
 def read_desc(fname):
+    """The function reads the descriptives output file and returns a dictionary that contains the
+    relevant parameters for test6 in test_integration.py.
+    """
     dict_ = {}
     with open(fname, 'r') as handle:
         for i, line in enumerate(handle):
