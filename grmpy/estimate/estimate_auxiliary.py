@@ -123,8 +123,6 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, init_dict, True)
-    rslt['DIST']['all'][2] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][2]))
-    rslt['DIST']['all'][3] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][3]))
 
 
 
@@ -454,11 +452,6 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 def adjust_print_output(init_dict, rslt):
     """The function arranges the distributional parameters."""
 
-    rho10 = init_dict['DIST']['all'][1] / (
-        init_dict['DIST']['all'][0] * init_dict['DIST']['all'][3])
-    sdv = init_dict['DIST']['all'][5]
-
-
     for dict_ in [init_dict, rslt]:
         if dict_ == init_dict:
             key_ = 'starting_values'
@@ -530,6 +523,7 @@ def backward_cholesky_transformation(x0, init_dict, dist=False):
         sd1 = cov[1, 1] ** 0.5
         rho0 = cov[0,2] / (sd0 *sdv)
         rho1 = cov[1,2] / (sd1 *sdv)
+
         dist_parameter = [sd0, sd1, rho0, rho1]
         return dist_parameter
     else:

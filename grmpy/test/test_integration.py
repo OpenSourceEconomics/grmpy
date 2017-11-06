@@ -72,7 +72,7 @@ class TestClass:
         the optimizer option.
         """
         for _ in range(5):
-            constr = constraints(probability=0.0, agents=1000, start='init',
+            constr = constraints(probability=0.0, agents=10000, start='init',
                                  optimizer='SCIPY-POWELL')
             generate_random_dict(constr)
 
