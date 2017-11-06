@@ -4,6 +4,7 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
+from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
@@ -64,15 +65,7 @@ def start_values(init_dict, data_frame, option):
     if option == 'init':
         # Set coefficients equal the true init file values
         x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
-        x0 += [init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1]]]
-        x0 += [init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 3]]
-        rho0v = init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 2] / (
-            init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1]] *
-            init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 5])
-        rho1v = init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 4] / (
-            init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 3] *
-            init_dict['AUX']['init_values'][2 * numbers[0] + numbers[1] + 5])
-        x0 += [rho0v, rho1v]
+        sd_ = None
     elif option == 'auto':
 
         # Estimate beta1 and beta0:
@@ -97,15 +90,13 @@ def start_values(init_dict, data_frame, option):
             gamma = [gamma_const]
         else:
             gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
-        rho = [0.00, 0.00]
 
         # Arange starting values
         x0 = np.concatenate((beta[1], beta[0]))
         x0 = np.concatenate((x0, gamma))
-        x0 = np.concatenate((x0, sd_))
-        x0 = np.concatenate((x0, rho))
+    x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]
-    x0 = _transform_start(x0)
+    init_dict['AUX']['start_values'] = start
     x0 = np.array(x0)
 
     return x0
@@ -131,9 +122,11 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
 
-    rslt['DIST']['all'] = start_values[-4:]
+    rslt['DIST']['all'] = backward_cholesky_transformation(start_values, init_dict, True)
     rslt['DIST']['all'][2] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][2]))
     rslt['DIST']['all'][3] = -1.0 + 2.0 / (1.0 + np.exp(-rslt['DIST']['all'][3]))
+
+
 
     # Update auxiliary versions
     rslt['AUX'] = dict()
@@ -182,7 +175,6 @@ def calculate_criteria(init_dict, data_frame, start_values):
 
 def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
-
     # Adjust output
     init_dict, rslt = adjust_print_output(init_dict, rslt)
 
@@ -466,6 +458,7 @@ def adjust_print_output(init_dict, rslt):
         init_dict['DIST']['all'][0] * init_dict['DIST']['all'][3])
     sdv = init_dict['DIST']['all'][5]
 
+
     for dict_ in [init_dict, rslt]:
         if dict_ == init_dict:
             key_ = 'starting_values'
@@ -473,9 +466,7 @@ def adjust_print_output(init_dict, rslt):
             key_ = 'x_internal'
         if not isinstance(dict_['AUX'][key_], list):
             dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
-        place_holder = dict_['AUX'][key_][:]
-        dict_['AUX'][key_] = place_holder[:-4] + [place_holder[-4], rho10, place_holder[-2],
-                                                  place_holder[-3], place_holder[-1], sdv]
+        dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_], init_dict)
         dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
 
     return init_dict, rslt
@@ -496,4 +487,63 @@ def transform_rslt_DIST(rslt, dict_):
     for i, element in enumerate(dict_['DIST']['all']):
         dict_['DIST']['all'][i] = round(element, 4)
 
+
     return dict_
+
+def provide_cholesky_decom(init_dict, x0, option, sd_=None):
+    """The function transforms the start covariance matrix into its cholesky decomposition."""
+    if option == 'init':
+        cov = construct_covariance_matrix(init_dict)
+        L = np.linalg.cholesky(cov)
+        distribution_characteristics = init_dict['AUX']['init_values'][-6:]
+        x0 += [L[0,0], L[2,0], L[1,1], L[2,1]]
+
+    elif option == 'auto':
+        distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,\
+                                       init_dict['DIST']['all'][5]]
+        cov = np.zeros((3, 3))
+        cov[np.triu_indices(3)] = [distribution_characteristics]
+        cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
+        cov[np.diag_indices(3)] **= 2
+        L = np.linalg.cholesky(cov)
+        x0 = np.concatenate((x0, [L[0,0], L[2,0], L[1,1], L[2,1]]))
+    init_dict['AUX']['cholesky_decomposition'] = L[np.tril_indices(3)]
+    start = [i for i in x0] + distribution_characteristics
+
+    return x0, start
+
+def backward_cholesky_transformation(x0, init_dict, dist=False):
+    """The function creates a positive semi definite covariance matrix from the given cholesky
+    decomposition elements.
+    """
+    start_cholesky = x0[-4:]
+    L = [start_cholesky[0], init_dict['AUX']['cholesky_decomposition'][1], start_cholesky[2],
+         start_cholesky[1], start_cholesky[3],init_dict['AUX']['cholesky_decomposition'][5]]
+
+    cholesky = np.zeros((3, 3))
+    cholesky[np.tril_indices(3)] =  L
+    cov = np.dot(cholesky, cholesky.T)
+    sdv = init_dict['DIST']['all'][5]
+    # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
+    if dist is True:
+        sd0 = cov[0, 0] ** 0.5
+        sd1 = cov[1, 1] ** 0.5
+        rho0 = cov[0,2] / (sd0 *sdv)
+        rho1 = cov[1,2] / (sd1 *sdv)
+        dist_parameter = [sd0, sd1, rho0, rho1]
+        return dist_parameter
+    else:
+        dist_para = cov[np.triu_indices(3)]
+        sd0, sd1, sdv = dist_para[0] ** 0.5, dist_para[3] ** 0.5, dist_para[5] ** 0.5
+        rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
+        rho01 = dist_para[1] / (sd0 * sd1)
+        output = x0[:-4]   + [sd0, rho01, rho0, sd1, rho1, sdv ]
+        return output
+
+
+
+
+
+
+
+
