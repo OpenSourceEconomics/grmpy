@@ -94,3 +94,9 @@ def estimate_old(init_file):
 
     # Finishing
     return rslt
+
+def calculate_criteria_old(init_dict, data_frame, start_values):
+    """The function calculates the criteria function value."""
+    rslt = distribute_parameters(init_dict, start_values)
+    criteria = log_likelihood_old(data_frame, init_dict, rslt)
+    return criteria
