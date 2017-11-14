@@ -24,7 +24,6 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         X = data.filter(regex=r'^X\_')
         Z = data.filter(regex=r'^Z\_')
         g = pd.concat((X, Z), axis=1)
-        print(choice)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
@@ -491,9 +490,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         L = np.linalg.cholesky(cov)
         L = L[np.tril_indices(3)]
         distribution_characteristics = init_dict['AUX']['init_values'][-6:]
-        print(L)
         x0 = np.concatenate((x0,L))
-        print(x0)
 
     elif option == 'auto':
         distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,\
@@ -514,7 +511,6 @@ def backward_cholesky_transformation(x0, init_dict, dist=False):
     decomposition elements.
     """
     start_cholesky = x0[-6:]
-    print(start_cholesky)
 
     cholesky = np.zeros((3, 3))
     cholesky[np.tril_indices(3)] =  start_cholesky
