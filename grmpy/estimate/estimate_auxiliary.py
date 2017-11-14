@@ -24,6 +24,7 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         X = data.filter(regex=r'^X\_')
         Z = data.filter(regex=r'^Z\_')
         g = pd.concat((X, Z), axis=1)
+        print(choice)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
@@ -120,7 +121,7 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_out]
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
+    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, init_dict, True)
 
@@ -427,7 +428,7 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_out]
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-4)]
+    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
 
     rslt['DIST']['all'] = start_values[-4:]
     rslt['DIST']['all'][2] = start_values[-2]
@@ -488,8 +489,11 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
     if option == 'init':
         cov = construct_covariance_matrix(init_dict)
         L = np.linalg.cholesky(cov)
+        L = L[np.tril_indices(3)]
         distribution_characteristics = init_dict['AUX']['init_values'][-6:]
-        x0 += [L[0,0], L[2,0], L[1,1], L[2,1]]
+        print(L)
+        x0 = np.concatenate((x0,L))
+        print(x0)
 
     elif option == 'auto':
         distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,\
@@ -499,8 +503,8 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
         cov[np.diag_indices(3)] **= 2
         L = np.linalg.cholesky(cov)
-        x0 = np.concatenate((x0, [L[0,0], L[2,0], L[1,1], L[2,1]]))
-    init_dict['AUX']['cholesky_decomposition'] = L[np.tril_indices(3)]
+        x0 = np.concatenate((x0, L))
+    init_dict['AUX']['cholesky_decomposition'] = L
     start = [i for i in x0] + distribution_characteristics
 
     return x0, start
@@ -509,14 +513,13 @@ def backward_cholesky_transformation(x0, init_dict, dist=False):
     """The function creates a positive semi definite covariance matrix from the given cholesky
     decomposition elements.
     """
-    start_cholesky = x0[-4:]
-    L = [start_cholesky[0], init_dict['AUX']['cholesky_decomposition'][1], start_cholesky[2],
-         start_cholesky[1], start_cholesky[3],init_dict['AUX']['cholesky_decomposition'][5]]
+    start_cholesky = x0[-6:]
+    print(start_cholesky)
 
     cholesky = np.zeros((3, 3))
-    cholesky[np.tril_indices(3)] =  L
+    cholesky[np.tril_indices(3)] =  start_cholesky
     cov = np.dot(cholesky, cholesky.T)
-    sdv = init_dict['DIST']['all'][5]
+    sdv = cov[2,2]
     # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
     if dist is True:
         sd0 = cov[0, 0] ** 0.5

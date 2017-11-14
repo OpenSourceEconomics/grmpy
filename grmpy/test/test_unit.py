@@ -157,7 +157,7 @@ class TestClass:
             # We simply test that there is a single unique value for the marginal treatment effect.
             np.testing.assert_equal(len(set(mte)), 1)
 
-    def test6(self):
+    def test6(self):3
         """The test ensures that the estimation process returns values that are approximately equal
         to the true values if the true values are set as start values for the estimation.
         """
