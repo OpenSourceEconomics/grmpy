@@ -429,17 +429,11 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
 
-    rslt['DIST']['all'] = start_values[-4:]
-    rslt['DIST']['all'][2] = start_values[-2]
-    rslt['DIST']['all'][3] = start_values[-1]
+    rslt['DIST']['all'] = start_values[-6:]
 
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
-    rslt['AUX']['x_internal'][-4] = start_values[(-4)]
-    rslt['AUX']['x_internal'][-3] = start_values[(-3)]
-    rslt['AUX']['x_internal'][-2] = start_values[(-2)]
-    rslt['AUX']['x_internal'][-1] = start_values[(-1)]
 
     rslt['AUX']['init_values'] = init_dict['AUX']['init_values'][:]
     rslt['success'], rslt['status'] = False, 2
@@ -500,6 +494,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
         cov[np.diag_indices(3)] **= 2
         L = np.linalg.cholesky(cov)
+        L = L[np.tril_indices(3)]
         x0 = np.concatenate((x0, L))
     init_dict['AUX']['cholesky_decomposition'] = L
     start = [i for i in x0] + distribution_characteristics
@@ -530,7 +525,7 @@ def backward_cholesky_transformation(x0, init_dict, dist=False):
         sd0, sd1, sdv = dist_para[0] ** 0.5, dist_para[3] ** 0.5, dist_para[5] ** 0.5
         rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
-        output = x0[:-4]   + [sd0, rho01, rho0, sd1, rho1, sdv ]
+        output = x0[:-6]   + [sd0, rho01, rho0, sd1, rho1, sdv ]
         return output
 
 
