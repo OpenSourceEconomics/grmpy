@@ -487,8 +487,8 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         x0 = np.concatenate((x0,L))
 
     elif option == 'auto':
-        distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,\
-                                       init_dict['DIST']['all'][5]]
+        distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,
+                                        init_dict['DIST']['all'][5]]
         cov = np.zeros((3, 3))
         cov[np.triu_indices(3)] = [distribution_characteristics]
         cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
@@ -501,7 +501,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
 
     return x0, start
 
-def backward_cholesky_transformation(x0, init_dict, dist=False):
+def backward_cholesky_transformation(x0, dist=False):
     """The function creates a positive semi definite covariance matrix from the given cholesky
     decomposition elements.
     """
