@@ -122,7 +122,7 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
 
-    rslt['DIST']['all'] = backward_cholesky_transformation(start_values, init_dict, True)
+    rslt['DIST']['all'] = backward_cholesky_transformation(start_values, True)
 
 
 
@@ -453,7 +453,7 @@ def adjust_print_output(init_dict, rslt):
             key_ = 'x_internal'
         if not isinstance(dict_['AUX'][key_], list):
             dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
-        dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_], init_dict)
+        dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_])
         dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
 
     return init_dict, rslt
