@@ -510,7 +510,7 @@ def backward_cholesky_transformation(x0, dist=False):
     cholesky = np.zeros((3, 3))
     cholesky[np.tril_indices(3)] =  start_cholesky
     cov = np.dot(cholesky, cholesky.T)
-    sdv = cov[2,2]
+    sdv = cov[2,2] ** 0.5
     # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
     if dist is True:
         sd0 = cov[0, 0] ** 0.5
