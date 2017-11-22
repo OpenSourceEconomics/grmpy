@@ -2,3 +2,4 @@
 import grmpy
 
 grmpy.simulate('tutorial.grmpy.ini')
+grmpy.estimate('tutorial.grmpy.ini')
