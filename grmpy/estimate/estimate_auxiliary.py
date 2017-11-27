@@ -501,7 +501,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
 
     return x0, start
 
-def backward_cholesky_transformation(x0, dist=False):
+def backward_cholesky_transformation(x0, dist=False, test=False):
     """The function creates a positive semi definite covariance matrix from the given cholesky
     decomposition elements.
     """
@@ -525,7 +525,10 @@ def backward_cholesky_transformation(x0, dist=False):
         sd0, sd1, sdv = dist_para[0] ** 0.5, dist_para[3] ** 0.5, dist_para[5] ** 0.5
         rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
-        output = x0[:-6]   + [sd0, rho01, rho0, sd1, rho1, sdv ]
+        if test is False:
+            output = x0[:-6]   + [sd0, rho01, rho0, sd1, rho1, sdv]
+        else:
+            output = [sd0, rho01, rho0, sd1, rho1, sdv]
         return output
 
 

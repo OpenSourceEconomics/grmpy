@@ -57,3 +57,9 @@ def read_desc(fname):
                     dict_['Untreated'][list_[0] + ' ' + list_[1] + ' ' + list_[2]] = list_[3:]
 
     return dict_
+
+def adjust_output_cholesky(output):
+    output[1] = output[1] * (output[0] * output[3])
+    output[2] = output[2] * (output[0] * output[5])
+    output[4] = output[4] * (output[3] * output[5])
+    return output

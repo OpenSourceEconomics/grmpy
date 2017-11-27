@@ -1,14 +1,18 @@
 """The module provides unit tests for different aspects of the simulation process."""
+from scipy.stats import wishart
 import pandas as pd
 import numpy as np
 import pytest
 
+from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.test.resources.estimate_old import calculate_criteria_old
+from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
+from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
@@ -161,18 +165,21 @@ class TestClass:
         """The test ensures that the estimation process returns values that are approximately equal
         to the true values if the true values are set as start values for the estimation.
         """
-        for _ in range(5):
-            constr = constraints(agents=1000, probability=0.0, optimizer='SCIPY-BFGS',
-                                 start='init')
-            generate_random_dict(constr)
-            simulate('test.grmpy.ini')
-            dict_ = read('test.grmpy.ini')
-            true_dist = [dict_['DIST']['all'][0], dict_['DIST']['all'][3]]
-            results = estimate('test.grmpy.ini')
-            np.testing.assert_array_almost_equal(true_dist, results['DIST']['all'][:2], decimal=3)
-            for key_ in ['TREATED', 'UNTREATED', 'COST']:
-                np.testing.assert_array_almost_equal(results[key_]['all'], dict_[key_]['all'],
-                                                     decimal=3)
+        pseudo_dict = {'DIST':{'all': []}, 'AUX':{'init_values': []}}
+        for _ in range(20):
+            b = wishart.rvs(df=10, scale=np.identity(3), size=1)
+            parameter = b[np.triu_indices(3)]
+            print(parameter)
+            for i in [0, 3, 5]:
+                parameter[i] **= 0.5
+            pseudo_dict['DIST']['all'] = parameter
+            pseudo_dict['AUX']['init_values'] = parameter
+            x0, start = provide_cholesky_decom(pseudo_dict, [], 'init')
+            output = backward_cholesky_transformation(x0, test=True)
+            output = adjust_output_cholesky(output)
+            np.testing.assert_array_almost_equal(pseudo_dict['DIST']['all'], output)
+
+
 
     def test7(self):
         """The test compares the criteria function value of the old and the new estimation process
