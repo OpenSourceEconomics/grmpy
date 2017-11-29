@@ -1,3 +1,6 @@
+"""The module provides check for the estimation process regarding different init file
+specifications.
+"""
 import copy
 
 import numpy as np

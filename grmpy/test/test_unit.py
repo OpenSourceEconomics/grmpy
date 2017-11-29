@@ -162,22 +162,26 @@ class TestClass:
             np.testing.assert_equal(len(set(mte)), 1)
 
     def test6(self):
-        """The test ensures that the estimation process returns values that are approximately equal
-        to the true values if the true values are set as start values for the estimation.
+        """The test ensures that the cholesky decomposition and recomposition works appropriately.
+        For this purpose the test creates a positive smi definite matrix fom a wishart distribution,
+        decomposes this matrix with, reconstruct it and compares the matrix with the one that was
+        specified as the input for the decomposition process.
         """
         pseudo_dict = {'DIST':{'all': []}, 'AUX':{'init_values': []}}
         for _ in range(20):
             b = wishart.rvs(df=10, scale=np.identity(3), size=1)
             parameter = b[np.triu_indices(3)]
-            print(parameter)
             for i in [0, 3, 5]:
                 parameter[i] **= 0.5
             pseudo_dict['DIST']['all'] = parameter
             pseudo_dict['AUX']['init_values'] = parameter
+            cov_1 = construct_covariance_matrix(pseudo_dict)
             x0, start = provide_cholesky_decom(pseudo_dict, [], 'init')
             output = backward_cholesky_transformation(x0, test=True)
             output = adjust_output_cholesky(output)
-            np.testing.assert_array_almost_equal(pseudo_dict['DIST']['all'], output)
+            pseudo_dict['DIST']['all'] = output
+            cov_2 = construct_covariance_matrix(pseudo_dict)
+            np.testing.assert_array_almost_equal(cov_1, cov_2)
 
 
 

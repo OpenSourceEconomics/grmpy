@@ -100,9 +100,7 @@ class TestClass:
             simulate('test.grmpy.ini')
             estimate('test.grmpy.ini')
             dict_ = read_desc('descriptives.grmpy.txt')
-            print(dict_)
             for key_ in ['All', 'Treated', 'Untreated']:
-                print(dict_[key_])
                 np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
                 np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
                                               dict_[key_]['Simulated Sample (finish)'])

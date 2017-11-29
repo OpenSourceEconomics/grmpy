@@ -36,21 +36,22 @@ def read_desc(fname):
     with open(fname, 'r') as handle:
         for i, line in enumerate(handle):
             list_ = shlex.split(line)
-            if 6 <= i < 9:
+            if 7 <= i < 10:
                 if list_[0] in ['All', 'Treated', 'Untreated']:
                     dict_[list_[0]] = {}
                     dict_[list_[0]]['Number'] = list_[1:]
-            elif 19 <= i < 22:
+            elif 20 <= i < 23:
+                print(list_)
                 if list_[0] == 'Observed':
                     dict_['All'][list_[0] + ' ' + list_[1]] = list_[2:]
                 else:
                     dict_['All'][list_[0] + ' ' + list_[1] + ' ' + list_[2]] = list_[3:]
-            elif 28 <= i < 31:
+            elif 29 <= i < 32:
                 if list_[0] == 'Observed':
                     dict_['Treated'][list_[0] + ' ' + list_[1]] = list_[2:]
                 else:
                     dict_['Treated'][list_[0] + ' ' + list_[1] + ' ' + list_[2]] = list_[3:]
-            elif 37 <= i < 40:
+            elif 38 <= i < 41:
                 if list_[0] == 'Observed':
                     dict_['Untreated'][list_[0] + ' ' + list_[1]] = list_[2:]
                 else:
@@ -59,6 +60,8 @@ def read_desc(fname):
     return dict_
 
 def adjust_output_cholesky(output):
+    """The function transfers the output of the cholesky decomposition process so that it is similar
+    in regards of to the distributional information of the init file."""
     output[1] = output[1] * (output[0] * output[3])
     output[2] = output[2] * (output[0] * output[5])
     output[4] = output[4] * (output[3] * output[5])

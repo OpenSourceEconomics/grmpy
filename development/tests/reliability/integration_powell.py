@@ -1,3 +1,6 @@
+"""The module checks if the estimation process works if 'SCIPY-POWELL' is specified as the
+optimizer.
+"""
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import constraints
 from grmpy.estimate.estimate import estimate

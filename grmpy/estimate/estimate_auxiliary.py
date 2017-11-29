@@ -185,19 +185,32 @@ def print_logfile(init_dict, rslt):
                 for section in ['Optimizer', 'Start values', 'Success', 'Status',
                                 'Number of Evaluations',
                                 'Criteria', 'Message', 'Warning']:
-                    fmt = '  {:<10}' + ' {:<20}' + '  {:>20}\n\n'
+                    fmt = '  {:<10}' + ' {:<20}'
                     if section == 'Number of Evaluations':
+                        if len(str(rslt['nfev'])) == 4:
+                            fmt += '  {:>21}\n\n'
+                        else:
+                            fmt += '  {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
                     elif section == 'Start values':
+                        fmt += '  {:>23}\n\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['start']))
                     elif section == 'Optimizer':
+                        if init_dict['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
+                            fmt += '  {:>31}\n\n'
+                        else:
+                            fmt += '  {:>29}\n\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
                     elif section == 'Criteria':
-                        fmt = '  {:<10}' + ' {:<20}' + '       {:>20.4f}\n\n'
+                        fmt += '       {:>20.4f}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
+                    elif section in ['Message', 'Warning']:
+                        fmt += '                     {:>20}\n\n'
+                        file_.write(fmt.format('', section + ':', rslt[section.lower()]))
                     else:
+                        fmt += '  {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
@@ -302,12 +315,12 @@ def write_descriptives(init_dict, df1, rslt):
         for i, label in enumerate([df1, df2, df3]):
             info_ += [[label.shape[0], (label['D'] == 1).sum(), (label['D'] == 0).sum()]]
 
-        fmt = '  {:<10}' + ' {:>30}' * 3 + '\n\n'
-        file_.write(fmt.format(*['', 'Observed Sample', 'Simulated Sample (finish)',
-                                 'Simulated Sample (start)']))
+        fmt = '    {:<25}' + ' {:>20}' * 3 + '\n\n\n'
+        file_.write(fmt.format(*['Sample', 'Observed', 'Simulated (finish)',
+                                 'Simulated (start)']))
 
         for i, label in enumerate(['All', 'Treated', 'Untreated']):
-            str_ = '  {:<10}' + ' {:30}' * 3 + '\n'
+            str_ = '    {:<25}' + ' {:>20}' * 3 + '\n'
             file_.write(str_.format(label, info_[0][i], info_[1][i], info_[2][i]))
 
         header = '\n\n Distribution of Outcomes\n\n'
@@ -380,7 +393,7 @@ def process_rslt(init_dict, dict_, rslt):
     if dict_['crit'][str(x)] <= rslt['crit']:
         warning = 'The optimization algorithm has failed to provide the parametrization that ' \
                   'leads to the minimal criteria function value. \n                           ' \
-                  '        The estimation output is automatically adjusted.'
+                  '                           The estimation output is automatically adjusted.'
 
         rslt['warning'] = warning
 
@@ -496,7 +509,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         L = np.linalg.cholesky(cov)
         L = L[np.tril_indices(3)]
         x0 = np.concatenate((x0, L))
-    init_dict['AUX']['cholesky_decomposition'] = L
+    init_dict['AUX']['cholesky_decomposition'] = L.tolist()
     start = [i for i in x0] + distribution_characteristics
 
     return x0, start
