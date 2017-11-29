@@ -75,7 +75,6 @@ coeff       float   coefficient of the second covariate
 =======     ======  ==================
 
 **COST**
-=======
 
 The *COST* block specifies the number of covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
 
