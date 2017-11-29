@@ -32,6 +32,21 @@ seed        int         seed for the specific simulation
 source      str         specified name for the simulation output files
 =======     ======      ==================
 
+**ESTIMATION**
+
+The *ESTIMATION* block determines the basic information for the estimation process.
+
+=========     ======      ==================
+Key            Value       Interpretation
+=========     ======      ==================
+agents         int         number of individuals for the estimation simulation
+file           str         specified data inout file for the estimation process
+optimizer      str         optimizer used for the estimation process
+start          str         determines which start values are used for the estimation process
+=========     ======      ==================
+
+
+
 **TREATED**
 
 The *TREATED* block specifies the number of covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
@@ -44,6 +59,7 @@ coeff       float   coefficient of the first covariate
 coeff       float   coefficient of the second covariate
  ...
 =======     ======  ==================
+
 
 **UNTREATED**
 
@@ -59,6 +75,7 @@ coeff       float   coefficient of the second covariate
 =======     ======  ==================
 
 **COST**
+=======
 
 The *COST* block specifies the number of covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
 
@@ -86,11 +103,42 @@ coeff    float      :math:`\sigma_{U_1,V}`
 coeff    float      :math:`\sigma_{V}`
 ======= ======      ==========================
 
+**SCIPY-BFGS**
+
+The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-bfgs.html#optimize-minimize-bfgs>`_.
+
+========  ======      ==========================
+Key       Value       Interpretation
+========  ======      ==========================
+disp       bool       set true to print convergence message
+maxiter    int        maximum numbers of iterations the minimization process performs
+gtol       float      the value that has to be larger as the gradient norm before successful termination
+eps        float      value of step size (if *jac* is approximated)
+========  ======      ==========================
+
+**SCIPY-POWELL**
+
+The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-powell.html#optimize-minimize-powell>`_.
+
+========  ======      ==========================
+Key       Value       Interpretation
+========  ======      ==========================
+disp       bool       set true to print convergence message
+maxiter    int        maximum numbers of iterations the minimization process performs
+xtol       float      relative error in solution values *xopt* that is acceptable for convergence
+ftol       float      relative error in fun(*xopt*) that is acceptable for convergence
+========  ======      ==========================
+
+
 Examples
 --------
 
-In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/pei_doc/docs/tutorial>`_. So far you can only simulate the sample from the generalized Roy model as specified in the initialization file.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/pei_doc/docs/tutorial>`_.
+So far the package provides the features to simulate a sample from the generalized roy model and to estimate the parameters of interest (given a data set) as specified in your initialization file.
 
+**Simulation**
+
+First we will take a look on the simulation feature. For simulating a sample from the generalized roy model you use the simulate function provided by the package. For simulating a sample of your choice you have to provide the path of your initalization file as an input to the function.
 ::
 
     import grmpy
@@ -100,6 +148,20 @@ In the following chapter we explore the basic features of the ``grmpy`` package.
 
 This creates a number of output files that contains information about the resulting simulated sample.
 
-* **data.respy.info**, basic information about the simulated sample
+* **data.grmpy.info**, basic information about the simulated sample
 * **data.grmpy.txt**, simulated sample in a simple text file
 * **data.grmpy.pkl**, simulated sample as a pandas data frame
+
+
+**Estimation**
+
+The other feature of the package is the estimation of the parameters of interest. The specification regarding start values and and the optimizer options are determined in the *ESTIMATION* section of the initialization file.
+
+::
+
+    grmpy.estimate('tutorial.grmpy.ini')
+
+As in the simulation process this creates a number of output files that contains information about the estimation results.
+
+* **est.grmpy.info**, basic information of the estimation process
+* **descriptives.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process

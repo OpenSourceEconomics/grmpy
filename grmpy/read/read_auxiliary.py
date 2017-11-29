@@ -6,6 +6,8 @@ def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) == 4:
         name, val, type_, frac_ = list_[0], list_[1], list_[2], list_[3]
+    elif list_[0] == 'direc':
+        name, val = list_[0], [list_[i] for i in range(len(list_)) if i > 0]
     else:
         name, val = list_[0], list_[1]
 
@@ -20,10 +22,12 @@ def process(list_, dict_, keyword):
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
-    if name in ['agents', 'seed']:
+    if name in ['agents', 'seed', 'maxiter', 'disp']:
         val = int(val)
-    elif name in ['source']:
+    elif name in ['source', 'file', 'optimizer', 'start']:
         val = str(val)
+    elif name in ['direc']:
+        val = list(val)
     else:
         val = float(val)
     if name in ['coeff']:
@@ -80,14 +84,14 @@ def auxiliary(dict_):
 
 
 def check_types(dict_):
+    """This function ensures that the variable types agree across the two treatment states."""
     if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
         for i in range(len(dict_['UNTREATED']['types'])):
             if isinstance(dict_['TREATED']['types'][i], list):
                 dict_['UNTREATED']['types'][i][0] = dict_['TREATED']['types'][i][0]
                 dict_['UNTREATED']['types'][i][1] = dict_['TREATED']['types'][i][1]
-            if  isinstance(dict_['UNTREATED']['types'][i], list):
+            if isinstance(dict_['UNTREATED']['types'][i], list):
                 dict_['TREATED']['types'][i][0] = dict_['UNTREATED']['types'][i][0]
                 dict_['TREATED']['types'][i][1] = dict_['UNTREATED']['types'][i][1]
-
 
     return dict_

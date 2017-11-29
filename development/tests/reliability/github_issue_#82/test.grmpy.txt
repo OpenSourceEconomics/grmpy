@@ -1,0 +1,55 @@
+   SIMULATION
+
+        agents                      100
+        seed                       2105
+        source                    D206B2CF            
+
+   ESTIMATION
+
+        agents                      100
+        file                      D206B2CF.grmpy.txt  
+        optimizer                 SCIPY-BFGS          
+        start                     init                
+
+   TREATED
+
+        coeff                    0.2322
+        coeff                    3.3447
+        coeff                   -2.2820
+        coeff                   -2.8955
+
+   UNTREATED
+
+        coeff                    0.4304
+        coeff                    0.3917
+        coeff                    1.6350
+        coeff                    0.0031
+
+   COST
+
+        coeff                   -6.0644
+        coeff                    1.1431
+
+   DIST
+
+        coeff                    4.0322
+        coeff                    2.2066
+        coeff                   -0.4487
+        coeff                    2.5751
+        coeff                   -1.0922
+        coeff                    2.0061
+
+   SCIPY-BFGS
+
+        disp                          0
+        maxiter                    9645
+        gtol          1.4245669217502535e-05
+        eps           1.4901161193847656e-08
+
+   SCIPY-POWELL
+
+        disp                          0
+        maxiter                    9645
+        xtol          0.00010614912184863406
+        ftol          9.022581672593831e-05
+
