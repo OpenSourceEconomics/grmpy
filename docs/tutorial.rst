@@ -132,7 +132,7 @@ ftol       float      relative error in fun(*xopt*) that is acceptable for conve
 Examples
 --------
 
-In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/pei_doc/docs/tutorial>`_.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/master/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized roy model and to estimate the parameters of interest (given a data set) as specified in your initialization file.
 
 **Simulation**
