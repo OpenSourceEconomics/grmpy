@@ -1,13 +1,16 @@
 """The module provides auxiliary functions for the estimation process"""
+from statsmodels.tools.sm_exceptions import PerfectSeparationError
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
+
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.check.custom_exceptions import UserError
 
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
@@ -82,9 +85,15 @@ def start_values(init_dict, data_frame, option):
         X = data_frame.filter(regex=r'^X\_')
         Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
         XZ = np.concatenate((X, Z), axis=1)
-        probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
-        sd = init_dict['DIST']['all'][5]
-        gamma = probitRslt.params * sd
+        try:
+            probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
+        except PerfectSeparationError:
+            msg = 'The estimation process wasn`t able to provide automatic start values due to ' \
+                  'perfect seperation of the data.'
+            perfect_seperation_log(init_dict)
+            raise UserError(msg)
+
+        gamma = probitRslt.params
         gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
         if len(init_dict['COST']['all']) == 1:
             gamma = [gamma_const]
@@ -171,10 +180,13 @@ def calculate_criteria(init_dict, data_frame, start_values):
     return criteria
 
 
-def print_logfile(init_dict, rslt):
+def print_logfile(init_dict, rslt, persep=False):
     """The function writes the log file for the estimation process."""
     # Adjust output
-    init_dict, rslt = adjust_print_output(init_dict, rslt)
+    if persep is False:
+        init_dict, rslt = adjust_print_output(init_dict, rslt)
+    else:
+        pass
 
     with open('est.grmpy.info', 'w') as file_:
 
@@ -204,13 +216,25 @@ def print_logfile(init_dict, rslt):
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
                     elif section == 'Criteria':
-                        fmt += '       {:>20.4f}\n\n'
+                        if persep is True:
+                            fmt += '    {:>20}\n\n'
+                        else:
+                            fmt += '       {:>20.4f}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
                     elif section in ['Message', 'Warning']:
-                        fmt += '                     {:>20}\n\n'
+                        if persep is True:
+                            if section == 'Message':
+                                fmt += '    {:>20}\n\n'
+                            else:
+                                fmt += '                     {:>20}\n\n'
+                        else:
+                            fmt += '                     {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
                     else:
-                        fmt += '  {:>20}\n\n'
+                        if persep is True:
+                            fmt += '    {:>20}\n\n'
+                        else:
+                            fmt += '  {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
@@ -219,7 +243,10 @@ def print_logfile(init_dict, rslt):
 
             else:
                 file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current']) + '\n\n')
-                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
+                if persep is True:
+                    fmt = '  {:>10}' * 2 + ' {:>20}' * 2
+                else:
+                    fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
                         fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
@@ -544,9 +571,30 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
             output = [sd0, rho01, rho0, sd1, rho1, sdv]
         return output
 
+def perfect_seperation_log(init_dict):
+    """The function returns a log file if the estimation process fails because of a perfect
+    separation error.
+    """
+    rslt = {}
+    rslt['AUX'] = {'x_internal': []}
 
+    dict_ = {}
+    dict_['ESTIMATION'] = {}
+    dict_['AUX'] = {'starting_values': []}
+    dict_['ESTIMATION']['optimizer'] = init_dict['ESTIMATION']['optimizer']
+    dict_['ESTIMATION']['start'] = init_dict['ESTIMATION']['start']
+    dict_['AUX']['criteria'] = '---'
+    # Create dict
+    rslt['success'], rslt['status'] = '---', '---'
+    rslt['nfev'], rslt['crit'] = '---', '---'
+    rslt['warning'] = 'The estimation process wasn`t able to provide automatic start values due ' \
+                      'to perfect seperation of the data.'
+    rslt['message'] = '---'
+    for _ in init_dict['AUX']['init_values'][:-4]:
+        rslt['AUX']['x_internal'] += ['---']
+        dict_['AUX']['starting_values'] += ['---']
 
-
+    print_logfile(dict_, rslt, persep=True)
 
 
 
