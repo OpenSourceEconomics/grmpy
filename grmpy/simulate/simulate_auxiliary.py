@@ -112,7 +112,6 @@ def print_info(init_dict, data_frame):
     coeffs_treated = init_dict['TREATED']['all']
     source = init_dict['SIMULATION']['source']
 
-
     # Construct auxiliary information
     coeffs_all = construct_all_coefficients(init_dict)
     cov = construct_covariance_matrix(init_dict)
