@@ -10,7 +10,6 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
-from grmpy.check.custom_exceptions import UserError
 
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
@@ -157,26 +156,6 @@ def minimizing_interface(start_values, init_dict, data_frame, dict_):
     likl = log_likelihood(init_dict, data_frame, rslt, dict_)
 
     return likl
-
-
-def _transform_start(x):
-    """The function transforms the starting values to cover the whole real line."""
-    # Coefficients
-    x[:(-4)] = x[:(-4)]
-
-    # Variances
-    x[(-4)] = x[(-4)]
-    x[(-3)] = x[(-3)]
-
-    # Correlations
-    transform = (x[(-2)] + 1) / 2
-    x[(-2)] = np.log(transform / (1.0 - transform))
-
-    transform = (x[(-1)] + 1) / 2
-    x[(-1)] = np.log(transform / (1.0 - transform))
-
-    # Finishing
-    return x
 
 
 def calculate_criteria(init_dict, data_frame, start_values):
