@@ -171,8 +171,13 @@ def print_info(init_dict, data_frame):
         # Implement the criteria function value , the MTE and parameterization
         header = '\n\n {} \n\n'.format('Criteria Function')
         file_.write(header)
-        str_ = '  {0:>10}             {1:>20}\n\n'.format('Value', init_dict['AUX']['criteria_value'])
+        if 'criteria_value' in init_dict['AUX'].keys():
+            str_ = '  {0:>10}             {1:>20}\n\n'.format('Value',
+                                                              init_dict['AUX']['criteria_value'])
+        else:
+            str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
         file_.write(str_)
+
         header = '\n\n {} \n\n'.format('MTE Information')
         file_.write(header)
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]

@@ -100,7 +100,7 @@ def start_values(init_dict, data_frame, option):
 
         except (PerfectSeparationError, ValueError):
             msg = 'The estimation process wasn`t able to provide automatic start values due to ' \
-                  'perfect separation. \n                                                     ' \
+                  'perfect seperation. \n                                                     ' \
                   ' The intialization specifications are used as start ' \
                   'values during the further process.'
             # Set coefficients equal the true init file values

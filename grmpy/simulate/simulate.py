@@ -35,8 +35,9 @@ def simulate(init_file):
     df = write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V)
 
     # Calculate Criteria function value
-    x0 = start_values(init_dict, df, 'init')
-    init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
+    if init_dict['DETERMINISTIC'] is False:
+        x0 = start_values(init_dict, df, 'init')
+        init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
 
 
     # Print Log file
