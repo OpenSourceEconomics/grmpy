@@ -71,38 +71,44 @@ def start_values(init_dict, data_frame, option):
         sd_ = None
     elif option == 'auto':
 
-        # Estimate beta1 and beta0:
-        beta = []
-        sd_ = []
-        for i in [0.0, 1.0]:
-            Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
-                data_frame.D == i]
-            ols_results = sm.OLS(Y, X).fit()
-            beta += [ols_results.params]
-            sd_ += [np.sqrt(ols_results.scale)]
-
-        # Estimate gamma via probit
-        X = data_frame.filter(regex=r'^X\_')
-        Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
-        XZ = np.concatenate((X, Z), axis=1)
         try:
+
+            # Estimate beta1 and beta0:
+            beta = []
+            sd_ = []
+            for i in [0.0, 1.0]:
+                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
+                    data_frame.D == i]
+                ols_results = sm.OLS(Y, X).fit()
+                beta += [ols_results.params]
+                sd_ += [np.sqrt(ols_results.scale)]
+
+            # Estimate gamma via probit
+            X = data_frame.filter(regex=r'^X\_')
+            Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
+            XZ = np.concatenate((X, Z), axis=1)
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
-        except PerfectSeparationError:
+            gamma = probitRslt.params
+            gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
+            if len(init_dict['COST']['all']) == 1:
+                gamma = [gamma_const]
+            else:
+                gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+            # Arange starting values
+            x0 = np.concatenate((beta[1], beta[0]))
+            x0 = np.concatenate((x0, gamma))
+
+        except (PerfectSeparationError, ValueError):
             msg = 'The estimation process wasn`t able to provide automatic start values due to ' \
-                  'perfect seperation of the data.'
-            perfect_seperation_log(init_dict)
-            raise UserError(msg)
+                  'perfect separation. \n                                                     ' \
+                  ' The intialization specifications are used as start ' \
+                  'values during the further process.'
+            # Set coefficients equal the true init file values
+            x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+            sd_ = None
+            init_dict['ESTIMATION']['warning'] = msg
+            option ='init'
 
-        gamma = probitRslt.params
-        gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
-        if len(init_dict['COST']['all']) == 1:
-            gamma = [gamma_const]
-        else:
-            gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
-
-        # Arange starting values
-        x0 = np.concatenate((beta[1], beta[0]))
-        x0 = np.concatenate((x0, gamma))
     x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]
     init_dict['AUX']['start_values'] = start
@@ -183,11 +189,7 @@ def calculate_criteria(init_dict, data_frame, start_values):
 def print_logfile(init_dict, rslt, persep=False):
     """The function writes the log file for the estimation process."""
     # Adjust output
-    if persep is False:
-        init_dict, rslt = adjust_print_output(init_dict, rslt)
-    else:
-        pass
-
+    init_dict, rslt = adjust_print_output(init_dict, rslt)
     with open('est.grmpy.info', 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
@@ -216,25 +218,16 @@ def print_logfile(init_dict, rslt, persep=False):
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
                     elif section == 'Criteria':
-                        if persep is True:
-                            fmt += '    {:>20}\n\n'
-                        else:
-                            fmt += '       {:>20.4f}\n\n'
+                        fmt += '       {:>20.4f}\n\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
                     elif section in ['Message', 'Warning']:
-                        if persep is True:
-                            if section == 'Message':
-                                fmt += '    {:>20}\n\n'
-                            else:
-                                fmt += '                     {:>20}\n\n'
-                        else:
-                            fmt += '                     {:>20}\n\n'
+                        fmt += '                     {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
+                        if section == 'Warning':
+                            if 'warning' in init_dict['ESTIMATION'].keys():
+                                file_.write(fmt.format('', '',init_dict['ESTIMATION']['warning']))
                     else:
-                        if persep is True:
-                            fmt += '    {:>20}\n\n'
-                        else:
-                            fmt += '  {:>20}\n\n'
+                        fmt += '  {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
@@ -243,10 +236,7 @@ def print_logfile(init_dict, rslt, persep=False):
 
             else:
                 file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current']) + '\n\n')
-                if persep is True:
-                    fmt = '  {:>10}' * 2 + ' {:>20}' * 2
-                else:
-                    fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
+                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
                         fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
@@ -570,31 +560,6 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         else:
             output = [sd0, rho01, rho0, sd1, rho1, sdv]
         return output
-
-def perfect_seperation_log(init_dict):
-    """The function returns a log file if the estimation process fails because of a perfect
-    separation error.
-    """
-    rslt = {}
-    rslt['AUX'] = {'x_internal': []}
-
-    dict_ = {}
-    dict_['ESTIMATION'] = {}
-    dict_['AUX'] = {'starting_values': []}
-    dict_['ESTIMATION']['optimizer'] = init_dict['ESTIMATION']['optimizer']
-    dict_['ESTIMATION']['start'] = init_dict['ESTIMATION']['start']
-    dict_['AUX']['criteria'] = '---'
-    # Create dict
-    rslt['success'], rslt['status'] = '---', '---'
-    rslt['nfev'], rslt['crit'] = '---', '---'
-    rslt['warning'] = 'The estimation process wasn`t able to provide automatic start values due ' \
-                      'to perfect seperation of the data.'
-    rslt['message'] = '---'
-    for _ in init_dict['AUX']['init_values'][:-4]:
-        rslt['AUX']['x_internal'] += ['---']
-        dict_['AUX']['starting_values'] += ['---']
-
-    print_logfile(dict_, rslt, persep=True)
 
 
 
