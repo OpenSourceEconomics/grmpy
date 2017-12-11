@@ -112,6 +112,7 @@ def print_info(init_dict, data_frame):
     coeffs_treated = init_dict['TREATED']['all']
     source = init_dict['SIMULATION']['source']
 
+
     # Construct auxiliary information
     coeffs_all = construct_all_coefficients(init_dict)
     cov = construct_covariance_matrix(init_dict)
@@ -167,7 +168,11 @@ def print_info(init_dict, data_frame):
 
                 file_.write(fmt.format(*[group] + info))
 
-        # Implement MTE and Parameterization
+        # Implement the criteria function value , the MTE and parameterization
+        header = '\n\n {} \n\n'.format('Criteria Function')
+        file_.write(header)
+        str_ = '  {0:>10}             {1:>20}\n\n'.format('Value', init_dict['AUX']['criteria_value'])
+        file_.write(str_)
         header = '\n\n {} \n\n'.format('MTE Information')
         file_.write(header)
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
