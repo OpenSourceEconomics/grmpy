@@ -15,7 +15,6 @@ from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
-from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read

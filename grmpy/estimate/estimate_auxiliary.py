@@ -1,8 +1,10 @@
 """The module provides auxiliary functions for the estimation process"""
+from statsmodels.tools.sm_exceptions import PerfectSeparationError
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
+
 
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
@@ -68,32 +70,44 @@ def start_values(init_dict, data_frame, option):
         sd_ = None
     elif option == 'auto':
 
-        # Estimate beta1 and beta0:
-        beta = []
-        sd_ = []
-        for i in [0.0, 1.0]:
-            Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
-                data_frame.D == i]
-            ols_results = sm.OLS(Y, X).fit()
-            beta += [ols_results.params]
-            sd_ += [np.sqrt(ols_results.scale)]
+        try:
 
-        # Estimate gamma via probit
-        X = data_frame.filter(regex=r'^X\_')
-        Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
-        XZ = np.concatenate((X, Z), axis=1)
-        probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
-        sd = init_dict['DIST']['all'][5]
-        gamma = probitRslt.params * sd
-        gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
-        if len(init_dict['COST']['all']) == 1:
-            gamma = [gamma_const]
-        else:
-            gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+            # Estimate beta1 and beta0:
+            beta = []
+            sd_ = []
+            for i in [0.0, 1.0]:
+                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
+                    data_frame.D == i]
+                ols_results = sm.OLS(Y, X).fit()
+                beta += [ols_results.params]
+                sd_ += [np.sqrt(ols_results.scale)]
 
-        # Arange starting values
-        x0 = np.concatenate((beta[1], beta[0]))
-        x0 = np.concatenate((x0, gamma))
+            # Estimate gamma via probit
+            X = data_frame.filter(regex=r'^X\_')
+            Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
+            XZ = np.concatenate((X, Z), axis=1)
+            probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
+            gamma = probitRslt.params
+            gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
+            if len(init_dict['COST']['all']) == 1:
+                gamma = [gamma_const]
+            else:
+                gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+            # Arange starting values
+            x0 = np.concatenate((beta[1], beta[0]))
+            x0 = np.concatenate((x0, gamma))
+
+        except (PerfectSeparationError, ValueError):
+            msg = 'The estimation process wasn`t able to provide automatic start values due to ' \
+                  'perfect seperation. \n                                                     ' \
+                  ' The intialization specifications are used as start ' \
+                  'values during the further process.'
+            # Set coefficients equal the true init file values
+            x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+            sd_ = None
+            init_dict['ESTIMATION']['warning'] = msg
+            option ='init'
+
     x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]
     init_dict['AUX']['start_values'] = start
@@ -144,26 +158,6 @@ def minimizing_interface(start_values, init_dict, data_frame, dict_):
     return likl
 
 
-def _transform_start(x):
-    """The function transforms the starting values to cover the whole real line."""
-    # Coefficients
-    x[:(-4)] = x[:(-4)]
-
-    # Variances
-    x[(-4)] = x[(-4)]
-    x[(-3)] = x[(-3)]
-
-    # Correlations
-    transform = (x[(-2)] + 1) / 2
-    x[(-2)] = np.log(transform / (1.0 - transform))
-
-    transform = (x[(-1)] + 1) / 2
-    x[(-1)] = np.log(transform / (1.0 - transform))
-
-    # Finishing
-    return x
-
-
 def calculate_criteria(init_dict, data_frame, start_values):
     """The function calculates the criteria function value."""
     rslt = distribute_parameters(init_dict, start_values)
@@ -171,11 +165,10 @@ def calculate_criteria(init_dict, data_frame, start_values):
     return criteria
 
 
-def print_logfile(init_dict, rslt):
+def print_logfile(init_dict, rslt, persep=False):
     """The function writes the log file for the estimation process."""
     # Adjust output
     init_dict, rslt = adjust_print_output(init_dict, rslt)
-
     with open('est.grmpy.info', 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
@@ -209,6 +202,9 @@ def print_logfile(init_dict, rslt):
                     elif section in ['Message', 'Warning']:
                         fmt += '                     {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
+                        if section == 'Warning':
+                            if 'warning' in init_dict['ESTIMATION'].keys():
+                                file_.write(fmt.format('', '',init_dict['ESTIMATION']['warning']))
                     else:
                         fmt += '  {:>20}\n\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
@@ -543,10 +539,6 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         else:
             output = [sd0, rho01, rho0, sd1, rho1, sdv]
         return output
-
-
-
-
 
 
 
