@@ -95,6 +95,11 @@ Local Average Treatment Effect
 
 The Local Average Treatment Effect (LATE) was introduced by Imbens and Angrist (1994 :cite:`Imbens94`). They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
 
+.. figure:: ../../bld/out/figures/fig-local-average-treatment.png
+   :align: center
+
+   LATE at different values of :math:`u_S`
+
 Unfortunately, the people induced to go into state 1 :math:`(D=1)` by a change in any particular instrument need not to be the same as the people induced to to go to state 1 by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may bot be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, IV estimates using the components of :math:`Z` as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. Heckman develops this argument in detail (2010 :cite:`Heckman10`).
 
 The average effect of a policy and the average effect of a treatment are linked by the marginal treatment effect (MTE). The MTE was introduced into the literature by Björklund and Moffitt (1987 :cite:`BjöMof87`) and extended in Heckman and Vytlacil (2001 :cite:`HecVyr01`,2005 :cite:`HecVyr05`, 2007b :cite:`HecVyr07b`).
@@ -117,7 +122,15 @@ Parameter :math:`j, \Delta j (x)`, can be written as
 
 where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data. All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
 
+.. figure:: ../../bld/out/figures/fig-eh-marginal-effect.png
+   :align: center
+
+   MTE in the presence and absence of essential heterogeneity.
+
+
+
 So far, we have only discussed average effect parameters. However, these conceal possible treatment effect heterogeneity, which provides important information about a treatment. Hence, we now present their distributional counterparts (Aakvik et al., 2005 :cite:`AaHeVy2005`).
+
 
 Distribution of Potential Outcomes
 ----------------------------------

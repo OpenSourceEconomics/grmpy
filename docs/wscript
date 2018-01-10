@@ -1,0 +1,6 @@
+#! python
+
+
+def build(ctx):
+    ctx.recurse('figures')
+    ctx.recurse('documentation')
