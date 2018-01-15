@@ -62,24 +62,22 @@ def plot_local_average_treatment(mte):
     for xtick in [0.195, 0.594]:
         index = GRID.index(round(xtick, 2))
         height = mte[index]
-        ax.text(x=xtick, y=-0.08, s='[', fontsize=30)
-        ax.text(x=xtick, y=height - 0.15, s='[', fontsize=30)
+        ax.text(x=xtick - 0.002, y=height - 0.1, s='[', fontsize=30)
     for xtick in [0.39, 0.79]:
         index = GRID.index(round(xtick, 2))
         height = mte[index]
-        ax.text(x=xtick, y=-0.08, s=']', fontsize=30)
-        ax.text(x=xtick, y=height - 0.15, s=']', fontsize=30)
+        ax.text(x=xtick - 0.01, y=height - 0.1, s=']', fontsize=30)
 
     ax.set_xlabel('$u_S$')
     ax.set_ylabel(r'$B^{MTE}$')
 
     ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
     ax.set_xticklabels([0, '$p_1$', '$p_2$', '$p_3$', '$p_4$', 1])
-    ax.tick_params(axis='x', which='major', pad=15)
-    ax.set_yticks([])
-    ax.set_ylim([1, 4.5])
+    ax.tick_params(axis='x', which='major')
+    ax.set_ylim([1.5, 4.5])
 
     plt.tight_layout()
+    plt.savefig(ppj("OUT_FIGURES_AUX", 'fig-local-average-treatment.png'))
     plt.savefig(ppj("OUT_FIGURES", 'fig-local-average-treatment.png'))
 
 

@@ -1,4 +1,4 @@
-Economics
+﻿Economics
 =========
 
 This section provides a general discussion of the generalized Roy model and selected issues in the econometrics of policy evaluation. The ``grmpy`` package implements a parametric normal version of the model, please see the next section for details.
@@ -95,7 +95,7 @@ Local Average Treatment Effect
 
 The Local Average Treatment Effect (LATE) was introduced by Imbens and Angrist (1994 :cite:`Imbens94`). They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
 
-.. figure:: ../../bld/out/figures/fig-local-average-treatment.png
+.. figure:: ../docs/figures/fig-local-average-treatment.png
    :align: center
 
    LATE at different values of :math:`u_S`
@@ -120,9 +120,16 @@ Parameter :math:`j, \Delta j (x)`, can be written as
 .. math::
     \Delta j (x) = \int_{0}^{1} MTE(x, u_S) hj(x, u_S) du_S,
 
-where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data. All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
+where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data.
 
-.. figure:: ../../bld/out/figures/fig-eh-marginal-effect.png
+.. figure:: ../docs/figures/fig-weights-marginal-effect.png
+   :align: center
+
+   Weights for the marginal treatment effect for different parameters.
+
+All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
+
+.. figure:: ../docs/figures/fig-eh-marginal-effect.png
    :align: center
 
    MTE in the presence and absence of essential heterogeneity.

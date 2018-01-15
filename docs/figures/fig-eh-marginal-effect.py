@@ -30,9 +30,12 @@ def plot_marginal_treatment_effect(pres, abs_):
     ax.plot(GRID, pres, label='Presence')
     ax.plot(GRID, abs_, label='Absence', linestyle = '--')
     
+    ax.set_ylim([1.5, 4.5])
+    
     plt.legend()
     
     plt.tight_layout()
+    plt.savefig(ppj("OUT_FIGURES_AUX", 'fig-eh-marginal-effect.png'))
     plt.savefig(ppj("OUT_FIGURES", 'fig-eh-marginal-effect.png'))
     
 if __name__ == '__main__':
