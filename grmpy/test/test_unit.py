@@ -24,7 +24,7 @@ from grmpy.read.read import read
 class TestClass:
     def test1(self):
         """The first test tests whether the relationships in the simulated datasets are appropriate
-        in a deterministic and an undeterministic setting. 
+        in a deterministic and an undeterministic setting.
         """
         for case in ['deterministic', 'undeterministic']:
             if case == 'deterministic':
@@ -123,14 +123,17 @@ class TestClass:
                 if key_ in ['TREATED', 'UNTREATED', 'COST']:
                     for i in range(len(gen_dict[key_]['types'])):
                         if isinstance(gen_dict[key_]['types'][i], str):
-                            assert gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]
+                            if not gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]:
+                                raise AssertionError()
                         elif isinstance(gen_dict[key_]['types'][i], list):
-                            assert gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]
+                            if not gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]:
+                                raise AssertionError()
                             np.testing.assert_array_almost_equal(
                                 gen_dict[key_]['types'][i][1], imp_dict[key_]['types'][i][1], 4)
 
             for key_ in ['source', 'agents', 'seed']:
-                assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
+                if not gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]:
+                    raise AssertionError()
 
     def test5(self):
         """The tests checks if the simulation process works even if the covariance between U1 and V
@@ -175,7 +178,7 @@ class TestClass:
             pseudo_dict['DIST']['all'] = parameter
             pseudo_dict['AUX']['init_values'] = parameter
             cov_1 = construct_covariance_matrix(pseudo_dict)
-            x0, start = provide_cholesky_decom(pseudo_dict, [], 'init')
+            x0, _ = provide_cholesky_decom(pseudo_dict, [], 'init')
             output = backward_cholesky_transformation(x0, test=True)
             output = adjust_output_cholesky(output)
             pseudo_dict['DIST']['all'] = output

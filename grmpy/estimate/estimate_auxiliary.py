@@ -61,7 +61,8 @@ def _prepare_arguments(init_dict, rslt):
 def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
-    assert isinstance(init_dict, dict)
+    if not  isinstance(init_dict, dict):
+        raise AssertionError()
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
 
     if option == 'init':
@@ -177,36 +178,36 @@ def print_logfile(init_dict, rslt, persep=False):
             if label == 'Optimization Information':
                 for section in ['Optimizer', 'Start values', 'Success', 'Status',
                                 'Number of Evaluations',
-                                'Criteria', 'Message', 'Warning']:
+                                'Criterion', 'Message', 'Warning']:
                     fmt = '  {:<10}' + ' {:<20}'
                     if section == 'Number of Evaluations':
                         if len(str(rslt['nfev'])) == 4:
-                            fmt += '  {:>21}\n\n'
+                            fmt += '  {:>21}\n'
                         else:
-                            fmt += '  {:>20}\n\n'
+                            fmt += '  {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
                     elif section == 'Start values':
-                        fmt += '  {:>23}\n\n'
+                        fmt += '  {:>23}\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['start']))
                     elif section == 'Optimizer':
                         if init_dict['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
-                            fmt += '  {:>31}\n\n'
+                            fmt += '  {:>31}\n'
                         else:
-                            fmt += '  {:>29}\n\n'
+                            fmt += '  {:>29}\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
-                    elif section == 'Criteria':
-                        fmt += '       {:>20.4f}\n\n'
+                    elif section == 'Criterion':
+                        fmt += '       {:>20.4f}\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
                     elif section in ['Message', 'Warning']:
-                        fmt += '                     {:>20}\n\n'
+                        fmt += '                     {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
                         if section == 'Warning':
                             if 'warning' in init_dict['ESTIMATION'].keys():
                                 file_.write(fmt.format('', '',init_dict['ESTIMATION']['warning']))
                     else:
-                        fmt += '  {:>20}\n\n'
+                        fmt += '  {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
@@ -253,7 +254,7 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         # Set seed value
         np.random.seed(seed)
         # Simulate unobservables
-        U, V = simulate_unobservables(dict_)
+        U, _ = simulate_unobservables(dict_)
 
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
@@ -388,7 +389,7 @@ def process_rslt(init_dict, dict_, rslt):
     x = min(dict_['crit'], key=dict_['crit'].get)
     if dict_['crit'][str(x)] <= rslt['crit']:
         warning = 'The optimization algorithm has failed to provide the parametrization that ' \
-                  'leads to the minimal criteria function value. \n                           ' \
+                  'leads to the minimal criterion function value. \n                           ' \
                   '                           The estimation output is automatically adjusted.'
 
         rslt['warning'] = warning

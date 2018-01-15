@@ -168,10 +168,10 @@ def print_info(init_dict, data_frame):
                 file_.write(fmt.format(*[group] + info))
 
         # Implement the criteria function value , the MTE and parameterization
-        header = '\n\n {} \n\n'.format('Criteria Function')
+        header = '\n\n {} \n\n'.format('Criterion Function')
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
-            str_ = '  {0:>10}             {1:>20}\n\n'.format('Value',
+            str_ = '  {0:<10}             {1:>20}\n\n'.format('Value',
                                                               init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')

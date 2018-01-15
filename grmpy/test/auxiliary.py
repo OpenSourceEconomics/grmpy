@@ -19,7 +19,8 @@ def cleanup(options=None):
 
 def save_output(file, option):
     """The function renames a given file and moves it in an output directory."""
-    assert os.path.isfile(file)
+    if not os.path.isfile(file):
+        raise AssertionError()
     directory = os.path.join(os.getcwd(), 'estimation_output')
     os.rename(file, option)
     if not os.path.isdir(directory):
