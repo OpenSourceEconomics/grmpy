@@ -136,7 +136,7 @@ def print_dict(dict_, file_name='test'):
               'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
 
-    if ('types' in dict_['TREATED'].keys()) |('types' in dict_['COST'].keys()):
+    if ('types' in dict_['TREATED'].keys()) | ('types' in dict_['COST'].keys()):
         flag_list = dict_['TREATED']['types'] + dict_['UNTREATED']['types'] \
                     + dict_['COST']['types']
         flag = all(item == 'nonbinary' for item in flag_list)
@@ -153,7 +153,7 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
-                    structure = [ 'file', 'start', 'agents', 'optimizer']
+                    structure = ['file', 'start', 'agents', 'optimizer']
                 elif label == 'SCIPY-BFGS':
                     structure = ['maxiter', 'gtol', 'eps']
                 else:
@@ -200,7 +200,6 @@ def print_dict(dict_, file_name='test'):
                         else:
                             str_ = '        {0:<10} {1:>35.4f}\n'
                             file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
-
 
             file_.write('\n')
 
