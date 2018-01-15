@@ -6,7 +6,6 @@ import pytest
 
 from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
-from grmpy.test.resources.estimate_old import calculate_criteria_old
 from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import mte_information
@@ -184,21 +183,3 @@ class TestClass:
             pseudo_dict['DIST']['all'] = output
             cov_2 = construct_covariance_matrix(pseudo_dict)
             np.testing.assert_array_almost_equal(cov_1, cov_2)
-
-
-
-    def test7(self):
-        """The test compares the criteria function value of the old and the new estimation process
-         is the equal given random start values.
-        """
-        for _ in range(10):
-            constr = constraints(probability=0.0)
-            generate_random_dict(constr)
-            df = simulate('test.grmpy.ini')
-            init_dict = read('test.grmpy.ini')
-            x0 = start_values(init_dict, df, 'init')
-            criteria = calculate_criteria(init_dict, df, x0)
-            criteria_old = calculate_criteria_old(init_dict, df, x0)
-            np.testing.assert_array_almost_equal(criteria, criteria_old)
-
-        cleanup()

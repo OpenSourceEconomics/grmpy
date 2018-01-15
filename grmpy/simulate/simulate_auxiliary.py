@@ -171,7 +171,7 @@ def print_info(init_dict, data_frame):
         header = '\n\n {} \n\n'.format('Criterion Function')
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
-            str_ = '  {0:<10}             {1:>20}\n\n'.format('Value',
+            str_ = '  {0:<10}      {1:<20.13f}\n\n'.format('Value',
                                                               init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
