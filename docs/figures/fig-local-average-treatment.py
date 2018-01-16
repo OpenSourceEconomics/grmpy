@@ -77,7 +77,6 @@ def plot_local_average_treatment(mte):
     ax.set_ylim([1.5, 4.5])
 
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES_AUX", 'fig-local-average-treatment.png'))
     plt.savefig(ppj("OUT_FIGURES", 'fig-local-average-treatment.png'))
 
 

@@ -17,7 +17,6 @@ def build(ctx):
 		ctx.path_to(ctx, 'IN_FIGURES', 'tutorial.grmpy.ini'),
             ] ,
             target=[
-                ctx.path_to(ctx, 'OUT_FIGURES_AUX', 'fig-eh-marginal-effect.png'),
 		ctx.path_to(ctx, 'OUT_FIGURES', 'fig-eh-marginal-effect.png'),
 		ctx.path_to(ctx, 'OUT_DATA', 'X.csv') 
             ] 
@@ -38,7 +37,6 @@ def build(ctx):
 		ctx.path_to(ctx, 'OUT_DATA', 'X.csv') 
             ] ,
             target=[
-                ctx.path_to(ctx, 'OUT_FIGURES_AUX', 'fig-local-average-treatment.png'),
 		ctx.path_to(ctx, 'OUT_FIGURES', 'fig-local-average-treatment.png')
             ] 
         )
@@ -57,7 +55,6 @@ def build(ctx):
 		ctx.path_to(ctx, 'OUT_DATA', 'X.csv') 
             ] ,
             target=[
-                ctx.path_to(ctx, 'OUT_FIGURES_AUX', 'fig-weights-marginal-effect.png'),
 		ctx.path_to(ctx, 'OUT_FIGURES', 'fig-weights-marginal-effect.png')
 	
             ] 

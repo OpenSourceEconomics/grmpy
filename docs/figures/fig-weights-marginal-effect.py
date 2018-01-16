@@ -87,7 +87,6 @@ def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax2.set_ylim(0, 0.35)
 
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES_AUX", 'fig-weights-marginal-effect.png'))
     plt.savefig(ppj("OUT_FIGURES", 'fig-weights-marginal-effect.png'))
 
 
