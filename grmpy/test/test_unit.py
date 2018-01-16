@@ -7,9 +7,7 @@ import pytest
 from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import mte_information
-from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.random_init import constraints
@@ -183,3 +181,4 @@ class TestClass:
             pseudo_dict['DIST']['all'] = output
             cov_2 = construct_covariance_matrix(pseudo_dict)
             np.testing.assert_array_almost_equal(cov_1, cov_2)
+        cleanup()

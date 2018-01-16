@@ -199,7 +199,7 @@ def print_logfile(init_dict, rslt, persep=False):
                         file_.write(fmt.format('', section + ':', rslt['crit']))
                     elif section in ['Message', 'Warning']:
                         fmt += '                     {:>20}\n'
-                        file_.write(fmt.format('', section + ':', rslt[section.lower()]))
+                        file_.write(fmt.format('', section + ':', rslt[section.lower()]) + '\n')
                         if section == 'Warning':
                             if 'warning' in init_dict['ESTIMATION'].keys():
                                 file_.write(fmt.format('', '', init_dict['ESTIMATION']['warning']))

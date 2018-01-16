@@ -136,12 +136,6 @@ def print_dict(dict_, file_name='test'):
               'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
 
-    if ('types' in dict_['TREATED'].keys()) | ('types' in dict_['COST'].keys()):
-        flag_list = dict_['TREATED']['types'] + dict_['UNTREATED']['types'] \
-                    + dict_['COST']['types']
-        flag = all(item == 'nonbinary' for item in flag_list)
-    else:
-        flag = False
 
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
@@ -174,7 +168,7 @@ def print_dict(dict_, file_name='test'):
                 for i, _ in enumerate(dict_[label]['coeff']):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
-                            str_ = '        {0:<10} {1:>17.4f} {2:>10} {3:>5.4f}\n'
+                            str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
                             file_.write(
                                 str_.format(
                                     'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
@@ -182,24 +176,16 @@ def print_dict(dict_, file_name='test'):
                             )
                         else:
                             if write_nonbinary:
-                                str_ = '        {0:<10} {1:>17.4f} {2:>17}\n'
+                                str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i],
                                                         dict_[label]['types'][i]))
                             else:
-                                if not flag:
-                                    str_ = '        {0:<10} {1:>17.4f}\n'
-                                    file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
-                                else:
-                                    str_ = '        {0:<10} {1:>35.4f}\n'
-                                    file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                                str_ = '        {0:<10} {1:>35.4f}\n'
+                                file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
 
                     else:
-                        if not flag:
-                            str_ = '        {0:<10} {1:>17.4f}\n'
-                            file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
-                        else:
-                            str_ = '        {0:<10} {1:>35.4f}\n'
-                            file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                        str_ = '        {0:<10} {1:>35.4f}\n'
+                        file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
 
             file_.write('\n')
 
@@ -216,7 +202,7 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.random.normal(0., 2., [num]).tolist()
         if key_ in ['UNTREATED', 'COST']:
             binary_list = ['nonbinary'] * num
-            for i in range(len(binary_list)):
+            for i, _ in enumerate(binary_list):
                 if np.random.random_sample() < 0.1:
                     if i is not 0:
                         frac = np.random.uniform(0, 1)
