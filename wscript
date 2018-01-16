@@ -19,7 +19,6 @@ def set_project_paths(ctx):
     pp['IN_SIMULATE'] = 'grmpy/simulate'
     pp['IN_CHECK'] = 'grmpy/check'
     pp['OUT_FIGURES'] = 'docs/figures'
-    pp['OUT_FIGURES_AUX'] = '{}/docs/figures'.format(out)
     pp['OUT_DATA'] = '{}/out/data'.format(out)
    
 

@@ -4,6 +4,12 @@
 import os
 
 def post_install(ctx):
+    ctx.install_files(
+        ctx.srcnode.abspath(),
+        'docs/latexpdf/project_documentation.pdf',
+        postpone=False
+    )
+
     # Now the entire directory tree of the html build, except for hidden stuff.
     install_root = os.path.join(ctx.srcnode.abspath(), 'project_documentation')
     html_root = ctx.bldnode.find_node('docs/html')
@@ -19,7 +25,7 @@ def build(ctx):
   
     ctx(
         features='sphinx',
-        builders=['html'],
+        builders=['html', 'latexpdf'],
         source='conf.py'
     )
     #Install only after the build has finished.
