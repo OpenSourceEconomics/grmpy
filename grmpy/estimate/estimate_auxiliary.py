@@ -163,7 +163,7 @@ def calculate_criteria(init_dict, data_frame, start_values):
     return criteria
 
 
-def print_logfile(init_dict, rslt, persep=False):
+def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
     init_dict, rslt = adjust_print_output(init_dict, rslt)

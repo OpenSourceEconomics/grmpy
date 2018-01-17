@@ -2,14 +2,11 @@
 from scipy.stats import wishart
 import pandas as pd
 import numpy as np
-import pytest
 
 from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import mte_information
-from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.random_init import constraints
@@ -43,6 +40,7 @@ def test1():
             np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
             np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0), decimal=7)
+
 
 def test2():
     """The third test  checks whether the relationships hold if the coefficients are zero in
@@ -94,6 +92,7 @@ def test2():
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
             np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0))
 
+
 def test3():
     """The fourth test checks whether the simulation process works if there are only treated or
     untreated Agents by setting the number of agents to one.
@@ -102,6 +101,7 @@ def test3():
     for _ in range(10):
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
+
 
 def test4():
     """The fifth test tests the random init file generating process and the  import process. It
@@ -120,14 +120,18 @@ def test4():
             if key_ in ['TREATED', 'UNTREATED', 'COST']:
                 for i in range(len(gen_dict[key_]['types'])):
                     if isinstance(gen_dict[key_]['types'][i], str):
-                        assert gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]
+                        if not gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]:
+                            raise AssertionError()
                     elif isinstance(gen_dict[key_]['types'][i], list):
-                        assert gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]
+                        if not gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]:
+                            raise AssertionError()
                         np.testing.assert_array_almost_equal(
                             gen_dict[key_]['types'][i][1], imp_dict[key_]['types'][i][1], 4)
 
         for key_ in ['source', 'agents', 'seed']:
-            assert gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]
+            if not gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]:
+                raise AssertionError()
+
 
 def test5():
     """The tests checks if the simulation process works even if the covariance between U1 and V
@@ -157,13 +161,14 @@ def test5():
         # We simply test that there is a single unique value for the marginal treatment effect.
         np.testing.assert_equal(len(set(mte)), 1)
 
+
 def test6():
     """The test ensures that the cholesky decomposition and recomposition works appropriately.
     For this purpose the test creates a positive smi definite matrix fom a wishart distribution,
     decomposes this matrix with, reconstruct it and compares the matrix with the one that was
     specified as the input for the decomposition process.
     """
-    pseudo_dict = {'DIST':{'all': []}, 'AUX':{'init_values': []}}
+    pseudo_dict = {'DIST': {'all': []}, 'AUX': {'init_values': []}}
     for _ in range(20):
         b = wishart.rvs(df=10, scale=np.identity(3), size=1)
         parameter = b[np.triu_indices(3)]
@@ -172,7 +177,7 @@ def test6():
         pseudo_dict['DIST']['all'] = parameter
         pseudo_dict['AUX']['init_values'] = parameter
         cov_1 = construct_covariance_matrix(pseudo_dict)
-        x0, start = provide_cholesky_decom(pseudo_dict, [], 'init')
+        x0, _ = provide_cholesky_decom(pseudo_dict, [], 'init')
         output = backward_cholesky_transformation(x0, test=True)
         output = adjust_output_cholesky(output)
         pseudo_dict['DIST']['all'] = output

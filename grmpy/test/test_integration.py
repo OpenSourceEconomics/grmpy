@@ -1,5 +1,4 @@
 """The module includes an integration and a regression test for the simulation process."""
-import pytest
 import json
 import os
 
