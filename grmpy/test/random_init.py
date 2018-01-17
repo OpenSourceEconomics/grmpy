@@ -52,7 +52,8 @@ def generate_random_dict(constraints_dict=None):
     """The function generates a random initialization dictionary."""
 
     if constraints_dict is not None:
-        assert isinstance(constraints_dict, dict)
+        if not isinstance(constraints_dict, dict):
+            raise AssertionError()
     else:
         constraints_dict = constraints()
 

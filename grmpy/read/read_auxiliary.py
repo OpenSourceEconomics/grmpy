@@ -88,10 +88,8 @@ def check_types(dict_):
     if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
         for i in range(len(dict_['UNTREATED']['types'])):
             if isinstance(dict_['TREATED']['types'][i], list):
-                dict_['UNTREATED']['types'][i][0] = dict_['TREATED']['types'][i][0]
-                dict_['UNTREATED']['types'][i][1] = dict_['TREATED']['types'][i][1]
+                dict_['UNTREATED']['types'][i] = dict_['TREATED']['types'][i]
             if isinstance(dict_['UNTREATED']['types'][i], list):
-                dict_['TREATED']['types'][i][0] = dict_['UNTREATED']['types'][i][0]
-                dict_['TREATED']['types'][i][1] = dict_['UNTREATED']['types'][i][1]
+                dict_['TREATED']['types'][i] = dict_['UNTREATED']['types'][i]
 
     return dict_

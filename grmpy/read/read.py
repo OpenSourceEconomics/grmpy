@@ -11,7 +11,8 @@ def read(file_):
     """The function reads the initialization file and returns a dictionary with parameters for the
     simulation.
     """
-    assert os.path.isfile(file_)
+    if not os.path.isfile(file_):
+        raise AssertionError()
 
     dict_ = {}
     for line in open(file_).readlines():

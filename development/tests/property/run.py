@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 """The test provides the basic capabilities to run numerous property tests."""
 import datetime
-import os
 
 import statsmodels
+import subprocess
+
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
@@ -31,6 +32,6 @@ while True:
         grmpy.estimate('test.grmpy.ini')
     except statsmodels.tools.sm_exceptions.PerfectSeparationError:
         print('separation error, skip')
-    os.system('git clean -d -f')
+    subprocess.check_call(['git', 'clean', '-d', '-f'])
 
     counter += 1
