@@ -1,7 +1,7 @@
 Software Engineering
 ====================
 
-We now briefly discuss our software engineering practices that help us to ensure the transparency, reliability, scalability, and extensibility of the ``grmpy`` package.
+We now briefly discuss our software engineering practices that help us to ensure the transparency, reliability, scalability, and extensibility of the ``grmpy`` package. Please visit us at the `Software Engineering for Economists Initiative <http://softecon.github.io/>`_ for an accessible introduction on how to integrate these practices in your own research.
 
 Test Battery
 ------------
