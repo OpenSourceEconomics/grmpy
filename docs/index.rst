@@ -16,6 +16,7 @@ We build on the following main references:
 
     James J. Heckman and Edward J. Vytlacil. `Chapter 71 Econometric Evaluation of Social Programs, Part II: Using the Marginal Treatment Effect to Organize Alternative Econometric Estimators to Evaluate Social Programs, and to Forecast their Effects in New Environments. <http://ac.els-cdn.com/S1573441207060710/1-s2.0-S1573441207060710-main.pdf?_tid=5ccb4ace-6bbf-11e7-807b-00000aab0f26&acdnat=1500385710_c3706f18138fabe356b0f3ebddd75670>`_ Handbook of Econometrics, 6, 4875 – 5143, 2007.
 
+.. htmlonly::
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 
 **Contents:**

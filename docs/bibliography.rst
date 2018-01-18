@@ -1,4 +1,4 @@
-.. only:: html
+
 
     Bibliography
     ============

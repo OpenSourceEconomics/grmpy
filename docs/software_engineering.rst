@@ -5,7 +5,7 @@ We now briefly discuss our software engineering practices that help us to ensure
 
 Test Battery
 ------------
-
+.. htmlonly::
 .. image:: https://codecov.io/gh/grmToolbox/grmpy/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/grmToolbox/grmpy
 
@@ -27,7 +27,6 @@ We use `pytest <http://docs.pytest.org>`_ as our test runner. We broadly group o
 
 Documentation
 -------------
-
 .. image:: https://readthedocs.org/projects/grmpy/badge/?version=latest
    :target: http://grmpy.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
@@ -45,7 +44,7 @@ We use several automatic code review tools to help us improve the readability an
 
 Continuous Integration Workflow
 -------------------------------
-
+.. htmlonly::
 .. image:: https://travis-ci.org/grmToolbox/grmpy.svg?branch=master
    :target: https://travis-ci.org/grmToolbox/grmpy
 

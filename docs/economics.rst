@@ -44,9 +44,9 @@ What gives rise to variation in choices and outcomes among, from the econometric
 The individual benefit of treatment is defined as
 
   .. math::
-       B  = Y_1 − Y_0 = (\mu_1(X) − \mu_0(X)) + (U_1 − U_0).
+       B  = Y_1 - Y_0 = (\mu_1(X) - \mu_0(X)) + (U_1 - U_0).
 
-From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 − U_0)`. However, :math:`(U_1 − U_0)` might be (at least partly) included in the agent’s information set I and thus known to the agent at the time of the treatment decision.
+From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 - U_0)`. However, :math:`(U_1 - U_0)` might be (at least partly) included in the agent’s information set I and thus known to the agent at the time of the treatment decision.
 
 As a result, unobservable treatment effect heterogeneity can be distinguished into private information and uncertainty. Private information is only known to the agent but not the econometrician; uncertainty refers to variability that is unpredictable by both.
 
@@ -69,9 +69,9 @@ It is common to summarize the average benefits of treatment for different subset
 treated (TT) or untreated (TUT).
 
   .. math::
-      ATE & = E [Y_1 − Y_0]\\
-      TT & = E [Y_1 − Y_0 | D = 1]\\
-      TUT & = E [Y_1 − Y_0 | D = 0]\\
+      ATE & = E [Y_1 - Y_0]\\
+      TT & = E [Y_1 - Y_0 | D = 1]\\
+      TUT & = E [Y_1 - Y_0 | D = 0]\\
 
 The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus TT > TUT. If agents select their treatment status at random, then all parameters are equal. The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The ATE is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The TT is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
 compulsory participation, then the TUT is the policy relevant parameter. To ensure a tight link between the posed policy question and the parameter of interest, Heckman
@@ -79,13 +79,13 @@ and Vytlacil (2001 :cite:`HecVyr01`) propose the policy-relevant treatment effec
 respectively. Then, observed outcomes are determined as
 
 .. math::
-    Y_B & = D_BY_1 + (1 − D_B)Y_0\\
-    Y_A & = D_AY_1 + (1 − D_A)Y_0.
+    Y_B & = D_BY_1 + (1 - D_B)Y_0\\
+    Y_A & = D_AY_1 + (1 - D_A)Y_0.
 
 A policy change induces some agents to change their treatment status (DB != DA), while others are unaffected. More formally, the PRTE is then defined as
 
 .. math::
-      PRTE  = E[D_A] − E[D_B](E[Y_A] − E[Y_B]).
+      PRTE  = E[D_A] - E[D_B](E[Y_A] - E[Y_B]).
 
 In our empirical illustration, in which we consider education policies, the lack of policy relevance of the conventional effect parameters is particularly evident. Rather than directly assigning individuals a certain level of education, policy makers can only indirectly affect schooling choices, e.g. by altering tuition cost through subsidies. The individuals drawn into treatment by such a policy will neither be a random sample of the whole population, nor the whole population of
 the previously (un-)treated. That is why we estimate the policy-relevant effects of alternative education policies and contrast them with the conventional treatment effect parameters. We also show how the PRTE varies for alternative policy proposals as different agents are induced to change their treatment status.
@@ -95,6 +95,11 @@ Local Average Treatment Effect
 
 The Local Average Treatment Effect (LATE) was introduced by Imbens and Angrist (1994 :cite:`Imbens94`). They show that instrumental variable estimator identify LATE, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
 
+.. figure:: ../docs/figures/fig-local-average-treatment.png
+   :align: center
+
+   LATE at different values of :math:`u_S`
+
 Unfortunately, the people induced to go into state 1 :math:`(D=1)` by a change in any particular instrument need not to be the same as the people induced to to go to state 1 by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may bot be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, IV estimates using the components of :math:`Z` as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. Heckman develops this argument in detail (2010 :cite:`Heckman10`).
 
 The average effect of a policy and the average effect of a treatment are linked by the marginal treatment effect (MTE). The MTE was introduced into the literature by Björklund and Moffitt (1987 :cite:`BjöMof87`) and extended in Heckman and Vytlacil (2001 :cite:`HecVyr01`,2005 :cite:`HecVyr05`, 2007b :cite:`HecVyr07b`).
@@ -102,10 +107,10 @@ The average effect of a policy and the average effect of a treatment are linked 
 Marginal Treatment Effect
 -------------------------
 
-The MTE is the treatment effect parameter that conditions on the unobserved desire to select into treatment. Let :math:`V = E[U_C − (U_1 − U_0) | I ]` summarize the expectations about all unobservables determining treatment choice and let :math:`U_S = F_V (V)`. Then, the MTE is defined as
+The MTE is the treatment effect parameter that conditions on the unobserved desire to select into treatment. Let :math:`V = E[U_C - (U_1 - U_0) | I ]` summarize the expectations about all unobservables determining treatment choice and let :math:`U_S = F_V (V)`. Then, the MTE is defined as
 
 .. math::
-      MTE(x, u_S)  = E [ Y_1 − Y_0 | X = x, U_S = u_S] .
+      MTE(x, u_S)  = E [ Y_1 - Y_0 | X = x, U_S = u_S] .
 
 The MTE is the average benefit for persons with observable characteristics :math:`X = x` and unobservables :math:`U_S = u_S`. By construction, :math:`U_S` denotes the different quantiles of :math:`V` . So, when varying :math:`U_S` but keeping :math:`X` fixed, then the MTE shows how the average benefit varies along the distribution of :math:`V` . For :math:`u_S` evaluation points close to zero, the MTE is the average effect of treatment for individuals with a value of :math:`V` that makes them most likely to participate. The opposite is true for high values of :math:`u_S`.
 The MTE provides the underlying structure for all average effect parameters previously discussed. These can be derived as weighted averages of the MTE (Heckman and Vytlacil, 2005 :cite:`HecVyr05`).
@@ -115,12 +120,27 @@ Parameter :math:`j, \Delta j (x)`, can be written as
 .. math::
     \Delta j (x) = \int_{0}^{1} MTE(x, u_S) hj(x, u_S) du_S,
 
-where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data. All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
+where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data.
+
+.. figure:: ../docs/figures/fig-weights-marginal-effect.png
+   :align: center
+
+   Weights for the marginal treatment effect for different parameters.
+
+All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`MTE(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
+
+.. figure:: ../docs/figures/fig-eh-marginal-effect.png
+   :align: center
+
+   MTE in the presence and absence of essential heterogeneity.
+
+
 
 So far, we have only discussed average effect parameters. However, these conceal possible treatment effect heterogeneity, which provides important information about a treatment. Hence, we now present their distributional counterparts (Aakvik et al., 2005 :cite:`AaHeVy2005`).
+
 
 Distribution of Potential Outcomes
 ----------------------------------
 
 Several interesting aspects of policies cannot be evaluated without knowing the joint distribution of potential outcomes (see Abbring and Heckman, 2007 :cite:`AbbHec07` and Heckman et al., 1997 :cite:`HeSmCl97`). The joint distribution of :math:`(Y_1, Y_0)` allows to calculate the whole distribution of benefits. Based on it, the average treatment and policy effects can be
-constructed just as the median and all other quantiles. In addition, the portion of people that benefit from treatment can be calculated for the overall population :math:`Pr(Y_1 − Y_0 > 0)` or among any subgroup of particular interest to policy makers :math:`Pr(Y_1 −Y_0 > 0 | X)`. This is important as a treatment which is beneficial for agents on average can still be harmful for some. The absence of an average effect might be the result of part of the population having a positive effect, which is just offset by a negative effect on the rest of the population. This kind of treatment effect heterogeneity is informative as it provides the starting point for an adaptive research strategy that tries to understand the driving force behind these differences (Horwitz et al., 1996 :cite:`HSMV96`, 1997 :cite:`HSMV97`).
+constructed just as the median and all other quantiles. In addition, the portion of people that benefit from treatment can be calculated for the overall population :math:`Pr(Y_1 - Y_0 > 0)` or among any subgroup of particular interest to policy makers :math:`Pr(Y_1 - Y_0 > 0 | X)`. This is important as a treatment which is beneficial for agents on average can still be harmful for some. The absence of an average effect might be the result of part of the population having a positive effect, which is just offset by a negative effect on the rest of the population. This kind of treatment effect heterogeneity is informative as it provides the starting point for an adaptive research strategy that tries to understand the driving force behind these differences (Horwitz et al., 1996 :cite:`HSMV96`, 1997 :cite:`HSMV97`).
