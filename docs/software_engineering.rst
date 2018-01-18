@@ -9,7 +9,7 @@ Test Battery
 .. image:: https://codecov.io/gh/grmToolbox/grmpy/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/grmToolbox/grmpy
 
-We use `pytest <http://docs.pytest.org>`_ as our test runner. We broadly group our tests in four categories:
+We use `pytest <http://docs.pytest.org>`_ as our test runner. We broadly group our tests in three categories:
 
 * **property-based testing**
 
