@@ -52,7 +52,8 @@ def generate_random_dict(constraints_dict=None):
     """The function generates a random initialization dictionary."""
 
     if constraints_dict is not None:
-        assert isinstance(constraints_dict, dict)
+        if not isinstance(constraints_dict, dict):
+            raise AssertionError()
     else:
         constraints_dict = constraints()
 
@@ -104,7 +105,7 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION']['start'] = start
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
-        dict_[key_]['disp'] = np.random.randint(0, 1)
+        dict_[key_]['disp'] = 0
         dict_[key_]['maxiter'] = maxiter
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
@@ -135,6 +136,8 @@ def print_dict(dict_, file_name='test'):
     labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'COST', 'DIST', 'SCIPY-BFGS',
               'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
+
+
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
         for label in labels:
@@ -143,29 +146,30 @@ def print_dict(dict_, file_name='test'):
 
             if label in ['SIMULATION', 'ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL']:
                 if label == 'SIMULATION':
-                    structure = ['agents', 'seed', 'source']
+                    structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['agents', 'file', 'optimizer', 'start']
+                    structure = ['file', 'start', 'agents', 'optimizer']
                 elif label == 'SCIPY-BFGS':
-                    structure = ['disp', 'maxiter', 'gtol', 'eps']
+                    structure = ['maxiter', 'gtol', 'eps']
                 else:
-                    structure = ['disp', 'maxiter', 'xtol', 'ftol']
+                    structure = ['maxiter', 'xtol', 'ftol']
                 for key_ in structure:
                     if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
-                        str_ = '        {0:<25} {1:20}\n'
+                        str_ = '        {0:<25} {1:>20}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps']:
-                        str_ = '        {0:<13} {1:20}\n'
+                        str_ = '        {0:<13} {1:>32}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
-                        str_ = '        {0:<10} {1:20}\n'
+                        str_ = '        {0:<10} {1:>35}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
+
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i, _ in enumerate(dict_[label]['coeff']):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
-                            str_ = '        {0:<10} {1:20.4f} {2:>18} {3:5.4f}\n'
+                            str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
                             file_.write(
                                 str_.format(
                                     'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
@@ -173,15 +177,17 @@ def print_dict(dict_, file_name='test'):
                             )
                         else:
                             if write_nonbinary:
-                                str_ = '        {0:<10} {1:20.4f} {2:>18}\n'
+                                str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i],
                                                         dict_[label]['types'][i]))
                             else:
-                                str_ = '        {0:<10} {1:20.4f}\n'
+                                str_ = '        {0:<10} {1:>35.4f}\n'
                                 file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+
                     else:
-                        str_ = '        {0:<10} {1:20.4f}\n'
+                        str_ = '        {0:<10} {1:>35.4f}\n'
                         file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+
             file_.write('\n')
 
 
@@ -197,7 +203,7 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.random.normal(0., 2., [num]).tolist()
         if key_ in ['UNTREATED', 'COST']:
             binary_list = ['nonbinary'] * num
-            for i in range(len(binary_list)):
+            for i, _ in enumerate(binary_list):
                 if np.random.random_sample() < 0.1:
                     if i is not 0:
                         frac = np.random.uniform(0, 1)

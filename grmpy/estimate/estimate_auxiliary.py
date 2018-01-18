@@ -5,7 +5,6 @@ import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
-
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
@@ -61,7 +60,8 @@ def _prepare_arguments(init_dict, rslt):
 def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
-    assert isinstance(init_dict, dict)
+    if not isinstance(init_dict, dict):
+        raise AssertionError()
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
 
     if option == 'init':
@@ -106,7 +106,7 @@ def start_values(init_dict, data_frame, option):
             x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
             sd_ = None
             init_dict['ESTIMATION']['warning'] = msg
-            option ='init'
+            option = 'init'
 
     x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]
@@ -138,8 +138,6 @@ def distribute_parameters(init_dict, start_values, dict_=None):
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, True)
 
-
-
     # Update auxiliary versions
     rslt['AUX'] = dict()
     rslt['AUX']['x_internal'] = start_values[:]
@@ -165,7 +163,7 @@ def calculate_criteria(init_dict, data_frame, start_values):
     return criteria
 
 
-def print_logfile(init_dict, rslt, persep=False):
+def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
     init_dict, rslt = adjust_print_output(init_dict, rslt)
@@ -177,36 +175,36 @@ def print_logfile(init_dict, rslt, persep=False):
             if label == 'Optimization Information':
                 for section in ['Optimizer', 'Start values', 'Success', 'Status',
                                 'Number of Evaluations',
-                                'Criteria', 'Message', 'Warning']:
+                                'Criterion', 'Message', 'Warning']:
                     fmt = '  {:<10}' + ' {:<20}'
                     if section == 'Number of Evaluations':
                         if len(str(rslt['nfev'])) == 4:
-                            fmt += '  {:>21}\n\n'
+                            fmt += '  {:>21}\n'
                         else:
-                            fmt += '  {:>20}\n\n'
+                            fmt += '  {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt['nfev']))
                     elif section == 'Start values':
-                        fmt += '  {:>23}\n\n'
+                        fmt += '  {:>23}\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['start']))
                     elif section == 'Optimizer':
                         if init_dict['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
-                            fmt += '  {:>31}\n\n'
+                            fmt += '  {:>31}\n'
                         else:
-                            fmt += '  {:>29}\n\n'
+                            fmt += '  {:>29}\n'
                         file_.write(fmt.format('', section + ':',
                                                init_dict['ESTIMATION']['optimizer']))
-                    elif section == 'Criteria':
-                        fmt += '       {:>20.4f}\n\n'
+                    elif section == 'Criterion':
+                        fmt += '       {:>20.4f}\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
                     elif section in ['Message', 'Warning']:
-                        fmt += '                     {:>20}\n\n'
-                        file_.write(fmt.format('', section + ':', rslt[section.lower()]))
+                        fmt += '                     {:>20}\n'
+                        file_.write(fmt.format('', section + ':', rslt[section.lower()]) + '\n')
                         if section == 'Warning':
                             if 'warning' in init_dict['ESTIMATION'].keys():
-                                file_.write(fmt.format('', '',init_dict['ESTIMATION']['warning']))
+                                file_.write(fmt.format('', '', init_dict['ESTIMATION']['warning']))
                     else:
-                        fmt += '  {:>20}\n\n'
+                        fmt += '  {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
@@ -253,7 +251,7 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         # Set seed value
         np.random.seed(seed)
         # Simulate unobservables
-        U, V = simulate_unobservables(dict_)
+        U, _ = simulate_unobservables(dict_)
 
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
@@ -388,7 +386,7 @@ def process_rslt(init_dict, dict_, rslt):
     x = min(dict_['crit'], key=dict_['crit'].get)
     if dict_['crit'][str(x)] <= rslt['crit']:
         warning = 'The optimization algorithm has failed to provide the parametrization that ' \
-                  'leads to the minimal criteria function value. \n                           ' \
+                  'leads to the minimal criterion function value. \n                           ' \
                   '                           The estimation output is automatically adjusted.'
 
         rslt['warning'] = warning
@@ -483,8 +481,8 @@ def transform_rslt_DIST(rslt, dict_):
     for i, element in enumerate(dict_['DIST']['all']):
         dict_['DIST']['all'][i] = round(element, 4)
 
-
     return dict_
+
 
 def provide_cholesky_decom(init_dict, x0, option, sd_=None):
     """The function transforms the start covariance matrix into its cholesky decomposition."""
@@ -493,7 +491,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         L = np.linalg.cholesky(cov)
         L = L[np.tril_indices(3)]
         distribution_characteristics = init_dict['AUX']['init_values'][-6:]
-        x0 = np.concatenate((x0,L))
+        x0 = np.concatenate((x0, L))
 
     elif option == 'auto':
         distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,
@@ -510,6 +508,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
 
     return x0, start
 
+
 def backward_cholesky_transformation(x0, dist=False, test=False):
     """The function creates a positive semi definite covariance matrix from the given cholesky
     decomposition elements.
@@ -517,15 +516,15 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
     start_cholesky = x0[-6:]
 
     cholesky = np.zeros((3, 3))
-    cholesky[np.tril_indices(3)] =  start_cholesky
+    cholesky[np.tril_indices(3)] = start_cholesky
     cov = np.dot(cholesky, cholesky.T)
-    sdv = cov[2,2] ** 0.5
+    sdv = cov[2, 2] ** 0.5
     # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
     if dist is True:
         sd0 = cov[0, 0] ** 0.5
         sd1 = cov[1, 1] ** 0.5
-        rho0 = cov[0,2] / (sd0 *sdv)
-        rho1 = cov[1,2] / (sd1 *sdv)
+        rho0 = cov[0, 2] / (sd0 * sdv)
+        rho1 = cov[1, 2] / (sd1 * sdv)
 
         dist_parameter = [sd0, sd1, rho0, rho1]
         return dist_parameter
@@ -535,11 +534,7 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
         if test is False:
-            output = x0[:-6]   + [sd0, rho01, rho0, sd1, rho1, sdv]
+            output = x0[:-6] + [sd0, rho01, rho0, sd1, rho1, sdv]
         else:
             output = [sd0, rho01, rho0, sd1, rho1, sdv]
         return output
-
-
-
-
