@@ -19,7 +19,7 @@ You can download the sources directly from our `GitHub repository <https://githu
 
 .. code-block:: bash
 
-   $ git clone https://github.com/grmpy/package.git
+   $ git clone https://github.com/grmToolbox/grmpy.git
 
 Once you obtained a copy of the source files, installing the package in editable model is straightforward.
 
