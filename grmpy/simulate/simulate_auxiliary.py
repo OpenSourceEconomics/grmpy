@@ -75,7 +75,9 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
+    # TODO: Here is a mistake in the order of unobservables
+    #data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
+    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
 
     # Construct list of column labels
     column = ['Y', 'D']

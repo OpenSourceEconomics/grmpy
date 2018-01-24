@@ -184,3 +184,11 @@ def test6():
         cov_2 = construct_covariance_matrix(pseudo_dict)
         np.testing.assert_array_almost_equal(cov_1, cov_2)
     cleanup()
+
+
+def test_7():
+    """We want to able to smoothly switch between generating and printing random initialization
+    files."""
+    # TODO:_There seems to be a problem with coeff flags and all flags in the initialization dict
+    generate_random_dict()
+    read('test.grmpy.ini')
