@@ -38,9 +38,13 @@ def simulate_unobservables(init_dict):
     cov = construct_covariance_matrix(init_dict)
 
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
-    V = np.array(U[0:, 2])
+    V = np.array(U[:, 2])
+
+    # TODO: The calculation was wrong!
     # Here we keep track of the implied value for U_C.
-    U[:, 2] = V - U[:, 0] + U[:, 1]
+    # U[:, 2] = V - U[:, 0] + U[:, 1]
+    U[:, 2] = V + (U[:, 0] - U[:, 1])
+
     return U, V
 
 
@@ -54,8 +58,9 @@ def simulate_outcomes(init_dict, X, Z, U):
     coeffs_cost = init_dict['COST']['all']
 
     # Calculate potential outcomes and costs
-    Y_1 = np.dot(coeffs_treated, X.T) + U[:, 1]
-    Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 0]
+    # TODO: Wrong order of unobservables
+    Y_1 = np.dot(coeffs_treated, X.T) + U[:, 0]
+    Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 1]
     C = np.dot(coeffs_cost, Z.T) + U[:, 2]
 
     # Calculate expected benefit and the resulting treatment dummy
