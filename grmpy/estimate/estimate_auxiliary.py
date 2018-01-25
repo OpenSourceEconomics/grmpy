@@ -1,5 +1,6 @@
 """The module provides auxiliary functions for the estimation process"""
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
+from numpy.random import RandomState
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd
@@ -208,7 +209,7 @@ def print_logfile(init_dict, rslt):
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
             elif label == 'Criterion Function':
                 fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
-                file_.write(fmt.format('', '', 'Start', 'Current'))
+                file_.write(fmt.format('', '', 'Start', 'Finish'))
                 file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
 
             else:
@@ -233,13 +234,12 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
-
+    np.random.seed(seed)
     # Determine parametrization and read in /simulate observables
     if start is True:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
-        X = data_frame.filter(regex=r'^X\_')
-        Z = data_frame.filter(regex=r'^Z\_')
+        np.random.seed(seed)
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
@@ -252,6 +252,8 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         np.random.seed(seed)
         # Simulate unobservables
         U, _ = simulate_unobservables(dict_)
+        X = simulate_covariates(rslt_dict, 'TREATED')
+        Z = simulate_covariates(rslt_dict, 'COST')
 
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
@@ -296,12 +298,12 @@ def process_results(init_dict, rslt, start=False):
                 return rslt_dict
 
 
-def write_descriptives(init_dict, df1, rslt):
+def write_comparison(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
     df3, df2 = simulate_estimation(init_dict, rslt, df1, True)
-    with open('descriptives.grmpy.txt', 'w') as file_:
+    with open('comparison.grmpy.txt', 'w') as file_:
         # First we note some basic information ab out the dataset.
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
@@ -494,8 +496,7 @@ def provide_cholesky_decom(init_dict, x0, option, sd_=None):
         x0 = np.concatenate((x0, L))
 
     elif option == 'auto':
-        distribution_characteristics = [sd_[0], init_dict['DIST']['all'][1], 0, sd_[1], 0,
-                                        init_dict['DIST']['all'][5]]
+        distribution_characteristics = [sd_[0], 0, 0, sd_[1], 0, 1]
         cov = np.zeros((3, 3))
         cov[np.triu_indices(3)] = [distribution_characteristics]
         cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]

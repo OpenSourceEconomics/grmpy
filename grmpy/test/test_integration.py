@@ -92,11 +92,11 @@ def test6():
     values as start values.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init')
+        constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init', same_size=True)
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
-        dict_ = read_desc('descriptives.grmpy.txt')
+        dict_ = read_desc('comparison.grmpy.txt')
         for key_ in ['All', 'Treated', 'Untreated']:
             np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
             np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
