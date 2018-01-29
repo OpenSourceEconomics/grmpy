@@ -188,11 +188,14 @@ def test6():
         np.testing.assert_array_almost_equal(cov_1, cov_2)
 
 def test7():
+    """This test ensures that setting different variables in the TREATED and UNTREATED section to
+    binary in the initialization file leads to the same type lists for both sections. Further it is
+    verified that it is not possible to set an intercept variable to a binary one."""
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
     dict_ = read(fname)
     if not dict_['TREATED']['types'] == dict_['UNTREATED']['types']:
         raise AssertionError()
-    for key_ in ['TREATED', 'UNTREATED']:
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
     cleanup()
