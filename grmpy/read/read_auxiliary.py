@@ -91,5 +91,7 @@ def check_types(dict_):
                 dict_['UNTREATED']['types'][i] = dict_['TREATED']['types'][i]
             if isinstance(dict_['UNTREATED']['types'][i], list):
                 dict_['TREATED']['types'][i] = dict_['UNTREATED']['types'][i]
-
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        if isinstance(dict_[key_]['types'][0], list):
+            dict_[key_]['types'][0] = 'nonbinary'
     return dict_

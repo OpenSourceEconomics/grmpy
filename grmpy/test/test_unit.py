@@ -1,4 +1,6 @@
 """The module provides unit tests for different aspects of the simulation process."""
+import os
+
 from scipy.stats import wishart
 import pandas as pd
 import numpy as np
@@ -14,6 +16,7 @@ from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
+import grmpy
 
 
 def test1():
@@ -183,4 +186,13 @@ def test6():
         pseudo_dict['DIST']['all'] = output
         cov_2 = construct_covariance_matrix(pseudo_dict)
         np.testing.assert_array_almost_equal(cov_1, cov_2)
+
+def test7():
+    fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
+    dict_ = read(fname)
+    if not dict_['TREATED']['types'] == dict_['UNTREATED']['types']:
+        raise AssertionError()
+    for key_ in ['TREATED', 'UNTREATED']:
+        if isinstance(dict_[key_]['types'][0], list):
+            raise AssertionError()
     cleanup()
