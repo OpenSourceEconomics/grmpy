@@ -3,10 +3,13 @@ import json
 import os
 
 import numpy as np
+import pytest
+
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import simulate_estimation
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
+from grmpy.check.custom_exceptions import UserError
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
@@ -103,4 +106,14 @@ def test6():
                                           dict_[key_]['Simulated Sample (finish)'])
             np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
                                           dict_[key_]['Simulated Sample (start)'])
+
+def test7():
+    """This test ensures that the estimation process returns an UserError if one tries to execute an
+    estimation process with initialization file values as start values for an deterministic setting.
+    """
+    constr = constraints(agents=1000, probability=1.0)
+    generate_random_dict(constr)
+    simulate('test.grmpy.ini')
+    pytest.raises(UserError, estimate, 'test.grmpy.ini')
+
     cleanup()

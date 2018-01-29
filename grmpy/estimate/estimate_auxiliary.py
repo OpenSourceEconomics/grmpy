@@ -213,7 +213,7 @@ def print_logfile(init_dict, rslt):
                 file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
 
             else:
-                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Current']) + '\n\n')
+                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Finish']) + '\n\n')
                 fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
