@@ -2,6 +2,9 @@
 processes of the unobservable and endogenous variables of the model as well as functions regarding
 the info file output.
 """
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from scipy.stats import norm
 import pandas as pd
 import numpy as np
