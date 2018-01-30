@@ -15,6 +15,7 @@ from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import print_logfile
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.estimate.estimate_auxiliary import bfgs_dict
+from grmpy.check.check import check_initialization_dict
 from grmpy.check.check import check_init_file
 from grmpy.read.read import read
 
@@ -26,6 +27,9 @@ def estimate(init_file):
     dict_ = read(init_file)
     np.random.seed(dict_['SIMULATION']['seed'])
     # Check if the initialization file specifications are appropriate for the estimation process
+
+    # We perform some basic consistency checks regarding the user's request.
+    check_initialization_dict(dict_)
     check_init_file(dict_)
 
     data_file = dict_['ESTIMATION']['file']
