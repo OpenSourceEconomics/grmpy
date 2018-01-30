@@ -15,7 +15,7 @@ Development Lead
 Contributors
 ^^^^^^^^^^^^
 
-`Tobias Raabe <https://github.com/tobiasraabe>`_, `Sebastian Becker <https://github.com/sebecker>`_
+`Tobias Raabe <https://github.com/tobiasraabe>`_, `Sebastian Becker <https://github.com/sebecker>`_, `Benedikt Kauf <https://github.com/benediktkauf>`_
 
 Acknowledgments
 ^^^^^^^^^^^^^^^
