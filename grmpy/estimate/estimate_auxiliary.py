@@ -1,6 +1,5 @@
 """The module provides auxiliary functions for the estimation process"""
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
-from numpy.random import RandomState
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd

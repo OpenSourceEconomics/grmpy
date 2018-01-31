@@ -23,7 +23,8 @@ from grmpy.read.read import read
 def estimate(init_file):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
-    assert os.path.isfile(init_file)
+    if not os.path.isfile(init_file):
+        raise AssertionError
     dict_ = read(init_file)
     np.random.seed(dict_['SIMULATION']['seed'])
     # Check if the initialization file specifications are appropriate for the estimation process
@@ -33,7 +34,8 @@ def estimate(init_file):
     check_init_file(dict_)
 
     data_file = dict_['ESTIMATION']['file']
-    assert os.path.isfile(data_file)
+    if not os.path.isfile(data_file):
+        raise AssertionError
 
     # Start value option
     option = dict_['ESTIMATION']['start']
