@@ -173,27 +173,27 @@ def print_dict(dict_, file_name='test'):
 
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                for i, _ in enumerate(dict_[label]['coeff']):
+                for i, _ in enumerate(dict_[label]['all']):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
                             str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
                             file_.write(
                                 str_.format(
-                                    'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
+                                    'coeff', dict_[label]['all'][i], dict_[label]['types'][i][0],
                                     dict_[label]['types'][i][1])
                             )
                         else:
                             if write_nonbinary:
                                 str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i],
+                                file_.write(str_.format('coeff', dict_[label]['all'][i],
                                                         dict_[label]['types'][i]))
                             else:
                                 str_ = '        {0:<10} {1:>35.4f}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                                file_.write(str_.format('coeff', dict_[label]['all'][i]))
 
                     else:
                         str_ = '        {0:<10} {1:>35.4f}\n'
-                        file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                        file_.write(str_.format('coeff', dict_[label]['all'][i]))
 
             file_.write('\n')
 
