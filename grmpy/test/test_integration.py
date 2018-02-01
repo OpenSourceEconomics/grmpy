@@ -3,11 +3,16 @@ import json
 import os
 
 import numpy as np
+import pytest
+
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import simulate_estimation
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.check.check import check_initialization_dict
 from grmpy.test.random_init import generate_random_dict
+from grmpy.check.custom_exceptions import UserError
 from grmpy.test.random_init import constraints
+from grmpy.check.check import check_init_file
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
@@ -92,15 +97,54 @@ def test6():
     values as start values.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init')
+        constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init', same_size=True)
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
-        dict_ = read_desc('descriptives.grmpy.txt')
+        dict_ = read_desc('comparison.grmpy.txt')
         for key_ in ['All', 'Treated', 'Untreated']:
             np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
             np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
                                           dict_[key_]['Simulated Sample (finish)'])
             np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
                                           dict_[key_]['Simulated Sample (start)'])
+
+def test7():
+    """This test ensures that the estimation process returns an UserError if one tries to execute an
+    estimation process with initialization file values as start values for an deterministic setting.
+    """
+    fname_num = os.path.dirname(grmpy.__file__) + '/test/resources/test_num.grmpy.ini'
+    fname_zero = os.path.dirname(grmpy.__file__) + '/test/resources/test_zero.grmpy.ini'
+    fname_vzero = os.path.dirname(grmpy.__file__) + '/test/resources/test_vzero.grmpy.ini'
+    fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
+
+    constr = constraints(agents=1000, probability=1.0)
+    generate_random_dict(constr)
+    dict_ = read('test.grmpy.ini')
+    pytest.raises(UserError, check_init_file, dict_)
+    pytest.raises(UserError, estimate, 'test.grmpy.ini')
+
+    constr = constraints(agents=0, probability=.0, sample=100)
+    generate_random_dict(constr)
+    dict_ = read('test.grmpy.ini')
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, simulate, 'test.grmpy.ini')
+
+    dict_ = read(fname_num)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, simulate, fname_num)
+
+    dict_ = read(fname_possd)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, simulate, fname_possd)
+
+    dict_ = read(fname_zero)
+    pytest.raises(UserError, check_init_file, dict_)
+    pytest.raises(UserError, estimate, fname_zero)
+
+    dict_ = read(fname_vzero)
+    pytest.raises(UserError, check_init_file, dict_)
+    pytest.raises(UserError, estimate, fname_vzero)
+
+
     cleanup()

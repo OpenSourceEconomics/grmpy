@@ -2,6 +2,9 @@
 processes of the unobservable and endogenous variables of the model as well as functions regarding
 the info file output.
 """
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 from scipy.stats import norm
 import pandas as pd
 import numpy as np
@@ -171,7 +174,7 @@ def print_info(init_dict, data_frame):
         header = '\n\n {} \n\n'.format('Criterion Function')
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
-            str_ = '  {0:<10}      {1:<20.13f}\n\n'.format('Value',
+            str_ = '  {0:<10}      {1:<20.12f}\n\n'.format('Value',
                                                               init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')

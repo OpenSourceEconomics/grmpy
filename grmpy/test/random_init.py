@@ -6,7 +6,7 @@ import numpy as np
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None, maxiter=None):
+                optimizer=None, start=None, maxiter=None, same_size=False):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -45,6 +45,8 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=No
     else:
         constraints_dict['MAXITER'] = maxiter
 
+    constraints_dict['SAME_SIZE'] = same_size
+
     return constraints_dict
 
 
@@ -60,6 +62,8 @@ def generate_random_dict(constraints_dict=None):
     is_deterministic = constraints_dict['DETERMINISTIC']
 
     optimizer = constraints_dict['OPTIMIZER']
+
+    same_size = constraints_dict['SAME_SIZE']
 
     is_zero = constraints_dict['IS_ZERO']
 
@@ -99,7 +103,10 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    dict_['ESTIMATION']['agents'] = agents
+    if same_size is True:
+        dict_['ESTIMATION']['agents'] = agents
+    else:
+        dict_['ESTIMATION']['agents'] = np.random.randint(1, 1000)
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     dict_['ESTIMATION']['optimizer'] = optimizer
     dict_['ESTIMATION']['start'] = start

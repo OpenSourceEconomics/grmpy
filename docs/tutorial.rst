@@ -163,4 +163,4 @@ The other feature of the package is the estimation of the parameters of interest
 As in the simulation process this creates a number of output file that contains information about the estimation results.
 
 * **est.grmpy.info**, basic information of the estimation process
-* **descriptives.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process
+* **comparison.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process

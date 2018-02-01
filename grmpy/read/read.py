@@ -2,7 +2,6 @@
 import shlex
 import os
 
-from grmpy.check.check import check_initialization_dict
 from grmpy.read.read_auxiliary import auxiliary
 from grmpy.read.read_auxiliary import process
 
@@ -38,8 +37,6 @@ def read(file_):
 
     dict_ = auxiliary(dict_)
 
-    # We perform some basic consistency checks regarding the user's request.
-    check_initialization_dict(dict_)
 
     return dict_
 
