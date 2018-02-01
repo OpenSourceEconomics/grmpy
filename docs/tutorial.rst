@@ -145,7 +145,7 @@ First we will take a look on the simulation feature. For simulating a sample fro
     grmpy.simulate('tutorial.grmpy.ini')
 
 
-This creates a number of output files that contains information about the resulting simulated sample.
+This creates a number of output files that contain information about the resulting simulated sample.
 
 * **data.grmpy.info**, basic information about the simulated sample
 * **data.grmpy.txt**, simulated sample in a simple text file
@@ -160,7 +160,7 @@ The other feature of the package is the estimation of the parameters of interest
 
     grmpy.estimate('tutorial.grmpy.ini')
 
-As in the simulation process this creates a number of output files that contains information about the estimation results.
+As in the simulation process this creates a number of output file that contains information about the estimation results.
 
 * **est.grmpy.info**, basic information of the estimation process
 * **descriptives.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process
