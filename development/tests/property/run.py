@@ -8,6 +8,7 @@ import subprocess
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
+from grmpy.test.random_init import constraints
 import grmpy
 
 # We simply specify a minimum number of minutes for our package to run with different requests.
@@ -21,17 +22,17 @@ while True:
 
     print('\n Iteration ', counter)
 
-    dict_ = generate_random_dict()
+    constr = constraints()
+
+    constr['DETERMINISTIC'] = False
+    dict_ = generate_random_dict(constr)
     print_dict(dict_)
 
     grmpy.simulate('test.grmpy.ini')
 
     # This is a temporary fix so that the determination of starting values by PROBIT does
     # not work if we have a perfect separation.
-    try:
-        grmpy.estimate('test.grmpy.ini')
-    except statsmodels.tools.sm_exceptions.PerfectSeparationError:
-        print('separation error, skip')
+    grmpy.estimate('test.grmpy.ini')
     subprocess.check_call(['git', 'clean', '-d', '-f'])
 
     counter += 1
