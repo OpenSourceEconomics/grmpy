@@ -54,9 +54,11 @@ def test3():
         print_dict(dict_)
 
         df1 = simulate('test.grmpy.ini')
+        print(df1.head( ))
         rslt = estimate('test.grmpy.ini')
         init_dict = read('test.grmpy.ini')
         df2 = simulate_estimation(init_dict, rslt, df1)
+        print(df2.head())
         start = start_values(init_dict, df1, 'init')
 
         criteria = []

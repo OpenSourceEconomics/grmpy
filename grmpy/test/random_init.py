@@ -82,11 +82,11 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
+            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
             if key_ == 'TREATED':
                 dict_[key_]['types'] = dict_['UNTREATED']['types']
         else:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
+            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -120,13 +120,13 @@ def generate_random_dict(constraints_dict=None):
         b = wishart.rvs(df=10, scale=np.identity(3), size=1)
     else:
         b = np.zeros((3, 3))
-    dict_['DIST']['coeff'] = []
-    dict_['DIST']['coeff'].append(b[0, 0] ** 0.5)
-    dict_['DIST']['coeff'].append(b[0, 1])
-    dict_['DIST']['coeff'].append(b[0, 2])
-    dict_['DIST']['coeff'].append(b[1, 1] ** 0.5)
-    dict_['DIST']['coeff'].append(b[1, 2])
-    dict_['DIST']['coeff'].append(b[2, 2] ** 0.5)
+    dict_['DIST']['all'] = []
+    dict_['DIST']['all'].append(b[0, 0] ** 0.5)
+    dict_['DIST']['all'].append(b[0, 1])
+    dict_['DIST']['all'].append(b[0, 2])
+    dict_['DIST']['all'].append(b[1, 1] ** 0.5)
+    dict_['DIST']['all'].append(b[1, 2])
+    dict_['DIST']['all'].append(b[2, 2] ** 0.5)
     print_dict(dict_)
     return dict_
 
