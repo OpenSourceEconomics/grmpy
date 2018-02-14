@@ -146,5 +146,19 @@ def test7():
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_vzero)
 
+def test8():
+    constr = constraints(agents=1000, probability=.0)
+    generate_random_dict(constr)
+    df = simulate('test.grmpy.ini')
+    a = []
+    dict_ = read('test.grmpy.ini')
+    dict_['ESTIMATION']['file'] = 'data.grmpy.ini'
+    print_dict(dict_, 'false_data')
+    pytest.raises(UserError, estimate, 'tast.grmpy.ini')
+    pytest.raises(UserError, estimate, 'false_data.grmpy.ini')
+    pytest.raises(UserError, simulate, 'tast.grmpy.ini')
+    pytest.raises(UserError, read, 'tast.grmpy.ini')
+    pytest.raises(UserError, start_values, a, df, 'init')
+    pytest.raises(UserError, generate_random_dict, a)
 
     cleanup()

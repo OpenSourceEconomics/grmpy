@@ -4,6 +4,8 @@ import uuid
 from scipy.stats import wishart
 import numpy as np
 
+from grmpy.check.check import UserError
+
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
                 optimizer=None, start=None, maxiter=None, same_size=False):
@@ -55,7 +57,8 @@ def generate_random_dict(constraints_dict=None):
 
     if constraints_dict is not None:
         if not isinstance(constraints_dict, dict):
-            raise AssertionError()
+            msg = '{} is not a dictionary.'.format(constraints_dict)
+            raise UserError(msg)
         if len(constraints_dict.keys()) < 9:
             help_dict = constraints()
             for key_ in help_dict.keys():

@@ -4,6 +4,7 @@ import os
 
 from grmpy.read.read_auxiliary import auxiliary
 from grmpy.read.read_auxiliary import process
+from grmpy.check.check import UserError
 
 
 def read(file_):
@@ -11,7 +12,8 @@ def read(file_):
     simulation.
     """
     if not os.path.isfile(file_):
-        raise AssertionError()
+        msg = '{}: There is no such file or directory.'.format(file_)
+        raise UserError(msg)
 
     dict_ = {}
     for line in open(file_).readlines():

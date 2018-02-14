@@ -9,6 +9,7 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.check.check import UserError
 
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
@@ -60,7 +61,9 @@ def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
     if not isinstance(init_dict, dict):
-        raise AssertionError()
+        msg = 'The input object ({})for specifing the start values isn`t a dictionary.'\
+            .format(init_dict)
+        raise UserError(msg)
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
 
     if option == 'init':
