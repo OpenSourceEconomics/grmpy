@@ -94,11 +94,11 @@ The *DIST* block specifies the distribution of the unobservables.
 ======= ======      ==========================
 Key     Value       Interpretation
 ======= ======      ==========================
-coeff    float      :math:`\sigma_{U_0}`
-coeff    float      :math:`\sigma_{U_1,U_0}`
-coeff    float      :math:`\sigma_{U_0,V}`
 coeff    float      :math:`\sigma_{U_1}`
+coeff    float      :math:`\sigma_{U_1,U_0}`
 coeff    float      :math:`\sigma_{U_1,V}`
+coeff    float      :math:`\sigma_{U_0}`
+coeff    float      :math:`\sigma_{U_0,V}`
 coeff    float      :math:`\sigma_{V}`
 ======= ======      ==========================
 
