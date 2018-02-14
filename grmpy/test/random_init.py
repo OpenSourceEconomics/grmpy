@@ -56,6 +56,11 @@ def generate_random_dict(constraints_dict=None):
     if constraints_dict is not None:
         if not isinstance(constraints_dict, dict):
             raise AssertionError()
+        if len(constraints_dict.keys()) < 9:
+            help_dict = constraints()
+            for key_ in help_dict.keys():
+                if key_ not in constraints_dict.keys():
+                    constraints_dict[key_] = help_dict[key_]
     else:
         constraints_dict = constraints()
 
