@@ -56,12 +56,12 @@ def test2():
 
             if i == 'ALL':
                 for key_ in ['TREATED', 'UNTREATED', 'COST']:
-                    dict_[key_]['coeff'] = np.array([0.] * len(dict_[key_]['coeff']))
+                    dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
             elif i == 'TREATED & UNTREATED':
                 for key_ in ['TREATED', 'UNTREATED']:
-                    dict_[key_]['coeff'] = np.array([0.] * len(dict_[key_]['coeff']))
+                    dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
             else:
-                dict_[i]['coeff'] = np.array([0.] * len(dict_[i]['coeff']))
+                dict_[i]['all'] = np.array([0.] * len(dict_[i]['all']))
 
             print_dict(dict_)
             dict_ = read('test.grmpy.ini')
@@ -118,7 +118,7 @@ def test4():
         imp_dict = read(init_file_name + '.grmpy.ini')
 
         for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-            np.testing.assert_array_almost_equal(gen_dict[key_]['coeff'], imp_dict[key_]['all'],
+            np.testing.assert_array_almost_equal(gen_dict[key_]['all'], imp_dict[key_]['all'],
                                                  decimal=4)
             if key_ in ['TREATED', 'UNTREATED', 'COST']:
                 for i in range(len(gen_dict[key_]['types'])):
@@ -199,3 +199,11 @@ def test7():
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
     cleanup()
+
+
+def test8():
+    """We want to able to smoothly switch between generating and printing random initialization
+    files."""
+    for _ in range(10):
+        generate_random_dict()
+        read('test.grmpy.ini')

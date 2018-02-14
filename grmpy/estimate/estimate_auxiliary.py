@@ -48,12 +48,11 @@ def _prepare_arguments(init_dict, rslt):
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
     gamma = np.array(rslt['COST']['all'])
-    sd1 = rslt['DIST']['all'][1]
     sd0 = rslt['DIST']['all'][0]
+    sd1 = rslt['DIST']['all'][1]
     sdv = init_dict['DIST']['all'][5]
     rho1, rho0 = rslt['DIST']['all'][3], rslt['DIST']['all'][2]
     choice = np.concatenate(((np.subtract(beta1, beta0)), -gamma))
-
     return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
 
 
@@ -75,7 +74,7 @@ def start_values(init_dict, data_frame, option):
             # Estimate beta1 and beta0:
             beta = []
             sd_ = []
-            for i in [0.0, 1.0]:
+            for i in [1.0, 0.0]:
                 Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
                     data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
@@ -452,19 +451,19 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
 
 def adjust_print_output(init_dict, rslt):
-    """The function arranges the distributional parameters."""
+        """The function arranges the distributional parameters."""
 
-    for dict_ in [init_dict, rslt]:
-        if dict_ == init_dict:
-            key_ = 'starting_values'
-        else:
-            key_ = 'x_internal'
-        if not isinstance(dict_['AUX'][key_], list):
-            dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
-        dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_])
-        dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
+        for dict_ in [init_dict, rslt]:
+            if dict_ == init_dict:
+                key_ = 'starting_values'
+            else:
+                key_ = 'x_internal'
+            if not isinstance(dict_['AUX'][key_], list):
+                dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
+            dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_])
+            dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
 
-    return init_dict, rslt
+        return init_dict, rslt
 
 
 def transform_rslt_DIST(rslt, dict_):
@@ -519,22 +518,23 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
     cholesky[np.tril_indices(3)] = start_cholesky
     cov = np.dot(cholesky, cholesky.T)
     sdv = cov[2, 2] ** 0.5
-    # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
-    if dist is True:
-        sd0 = cov[0, 0] ** 0.5
-        sd1 = cov[1, 1] ** 0.5
-        rho0 = cov[0, 2] / (sd0 * sdv)
-        rho1 = cov[1, 2] / (sd1 * sdv)
 
+    if dist is True:
+        sd1 = cov[0, 0] ** 0.5
+        sd0 = cov[1, 1] ** 0.5
+        rho0 = cov[1, 2] / (sd0 * sdv)
+        rho1 = cov[0, 2] / (sd1 * sdv)
+
+        dist_parameter = [sd0, sd1, rho0, rho1]
         dist_parameter = [sd0, sd1, rho0, rho1]
         return dist_parameter
     else:
         dist_para = cov[np.triu_indices(3)]
-        sd0, sd1, sdv = dist_para[0] ** 0.5, dist_para[3] ** 0.5, dist_para[5] ** 0.5
-        rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
+        sd0, sd1, sdv = dist_para[3] ** 0.5, dist_para[0] ** 0.5, dist_para[5] ** 0.5
+        rho1, rho0 = dist_para[2] / (sd1 * sdv), dist_para[4] / (sd0 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
         if test is False:
-            output = x0[:-6] + [sd0, rho01, rho0, sd1, rho1, sdv]
+            output = x0[:-6] + [sd1, rho01, rho1, sd0, rho0, sdv]
         else:
-            output = [sd0, rho01, rho0, sd1, rho1, sdv]
+            output = [sd1, rho01, rho1, sd0, rho0, sdv]
         return output

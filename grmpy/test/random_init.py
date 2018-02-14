@@ -86,11 +86,11 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
+            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
             if key_ == 'TREATED':
                 dict_[key_]['types'] = dict_['UNTREATED']['types']
         else:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
+            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
     # Simulation parameters
     dict_['SIMULATION'] = {}
@@ -127,13 +127,13 @@ def generate_random_dict(constraints_dict=None):
         b = wishart.rvs(df=10, scale=np.identity(3), size=1)
     else:
         b = np.zeros((3, 3))
-    dict_['DIST']['coeff'] = []
-    dict_['DIST']['coeff'].append(b[0, 0] ** 0.5)
-    dict_['DIST']['coeff'].append(b[0, 1])
-    dict_['DIST']['coeff'].append(b[0, 2])
-    dict_['DIST']['coeff'].append(b[1, 1] ** 0.5)
-    dict_['DIST']['coeff'].append(b[1, 2])
-    dict_['DIST']['coeff'].append(b[2, 2] ** 0.5)
+    dict_['DIST']['all'] = []
+    dict_['DIST']['all'].append(b[0, 0] ** 0.5)
+    dict_['DIST']['all'].append(b[0, 1])
+    dict_['DIST']['all'].append(b[0, 2])
+    dict_['DIST']['all'].append(b[1, 1] ** 0.5)
+    dict_['DIST']['all'].append(b[1, 2])
+    dict_['DIST']['all'].append(b[2, 2] ** 0.5)
     print_dict(dict_)
     return dict_
 
@@ -173,27 +173,27 @@ def print_dict(dict_, file_name='test'):
 
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                for i, _ in enumerate(dict_[label]['coeff']):
+                for i, _ in enumerate(dict_[label]['all']):
                     if 'types' in dict_[label].keys():
                         if isinstance(dict_[label]['types'][i], list):
                             str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
                             file_.write(
                                 str_.format(
-                                    'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
+                                    'coeff', dict_[label]['all'][i], dict_[label]['types'][i][0],
                                     dict_[label]['types'][i][1])
                             )
                         else:
                             if write_nonbinary:
                                 str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i],
+                                file_.write(str_.format('coeff', dict_[label]['all'][i],
                                                         dict_[label]['types'][i]))
                             else:
                                 str_ = '        {0:<10} {1:>35.4f}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                                file_.write(str_.format('coeff', dict_[label]['all'][i]))
 
                     else:
                         str_ = '        {0:<10} {1:>35.4f}\n'
-                        file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                        file_.write(str_.format('coeff', dict_[label]['all'][i]))
 
             file_.write('\n')
 
