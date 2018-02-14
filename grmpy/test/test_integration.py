@@ -147,6 +147,9 @@ def test7():
     pytest.raises(UserError, estimate, fname_vzero)
 
 def test8():
+    """The test checks if an UserError occurs if wrong inputs are specified for a different
+    functions/methods.
+    """
     constr = constraints(agents=1000, probability=.0)
     generate_random_dict(constr)
     df = simulate('test.grmpy.ini')
