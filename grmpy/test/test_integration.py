@@ -97,7 +97,7 @@ def test6():
     values as start values.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, maxiter=0, agents=1000, start='init', same_size=True)
+        constr = constraints(probability=0.0, maxiter=0, agents=10000, start='init', same_size=True)
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
