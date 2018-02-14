@@ -186,9 +186,9 @@ def test6():
     cleanup()
 
 
-def test_7():
+def test8():
     """We want to able to smoothly switch between generating and printing random initialization
     files."""
-    # TODO:_There seems to be a problem with coeff flags and all flags in the initialization dict
-    generate_random_dict()
-    read('test.grmpy.ini')
+    for _ in range(10):
+        generate_random_dict()
+        read('test.grmpy.ini')
