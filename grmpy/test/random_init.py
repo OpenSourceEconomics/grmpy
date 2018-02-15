@@ -8,7 +8,7 @@ from grmpy.check.check import UserError
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None, maxiter=None, same_size=False):
+                optimizer=None, start=None, maxiter=None, same_size=False, overlap=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -49,6 +49,10 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=No
 
     constraints_dict['SAME_SIZE'] = same_size
 
+    if overlap is None:
+        constraints_dict['OVERLAP'] = np.random.random_sample() < 0.5
+    else:
+        constraints_dict['OVERLAP'] = overlap
     return constraints_dict
 
 
@@ -75,6 +79,8 @@ def generate_random_dict(constraints_dict=None):
 
     is_zero = constraints_dict['IS_ZERO']
 
+    overlap = constraints_dict['OVERLAP']
+
     maxiter = constraints_dict['MAXITER']
 
     agents = constraints_dict['AGENTS']
@@ -100,6 +106,9 @@ def generate_random_dict(constraints_dict=None):
         else:
             dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
+
+    dict_ = overlap_treat_cost(dict_, treated_num, cost_num, overlap)
+    dict_ = check_types(dict_, overlap)
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
@@ -182,22 +191,25 @@ def print_dict(dict_, file_name='test'):
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i, _ in enumerate(dict_[label]['all']):
-                    if 'types' in dict_[label].keys():
-                        if isinstance(dict_[label]['types'][i], list):
-                            str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
-                            file_.write(
-                                str_.format(
-                                    'coeff', dict_[label]['all'][i], dict_[label]['types'][i][0],
-                                    dict_[label]['types'][i][1])
-                            )
-                        else:
-                            if write_nonbinary:
-                                str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
-                                file_.write(str_.format('coeff', dict_[label]['all'][i],
-                                                        dict_[label]['types'][i]))
+                    if 'order' in dict_[label].keys():
+                        if 'types' in dict_[label].keys():
+                            if isinstance(dict_[label]['types'][i], list):
+                                str_ = '        {0:<10} {1:>15} {2:>20.4f} {3:>10} {4:>5.4f}\n'
+                                file_.write(
+                                    str_.format(
+                                        'coeff', dict_[label]['order'][i], dict_[label]['all'][i],
+                                        dict_[label]['types'][i][0],dict_[label]['types'][i][1])
+                                )
                             else:
-                                str_ = '        {0:<10} {1:>35.4f}\n'
-                                file_.write(str_.format('coeff', dict_[label]['all'][i]))
+                                if write_nonbinary:
+                                    str_ = '        {0:<10} {1:>15} {2:>20.4f} {3:>17}\n'
+                                    file_.write(str_.format('coeff',dict_[label]['order'][i],
+                                                            dict_[label]['all'][i],
+                                                            dict_[label]['types'][i]))
+                                else:
+                                    str_ = '        {0:<10} {1:>15} {2:>20.4f}\n'
+                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
+                                                            dict_[label]['all'][i]))
 
                     else:
                         str_ = '        {0:<10} {1:>35.4f}\n'
@@ -230,3 +242,48 @@ def generate_coeff(num, key_, is_zero):
         list_ = np.array([0] * num).tolist()
 
     return list_, binary_list
+
+def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
+    if overlap is True:
+        treated_ord = list(range(1, treated_num + 1))
+        x = list(range(2, treated_num + 1))
+        cost_ord = []
+        y = 1
+        for i in range(cost_num):
+            if i == 0:
+                cost_ord += [1]
+            else:
+                if np.random.random_sample() < 0.2:
+                    if len(x) == 0:
+                        cost_ord += [treated_ord[treated_num - 1] + y]
+                        y = y + 1
+                    else:
+                        a = np.random.choice(x)
+                        cost_ord += [int(a)]
+                        x = [j for j in x if j != a]
+                else:
+                    cost_ord += [treated_ord[treated_num - 1] + y]
+                    y = y + 1
+    else:
+        treated_ord = list(range(1, treated_num + 1))
+        cost_ord = list(range(treated_num + 1, treated_num + cost_num))
+        cost_ord = [1] + cost_ord
+
+    dict_['TREATED']['order'] = treated_ord
+    dict_['UNTREATED']['order'] = treated_ord
+    dict_['COST']['order'] = cost_ord
+
+    return dict_
+
+def check_types(dict_, overlap):
+    if overlap is True:
+        for i in dict_['COST']['order']:
+            if i in dict_['TREATED']['order']:
+                num_cost = dict_['COST']['order'].index(i)
+                num_treat = dict_['TREATED']['order'].index(i)
+                dict_['COST']['types'][num_cost] = dict_['TREATED']['types'][num_treat]
+    else:
+        pass
+    return dict_
+
+

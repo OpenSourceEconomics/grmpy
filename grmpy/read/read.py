@@ -39,6 +39,5 @@ def read(file_):
 
     dict_ = auxiliary(dict_)
 
-
     return dict_
 

@@ -23,8 +23,8 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
         data = data_frame[data_frame['D'] == i]
-        X = data.filter(regex=r'^X\_')
-        Z = data.filter(regex=r'^Z\_')
+        Z = data[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
+        X = data[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
         g = pd.concat((X, Z), axis=1)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
@@ -78,16 +78,17 @@ def start_values(init_dict, data_frame, option):
             beta = []
             sd_ = []
             for i in [1.0, 0.0]:
-                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
-                    data_frame.D == i]
+                Y = data_frame.Y[data_frame.D == i], \
+                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]][data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via probit
-            X = data_frame.filter(regex=r'^X\_')
-            Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
+            X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
+            Z = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
             XZ = np.concatenate((X, Z), axis=1)
+            print(XZ.shape[0])
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             gamma = probitRslt.params
             gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
@@ -235,17 +236,13 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
-    np.random.seed(seed)
     # Determine parametrization and read in /simulate observables
     if start is True:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
-        np.random.seed(seed)
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
-        X = simulate_covariates(rslt_dict, 'TREATED')
-        Z = simulate_covariates(rslt_dict, 'COST')
 
     data_frames = []
     for dict_ in dicts:
@@ -253,13 +250,12 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         np.random.seed(seed)
         # Simulate unobservables
         U, _ = simulate_unobservables(dict_)
-        X = simulate_covariates(rslt_dict, 'TREATED')
-        Z = simulate_covariates(rslt_dict, 'COST')
+        X = simulate_covariates(rslt_dict)
 
         # Simulate endogeneous variables
-        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
+        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U)
 
-        df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
+        df = write_output_estimation(Y, D, X, Y_1, Y_0)
         data_frames += [df]
 
     if start is True:
@@ -281,6 +277,7 @@ def process_results(init_dict, rslt, start=False):
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 dict_[key_] = {}
                 dict_[key_]['types'] = init_dict[key_]['types']
+                dict_[key_]['order'] = init_dict[key_]['order']
                 dict_[key_]['all'] = rslt[key_]['all']
                 dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
         else:
@@ -289,6 +286,7 @@ def process_results(init_dict, rslt, start=False):
                 for key_ in ['TREATED', 'UNTREATED', 'COST']:
                     dict_[key_] = {}
                     dict_[key_]['types'] = init_dict[key_]['types']
+                    dict_[key_]['order'] = init_dict[key_]['order']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
                                             num_treated:2 * num_treated]
@@ -359,19 +357,16 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write(fmt.format(*[sample] + info))
 
 
-def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
+def write_output_estimation(Y, D, X, Y_1, Y_0):
     """The function converts the simulated variables to a panda data frame."""
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0))
+    data = np.column_stack((Y, D, X, Y_1, Y_0))
 
     # Construct list of column labels
     column = ['Y', 'D']
     for i in range(X.shape[1]):
         str_ = 'X_' + str(i)
-        column.append(str_)
-    for i in range(Z.shape[1]):
-        str_ = 'Z_' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0']
 

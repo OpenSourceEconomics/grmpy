@@ -4,21 +4,31 @@ import numpy as np
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
-    if len(list_) == 4:
-        name, val, type_, frac_ = list_[0], list_[1], list_[2], list_[3]
+    if len(list_) == 5:
+        name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
+    elif len(list_) in [3,4]:
+        name, order, val  = list_[0], list_[1], list_[2]
+
     elif list_[0] == 'direc':
         name, val = list_[0], [list_[i] for i in range(len(list_)) if i > 0]
+
     else:
         name, val = list_[0], list_[1]
+
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []
     if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
         dict_[keyword]['types'] = []
+    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'order' not in dict_[keyword].keys():
+        dict_[keyword]['order'] = []
+
     if keyword in ['TREATED', 'UNTREATED', 'COST']:
-        if len(list_) == 4:
+        if len(list_) == 5:
+            dict_[keyword]['order'] += [int(order)]
             dict_[keyword]['types'] += [[type_, float(frac_)]]
         else:
+            dict_[keyword]['order'] += [int(order)]
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
@@ -73,7 +83,7 @@ def auxiliary(dict_):
         dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
 
         for j in sorted(dict_[key_].keys()):
-            if j in ['all', 'types']:
+            if j in ['all', 'types', 'order']:
                 pass
             else:
                 del dict_[key_][j]

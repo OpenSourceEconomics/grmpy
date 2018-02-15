@@ -10,25 +10,32 @@ import pandas as pd
 import numpy as np
 
 
-def simulate_covariates(init_dict, cov_type):
+def simulate_covariates(init_dict):
     """The function simulates the covariates for the cost and the output functions."""
     # Distribute information
     num_agents = init_dict['SIMULATION']['agents']
 
     # Construct auxiliary information
-    num_covars = init_dict[cov_type]['all'].shape[0]
+
+    num_covars =  len(list(set(init_dict['TREATED']['order'] + init_dict['COST']['order'])))
+    types = init_dict['TREATED']['types']
+
+    for index, value in enumerate(init_dict['COST']['order']):
+        if value in init_dict['TREATED']['order']:
+            pass
+        else:
+            types += [init_dict['COST']['types'][index]]
 
     # As our baseline we simulate covariates from a standard normal distribution.
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
-
     # We now perform some selective replacements.
     X[:, 0] = 1.0
     for i in range(num_covars):
-        if isinstance(init_dict[cov_type]['types'][i], list):
+        if isinstance(types[i], list):
             if i != 0:
-                frac = init_dict[cov_type]['types'][i][1]
+                frac = types[i][1]
                 binary = np.random.binomial(1, frac, size=num_agents)
                 X[:, i] = binary
 
@@ -51,10 +58,13 @@ def simulate_unobservables(init_dict):
     return U, V
 
 
-def simulate_outcomes(init_dict, X, Z, U):
+def simulate_outcomes(init_dict, X, U):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
+    X = pd.DataFrame(X)
+    Z = X[[i -1 for i in init_dict['COST']['order']]].as_matrix()
+    X = X[[i -1 for i in init_dict['TREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
@@ -75,7 +85,7 @@ def simulate_outcomes(init_dict, X, Z, U):
     return Y, D, Y_1, Y_0
 
 
-def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
+def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     """The function converts the simulated variables to a panda data frame and saves the data in a
     txt and a pickle file.
     """
@@ -85,15 +95,12 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     # Stack arrays
     # TODO: Here is a mistake in the order of unobservables
     #data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
+    data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
 
     # Construct list of column labels
     column = ['Y', 'D']
     for i in range(X.shape[1]):
         str_ = 'X_' + str(i)
-        column.append(str_)
-    for i in range(Z.shape[1]):
-        str_ = 'Z_' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
 
@@ -192,7 +199,7 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame.filter(regex=r'^X\_', axis=1)
+        x = data_frame[['X_{}'.format(i-1) for i in init_dict['TREATED']['order']]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)

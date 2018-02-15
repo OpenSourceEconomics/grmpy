@@ -55,8 +55,7 @@ def test3():
     for _ in range(5):
         constr = constraints(probability=0.0, agents=10000, start='init',
                              optimizer='SCIPY-BFGS')
-        dict_ = generate_random_dict(constr)
-        print_dict(dict_)
+        generate_random_dict(constr)
 
         df1 = simulate('test.grmpy.ini')
         rslt = estimate('test.grmpy.ini')

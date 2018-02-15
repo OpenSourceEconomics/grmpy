@@ -34,7 +34,7 @@ def test1():
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
 
-            x = df.filter(regex=r'^X\_', axis=1)
+            x = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
             y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
             y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
 
@@ -66,7 +66,7 @@ def test2():
             print_dict(dict_)
             dict_ = read('test.grmpy.ini')
             df = simulate('test.grmpy.ini')
-            x = df.filter(regex=r'^X\_', axis=1)
+            x = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
 
             if i == 'ALL':
                 np.testing.assert_array_equal(df.Y1, df.U1)
@@ -157,7 +157,7 @@ def test5():
         cov = construct_covariance_matrix(init_dict)
 
         df = simulate('test.grmpy.ini')
-        x = df.filter(regex=r'^X\_', axis=1)
+        x = df[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
         mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x)
 

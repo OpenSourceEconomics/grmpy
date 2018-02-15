@@ -52,6 +52,7 @@ def estimate(init_file):
     dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
     if opts['maxiter'] == 0:
         rslt = adjust_output_maxiter_zero(dict_, x0)
+        print(rslt['TREATED'])
     else:
         rslt_dict = bfgs_dict()
         opt_rslt = minimize(
