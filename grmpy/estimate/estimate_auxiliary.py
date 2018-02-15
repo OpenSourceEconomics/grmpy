@@ -79,26 +79,25 @@ def start_values(init_dict, data_frame, option):
             sd_ = []
             for i in [1.0, 0.0]:
                 Y = data_frame.Y[data_frame.D == i]
-                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]][
+                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]][
                     data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via probit
-            X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
-            Z = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
-            XZ = np.concatenate((X, Z), axis=1)
-            print(XZ.shape[0])
+            XZ = data_frame[[i for i in data_frame.columns.values if i.startswith('X')]]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
-            gamma = probitRslt.params
-            gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
-            if len(init_dict['COST']['all']) == 1:
-                gamma = [gamma_const]
-            else:
-                gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+            help_gamma = probitRslt.params
+            # Adjust estimated cost-benefit shifter and intercept coefficients
+            adj = [i - 1 for i in init_dict['COST']['order'] if i in init_dict['TREATED']['order']]
+            for j in adj:
+                help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
+            gamma = []
+            for i in init_dict['COST']['order']:
+                gamma += [help_gamma[i - 1]]
             # Arange starting values
-            x0 = np.concatenate((beta[1], beta[0]))
+            x0 = np.concatenate((beta[0], beta[1]))
             x0 = np.concatenate((x0, gamma))
 
         except (PerfectSeparationError, ValueError):
@@ -111,6 +110,7 @@ def start_values(init_dict, data_frame, option):
             sd_ = None
             init_dict['ESTIMATION']['warning'] = msg
             option = 'init'
+
 
     x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]

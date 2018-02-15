@@ -233,7 +233,7 @@ def generate_coeff(num, key_, is_zero):
             for i, _ in enumerate(binary_list):
                 if np.random.random_sample() < 0.1:
                     if i is not 0:
-                        frac = np.random.uniform(0, 1)
+                        frac = np.random.uniform(0, 0.8)
                         binary_list[i] = ['binary', frac]
         else:
             binary_list = []
