@@ -61,7 +61,7 @@ def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
     if not isinstance(init_dict, dict):
-        msg = 'The input object ({})for specifing the start values isn`t a dictionary.'\
+        msg = 'The input object ({})for specifing the start values isn`t a dictionary.' \
             .format(init_dict)
         raise UserError(msg)
     numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
@@ -78,8 +78,9 @@ def start_values(init_dict, data_frame, option):
             beta = []
             sd_ = []
             for i in [1.0, 0.0]:
-                Y = data_frame.Y[data_frame.D == i], \
-                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]][data_frame.D == i]
+                Y = data_frame.Y[data_frame.D == i]
+                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]][
+                    data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
@@ -449,19 +450,19 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
 
 def adjust_print_output(init_dict, rslt):
-        """The function arranges the distributional parameters."""
+    """The function arranges the distributional parameters."""
 
-        for dict_ in [init_dict, rslt]:
-            if dict_ == init_dict:
-                key_ = 'starting_values'
-            else:
-                key_ = 'x_internal'
-            if not isinstance(dict_['AUX'][key_], list):
-                dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
-            dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_])
-            dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
+    for dict_ in [init_dict, rslt]:
+        if dict_ == init_dict:
+            key_ = 'starting_values'
+        else:
+            key_ = 'x_internal'
+        if not isinstance(dict_['AUX'][key_], list):
+            dict_['AUX'][key_] = dict_['AUX'][key_].tolist()
+        dict_['AUX'][key_] = backward_cholesky_transformation(dict_['AUX'][key_])
+        dict_['AUX'][key_] = np.array(dict_['AUX'][key_])
 
-        return init_dict, rslt
+    return init_dict, rslt
 
 
 def transform_rslt_DIST(rslt, dict_):

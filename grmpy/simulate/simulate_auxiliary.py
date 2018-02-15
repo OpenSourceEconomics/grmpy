@@ -3,6 +3,7 @@ processes of the unobservable and endogenous variables of the model as well as f
 the info file output.
 """
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from scipy.stats import norm
@@ -17,7 +18,7 @@ def simulate_covariates(init_dict):
 
     # Construct auxiliary information
 
-    num_covars =  len(list(set(init_dict['TREATED']['order'] + init_dict['COST']['order'])))
+    num_covars = len(list(set(init_dict['TREATED']['order'] + init_dict['COST']['order'])))
     types = init_dict['TREATED']['types']
 
     for index, value in enumerate(init_dict['COST']['order']):
@@ -50,9 +51,7 @@ def simulate_unobservables(init_dict):
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
     V = np.array(U[:, 2])
 
-    # TODO: The calculation was wrong!
     # Here we keep track of the implied value for U_C.
-    # U[:, 2] = V - U[:, 0] + U[:, 1]
     U[:, 2] = V + (U[:, 0] - U[:, 1])
 
     return U, V
@@ -63,15 +62,14 @@ def simulate_outcomes(init_dict, X, U):
     the realized outcome Y.
     """
     X = pd.DataFrame(X)
-    Z = X[[i -1 for i in init_dict['COST']['order']]].as_matrix()
-    X = X[[i -1 for i in init_dict['TREATED']['order']]].as_matrix()
+    Z = X[[i - 1 for i in init_dict['COST']['order']]].as_matrix()
+    X = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     coeffs_cost = init_dict['COST']['all']
 
     # Calculate potential outcomes and costs
-    # TODO: Wrong order of unobservables
     Y_1 = np.dot(coeffs_treated, X.T) + U[:, 0]
     Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 1]
     C = np.dot(coeffs_cost, Z.T) + U[:, 2]
@@ -93,8 +91,6 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    # TODO: Here is a mistake in the order of unobservables
-    #data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
     data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
 
     # Construct list of column labels
@@ -189,7 +185,7 @@ def print_info(init_dict, data_frame):
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
             str_ = '  {0:<10}      {1:<20.12f}\n\n'.format('Value',
-                                                              init_dict['AUX']['criteria_value'])
+                                                           init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
         file_.write(str_)
@@ -199,7 +195,7 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame[['X_{}'.format(i-1) for i in init_dict['TREATED']['order']]]
+        x = data_frame[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
