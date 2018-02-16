@@ -116,12 +116,22 @@ def test4():
         init_file_name = gen_dict['SIMULATION']['source']
         print_dict(gen_dict, init_file_name)
         imp_dict = read(init_file_name + '.grmpy.ini')
-
+        dicts = [gen_dict, imp_dict]
         for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
             np.testing.assert_array_almost_equal(gen_dict[key_]['all'], imp_dict[key_]['all'],
                                                  decimal=4)
             if key_ in ['TREATED', 'UNTREATED', 'COST']:
+                for dict_ in dicts:
+
+                    if not dict_[key_]['order'] == dict_[key_]['order']:
+                        raise AssertionError()
+                    if len(dict_[key_]['order']) != len(set(dict_[key_]['order'])):
+                        raise AssertionError()
+                    if dict_[key_]['order'][0] != 1:
+                        raise AssertionError()
+
                 for i in range(len(gen_dict[key_]['types'])):
+
                     if isinstance(gen_dict[key_]['types'][i], str):
                         if not gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]:
                             raise AssertionError()

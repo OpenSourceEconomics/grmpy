@@ -249,7 +249,7 @@ def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
         x = list(range(2, treated_num + 1))
         cost_ord = []
         y = 1
-        for i in range(cost_num):
+        for i in list(range(cost_num)):
             if i == 0:
                 cost_ord += [1]
             else:

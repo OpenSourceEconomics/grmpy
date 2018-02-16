@@ -45,8 +45,8 @@ def test2():
         init_dict = read('test.grmpy.ini')
         start = start_values(init_dict, df, 'init')
         criteria_ = calculate_criteria(init_dict, df, start)
-        np.testing.assert_array_almost_equal(criteria, criteria_)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
+        np.testing.assert_array_almost_equal(criteria, criteria_)
 
 def test3():
     """The test checks if the criteria function value of the simulated and the 'estimated'
@@ -54,7 +54,7 @@ def test3():
     """
     for _ in range(5):
         constr = constraints(probability=0.0, agents=10000, start='init',
-                             optimizer='SCIPY-BFGS')
+                             optimizer='SCIPY-BFGS', same_size=True)
         generate_random_dict(constr)
 
         df1 = simulate('test.grmpy.ini')

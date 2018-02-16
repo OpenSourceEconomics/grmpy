@@ -18,22 +18,25 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         _prepare_arguments(init_dict, rslt)
     likl = []
     for i in [0.0, 1.0]:
-        if i == 1.00:
+        if i == 1.0:
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
         data = data_frame[data_frame['D'] == i]
-        Z = data[['X_{}'.format(i - 1) for i in init_dict['COST']['order']]]
-        X = data[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
+        Z = data[['X_{}'.format(j - 1) for j in init_dict['COST']['order']]]
+        X = data[['X_{}'.format(j - 1) for j in init_dict['TREATED']['order']]]
         g = pd.concat((X, Z), axis=1)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
-        if i == 1.00:
+
+        if i == 1.0:
             contrib = (1.0 / sd) * dist_1 * dist_2
+
         else:
             contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
+
         likl.append(contrib)
     likl = np.append(likl[0], likl[1])
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
@@ -79,14 +82,14 @@ def start_values(init_dict, data_frame, option):
             sd_ = []
             for i in [1.0, 0.0]:
                 Y = data_frame.Y[data_frame.D == i]
-                X = data_frame[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]][
+                X = data_frame[['X_{}'.format(j - 1) for j in init_dict['TREATED']['order']]][
                     data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via probit
-            XZ = data_frame[[i for i in data_frame.columns.values if i.startswith('X')]]
+            XZ = data_frame[[j for j in data_frame.columns.values if j.startswith('X')]]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             help_gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
@@ -139,6 +142,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['TREATED']['all'] = start_values[:num_covars_out]
     rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
     rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        rslt[key_]['order'] = init_dict[key_]['order']
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, True)
 
@@ -366,7 +371,7 @@ def write_output_estimation(Y, D, X, Y_1, Y_0):
 
     # Construct list of column labels
     column = ['Y', 'D']
-    for i in range(X.shape[1]):
+    for i in list(range(X.shape[1])):
         str_ = 'X_' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0']

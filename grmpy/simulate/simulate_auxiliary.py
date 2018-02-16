@@ -33,7 +33,7 @@ def simulate_covariates(init_dict):
     X = np.random.multivariate_normal(means, covs, num_agents)
     # We now perform some selective replacements.
     X[:, 0] = 1.0
-    for i in range(num_covars):
+    for i in list(range(num_covars)):
         if isinstance(types[i], list):
             if i != 0:
                 frac = types[i][1]
@@ -95,7 +95,7 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
 
     # Construct list of column labels
     column = ['Y', 'D']
-    for i in range(X.shape[1]):
+    for i in list(range(X.shape[1])):
         str_ = 'X_' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
