@@ -9,6 +9,7 @@ from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
 from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.random_init import constraints
@@ -97,19 +98,23 @@ def test2():
 
 
 def test3():
-    """The fourth test checks whether the simulation process works if there are only treated or
-    untreated Agents by setting the number of agents to one.
+    """The fourth test checks whether the simulation process works if there are only treated or un-
+    treated Agents by setting the number of agents to one. Additionally the test checks if the start
+    values for the estimation process are set to the initialization file values due to perfect se-
+    paration.
     """
     constr = constraints(probability=0.0, agents=1)
     for _ in range(10):
         generate_random_dict(constr)
-        simulate('test.grmpy.ini')
+        dict_ = read('test.grmpy.ini')
+        df = simulate('test.grmpy.ini')
+        start = start_values(dict_, df, 'auto')
+        np.testing.assert_equal(dict_['AUX']['init_values'][:(-6)], start[:(-6)])
 
 
 def test4():
     """The fifth test tests the random init file generating process and the  import process. It
-    generates an random init file, imports it again and compares the entries in the both dictio-
-    naries.
+    generates an random init file, imports it again and compares the entries in  both dictionaries.
     """
     for _ in range(10):
         gen_dict = generate_random_dict()
@@ -216,4 +221,24 @@ def test8():
     files."""
     for _ in range(10):
         generate_random_dict()
-        read('test.grmpy.ini')
+        dict_1 = read('test.grmpy.ini')
+        print_dict(dict_1)
+        dict_2 = read('test.grmpy.ini')
+        np.testing.assert_equal(dict_1, dict_2)
+
+def test9():
+    """This test ensures that the random process handles the constraints dict appropriately if there
+    the input dictionary is not complete.
+    """
+    for _ in range(10):
+        constr = dict()
+        constr['MAXITER'] = np.random.randint(0, 1000)
+        constr['START'] = np.random.choice(['start', 'init'])
+        constr['AGENTS'] = np.random.randint(1, 1000)
+        dict_ = generate_random_dict(constr)
+        np.testing.assert_equal(constr['AGENTS'], dict_['SIMULATION']['agents'])
+        np.testing.assert_equal(constr['START'], dict_['ESTIMATION']['start'])
+        for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
+            np.testing.assert_equal(constr['MAXITER'], dict_[key_]['maxiter'])
+
+
