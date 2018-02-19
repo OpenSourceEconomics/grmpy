@@ -83,10 +83,10 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     # Construct list of column labels
     column = ['Y', 'D']
     for i in range(X.shape[1]):
-        str_ = 'X_' + str(i)
+        str_ = 'X' + str(i)
         column.append(str_)
     for i in range(Z.shape[1]):
-        str_ = 'Z_' + str(i)
+        str_ = 'Z' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
 
