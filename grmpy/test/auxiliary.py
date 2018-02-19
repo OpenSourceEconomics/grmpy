@@ -74,6 +74,9 @@ def adjust_output_cholesky(output):
 
 
 def refactor_results(dict_, file):
+    """The function generates a new init file based on a dictionary with parameter values from a previous
+    estimation process.
+    """
     pseudo = read(file)
 
     for key in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
