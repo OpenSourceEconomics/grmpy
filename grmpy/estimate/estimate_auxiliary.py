@@ -22,8 +22,8 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
         data = data_frame[data_frame['D'] == i]
-        X = data.filter(regex=r'^X\_')
-        Z = data.filter(regex=r'^Z\_')
+        X = data.filter(regex=r'^X')
+        Z = data.filter(regex=r'^Z')
         g = pd.concat((X, Z), axis=1)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
@@ -76,15 +76,15 @@ def start_values(init_dict, data_frame, option):
             beta = []
             sd_ = []
             for i in [0.0, 1.0]:
-                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X\_')[
+                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X')[
                     data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via probit
-            X = data_frame.filter(regex=r'^X\_')
-            Z = (data_frame.filter(regex=r'^Z\_')).drop('Z_0', axis=1)
+            X = data_frame.filter(regex=r'^X')
+            Z = (data_frame.filter(regex=r'^Z')).drop('Z0', axis=1)
             XZ = np.concatenate((X, Z), axis=1)
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             gamma = probitRslt.params
@@ -366,10 +366,10 @@ def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
     # Construct list of column labels
     column = ['Y', 'D']
     for i in range(X.shape[1]):
-        str_ = 'X_' + str(i)
+        str_ = 'X' + str(i)
         column.append(str_)
     for i in range(Z.shape[1]):
-        str_ = 'Z_' + str(i)
+        str_ = 'Z' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0']
 
