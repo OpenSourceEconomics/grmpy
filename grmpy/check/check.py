@@ -17,9 +17,6 @@ def check_initialization_dict(dict_):
         msg = 'The number of simulated individuals needs to be larger than zero.'
         raise UserError(msg)
 
-    if num_coeffs_treated != num_coeffs_untreated:
-        msg = 'The number of covariates determining potential outcomes needs to be identical.'
-        raise UserError(msg)
     if dict_['DETERMINISTIC'] is False:
         if is_pos_def(dict_) is False:
             msg = 'The specified covariance matrix has to be positive semidefinite.'

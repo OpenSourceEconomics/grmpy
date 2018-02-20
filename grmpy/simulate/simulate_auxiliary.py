@@ -18,14 +18,8 @@ def simulate_covariates(init_dict):
 
     # Construct auxiliary information
 
-    num_covars = len(list(set(init_dict['TREATED']['order'] + init_dict['COST']['order'])))
-    types = init_dict['TREATED']['types']
-
-    for index, value in enumerate(init_dict['COST']['order']):
-        if value in init_dict['TREATED']['order']:
-            pass
-        else:
-            types += [init_dict['COST']['types'][index]]
+    num_covars = len(init_dict['AUX']['types'])
+    types = init_dict['AUX']['types']
 
     # As our baseline we simulate covariates from a standard normal distribution.
     means = np.tile(0.0, num_covars)
@@ -63,15 +57,16 @@ def simulate_outcomes(init_dict, X, U):
     """
     X = pd.DataFrame(X)
     Z = X[[i - 1 for i in init_dict['COST']['order']]].as_matrix()
-    X = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
+    X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
+    X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     coeffs_cost = init_dict['COST']['all']
 
     # Calculate potential outcomes and costs
-    Y_1 = np.dot(coeffs_treated, X.T) + U[:, 0]
-    Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 1]
+    Y_1 = np.dot(coeffs_treated, X_treated.T) + U[:, 0]
+    Y_0 = np.dot(coeffs_untreated, X_untreated.T) + U[:, 1]
     C = np.dot(coeffs_cost, Z.T) + U[:, 2]
 
     # Calculate expected benefit and the resulting treatment dummy
@@ -195,8 +190,9 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
-        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
+        help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
+        x = data_frame[['X_{}'.format(i - 1) for i in help_]]
+        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
         len_ = len(value) - 1
@@ -213,12 +209,28 @@ def print_info(init_dict, data_frame):
             file_.write('  {0:>10} {1:>20.4f}\n'.format(i, coeff))
 
 
-def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
+def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
     """
     # Construct auxiliary information
-    para_diff = coeffs_treated - coeffs_untreated
+    if dict_['TREATED']['order'] != dict_['UNTREATED']['order']:
+        para_diff = []
+        for i in set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']):
+            if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
+                index_treated = dict_['TREATED']['order'].index(i)
+                index_untreated = dict_['UNTREATED']['order'].index(i)
+                diff = dict_['TREATED']['all'][index_treated] - dict_['UNTREATED']['all'][index_untreated]
+            elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order']:
+                index = dict_['TREATED']['order'].index(i)
+                diff = dict_['TREATED']['all'][index]
+
+            elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
+                index = dict_['UNTREATED']['order'].index(i)
+                diff = - dict_['UNTREATED']['all'][index]
+            para_diff += [diff]
+    else:
+        para_diff = coeffs_treated - coeffs_untreated
     MTE = []
     for i in quantiles:
         if cov[2, 2] == 0.00:

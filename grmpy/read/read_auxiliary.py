@@ -1,6 +1,7 @@
 """This module provides auxiliary functions for the import process of the init file."""
 import numpy as np
 
+from grmpy.check.custom_exceptions import UserError
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
@@ -94,14 +95,98 @@ def auxiliary(dict_):
 
 
 def check_types(dict_):
-    """This function ensures that the variable types agree across the two treatment states."""
-    if dict_['UNTREATED']['types'] != dict_['TREATED']['types']:
-        for i in range(len(dict_['UNTREATED']['types'])):
-            if isinstance(dict_['TREATED']['types'][i], list):
-                dict_['UNTREATED']['types'][i] = dict_['TREATED']['types'][i]
-            if isinstance(dict_['UNTREATED']['types'][i], list):
-                dict_['TREATED']['types'][i] = dict_['UNTREATED']['types'][i]
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
-        if isinstance(dict_[key_]['types'][0], list):
-            dict_[key_]['types'][0] = 'nonbinary'
+    """This function ensures that the variable types agree across the two treatment states and the
+    costs.
+    """
+    list_ = []
+    covars = set(dict_['TREATED']['order'] +  dict_['UNTREATED']['order'] +  dict_['COST']['order'])
+    for i in covars:
+        if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
+                        i in dict_['COST']['order']:
+            keys = ['TREATED', 'UNTREATED', 'COST']
+            for key_ in keys:
+                index = dict_[key_]['order'].index(i)
+                if isinstance(dict_[key_]['types'][index], list):
+                    other_keys = [j for j in keys if j != key_]
+                    for other in other_keys:
+                        index_other = dict_[other]['order'].index(i)
+                        if not isinstance(dict_[other]['types'][index_other], list):
+                            dict_[other]['types'][index_other] = dict_[key_]['types'][index]
+                        elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
+                            pass
+                        else:
+                            msg = 'Your initilaization file has two different binary specification ' \
+                                  'for the same covariate.'
+                            raise UserError(msg)
+            list_ += [dict_['COST']['types'][index]]
+
+        elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']):
+            keys = ['TREATED', 'UNTREATED']
+            for key_ in keys:
+                index = dict_[key_]['order'].index(i)
+                if isinstance(dict_[key_]['types'][index], list):
+                    other_keys = [j for j in keys if j != key_]
+
+                    for other in other_keys:
+                        index_other = dict_[other]['order'].index(i)
+                        if not isinstance(dict_[other]['types'][index_other], list):
+                            dict_[other]['types'][index_other] = dict_[key_]['types'][index]
+
+                        elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
+                            pass
+                        else:
+                            msg = 'Your initilaization file has two different binary specification ' \
+                                  'for the same covariate.'
+                            raise UserError(msg)
+            list_ += [dict_['UNTREATED']['types'][index]]
+
+        elif (i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
+            keys = ['UNTREATED', 'COST']
+            for key_ in keys:
+                index = dict_[key_]['order'].index(i)
+                if isinstance(dict_[key_]['types'][index], list):
+                    other_keys = [j for j in keys if j != key_]
+                    for other in other_keys:
+                        index_other = dict_[other]['order'].index(i)
+                        if not isinstance(dict_[other]['types'][index_other], list):
+                            dict_[other]['types'][index_other] = dict_[key_]['types'][index]
+                        elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
+                            pass
+                        else:
+                            msg = 'Your initilaization file has two different binary specification ' \
+                                  'for the same covariate.'
+                            raise UserError(msg)
+            list_ += [dict_['COST']['types'][index]]
+
+        elif (i in dict_['TREATED']['order'] and i in dict_['COST']['order']):
+            keys = ['TREATED', 'COST']
+            for key_ in keys:
+                index = dict_[key_]['order'].index(i)
+                if isinstance(dict_[key_]['types'][index], list):
+                    other_keys = [j for j in keys if j != key_]
+                    for other in other_keys:
+                        index_other = dict_[other]['order'].index(i)
+                        if not isinstance(dict_[other]['types'][index_other], list):
+                            dict_[other]['types'][index_other] = dict_[key_]['types'][index]
+                        elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
+                            pass
+                        else:
+                            msg = 'Your initilaization file has two different binary specification ' \
+                                  'for the same covariate.'
+                            raise UserError(msg)
+            list_ += [dict_['COST']['types'][index]]
+
+        else:
+            if i in dict_['TREATED']['order']:
+                index = dict_['TREATED']['order'].index(i)
+                list_ += [dict_['TREATED']['types'][index]]
+            elif i in dict_['UNTREATED']['order']:
+                index = dict_['UNTREATED']['order'].index(i)
+                list_ += [dict_['UNTREATED']['types'][index]]
+            else:
+                index = dict_['COST']['order'].index(i)
+                list_ += [dict_['COST']['types'][index]]
+    dict_['AUX']['types'] = list_
+
+
     return dict_

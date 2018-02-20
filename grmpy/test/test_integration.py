@@ -133,7 +133,7 @@ def test7():
     constr = constraints(agents=1000, probability=.0, sample=100)
     generate_random_dict(constr)
     dict_ = read('test.grmpy.ini')
-    dict_['COST']['order'][1] = 1   
+    dict_['COST']['order'][1] = 1
     print_dict(dict_)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_order)
