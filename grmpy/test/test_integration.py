@@ -116,6 +116,7 @@ def test7():
     fname_zero = os.path.dirname(grmpy.__file__) + '/test/resources/test_zero.grmpy.ini'
     fname_vzero = os.path.dirname(grmpy.__file__) + '/test/resources/test_vzero.grmpy.ini'
     fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
+    fname_order =  os.path.dirname(grmpy.__file__) + '/test/resources/test_order.grmpy.ini'
 
     constr = constraints(agents=1000, probability=1.0)
     generate_random_dict(constr)
@@ -129,6 +130,16 @@ def test7():
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, 'test.grmpy.ini')
 
+    constr = constraints(agents=1000, probability=.0, sample=100)
+    generate_random_dict(constr)
+    dict_ = read('test.grmpy.ini')
+    dict_['COST']['order'][1] = 1   
+    print_dict(dict_)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, simulate, fname_order)
+    pytest.raises(UserError, estimate, fname_order)
+
+
     dict_ = read(fname_num)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_num)
@@ -136,6 +147,7 @@ def test7():
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
+
 
     dict_ = read(fname_zero)
     pytest.raises(UserError, check_init_file, dict_)
