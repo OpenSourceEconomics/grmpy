@@ -17,15 +17,19 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = []
+    order_outcome = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
     for i in [0.0, 1.0]:
         if i == 1.0:
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
+            key_ = 'TREATED'
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
+            key_ = 'UNTREATED'
         data = data_frame[data_frame['D'] == i]
         Z = data[['X_{}'.format(j - 1) for j in init_dict['COST']['order']]]
-        X = data[['X_{}'.format(j - 1) for j in init_dict['TREATED']['order']]]
-        g = pd.concat((X, Z), axis=1)
+        X = data[['X_{}'.format(j - 1) for j in init_dict[key_]['order']]]
+        XX = data[['X_{}'.format(j - 1) for j in order_outcome]]
+        g = pd.concat((XX, Z), axis=1)
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
@@ -56,7 +60,19 @@ def _prepare_arguments(init_dict, rslt):
     sd1 = rslt['DIST']['all'][1]
     sdv = init_dict['DIST']['all'][5]
     rho1, rho0 = rslt['DIST']['all'][3], rslt['DIST']['all'][2]
-    choice = np.concatenate(((np.subtract(beta1, beta0)), -gamma))
+    choice = []
+    for i in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']):
+        if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+            index_treated = init_dict['TREATED']['order'].index(i)
+            index_untreated = init_dict['UNTREATED']['order'].index(i)
+            choice += [beta1[index_treated] - beta0[index_untreated]]
+        elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
+            index = init_dict['TREATED']['order'].index(i)
+            choice += [beta1[index]]
+        elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+            index = init_dict['UNTREATED']['order'].index(i)
+            choice += [-beta0[index]]
+    choice = np.concatenate((np.array(choice), -gamma))
     return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
 
 
@@ -67,11 +83,12 @@ def start_values(init_dict, data_frame, option):
         msg = 'The input object ({})for specifing the start values isn`t a dictionary.' \
             .format(init_dict)
         raise UserError(msg)
-    numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
+    numbers = [init_dict['AUX']['num_covars_treated'], init_dict['AUX']['num_covars_untreated'],
+               init_dict['AUX']['num_covars_cost']]
 
     if option == 'init':
         # Set coefficients equal the true init file values
-        x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+        x0 = init_dict['AUX']['init_values'][:numbers[0] + numbers[1] + numbers[2]]
         sd_ = None
     elif option == 'auto':
 
@@ -82,8 +99,11 @@ def start_values(init_dict, data_frame, option):
             sd_ = []
             for i in [1.0, 0.0]:
                 Y = data_frame.Y[data_frame.D == i]
-                X = data_frame[['X_{}'.format(j - 1) for j in init_dict['TREATED']['order']]][
-                    data_frame.D == i]
+                if i == 1:
+                    order = init_dict['TREATED']['order']
+                else:
+                    order = init_dict['UNTREATED']['order']
+                X = data_frame[['X_{}'.format(j - 1) for j in order]][data_frame.D == i]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
@@ -93,9 +113,16 @@ def start_values(init_dict, data_frame, option):
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             help_gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
-            adj = [i - 1 for i in init_dict['COST']['order'] if i in init_dict['TREATED']['order']]
+            help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
+            adj = [i - 1 for i in init_dict['COST']['order'] if i in help_]
             for j in adj:
-                help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
+                if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
+                elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract(beta[0][j], help_gamma[j])
+                elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract((- beta[1][j]), help_gamma[j])
+
             gamma = []
             for i in init_dict['COST']['order']:
                 gamma += [help_gamma[i - 1]]
@@ -109,7 +136,7 @@ def start_values(init_dict, data_frame, option):
                   ' The intialization specifications are used as start ' \
                   'values during the further process.'
             # Set coefficients equal the true init file values
-            x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+            x0 = init_dict['AUX']['init_values'][: numbers[0] + numbers[1] +numbers[2]]
             sd_ = None
             init_dict['ESTIMATION']['warning'] = msg
             option = 'init'
@@ -130,7 +157,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     else:
         dict_['parameter'][str(len(dict_['parameter']))] = start_values
 
-    num_covars_out = init_dict['AUX']['num_covars_out']
+    num_covars_treated = init_dict['AUX']['num_covars_treated']
+    num_covars_untreated = init_dict['AUX']['num_covars_untreated']
     rslt = dict()
 
     rslt['TREATED'] = dict()
@@ -139,9 +167,9 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['DIST'] = dict()
 
     # Distribute parameters
-    rslt['TREATED']['all'] = start_values[:num_covars_out]
-    rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
+    rslt['TREATED']['all'] = start_values[:num_covars_treated]
+    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         rslt[key_]['order'] = init_dict[key_]['order']
 
@@ -274,11 +302,15 @@ def process_results(init_dict, rslt, start=False):
     """The function processes the results dictionary for the following simulation."""
     rslt_dict = {}
     start_dict = {}
+    num_treated = len(init_dict['TREATED']['all'])
+    num_untreated = len(init_dict['UNTREATED']['all'])
     dicts = [rslt_dict, start_dict]
     for dict_ in dicts:
         dict_['SIMULATION'] = {}
         dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
         dict_['SIMULATION']['seed'] = init_dict['SIMULATION']['seed']
+        dict_['AUX'] = {}
+        dict_['AUX']['types'] = init_dict['AUX']['types']
         if dict_ == rslt_dict:
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 dict_[key_] = {}
@@ -295,8 +327,8 @@ def process_results(init_dict, rslt, start=False):
                     dict_[key_]['order'] = init_dict[key_]['order']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
-                                            num_treated:2 * num_treated]
-                dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
+                                            num_treated: num_treated + num_untreated]
+                dict_['COST']['all'] = init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
                 dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
@@ -428,7 +460,8 @@ def adjust_output(opt_rslt, init_dict, start_values, dict_=None):
 
 def adjust_output_maxiter_zero(init_dict, start_values):
     """The function returns a result dictionary if the maximum number of evaluations is zero."""
-    num_covars_out = init_dict['AUX']['num_covars_out']
+    num_covars_treated = init_dict['AUX']['num_covars_treated']
+    num_covars_untreated = init_dict['AUX']['num_covars_untreated']
     rslt = dict()
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
@@ -436,9 +469,9 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt['DIST'] = dict()
 
     # Distribute parameters
-    rslt['TREATED']['all'] = start_values[:num_covars_out]
-    rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
+    rslt['TREATED']['all'] = start_values[:num_covars_treated]
+    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
 
     rslt['DIST']['all'] = start_values[-6:]
 
