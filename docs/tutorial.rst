@@ -43,6 +43,7 @@ agents         int         number of individuals for the estimation simulation
 file           str         specified data inout file for the estimation process
 optimizer      str         optimizer used for the estimation process
 start          str         determines which start values are used for the estimation process
+maxiter	       int         maximum numbers of iterations the minimization process performs
 =========     ======      ==================
 
 
@@ -109,8 +110,6 @@ The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization a
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 gtol       float      the value that has to be larger as the gradient norm before successful termination
 eps        float      value of step size (if *jac* is approximated)
 ========  ======      ==========================
@@ -122,8 +121,6 @@ The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimizati
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 xtol       float      relative error in solution values *xopt* that is acceptable for convergence
 ftol       float      relative error in fun(*xopt*) that is acceptable for convergence
 ========  ======      ==========================
