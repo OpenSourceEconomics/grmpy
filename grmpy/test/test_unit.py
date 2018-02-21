@@ -35,9 +35,10 @@ def test1():
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
 
-            x = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
+            x_treated = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
+            x_untreated = df[['X_{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
+            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
@@ -50,7 +51,7 @@ def test2():
     """The third test  checks whether the relationships hold if the coefficients are zero in
     different setups.
     """
-    for _ in range(10):
+    for j in range(10):
         for i in ['ALL', 'TREATED', 'UNTREATED', 'COST', 'TREATED & UNTREATED']:
             constr = constraints(probability=0.0)
             dict_ = generate_random_dict(constr)
@@ -65,9 +66,22 @@ def test2():
                 dict_[i]['all'] = np.array([0.] * len(dict_[i]['all']))
 
             print_dict(dict_)
+            print('TEST {}'.format(j))
+            print(constr)
+
+            print(dict_['TREATED']['order'])
+            print(dict_['TREATED']['types'])
+
+            print(dict_['UNTREATED']['order'])
+            print(dict_['UNTREATED']['types'])
+
+            print(dict_['COST']['order'])
+            print(dict_['COST']['types'])
+
             dict_ = read('test.grmpy.ini')
             df = simulate('test.grmpy.ini')
-            x = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            x_treated = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            x_untreated = df[['X_{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
 
             if i == 'ALL':
                 np.testing.assert_array_equal(df.Y1, df.U1)
@@ -78,17 +92,19 @@ def test2():
                 np.testing.assert_array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
             elif i == 'TREATED':
-                y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
+                y_untreated = pd.DataFrame.sum(
+                    dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
                 np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
                 np.testing.assert_array_equal(df.Y1, df.U1)
 
             elif i == 'UNTREATED':
-                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
+                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
                 np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                 np.testing.assert_array_equal(df.Y0, df.U0)
             else:
-                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x, axis=1) + df.U1
-                y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x, axis=1) + df.U0
+                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
+                y_untreated = pd.DataFrame.sum(
+                    dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
                 np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                 np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
 
@@ -113,8 +129,8 @@ def test3():
 
 
 def test4():
-    """The fifth test tests the random init file generating process and the  import process. It
-    generates an random init file, imports it again and compares the entries in  both dictionaries.
+    """The fifth test tests the random init file generating process and the import process. It gen-
+    erates an random init file, imports it again and compares the entries in  both dictionaries.
     """
     for _ in range(10):
         gen_dict = generate_random_dict()
@@ -172,7 +188,9 @@ def test5():
         cov = construct_covariance_matrix(init_dict)
 
         df = simulate('test.grmpy.ini')
-        x = df[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
+        help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
+        x = df[['X_{}'.format(i - 1) for i in help_]]
+
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
         mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x, init_dict)
 
@@ -209,13 +227,15 @@ def test7():
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
     dict_ = read(fname)
 
-    if not dict_['TREATED']['types'] == dict_['UNTREATED']['types']:
-        raise AssertionError()
+    for i in set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']):
+        if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
+            index_treated = dict_['TREATED']['order'].index(i)
+            index_untreated = dict_['UNTREATED']['order'].index(i)
+            if not dict_['TREATED']['types'][index_treated] == dict_['UNTREATED']['types'][index_untreated]:
+                raise AssertionError()
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
-    cleanup()
-
 
 def test8():
     """We want to able to smoothly switch between generating and printing random initialization
@@ -241,5 +261,7 @@ def test9():
         np.testing.assert_equal(constr['START'], dict_['ESTIMATION']['start'])
         for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
             np.testing.assert_equal(constr['MAXITER'], dict_[key_]['maxiter'])
+
+    cleanup()
 
 

@@ -81,9 +81,7 @@ def test4():
         estimate('test.grmpy.ini')
 
 def test5():
-    """The test checks if the estimation process works properly when maxiter is set to
-    zero.
-    """
+    """The test checks if the estimation process works properly when maxiter is set to zero."""
     for _ in range(10):
         constr = constraints(probability=0.0, maxiter=0)
         generate_random_dict(constr)
@@ -193,5 +191,6 @@ def test9():
         generate_random_dict(constr)
         read('test.grmpy.ini')
         simulate('test.grmpy.ini')
+        estimate('test.grmpy.ini')
 
 

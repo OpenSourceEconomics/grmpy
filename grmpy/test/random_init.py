@@ -9,7 +9,7 @@ from grmpy.check.check import UserError
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
                 optimizer=None, start=None, maxiter=None, same_size=False, overlap=None,
-                state_diff=False):
+                state_diff=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -55,7 +55,7 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=No
     else:
         constraints_dict['OVERLAP'] = overlap
 
-    if state_diff is True:
+    if state_diff is None:
         constraints_dict['STATE_DIFF'] = np.random.random_sample() < 0.5
     else:
         constraints_dict['STATE_DIFF'] = state_diff
@@ -364,51 +364,49 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
 
 
 def check_types(dict_, overlap, state_diff):
-    if overlap is True:
-        if state_diff is True:
-            aggregate_order = []
-            for key_ in ['TREATED', 'UNTREATED', 'COST']:
-                aggregate_order += dict_[key_]['order']
-            covar = list(set(aggregate_order))
-            for i in covar:
-                if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                                i in dict_['COST']['order']:
-                    index_treated = dict_['TREATED']['order'].index(i)
-                    index_untreated = dict_['UNTREATED']['order'].index(i)
-                    index_cost = dict_['COST']['order'].index(i)
-                    dict_['TREATED']['types'][index_treated] =\
-                        dict_['UNTREATED']['types'][index_untreated]
-                    dict_['COST']['types'][index_cost] =\
-                        dict_['UNTREATED']['types'][index_untreated]
+    if state_diff is True:
+        aggregate_order = []
+        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+            aggregate_order += dict_[key_]['order']
+        covar = list(set(aggregate_order))
+        for i in covar:
+            if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
+                            i in dict_['COST']['order']:
+                print('here: {}'.format(i))
+                index_treated = dict_['TREATED']['order'].index(i)
+                index_untreated = dict_['UNTREATED']['order'].index(i)
+                index_cost = dict_['COST']['order'].index(i)
+                dict_['TREATED']['types'][index_treated] =\
+                    dict_['UNTREATED']['types'][index_untreated]
+                dict_['COST']['types'][index_cost] =\
+                    dict_['UNTREATED']['types'][index_untreated]
 
-                elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']):
-                    index_treated = dict_['TREATED']['order'].index(i)
-                    index_untreated = dict_['UNTREATED']['order'].index(i)
-                    dict_['TREATED']['types'][index_treated] =\
-                        dict_['UNTREATED']['types'][index_untreated]
+            elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i not in dict_['COST']['order']:
+                index_treated = dict_['TREATED']['order'].index(i)
+                index_untreated = dict_['UNTREATED']['order'].index(i)
+                dict_['TREATED']['types'][index_treated] =\
+                    dict_['UNTREATED']['types'][index_untreated]
 
-                elif (i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
-                    index_untreated = dict_['UNTREATED']['order'].index(i)
-                    index_cost = dict_['COST']['order'].index(i)
-                    dict_['COST']['types'][index_cost] =\
-                        dict_['UNTREATED']['types'][index_untreated]
+            elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']:
+                index_untreated = dict_['UNTREATED']['order'].index(i)
+                index_cost = dict_['COST']['order'].index(i)
+                dict_['COST']['types'][index_cost] =\
+                    dict_['UNTREATED']['types'][index_untreated]
 
-                elif (i in dict_['TREATED']['order'] and i in dict_['COST']['order']):
-                    index_treated = dict_['TREATED']['order'].index(i)
-                    index_cost = dict_['COST']['order'].index(i)
-                    dict_['COST']['types'][index_cost] =\
-                        dict_['TREATED']['types'][index_treated]
-                else:
-                    pass
-        else:
-            for i in dict_['COST']['order']:
-                if i in dict_['TREATED']['order']:
-                    num_cost = dict_['COST']['order'].index(i)
-                    num_treat = dict_['TREATED']['order'].index(i)
-                    dict_['COST']['types'][num_cost] = dict_['TREATED']['types'][num_treat]
-
+            elif (i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
+                index_treated = dict_['TREATED']['order'].index(i)
+                index_cost = dict_['COST']['order'].index(i)
+                dict_['COST']['types'][index_cost] =\
+                    dict_['TREATED']['types'][index_treated]
+            else:
+                pass
     else:
-        pass
+        for i in dict_['COST']['order']:
+            if i in dict_['TREATED']['order']:
+                num_cost = dict_['COST']['order'].index(i)
+                num_treat = dict_['TREATED']['order'].index(i)
+                dict_['COST']['types'][num_cost] = dict_['TREATED']['types'][num_treat]
+
 
     return dict_
 
