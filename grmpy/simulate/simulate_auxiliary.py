@@ -185,7 +185,7 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame.filter(regex=r'^X\_', axis=1)
+        x = data_frame.filter(regex=r'^X', axis=1)
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)

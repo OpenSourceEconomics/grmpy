@@ -110,10 +110,10 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     dict_['ESTIMATION']['optimizer'] = optimizer
     dict_['ESTIMATION']['start'] = start
+    dict_['ESTIMATION']['maxiter'] = maxiter
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         dict_[key_]['disp'] = 0
-        dict_[key_]['maxiter'] = maxiter
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
             dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
@@ -155,11 +155,11 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['file', 'start', 'agents', 'optimizer']
+                    structure = ['file', 'start', 'agents', 'optimizer', 'maxiter']
                 elif label == 'SCIPY-BFGS':
-                    structure = ['maxiter', 'gtol', 'eps']
+                    structure = ['gtol', 'eps']
                 else:
-                    structure = ['maxiter', 'xtol', 'ftol']
+                    structure = ['xtol', 'ftol']
                 for key_ in structure:
                     if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
                         str_ = '        {0:<25} {1:>20}\n'
