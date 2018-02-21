@@ -113,7 +113,6 @@ def generate_random_dict(constraints_dict=None):
     dict_['ESTIMATION']['maxiter'] = maxiter
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
-        dict_[key_]['disp'] = 0
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
             dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
