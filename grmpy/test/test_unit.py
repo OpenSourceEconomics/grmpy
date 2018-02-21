@@ -174,7 +174,7 @@ def test5():
         df = simulate('test.grmpy.ini')
         x = df[['X_{}'.format(i - 1) for i in init_dict['TREATED']['order']]]
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
-        mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x)
+        mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x, init_dict)
 
         # We simply test that there is a single unique value for the marginal treatment effect.
         np.testing.assert_equal(len(set(mte)), 1)
@@ -208,6 +208,7 @@ def test7():
     verified that it is not possible to set an intercept variable to a binary one."""
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
     dict_ = read(fname)
+
     if not dict_['TREATED']['types'] == dict_['UNTREATED']['types']:
         raise AssertionError()
     for key_ in ['TREATED', 'UNTREATED', 'COST']:

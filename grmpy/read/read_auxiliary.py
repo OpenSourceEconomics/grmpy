@@ -68,14 +68,16 @@ def auxiliary(dict_):
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
 
     # Number of covariates
-    num_covars_out = len(dict_['TREATED']['all'])
+    num_covars_treated = len(dict_['TREATED']['all'])
+    num_covars_untreated = len(dict_['UNTREATED']['all'])
     num_covars_cost = len(dict_['COST']['all'])
 
-    dict_['AUX']['num_covars_out'] = num_covars_out
+    dict_['AUX']['num_covars_treated'] = num_covars_treated
+    dict_['AUX']['num_covars_untreated'] = num_covars_untreated
     dict_['AUX']['num_covars_cost'] = num_covars_cost
 
     # Number of parameters
-    dict_['AUX']['num_paras'] = 2 * num_covars_out + num_covars_cost + 2 + 2
+    dict_['AUX']['num_paras'] = num_covars_treated +  num_covars_untreated + num_covars_cost + 2 + 2
 
     # Starting values
     dict_['AUX']['init_values'] = []
@@ -103,21 +105,27 @@ def check_types(dict_):
     for i in covars:
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
                         i in dict_['COST']['order']:
-            keys = ['TREATED', 'UNTREATED', 'COST']
-            for key_ in keys:
-                index = dict_[key_]['order'].index(i)
-                if isinstance(dict_[key_]['types'][index], list):
-                    other_keys = [j for j in keys if j != key_]
-                    for other in other_keys:
-                        index_other = dict_[other]['order'].index(i)
-                        if not isinstance(dict_[other]['types'][index_other], list):
-                            dict_[other]['types'][index_other] = dict_[key_]['types'][index]
-                        elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
-                            pass
-                        else:
-                            msg = 'Your initilaization file has two different binary specification ' \
-                                  'for the same covariate.'
-                            raise UserError(msg)
+            if i == 1:
+                keys = ['TREATED', 'UNTREATED', 'COST']
+                for key_ in keys:
+                    index = dict_[key_]['order'].index(i)
+                    dict_[key_]['types'][index] = 'nonbinary'
+            else:
+                keys = ['TREATED', 'UNTREATED', 'COST']
+                for key_ in keys:
+                    index = dict_[key_]['order'].index(i)
+                    if isinstance(dict_[key_]['types'][index], list):
+                        other_keys = [j for j in keys if j != key_]
+                        for other in other_keys:
+                            index_other = dict_[other]['order'].index(i)
+                            if not isinstance(dict_[other]['types'][index_other], list):
+                                dict_[other]['types'][index_other] = dict_[key_]['types'][index]
+                            elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
+                                pass
+                            else:
+                                msg = 'Your initilaization file has two different binary specification ' \
+                                      'for the same covariate.'
+                                raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 
         elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']):

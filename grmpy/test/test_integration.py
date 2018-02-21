@@ -116,7 +116,6 @@ def test7():
     fname_zero = os.path.dirname(grmpy.__file__) + '/test/resources/test_zero.grmpy.ini'
     fname_vzero = os.path.dirname(grmpy.__file__) + '/test/resources/test_vzero.grmpy.ini'
     fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
-    fname_order =  os.path.dirname(grmpy.__file__) + '/test/resources/test_order.grmpy.ini'
 
     constr = constraints(agents=1000, probability=1.0)
     generate_random_dict(constr)
@@ -136,13 +135,21 @@ def test7():
     dict_['COST']['order'][1] = 1
     print_dict(dict_)
     pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, simulate, fname_order)
-    pytest.raises(UserError, estimate, fname_order)
+    pytest.raises(UserError, simulate, 'test.grmpy.ini')
+    pytest.raises(UserError, estimate, 'test.grmpy.ini')
 
-
-    dict_ = read(fname_num)
-    pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, simulate, fname_num)
+    constr = constraints(0.0, agents=1000)
+    generate_random_dict(constr)
+    dict_ = read('test.grmpy.ini')
+    if len(dict_['TREATED']['all']) < 2:
+        dict_['TREATED']['all'] += [2.99]
+        dict_['UNTREATED']['all'] += [1.23]
+    else:
+        pass
+    dict_['TREATED']['types'][1] = ['binary', 0.5]
+    dict_['UNTREATED']['types'][1] = ['binary', 0.65]
+    print_dict(dict_)
+    pytest.raises(UserError, read, 'test.grmpy.ini')
 
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
@@ -176,3 +183,15 @@ def test8():
     pytest.raises(UserError, generate_random_dict, a)
 
     cleanup()
+
+def test9():
+    """This test ensures that the random initialization file generating process, the read in process
+    and the simulation process works if the constraints function allows for different number of co-
+    variates for each treatment state and the occurence of cost-benefit shifters."""
+    for _ in range(10):
+        constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+        generate_random_dict(constr)
+        read('test.grmpy.ini')
+        simulate('test.grmpy.ini')
+
+
