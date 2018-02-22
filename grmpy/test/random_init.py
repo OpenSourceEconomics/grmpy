@@ -218,7 +218,7 @@ def print_dict(dict_, file_name='test'):
                     if 'order' in dict_[label].keys():
                         if 'types' in dict_[label].keys():
                             if isinstance(dict_[label]['types'][i], list):
-                                str_ = '        {0:<10} {1:>15} {2:>20.4f} {3:>10} {4:>5.4f}\n'
+                                str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>10} {4:>5.4f}\n'
                                 file_.write(
                                     str_.format(
                                         'coeff', dict_[label]['order'][i], dict_[label]['all'][i],
@@ -226,12 +226,12 @@ def print_dict(dict_, file_name='test'):
                                 )
                             else:
                                 if write_nonbinary:
-                                    str_ = '        {0:<10} {1:>15} {2:>20.4f} {3:>17}\n'
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
                                     file_.write(str_.format('coeff',dict_[label]['order'][i],
                                                             dict_[label]['all'][i],
                                                             dict_[label]['types'][i]))
                                 else:
-                                    str_ = '        {0:<10} {1:>15} {2:>20.4f}\n'
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f}\n'
                                     file_.write(str_.format('coeff', dict_[label]['order'][i],
                                                             dict_[label]['all'][i]))
 
