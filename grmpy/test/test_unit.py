@@ -66,17 +66,6 @@ def test2():
                 dict_[i]['all'] = np.array([0.] * len(dict_[i]['all']))
 
             print_dict(dict_)
-            print('TEST {}'.format(j))
-            print(constr)
-
-            print(dict_['TREATED']['order'])
-            print(dict_['TREATED']['types'])
-
-            print(dict_['UNTREATED']['order'])
-            print(dict_['UNTREATED']['types'])
-
-            print(dict_['COST']['order'])
-            print(dict_['COST']['types'])
 
             dict_ = read('test.grmpy.ini')
             df = simulate('test.grmpy.ini')

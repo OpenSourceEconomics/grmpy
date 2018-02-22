@@ -372,7 +372,6 @@ def check_types(dict_, overlap, state_diff):
         for i in covar:
             if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
                             i in dict_['COST']['order']:
-                print('here: {}'.format(i))
                 index_treated = dict_['TREATED']['order'].index(i)
                 index_untreated = dict_['UNTREATED']['order'].index(i)
                 index_cost = dict_['COST']['order'].index(i)

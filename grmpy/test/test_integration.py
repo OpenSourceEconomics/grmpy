@@ -110,59 +110,65 @@ def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
     estimation process with initialization file values as start values for an deterministic setting.
     """
-    fname_num = os.path.dirname(grmpy.__file__) + '/test/resources/test_num.grmpy.ini'
     fname_zero = os.path.dirname(grmpy.__file__) + '/test/resources/test_zero.grmpy.ini'
     fname_vzero = os.path.dirname(grmpy.__file__) + '/test/resources/test_vzero.grmpy.ini'
     fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
 
-    constr = constraints(agents=1000, probability=1.0)
-    generate_random_dict(constr)
-    dict_ = read('test.grmpy.ini')
-    pytest.raises(UserError, check_init_file, dict_)
-    pytest.raises(UserError, estimate, 'test.grmpy.ini')
-
-    constr = constraints(agents=0, probability=.0, sample=100)
-    generate_random_dict(constr)
-    dict_ = read('test.grmpy.ini')
-    pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, simulate, 'test.grmpy.ini')
-
-    constr = constraints(agents=1000, probability=.0, sample=100)
-    generate_random_dict(constr)
-    dict_ = read('test.grmpy.ini')
-    dict_['COST']['order'][1] = 1
-    print_dict(dict_)
-    pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, simulate, 'test.grmpy.ini')
-    pytest.raises(UserError, estimate, 'test.grmpy.ini')
-
-
-    tests = [
-        ['TREATED','UNTREATED'], ['TREATED', 'COST'], ['UNTREATED', 'COST'],
-        ['TREATED', 'UNTREATED', 'COST']
-    ]
-    for combi in tests:
-        print(combi)
-        constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+    for i in range(10):
+        print(i)
+        constr = constraints(agents=1000, probability=1.0)
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
-        if len(combi) == 2:
-            dict_[combi[0]]['order'][1] = len(dict_[combi[1]]['all'])
-            dict_[combi[1]]['order'][1] = len(dict_[combi[1]]['all'])
+        pytest.raises(UserError, check_init_file, dict_)
+        pytest.raises(UserError, estimate, 'test.grmpy.ini')
 
-            dict_[combi[0]]['types'][1] = ['binary', 0.5]
-            dict_[combi[1]]['types'][1] = ['binary', 0.65]
+        constr = constraints(agents=0, probability=.0, sample=100)
+        generate_random_dict(constr)
+        dict_ = read('test.grmpy.ini')
+        pytest.raises(UserError, check_initialization_dict, dict_)
+        pytest.raises(UserError, simulate, 'test.grmpy.ini')
 
-        elif len(combi) == 3:
-            dict_[combi[0]]['order'][1] = len(dict_[combi[2]]['all'])
-            dict_[combi[1]]['order'][1] = len(dict_[combi[2]]['all'])
-            dict_[combi[2]]['order'][1] = len(dict_[combi[2]]['all'])
+        constr = constraints(agents=1000, probability=.0, sample=100)
+        generate_random_dict(constr)
+        dict_ = read('test.grmpy.ini')
+        if len(dict_['COST']['order']) == 1:
+            dict_['COST']['all'] = list(dict_['COST']['all'])
+            dict_['COST']['all'] += [1.000]
+            dict_['COST']['order'] += [2]
+            dict_['COST']['types'] += ['nonbinary']
 
-            dict_[combi[0]]['types'][1] = ['binary', 0.5]
-            dict_[combi[1]]['types'][1] = ['binary', 0.65]
-            dict_[combi[2]]['types'][1] = ['binary', 0.75]
+        dict_['COST']['order'][1] = 1
         print_dict(dict_)
-        pytest.raises(UserError, read, 'test.grmpy.ini')
+        pytest.raises(UserError, check_initialization_dict, dict_)
+        pytest.raises(UserError, simulate, 'test.grmpy.ini')
+        pytest.raises(UserError, estimate, 'test.grmpy.ini')
+
+
+        tests = [
+            ['TREATED','UNTREATED'], ['TREATED', 'COST'], ['UNTREATED', 'COST'],
+            ['TREATED', 'UNTREATED', 'COST']
+        ]
+        for combi in tests:
+            constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+            generate_random_dict(constr)
+            dict_ = read('test.grmpy.ini')
+            for j in combi:
+
+                if len(dict_[j]['order']) == 1:
+                    dict_[j]['all'] = list(dict_[j]['all'])
+                    dict_[j]['all'] += [1.000]
+                    dict_[j]['order'] += [2]
+                    dict_[j]['types'] += ['nonbinary']
+                else:
+                    pass
+                dict_[j]['order'][1] = len(dict_['AUX']['types']) +1
+
+                frac = np.random.uniform(0.1, 0.8)
+                dict_[j]['types'][1] = ['binary', frac]
+
+            print_dict(dict_)
+
+            pytest.raises(UserError, read, 'test.grmpy.ini')
 
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
