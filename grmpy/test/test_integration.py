@@ -135,19 +135,34 @@ def test7():
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, 'test.grmpy.ini')
     pytest.raises(UserError, estimate, 'test.grmpy.ini')
-    
-    constr = constraints(0.0, agents=1000)
-    generate_random_dict(constr)
-    dict_ = read('test.grmpy.ini')
-    if len(dict_['TREATED']['all']) < 2:
-        dict_['TREATED']['all'] += [2.99]
-        dict_['UNTREATED']['all'] += [1.23]
-    else:
-        pass
-    dict_['TREATED']['types'][1] = ['binary', 0.5]
-    dict_['UNTREATED']['types'][1] = ['binary', 0.65]
-    print_dict(dict_)
-    pytest.raises(UserError, read, 'test.grmpy.ini')
+
+
+    tests = [
+        ['TREATED','UNTREATED'], ['TREATED', 'COST'], ['UNTREATED', 'COST'],
+        ['TREATED', 'UNTREATED', 'COST']
+    ]
+    for combi in tests:
+        print(combi)
+        constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+        generate_random_dict(constr)
+        dict_ = read('test.grmpy.ini')
+        if len(combi) == 2:
+            dict_[combi[0]]['order'][1] = len(dict_[combi[1]]['all'])
+            dict_[combi[1]]['order'][1] = len(dict_[combi[1]]['all'])
+
+            dict_[combi[0]]['types'][1] = ['binary', 0.5]
+            dict_[combi[1]]['types'][1] = ['binary', 0.65]
+
+        elif len(combi) == 3:
+            dict_[combi[0]]['order'][1] = len(dict_[combi[2]]['all'])
+            dict_[combi[1]]['order'][1] = len(dict_[combi[2]]['all'])
+            dict_[combi[2]]['order'][1] = len(dict_[combi[2]]['all'])
+
+            dict_[combi[0]]['types'][1] = ['binary', 0.5]
+            dict_[combi[1]]['types'][1] = ['binary', 0.65]
+            dict_[combi[2]]['types'][1] = ['binary', 0.75]
+        print_dict(dict_)
+        pytest.raises(UserError, read, 'test.grmpy.ini')
 
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
@@ -192,5 +207,7 @@ def test9():
         read('test.grmpy.ini')
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
+
+
 
 

@@ -39,7 +39,7 @@ def simulate(init_file):
     df = write_output(init_dict, Y, D, X, Y_1, Y_0, U, V)
 
     # Calculate Criteria function value
-    if init_dict['DETERMINISTIC'] is False and len(init_dict['TREATED']['order']) == init_dict['UNTREATED']['order']:
+    if init_dict['DETERMINISTIC'] is False:
         x0 = start_values(init_dict, df, 'init')
         init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
 

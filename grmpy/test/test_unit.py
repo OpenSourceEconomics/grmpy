@@ -262,6 +262,23 @@ def test9():
         for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
             np.testing.assert_equal(constr['MAXITER'], dict_[key_]['maxiter'])
 
+def test10():
+    """This test checks if the start_values function returns the init file values if the start
+    option is set to init.
+    """
+    for _ in range(10):
+        constr = constraints(0.0)
+        generate_random_dict(constr)
+        dict_ = read('test.grmpy.ini')
+        print(dict_)
+        true = []
+        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+            true += list(dict_[key_]['all'])
+        df = simulate('test.grmpy.ini')
+        x0 = start_values(dict_, df, 'init')[:-6]
+
+        np.testing.assert_array_equal(true, x0)
+
     cleanup()
 
 

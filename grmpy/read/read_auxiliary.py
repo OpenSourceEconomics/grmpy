@@ -128,7 +128,7 @@ def check_types(dict_):
                                 raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 
-        elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']):
+        elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i not in dict_['COST']['order']):
             keys = ['TREATED', 'UNTREATED']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -148,7 +148,7 @@ def check_types(dict_):
                             raise UserError(msg)
             list_ += [dict_['UNTREATED']['types'][index]]
 
-        elif (i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
+        elif (i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
             keys = ['UNTREATED', 'COST']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -166,7 +166,7 @@ def check_types(dict_):
                             raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 
-        elif (i in dict_['TREATED']['order'] and i in dict_['COST']['order']):
+        elif (i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
             keys = ['TREATED', 'COST']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
