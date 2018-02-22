@@ -270,7 +270,6 @@ def types(dict_):
     all = []
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         all += dict_[key_]['order']
-        print(dict_[key_]['types'])
     all = [k for k in all if k != 1]
     for i in list(set(all)):
         if np.random.random_sample() < 0.1:
