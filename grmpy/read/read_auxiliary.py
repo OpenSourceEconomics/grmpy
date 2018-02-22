@@ -9,10 +9,6 @@ def process(list_, dict_, keyword):
         name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
     elif len(list_) in [3,4]:
         name, order, val  = list_[0], list_[1], list_[2]
-
-    elif list_[0] == 'direc':
-        name, val = list_[0], [list_[i] for i in range(len(list_)) if i > 0]
-
     else:
         name, val = list_[0], list_[1]
 
@@ -123,12 +119,13 @@ def check_types(dict_):
                             elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
                                 pass
                             else:
-                                msg = 'Your initilaization file has two different binary specification ' \
-                                      'for the same covariate.'
+                                msg = 'Your initilaization file has two different binary ' \
+                                      'specification for the same covariate.'
                                 raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 
-        elif (i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i not in dict_['COST']['order']):
+        elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
+                        i not in dict_['COST']['order']:
             keys = ['TREATED', 'UNTREATED']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -143,12 +140,13 @@ def check_types(dict_):
                         elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
                             pass
                         else:
-                            msg = 'Your initilaization file has two different binary specification ' \
-                                  'for the same covariate.'
+                            msg = 'Your initilaization file has two different binary ' \
+                                  'specification for the same covariate.'
                             raise UserError(msg)
             list_ += [dict_['UNTREATED']['types'][index]]
 
-        elif (i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
+        elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
+                        i in dict_['COST']['order']:
             keys = ['UNTREATED', 'COST']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -161,12 +159,13 @@ def check_types(dict_):
                         elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
                             pass
                         else:
-                            msg = 'Your initilaization file has two different binary specification ' \
-                                  'for the same covariate.'
+                            msg = 'Your initilaization file has two different binary ' \
+                                  'specification for the same covariate.'
                             raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 
-        elif (i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
+        elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and\
+                        i in dict_['COST']['order']:
             keys = ['TREATED', 'COST']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -179,8 +178,8 @@ def check_types(dict_):
                         elif dict_[other]['types'][index_other] == dict_[key_]['types'][index]:
                             pass
                         else:
-                            msg = 'Your initilaization file has two different binary specification ' \
-                                  'for the same covariate.'
+                            msg = 'Your initilaization file has two different binary ' \
+                                  'specification for the same covariate.'
                             raise UserError(msg)
             list_ += [dict_['COST']['types'][index]]
 

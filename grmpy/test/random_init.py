@@ -124,8 +124,6 @@ def generate_random_dict(constraints_dict=None):
             else:
                 dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
                                                                               is_zero)
-                if key_ == 'TREATED':
-                    dict_[key_]['types'] = dict_['UNTREATED']['types']
         else:
             dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
@@ -134,7 +132,7 @@ def generate_random_dict(constraints_dict=None):
     else:
         dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
         dict_ = overlap_treat_untreat_cost(dict_, cost_num, overlap)
-    dict_ = check_types(dict_, overlap, state_diff)
+    dict_ = types(dict_)
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
@@ -252,26 +250,39 @@ def my_random_string(string_length=10):
 
 def generate_coeff(num, key_, is_zero, state_diff=False):
     """The function generates random coefficients for creating the random init dictionary."""
+    keys = ['UNTREATED', 'COST', 'TREATED']
     if not is_zero:
         list_ = np.random.normal(0., 2., [num]).tolist()
-        if state_diff is True:
-            keys = ['UNTREATED', 'COST', 'TREATED']
-        else:
-            keys = ['UNTREATED', 'COST']
         if key_ in keys:
             binary_list = ['nonbinary'] * num
-            for i, _ in enumerate(binary_list):
-                if np.random.random_sample() < 0.1:
-                    if i is not 0:
-                        frac = np.random.uniform(0, 0.8)
-                        binary_list[i] = ['binary', frac]
-        else:
-            binary_list = []
     else:
-        binary_list = ['nonbinary'] * num
         list_ = np.array([0] * num).tolist()
 
+    if key_ in keys:
+        binary_list = ['nonbinary'] * num
+    else:
+        binary_list = []
+
+
     return list_, binary_list
+
+def types(dict_):
+    all = []
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        all += dict_[key_]['order']
+        print(dict_[key_]['types'])
+    all = [k for k in all if k != 1]
+    for i in list(set(all)):
+        if np.random.random_sample() < 0.1:
+            frac = np.random.uniform(0, 1)
+            for section in ['TREATED', 'UNTREATED', 'COST']:
+                if i in dict_[section]['order']:
+                    index = dict_[section]['order'].index(i)
+                    dict_[section]['types'][index] = ['binary', frac]
+        else:
+            pass
+
+    return dict_
 
 
 def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
@@ -287,14 +298,14 @@ def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
                 if np.random.random_sample() < 0.2:
                     if len(x) == 0:
                         cost_ord += [treated_ord[treated_num - 1] + y]
-                        y = y + 1
+                        y += 1
                     else:
                         a = np.random.choice(x)
                         cost_ord += [int(a)]
                         x = [j for j in x if j != a]
                 else:
                     cost_ord += [treated_ord[treated_num - 1] + y]
-                    y = y + 1
+                    y += 1
     else:
         treated_ord = list(range(1, treated_num + 1))
         cost_ord = list(range(treated_num + 1, treated_num + cost_num))
@@ -318,14 +329,14 @@ def overlap_treat_untreat(dict_, treated_num, untreated_num):
             if np.random.random_sample() < 0.3:
                 if len(x) == 0:
                     untreated_ord += [treated_ord[treated_num - 1] + y]
-                    y = y + 1
+                    y += 1
                 else:
                     a = np.random.choice(x)
                     untreated_ord += [int(a)]
                     x = [j for j in x if j != a]
             else:
                 untreated_ord += [treated_ord[treated_num - 1] + y]
-                y = y + 1
+                y += 1
     dict_['TREATED']['order'] = treated_ord
     dict_['UNTREATED']['order'] = untreated_ord
 
@@ -345,14 +356,14 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
                 if np.random.random_sample() < .2:
                     if len(x) == 0:
                         cost_ord += [treated_ord[num_var - 1] + y]
-                        y = y + 1
+                        y += 1
                     else:
                         a = np.random.choice(x)
                         cost_ord += [int(a)]
                         x = [j for j in x if j != a]
                 else:
                     cost_ord += [treated_ord[num_var - 1] + y]
-                    y = y + 1
+                    y += 1
     else:
         cost_ord = list(range(num_var + 1, num_var + cost_num))
         cost_ord = [1] + cost_ord
@@ -360,53 +371,3 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
     dict_['COST']['order'] = cost_ord
 
     return dict_
-
-
-
-def check_types(dict_, overlap, state_diff):
-    if state_diff is True:
-        aggregate_order = []
-        for key_ in ['TREATED', 'UNTREATED', 'COST']:
-            aggregate_order += dict_[key_]['order']
-        covar = list(set(aggregate_order))
-        for i in covar:
-            if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                            i in dict_['COST']['order']:
-                index_treated = dict_['TREATED']['order'].index(i)
-                index_untreated = dict_['UNTREATED']['order'].index(i)
-                index_cost = dict_['COST']['order'].index(i)
-                dict_['TREATED']['types'][index_treated] =\
-                    dict_['UNTREATED']['types'][index_untreated]
-                dict_['COST']['types'][index_cost] =\
-                    dict_['UNTREATED']['types'][index_untreated]
-
-            elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i not in dict_['COST']['order']:
-                index_treated = dict_['TREATED']['order'].index(i)
-                index_untreated = dict_['UNTREATED']['order'].index(i)
-                dict_['TREATED']['types'][index_treated] =\
-                    dict_['UNTREATED']['types'][index_untreated]
-
-            elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and i in dict_['COST']['order']:
-                index_untreated = dict_['UNTREATED']['order'].index(i)
-                index_cost = dict_['COST']['order'].index(i)
-                dict_['COST']['types'][index_cost] =\
-                    dict_['UNTREATED']['types'][index_untreated]
-
-            elif (i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and i in dict_['COST']['order']):
-                index_treated = dict_['TREATED']['order'].index(i)
-                index_cost = dict_['COST']['order'].index(i)
-                dict_['COST']['types'][index_cost] =\
-                    dict_['TREATED']['types'][index_treated]
-            else:
-                pass
-    else:
-        for i in dict_['COST']['order']:
-            if i in dict_['TREATED']['order']:
-                num_cost = dict_['COST']['order'].index(i)
-                num_treat = dict_['TREATED']['order'].index(i)
-                dict_['COST']['types'][num_cost] = dict_['TREATED']['types'][num_treat]
-
-
-    return dict_
-
-

@@ -12,9 +12,11 @@ from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
+from grmpy.test.auxiliary import refactor_results
 from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
+from grmpy.estimate.estimate import estimate
 from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
@@ -268,6 +270,18 @@ def test10():
 
         np.testing.assert_array_equal(true, x0)
 
+def test11():
+    """This test checks if the refactor auxiliary function returns an unchanged init file if the
+    maximum number of iterations is set to zero."""
+
+    for _ in range(10):
+        constr = constraints(0.0,1000,maxiter=0, start='init' )
+        generate_random_dict(constr)
+        simulate('test.grmpy.ini')
+        rslt = estimate('test.grmpy.ini')
+        refactor_results(rslt, 'test.grmpy.ini', 'estimate')
+        dict_1 = read('test.grmpy.ini')
+        dict_2 = read('estimate.grmpy.ini')
+        np.testing.assert_equal(dict_1, dict_2)
+
     cleanup()
-
-

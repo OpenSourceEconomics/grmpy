@@ -115,7 +115,6 @@ def test7():
     fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
 
     for i in range(10):
-        print(i)
         constr = constraints(agents=1000, probability=1.0)
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')

@@ -172,6 +172,7 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         rslt[key_]['order'] = init_dict[key_]['order']
+        rslt[key_]['types'] = init_dict[key_]['types']
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, True)
 
