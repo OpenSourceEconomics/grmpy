@@ -46,7 +46,7 @@ def estimate(init_file):
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
     dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
-    if dict_['ESTIMATION']['maxiter'] == 0:
+    if opts['maxiter'] == 0:
         rslt = adjust_output_maxiter_zero(dict_, x0)
     else:
         rslt_dict = bfgs_dict()
