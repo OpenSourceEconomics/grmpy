@@ -17,6 +17,7 @@ from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.check.check import check_initialization_dict
 from grmpy.check.check import check_init_file
+from grmpy.check.check import UserError
 from grmpy.read.read import read
 
 
@@ -24,7 +25,9 @@ def estimate(init_file):
     """The function estimates the coefficients of the simulated data set."""
     # Import init file as dictionary
     if not os.path.isfile(init_file):
-        raise AssertionError
+        msg = '{}: There is no such file or directory.'.format(init_file)
+        raise UserError(msg)
+
     dict_ = read(init_file)
     np.random.seed(dict_['SIMULATION']['seed'])
     # Check if the initialization file specifications are appropriate for the estimation process
@@ -35,7 +38,8 @@ def estimate(init_file):
 
     data_file = dict_['ESTIMATION']['file']
     if not os.path.isfile(data_file):
-        raise AssertionError
+        msg = 'The data file specified in your initialization file doesn`t exist.'
+        raise UserError(msg)
 
     # Start value option
     option = dict_['ESTIMATION']['start']
@@ -52,7 +56,6 @@ def estimate(init_file):
         rslt_dict = bfgs_dict()
         opt_rslt = minimize(
             minimizing_interface, x0, args=(dict_, data, rslt_dict), method=method, options=opts)
-
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)

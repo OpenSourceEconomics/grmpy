@@ -14,15 +14,20 @@ def check_initialization_dict(dict_):
 
     # This are just two example for a whole host of tests.
     if num_agents_sim <= 0:
-        raise UserError('The number of simulated individuals needs to be larger than zero.')
-
-    if num_coeffs_treated != num_coeffs_untreated:
-        msg = 'The number of covariates determining potential outcomes needs to be identical.'
+        msg = 'The number of simulated individuals needs to be larger than zero.'
         raise UserError(msg)
+
     if dict_['DETERMINISTIC'] is False:
         if is_pos_def(dict_) is False:
             msg = 'The specified covariance matrix has to be positive semidefinite.'
             raise UserError(msg)
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        if len(dict_[key_]['order']) > len(set(dict_[key_]['order'])):
+            msg = 'There is a problem in the {} section of the initialization file. \n         ' \
+                  'Probably you specified two coefficients for one covariate in the same section.'\
+                .format(key_)
+            raise UserError(msg)
+
 
 
 def check_init_file(dict_):
