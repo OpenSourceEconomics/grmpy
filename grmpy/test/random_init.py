@@ -8,7 +8,8 @@ from grmpy.check.check import UserError
 
 
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None, maxiter=None, same_size=False):
+                optimizer=None, start=None, maxiter=None, same_size=False, overlap=None,
+                state_diff=None):
     """The constraints function returns an dictionary that provides specific characteristics for the
     random dictionary generating process.
     """
@@ -49,6 +50,16 @@ def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=No
 
     constraints_dict['SAME_SIZE'] = same_size
 
+    if overlap is None:
+        constraints_dict['OVERLAP'] = np.random.random_sample() < 0.5
+    else:
+        constraints_dict['OVERLAP'] = overlap
+
+    if state_diff is None:
+        constraints_dict['STATE_DIFF'] = np.random.random_sample() < 0.5
+    else:
+        constraints_dict['STATE_DIFF'] = state_diff
+
     return constraints_dict
 
 
@@ -69,11 +80,15 @@ def generate_random_dict(constraints_dict=None):
 
     is_deterministic = constraints_dict['DETERMINISTIC']
 
+    state_diff = constraints_dict['STATE_DIFF']
+
     optimizer = constraints_dict['OPTIMIZER']
 
     same_size = constraints_dict['SAME_SIZE']
 
     is_zero = constraints_dict['IS_ZERO']
+
+    overlap = constraints_dict['OVERLAP']
 
     maxiter = constraints_dict['MAXITER']
 
@@ -87,6 +102,10 @@ def generate_random_dict(constraints_dict=None):
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
+    if state_diff is True:
+        untreated_num = np.random.randint(1, 10)
+    else:
+        pass
     cost_num = np.random.randint(1, 10)
     # Coefficients
     for key_ in ['UNTREATED', 'TREATED', 'COST']:
@@ -94,12 +113,26 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
-            if key_ == 'TREATED':
-                dict_[key_]['types'] = dict_['UNTREATED']['types']
+            if state_diff is True:
+                if key_ == 'TREATED':
+                    x = treated_num
+                else:
+                    x= untreated_num
+                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_,
+                                                                              is_zero, state_diff)
+
+            else:
+                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
+                                                                              is_zero)
         else:
             dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
+    if state_diff is False:
+        dict_ = overlap_treat_cost(dict_, treated_num, cost_num, overlap)
+    else:
+        dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
+        dict_ = overlap_treat_untreat_cost(dict_, cost_num, overlap)
+    dict_ = types(dict_)
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
@@ -182,22 +215,25 @@ def print_dict(dict_, file_name='test'):
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
                 for i, _ in enumerate(dict_[label]['all']):
-                    if 'types' in dict_[label].keys():
-                        if isinstance(dict_[label]['types'][i], list):
-                            str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
-                            file_.write(
-                                str_.format(
-                                    'coeff', dict_[label]['all'][i], dict_[label]['types'][i][0],
-                                    dict_[label]['types'][i][1])
-                            )
-                        else:
-                            if write_nonbinary:
-                                str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
-                                file_.write(str_.format('coeff', dict_[label]['all'][i],
-                                                        dict_[label]['types'][i]))
+                    if 'order' in dict_[label].keys():
+                        if 'types' in dict_[label].keys():
+                            if isinstance(dict_[label]['types'][i], list):
+                                str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>10} {4:>5.4f}\n'
+                                file_.write(
+                                    str_.format(
+                                        'coeff', dict_[label]['order'][i], dict_[label]['all'][i],
+                                        dict_[label]['types'][i][0],dict_[label]['types'][i][1])
+                                )
                             else:
-                                str_ = '        {0:<10} {1:>35.4f}\n'
-                                file_.write(str_.format('coeff', dict_[label]['all'][i]))
+                                if write_nonbinary:
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
+                                    file_.write(str_.format('coeff',dict_[label]['order'][i],
+                                                            dict_[label]['all'][i],
+                                                            dict_[label]['types'][i]))
+                                else:
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f}\n'
+                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
+                                                            dict_[label]['all'][i]))
 
                     else:
                         str_ = '        {0:<10} {1:>35.4f}\n'
@@ -212,21 +248,125 @@ def my_random_string(string_length=10):
     return random[0:string_length]
 
 
-def generate_coeff(num, key_, is_zero):
+def generate_coeff(num, key_, is_zero, state_diff=False):
     """The function generates random coefficients for creating the random init dictionary."""
+    keys = ['UNTREATED', 'COST', 'TREATED']
     if not is_zero:
         list_ = np.random.normal(0., 2., [num]).tolist()
-        if key_ in ['UNTREATED', 'COST']:
+        if key_ in keys:
             binary_list = ['nonbinary'] * num
-            for i, _ in enumerate(binary_list):
-                if np.random.random_sample() < 0.1:
-                    if i is not 0:
-                        frac = np.random.uniform(0, 1)
-                        binary_list[i] = ['binary', frac]
-        else:
-            binary_list = []
     else:
-        binary_list = ['nonbinary'] * num
         list_ = np.array([0] * num).tolist()
 
+    if key_ in keys:
+        binary_list = ['nonbinary'] * num
+    else:
+        binary_list = []
+
+
     return list_, binary_list
+
+def types(dict_):
+    all = []
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        all += dict_[key_]['order']
+    all = [k for k in all if k != 1]
+    for i in list(set(all)):
+        if np.random.random_sample() < 0.1:
+            frac = np.random.uniform(0, 1)
+            for section in ['TREATED', 'UNTREATED', 'COST']:
+                if i in dict_[section]['order']:
+                    index = dict_[section]['order'].index(i)
+                    dict_[section]['types'][index] = ['binary', frac]
+        else:
+            pass
+
+    return dict_
+
+
+def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
+    if overlap is True:
+        treated_ord = list(range(1, treated_num + 1))
+        x = list(range(2, treated_num + 1))
+        cost_ord = []
+        y = 1
+        for i in list(range(cost_num)):
+            if i == 0:
+                cost_ord += [1]
+            else:
+                if np.random.random_sample() < 0.2:
+                    if len(x) == 0:
+                        cost_ord += [treated_ord[treated_num - 1] + y]
+                        y += 1
+                    else:
+                        a = np.random.choice(x)
+                        cost_ord += [int(a)]
+                        x = [j for j in x if j != a]
+                else:
+                    cost_ord += [treated_ord[treated_num - 1] + y]
+                    y += 1
+    else:
+        treated_ord = list(range(1, treated_num + 1))
+        cost_ord = list(range(treated_num + 1, treated_num + cost_num))
+        cost_ord = [1] + cost_ord
+
+    dict_['TREATED']['order'] = treated_ord
+    dict_['UNTREATED']['order'] = treated_ord
+    dict_['COST']['order'] = cost_ord
+
+    return dict_
+
+def overlap_treat_untreat(dict_, treated_num, untreated_num):
+    treated_ord = list(range(1, treated_num + 1))
+    x = list(range(2, treated_num + 1))
+    untreated_ord = []
+    y = 1
+    for i in list(range(untreated_num)):
+        if i == 0:
+            untreated_ord += [1]
+        else:
+            if np.random.random_sample() < 0.3:
+                if len(x) == 0:
+                    untreated_ord += [treated_ord[treated_num - 1] + y]
+                    y += 1
+                else:
+                    a = np.random.choice(x)
+                    untreated_ord += [int(a)]
+                    x = [j for j in x if j != a]
+            else:
+                untreated_ord += [treated_ord[treated_num - 1] + y]
+                y += 1
+    dict_['TREATED']['order'] = treated_ord
+    dict_['UNTREATED']['order'] = untreated_ord
+
+    return dict_
+
+def overlap_treat_untreat_cost(dict_, cost_num, overlap):
+    num_var = len(set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']))
+    if overlap is True:
+        treated_ord = list(range(1, num_var + 1))
+        x = list(range(2, num_var + 1))
+        cost_ord = []
+        y = 1
+        for i in list(range(cost_num)):
+            if i == 0:
+                cost_ord += [1]
+            else:
+                if np.random.random_sample() < .2:
+                    if len(x) == 0:
+                        cost_ord += [treated_ord[num_var - 1] + y]
+                        y += 1
+                    else:
+                        a = np.random.choice(x)
+                        cost_ord += [int(a)]
+                        x = [j for j in x if j != a]
+                else:
+                    cost_ord += [treated_ord[num_var - 1] + y]
+                    y += 1
+    else:
+        cost_ord = list(range(num_var + 1, num_var + cost_num))
+        cost_ord = [1] + cost_ord
+
+    dict_['COST']['order'] = cost_ord
+
+    return dict_
