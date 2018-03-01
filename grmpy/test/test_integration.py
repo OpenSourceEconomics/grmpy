@@ -48,6 +48,7 @@ def test2():
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
         np.testing.assert_array_almost_equal(criteria, criteria_)
 
+
 def test3():
     """The test checks if the criteria function value of the simulated and the 'estimated'
     sample is equal if both samples include an identical number of individuals.
@@ -67,6 +68,7 @@ def test3():
         for data in [df1, df2]:
             criteria += [calculate_criteria(init_dict, data, start)]
         np.testing.assert_allclose(criteria[1], criteria[0], rtol=0.1)
+
 
 def test4():
     """The test checks if the estimation process works if the Powell algorithm is specified as
@@ -88,6 +90,7 @@ def test5():
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
 
+
 def test6():
     """Additionally to test5 this test checks if the descriptives file provides the expected
     output when maxiter is set to zero and the estimation process uses the initialization file
@@ -105,6 +108,7 @@ def test6():
                                           dict_[key_]['Simulated Sample (finish)'])
             np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
                                           dict_[key_]['Simulated Sample (start)'])
+
 
 def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
@@ -182,6 +186,7 @@ def test7():
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_vzero)
 
+
 def test8():
     """The test checks if an UserError occurs if wrong inputs are specified for a different
     functions/methods.
@@ -201,6 +206,7 @@ def test8():
     pytest.raises(UserError, generate_random_dict, a)
 
     cleanup()
+
 
 def test9():
     """This test ensures that the random initialization file generating process, the read in process
