@@ -3,6 +3,7 @@ processes of the unobservable and endogenous variables of the model as well as f
 the info file output.
 """
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from scipy.stats import norm
@@ -10,25 +11,26 @@ import pandas as pd
 import numpy as np
 
 
-def simulate_covariates(init_dict, cov_type):
+def simulate_covariates(init_dict):
     """The function simulates the covariates for the cost and the output functions."""
     # Distribute information
     num_agents = init_dict['SIMULATION']['agents']
 
     # Construct auxiliary information
-    num_covars = init_dict[cov_type]['all'].shape[0]
+
+    num_covars = len(init_dict['AUX']['types'])
+    types = init_dict['AUX']['types']
 
     # As our baseline we simulate covariates from a standard normal distribution.
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
-
     # We now perform some selective replacements.
     X[:, 0] = 1.0
-    for i in range(num_covars):
-        if isinstance(init_dict[cov_type]['types'][i], list):
+    for i in list(range(num_covars)):
+        if isinstance(types[i], list):
             if i != 0:
-                frac = init_dict[cov_type]['types'][i][1]
+                frac = types[i][1]
                 binary = np.random.binomial(1, frac, size=num_agents)
                 X[:, i] = binary
 
@@ -41,24 +43,30 @@ def simulate_unobservables(init_dict):
     cov = construct_covariance_matrix(init_dict)
 
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
-    V = np.array(U[0:, 2])
+    V = np.array(U[:, 2])
+
     # Here we keep track of the implied value for U_C.
-    U[:, 2] = V - U[:, 0] + U[:, 1]
+    U[:, 2] = V + (U[:, 0] - U[:, 1])
+
     return U, V
 
 
-def simulate_outcomes(init_dict, X, Z, U):
+def simulate_outcomes(init_dict, X, U):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
+    X = pd.DataFrame(X)
+    Z = X[[i - 1 for i in init_dict['COST']['order']]].as_matrix()
+    X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
+    X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     coeffs_cost = init_dict['COST']['all']
 
     # Calculate potential outcomes and costs
-    Y_1 = np.dot(coeffs_treated, X.T) + U[:, 1]
-    Y_0 = np.dot(coeffs_untreated, X.T) + U[:, 0]
+    Y_1 = np.dot(coeffs_treated, X_treated.T) + U[:, 0]
+    Y_0 = np.dot(coeffs_untreated, X_untreated.T) + U[:, 1]
     C = np.dot(coeffs_cost, Z.T) + U[:, 2]
 
     # Calculate expected benefit and the resulting treatment dummy
@@ -70,7 +78,7 @@ def simulate_outcomes(init_dict, X, Z, U):
     return Y, D, Y_1, Y_0
 
 
-def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
+def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     """The function converts the simulated variables to a panda data frame and saves the data in a
     txt and a pickle file.
     """
@@ -78,15 +86,13 @@ def write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0, U[:, 1], U[:, 0], U[:, 2], V))
+    data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
 
     # Construct list of column labels
     column = ['Y', 'D']
-    for i in range(X.shape[1]):
+    
+    for i in list(range(X.shape[1])):
         str_ = 'X' + str(i)
-        column.append(str_)
-    for i in range(Z.shape[1]):
-        str_ = 'Z' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
 
@@ -175,7 +181,7 @@ def print_info(init_dict, data_frame):
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
             str_ = '  {0:<10}      {1:<20.12f}\n\n'.format('Value',
-                                                              init_dict['AUX']['criteria_value'])
+                                                           init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
         file_.write(str_)
@@ -185,8 +191,10 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
-        x = data_frame.filter(regex=r'^X', axis=1)
-        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x)
+
+        help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
+        x = data_frame[['X{}'.format(i - 1) for i in help_]]
+        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
         len_ = len(value) - 1
@@ -203,12 +211,28 @@ def print_info(init_dict, data_frame):
             file_.write('  {0:>10} {1:>20.4f}\n'.format(i, coeff))
 
 
-def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x):
+def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
     """
     # Construct auxiliary information
-    para_diff = coeffs_treated - coeffs_untreated
+    if dict_['TREATED']['order'] != dict_['UNTREATED']['order']:
+        para_diff = []
+        for i in set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']):
+            if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
+                index_treated = dict_['TREATED']['order'].index(i)
+                index_untreated = dict_['UNTREATED']['order'].index(i)
+                diff = dict_['TREATED']['all'][index_treated] - dict_['UNTREATED']['all'][index_untreated]
+            elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order']:
+                index = dict_['TREATED']['order'].index(i)
+                diff = dict_['TREATED']['all'][index]
+
+            elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
+                index = dict_['UNTREATED']['order'].index(i)
+                diff = - dict_['UNTREATED']['all'][index]
+            para_diff += [diff]
+    else:
+        para_diff = coeffs_treated - coeffs_untreated
     MTE = []
     for i in quantiles:
         if cov[2, 2] == 0.00:

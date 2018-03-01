@@ -25,25 +25,22 @@ def simulate(init_file):
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
-
     # Simulate unobservables of the model
     U, V = simulate_unobservables(init_dict)
 
     # Simulate observables of the model
-    X = simulate_covariates(init_dict, 'TREATED')
+    X = simulate_covariates(init_dict)
 
-    Z = simulate_covariates(init_dict, 'COST')
     # Simulate endogeneous variables of the model
-    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, Z, U)
+    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, U)
 
     # Write output file
-    df = write_output(init_dict, Y, D, X, Z, Y_1, Y_0, U, V)
+    df = write_output(init_dict, Y, D, X, Y_1, Y_0, U, V)
 
     # Calculate Criteria function value
     if init_dict['DETERMINISTIC'] is False:
         x0 = start_values(init_dict, df, 'init')
         init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
-
 
     # Print Log file
     print_info(init_dict, df)

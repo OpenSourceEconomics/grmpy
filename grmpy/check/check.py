@@ -1,6 +1,23 @@
 """This module provides some capabilities to check the integrity of the package."""
+import os
+
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
+
+
+def check_presence_init(fname):
+    """This function checks whether the model initialization file does in fact exist."""
+    if not os.path.isfile(fname):
+        msg = '{}: There is no such file or directory.'.format(fname)
+        raise UserError(msg)
+
+
+def check_presence_estimation_dataset(init_dict):
+    """This function checks whether the estimation dataset does exist."""
+    data_file = init_dict['ESTIMATION']['file']
+    if not os.path.isfile(data_file):
+        msg = 'The data file specified in your initialization file doesn`t exist.'
+        raise UserError(msg)
 
 
 def check_initialization_dict(dict_):
@@ -8,25 +25,27 @@ def check_initialization_dict(dict_):
     There should be no uncontrolled terminations of the package once these checks are passed.
     """
     # Distribute details
-    num_coeffs_untreated = len(dict_['UNTREATED']['all'])
-    num_coeffs_treated = len(dict_['TREATED']['all'])
     num_agents_sim = dict_['SIMULATION']['agents']
 
     # This are just two example for a whole host of tests.
     if num_agents_sim <= 0:
-        raise UserError('The number of simulated individuals needs to be larger than zero.')
-
-    if num_coeffs_treated != num_coeffs_untreated:
-        msg = 'The number of covariates determining potential outcomes needs to be identical.'
+        msg = 'The number of simulated individuals needs to be larger than zero.'
         raise UserError(msg)
+
     if dict_['DETERMINISTIC'] is False:
         if is_pos_def(dict_) is False:
             msg = 'The specified covariance matrix has to be positive semidefinite.'
             raise UserError(msg)
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        if len(dict_[key_]['order']) > len(set(dict_[key_]['order'])):
+            msg = 'There is a problem in the {} section of the initialization file. \n         ' \
+                  'Probably you specified two coefficients for one covariate in the same section.'\
+                .format(key_)
+            raise UserError(msg)
 
 
 def check_init_file(dict_):
-    """This fuction checks if the specified initialization file meets the requirements for the
+    """This function checks if the specified initialization file meets the requirements for the
     estimation process.
     """
     if all(dist_elements == 0 for dist_elements in dict_['DIST']['all']):

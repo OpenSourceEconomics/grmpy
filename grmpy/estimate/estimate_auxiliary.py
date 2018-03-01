@@ -9,6 +9,7 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.check.check import UserError
 
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
@@ -16,23 +17,32 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = []
+    order_outcome = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
     for i in [0.0, 1.0]:
-        if i == 1.00:
+        if i == 1.0:
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
+            key_ = 'TREATED'
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
+            key_ = 'UNTREATED'
         data = data_frame[data_frame['D'] == i]
-        X = data.filter(regex=r'^X')
-        Z = data.filter(regex=r'^Z')
-        g = pd.concat((X, Z), axis=1)
+
+        Z = data[['X{}'.format(j - 1) for j in init_dict['COST']['order']]]
+        X = data[['X{}'.format(j - 1) for j in init_dict[key_]['order']]]
+        XX = data[['X{}'.format(j - 1) for j in order_outcome]]
+        g = pd.concat((XX, Z), axis=1)
+
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
-        if i == 1.00:
+
+        if i == 1.0:
             contrib = (1.0 / sd) * dist_1 * dist_2
+
         else:
             contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
+
         likl.append(contrib)
     likl = np.append(likl[0], likl[1])
     likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
@@ -48,12 +58,23 @@ def _prepare_arguments(init_dict, rslt):
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
     gamma = np.array(rslt['COST']['all'])
-    sd1 = rslt['DIST']['all'][1]
     sd0 = rslt['DIST']['all'][0]
+    sd1 = rslt['DIST']['all'][1]
     sdv = init_dict['DIST']['all'][5]
     rho1, rho0 = rslt['DIST']['all'][3], rslt['DIST']['all'][2]
-    choice = np.concatenate(((np.subtract(beta1, beta0)), -gamma))
-
+    choice = []
+    for i in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']):
+        if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+            index_treated = init_dict['TREATED']['order'].index(i)
+            index_untreated = init_dict['UNTREATED']['order'].index(i)
+            choice += [beta1[index_treated] - beta0[index_untreated]]
+        elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
+            index = init_dict['TREATED']['order'].index(i)
+            choice += [beta1[index]]
+        elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+            index = init_dict['UNTREATED']['order'].index(i)
+            choice += [-beta0[index]]
+    choice = np.concatenate((np.array(choice), -gamma))
     return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
 
 
@@ -61,12 +82,15 @@ def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
 
     if not isinstance(init_dict, dict):
-        raise AssertionError()
-    numbers = [init_dict['AUX']['num_covars_out'], init_dict['AUX']['num_covars_cost']]
+        msg = 'The input object ({})for specifing the start values isn`t a dictionary.' \
+            .format(init_dict)
+        raise UserError(msg)
+    numbers = [init_dict['AUX']['num_covars_treated'], init_dict['AUX']['num_covars_untreated'],
+               init_dict['AUX']['num_covars_cost']]
 
     if option == 'init':
         # Set coefficients equal the true init file values
-        x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+        x0 = init_dict['AUX']['init_values'][:numbers[0] + numbers[1] + numbers[2]]
         sd_ = None
     elif option == 'auto':
 
@@ -75,26 +99,40 @@ def start_values(init_dict, data_frame, option):
             # Estimate beta1 and beta0:
             beta = []
             sd_ = []
-            for i in [0.0, 1.0]:
-                Y, X = data_frame.Y[data_frame.D == i], data_frame.filter(regex=r'^X')[
-                    data_frame.D == i]
+
+            for i in [1.0, 0.0]:
+                Y = data_frame.Y[data_frame.D == i]
+                if i == 1:
+                    order = init_dict['TREATED']['order']
+                else:
+                    order = init_dict['UNTREATED']['order']
+                X = data_frame[['X{}'.format(j - 1) for j in order]][data_frame.D == i]
+
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via probit
-            X = data_frame.filter(regex=r'^X')
-            Z = (data_frame.filter(regex=r'^Z')).drop('Z0', axis=1)
-            XZ = np.concatenate((X, Z), axis=1)
+            XZ = data_frame[[j for j in data_frame.columns.values if j.startswith('X')]]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
-            gamma = probitRslt.params
-            gamma_const = np.subtract(np.subtract(beta[1][0], beta[0][0]), gamma[0])
-            if len(init_dict['COST']['all']) == 1:
-                gamma = [gamma_const]
-            else:
-                gamma = np.concatenate(([gamma_const], gamma[-(numbers[1] - 1):]))
+            help_gamma = probitRslt.params
+            
+            # Adjust estimated cost-benefit shifter and intercept coefficients
+            help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
+            adj = [i - 1 for i in init_dict['COST']['order'] if i in help_]
+            for j in adj:
+                if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
+                elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract(beta[0][j], help_gamma[j])
+                elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
+                    help_gamma[j] = np.subtract((- beta[1][j]), help_gamma[j])
+
+            gamma = []
+            for i in init_dict['COST']['order']:
+                gamma += [help_gamma[i - 1]]
             # Arange starting values
-            x0 = np.concatenate((beta[1], beta[0]))
+            x0 = np.concatenate((beta[0], beta[1]))
             x0 = np.concatenate((x0, gamma))
 
         except (PerfectSeparationError, ValueError):
@@ -103,10 +141,11 @@ def start_values(init_dict, data_frame, option):
                   ' The intialization specifications are used as start ' \
                   'values during the further process.'
             # Set coefficients equal the true init file values
-            x0 = init_dict['AUX']['init_values'][:2 * numbers[0] + numbers[1]]
+            x0 = init_dict['AUX']['init_values'][: numbers[0] + numbers[1] +numbers[2]]
             sd_ = None
             init_dict['ESTIMATION']['warning'] = msg
             option = 'init'
+
 
     x0, start = provide_cholesky_decom(init_dict, x0, option, sd_)
     init_dict['AUX']['starting_values'] = x0[:]
@@ -123,7 +162,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     else:
         dict_['parameter'][str(len(dict_['parameter']))] = start_values
 
-    num_covars_out = init_dict['AUX']['num_covars_out']
+    num_covars_treated = init_dict['AUX']['num_covars_treated']
+    num_covars_untreated = init_dict['AUX']['num_covars_untreated']
     rslt = dict()
 
     rslt['TREATED'] = dict()
@@ -132,9 +172,12 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     rslt['DIST'] = dict()
 
     # Distribute parameters
-    rslt['TREATED']['all'] = start_values[:num_covars_out]
-    rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
+    rslt['TREATED']['all'] = start_values[:num_covars_treated]
+    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        rslt[key_]['order'] = init_dict[key_]['order']
+        rslt[key_]['types'] = init_dict[key_]['types']
 
     rslt['DIST']['all'] = backward_cholesky_transformation(start_values, True)
 
@@ -234,17 +277,13 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
-    np.random.seed(seed)
     # Determine parametrization and read in /simulate observables
     if start is True:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
-        np.random.seed(seed)
     else:
         rslt_dict = process_results(init_dict, rslt, start)
         dicts = [rslt_dict]
-        X = simulate_covariates(rslt_dict, 'TREATED')
-        Z = simulate_covariates(rslt_dict, 'COST')
 
     data_frames = []
     for dict_ in dicts:
@@ -252,13 +291,12 @@ def simulate_estimation(init_dict, rslt, data_frame, start=False):
         np.random.seed(seed)
         # Simulate unobservables
         U, _ = simulate_unobservables(dict_)
-        X = simulate_covariates(rslt_dict, 'TREATED')
-        Z = simulate_covariates(rslt_dict, 'COST')
+        X = simulate_covariates(rslt_dict)
 
         # Simulate endogeneous variables
-        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, Z, U)
+        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U)
 
-        df = write_output_estimation(Y, D, X, Z, Y_1, Y_0)
+        df = write_output_estimation(Y, D, X, Y_1, Y_0)
         data_frames += [df]
 
     if start is True:
@@ -271,15 +309,20 @@ def process_results(init_dict, rslt, start=False):
     """The function processes the results dictionary for the following simulation."""
     rslt_dict = {}
     start_dict = {}
+    num_treated = len(init_dict['TREATED']['all'])
+    num_untreated = len(init_dict['UNTREATED']['all'])
     dicts = [rslt_dict, start_dict]
     for dict_ in dicts:
         dict_['SIMULATION'] = {}
         dict_['SIMULATION']['agents'] = init_dict['ESTIMATION']['agents']
         dict_['SIMULATION']['seed'] = init_dict['SIMULATION']['seed']
+        dict_['AUX'] = {}
+        dict_['AUX']['types'] = init_dict['AUX']['types']
         if dict_ == rslt_dict:
             for key_ in ['TREATED', 'UNTREATED', 'COST']:
                 dict_[key_] = {}
                 dict_[key_]['types'] = init_dict[key_]['types']
+                dict_[key_]['order'] = init_dict[key_]['order']
                 dict_[key_]['all'] = rslt[key_]['all']
                 dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
         else:
@@ -288,10 +331,11 @@ def process_results(init_dict, rslt, start=False):
                 for key_ in ['TREATED', 'UNTREATED', 'COST']:
                     dict_[key_] = {}
                     dict_[key_]['types'] = init_dict[key_]['types']
+                    dict_[key_]['order'] = init_dict[key_]['order']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
-                                            num_treated:2 * num_treated]
-                dict_['COST']['all'] = init_dict['AUX']['starting_values'][2 * num_treated:-6]
+                                            num_treated: num_treated + num_untreated]
+                dict_['COST']['all'] = init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
                 dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
@@ -358,20 +402,19 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write(fmt.format(*[sample] + info))
 
 
-def write_output_estimation(Y, D, X, Z, Y_1, Y_0):
+def write_output_estimation(Y, D, X, Y_1, Y_0):
     """The function converts the simulated variables to a panda data frame."""
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Z, Y_1, Y_0))
+    data = np.column_stack((Y, D, X, Y_1, Y_0))
 
     # Construct list of column labels
     column = ['Y', 'D']
-    for i in range(X.shape[1]):
+
+    for i in list(range(X.shape[1])):
         str_ = 'X' + str(i)
         column.append(str_)
-    for i in range(Z.shape[1]):
-        str_ = 'Z' + str(i)
-        column.append(str_)
+
     column += ['Y1', 'Y0']
 
     # Generate data frame
@@ -426,7 +469,8 @@ def adjust_output(opt_rslt, init_dict, start_values, dict_=None):
 
 def adjust_output_maxiter_zero(init_dict, start_values):
     """The function returns a result dictionary if the maximum number of evaluations is zero."""
-    num_covars_out = init_dict['AUX']['num_covars_out']
+    num_covars_treated = init_dict['AUX']['num_covars_treated']
+    num_covars_untreated = init_dict['AUX']['num_covars_untreated']
     rslt = dict()
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
@@ -434,9 +478,9 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt['DIST'] = dict()
 
     # Distribute parameters
-    rslt['TREATED']['all'] = start_values[:num_covars_out]
-    rslt['UNTREATED']['all'] = start_values[num_covars_out:(2 * num_covars_out)]
-    rslt['COST']['all'] = start_values[(2 * num_covars_out):(-6)]
+    rslt['TREATED']['all'] = start_values[:num_covars_treated]
+    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
 
     rslt['DIST']['all'] = start_values[-6:]
 
@@ -520,22 +564,22 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
     cholesky[np.tril_indices(3)] = start_cholesky
     cov = np.dot(cholesky, cholesky.T)
     sdv = cov[2, 2] ** 0.5
-    # What do we want to use here ? the sdv from the cholesky decomposition or the sdv from the init dict??
+
     if dist is True:
-        sd0 = cov[0, 0] ** 0.5
-        sd1 = cov[1, 1] ** 0.5
-        rho0 = cov[0, 2] / (sd0 * sdv)
-        rho1 = cov[1, 2] / (sd1 * sdv)
+        sd1 = cov[0, 0] ** 0.5
+        sd0 = cov[1, 1] ** 0.5
+        rho0 = cov[1, 2] / (sd0 * sdv)
+        rho1 = cov[0, 2] / (sd1 * sdv)
 
         dist_parameter = [sd0, sd1, rho0, rho1]
         return dist_parameter
     else:
         dist_para = cov[np.triu_indices(3)]
-        sd0, sd1, sdv = dist_para[0] ** 0.5, dist_para[3] ** 0.5, dist_para[5] ** 0.5
-        rho0, rho1 = dist_para[2] / (sd0 * sdv), dist_para[4] / (sd1 * sdv)
+        sd0, sd1, sdv = dist_para[3] ** 0.5, dist_para[0] ** 0.5, dist_para[5] ** 0.5
+        rho1, rho0 = dist_para[2] / (sd1 * sdv), dist_para[4] / (sd0 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
         if test is False:
-            output = x0[:-6] + [sd0, rho01, rho0, sd1, rho1, sdv]
+            output = x0[:-6] + [sd1, rho01, rho1, sd0, rho0, sdv]
         else:
-            output = [sd0, rho01, rho0, sd1, rho1, sdv]
+            output = [sd1, rho01, rho1, sd0, rho0, sdv]
         return output

@@ -12,7 +12,7 @@ def set_seed():
     np.random.seed(1223)
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='module', autouse=True)
 def fresh_directory():
     """Each test is executed in a fresh directory."""
     os.chdir(tempfile.mkdtemp())

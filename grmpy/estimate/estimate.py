@@ -1,7 +1,5 @@
 """The module provides an estimation process given the simulated data set and the initialization
 file."""
-import os
-
 from scipy.optimize import minimize
 import pandas as pd
 import numpy as np
@@ -10,34 +8,32 @@ from grmpy.estimate.estimate_auxiliary import adjust_output_maxiter_zero
 from grmpy.estimate.estimate_auxiliary import minimizing_interface
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import optimizer_options
+from grmpy.check.check import check_presence_estimation_dataset
 from grmpy.estimate.estimate_auxiliary import write_comparison
 from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import print_logfile
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.check.check import check_initialization_dict
+from grmpy.check.check import check_presence_init
 from grmpy.check.check import check_init_file
 from grmpy.read.read import read
 
 
 def estimate(init_file):
     """The function estimates the coefficients of the simulated data set."""
-    # Import init file as dictionary
-    if not os.path.isfile(init_file):
-        raise AssertionError
+    check_presence_init(init_file)
+
     dict_ = read(init_file)
     np.random.seed(dict_['SIMULATION']['seed'])
-    # Check if the initialization file specifications are appropriate for the estimation process
 
     # We perform some basic consistency checks regarding the user's request.
+    check_presence_estimation_dataset(dict_)
     check_initialization_dict(dict_)
     check_init_file(dict_)
 
+    # Distribute initialization information.
     data_file = dict_['ESTIMATION']['file']
-    if not os.path.isfile(data_file):
-        raise AssertionError
-
-    # Start value option
     option = dict_['ESTIMATION']['start']
 
     # Read data frame
@@ -52,7 +48,6 @@ def estimate(init_file):
         rslt_dict = bfgs_dict()
         opt_rslt = minimize(
             minimizing_interface, x0, args=(dict_, data, rslt_dict), method=method, options=opts)
-
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)
