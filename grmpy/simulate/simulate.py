@@ -25,7 +25,6 @@ def simulate(init_file):
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
-
     # Simulate unobservables of the model
     U, V = simulate_unobservables(init_dict)
 
@@ -42,7 +41,6 @@ def simulate(init_file):
     if init_dict['DETERMINISTIC'] is False:
         x0 = start_values(init_dict, df, 'init')
         init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
-
 
     # Print Log file
     print_info(init_dict, df)

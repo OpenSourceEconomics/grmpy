@@ -564,7 +564,6 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         rho1 = cov[0, 2] / (sd1 * sdv)
 
         dist_parameter = [sd0, sd1, rho0, rho1]
-        dist_parameter = [sd0, sd1, rho0, rho1]
         return dist_parameter
     else:
         dist_para = cov[np.triu_indices(3)]
