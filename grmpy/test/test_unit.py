@@ -250,8 +250,7 @@ def test9():
         dict_ = generate_random_dict(constr)
         np.testing.assert_equal(constr['AGENTS'], dict_['SIMULATION']['agents'])
         np.testing.assert_equal(constr['START'], dict_['ESTIMATION']['start'])
-        for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
-            np.testing.assert_equal(constr['MAXITER'], dict_[key_]['maxiter'])
+        np.testing.assert_equal(constr['MAXITER'], dict_['ESTIMATION']['maxiter'])
 
 def test10():
     """This test checks if the start_values function returns the init file values if the start
