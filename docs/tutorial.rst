@@ -18,7 +18,7 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/restudToolbox/package/blob/master/respy/tests/resources/kw_data_one.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/grmToolbox/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
