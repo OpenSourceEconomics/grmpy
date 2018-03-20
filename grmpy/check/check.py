@@ -3,6 +3,7 @@ import os
 
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
+from math import isclose
 
 
 def check_presence_init(fname):
@@ -42,6 +43,11 @@ def check_initialization_dict(dict_):
                   'Probably you specified two coefficients for one covariate in the same section.'\
                 .format(key_)
             raise UserError(msg)
+        if dict_[key_]['types'][0] == 'binary':    
+            if isclose(dict_[key_]['types'][1], 1, rel_tol = 0.01, abs_tol = 0.0):
+                msg = 'The specified probability that a binary variable is equal to one has to be \\\
+                suffiently lower than one.'
+                raise UserError(msg)
 
 
 def check_init_file(dict_):
