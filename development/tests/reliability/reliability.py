@@ -2,10 +2,10 @@
 estimation strategy. Additionally the module creates four different figures for the reliability
 section of the documentation.
 """
-
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
 from statsmodels.sandbox.regression.gmm import IV2SLS
@@ -121,3 +121,5 @@ def create_plots(effects, true):
 if __name__ == '__main__':
     x = monte_carlo('test.grmpy.ini', 10)
     create_plots(x, 0.5)
+    cleanup('init_file')
+

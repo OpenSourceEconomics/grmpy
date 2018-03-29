@@ -19,7 +19,12 @@ def cleanup(options=None):
                 pass
             else:
                 os.remove(f)
-
+    elif options == 'init_file':
+        for f in glob.glob("*.grmpy.*"):
+            if f.startswith('test.grmpy'):
+                pass
+            else:
+                os.remove(f)
 
 def save_output(file, option):
     """The function renames a given file and moves it in an output directory."""
