@@ -96,7 +96,7 @@ def create_plots(effects, true):
         elif strategy == 'ols':
             title = 'Ordinary Least Squares'
 
-
+    # Create a figure for each estimation strategy
         ax = plt.figure().add_subplot(111)
 
         grid = np.linspace(0.00, 0.99, len(effects[strategy]))
