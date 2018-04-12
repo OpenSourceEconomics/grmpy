@@ -18,9 +18,7 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.read.read import read
 
-from bld.project_paths import project_paths_join as ppj
-
-filename=ppj("IN_FIGURES", "tutorial.grmpy.ini")
+filename = 'tutorial.grmpy.ini'
 
 GRID = [i / 100 for i in range(1, 100, 1)]
 init_dict = read(filename)
@@ -77,7 +75,7 @@ def plot_local_average_treatment(mte):
     ax.set_ylim([1.5, 4.5])
 
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES", 'fig-local-average-treatment.png'))
+    plt.savefig('fig-local-average-treatment.png')
 
 
 if __name__ == '__main__':
@@ -85,8 +83,7 @@ if __name__ == '__main__':
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     cov = construct_covariance_matrix(init_dict)
-    x = np.loadtxt(ppj("OUT_DATA", "X.csv"), delimiter=",")
-    x = x.reshape(165, 2)
+    x = simulate_covariates(init_dict, 'TREATED')
     
 
     mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x) 

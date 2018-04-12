@@ -12,15 +12,11 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.read.read import read
 
-from bld.project_paths import project_paths_join as ppj
 
-filename=ppj("IN_FIGURES", "tutorial.grmpy.ini")
+filename = "tutorial.grmpy.ini"
 
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
 init_dict = read(filename)
-
-def save_data(sample):
-    sample.tofile(ppj("OUT_DATA", "X.csv"), sep=",")
 
 def plot_marginal_treatment_effect(pres, abs_):
     ax = plt.figure().add_subplot(111)
@@ -35,7 +31,7 @@ def plot_marginal_treatment_effect(pres, abs_):
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES", 'fig-eh-marginal-effect.png'))
+    plt.savefig('fig-eh-marginal-effect.png')
     
 if __name__ == '__main__':
     coeffs_untreated = init_dict['UNTREATED']['all']
