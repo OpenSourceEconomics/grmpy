@@ -36,6 +36,7 @@ def get_effect_grmpy(dict_):
     name = dict_['SIMULATION']['source']
     linecache.clearcache()
     line = linecache.getline('{}.grmpy.info'.format(name), 25)
+    print(line)
     stat = float(shlex.split(line)[1])
     return stat
 
@@ -44,7 +45,6 @@ def monte_carlo(file, grid_points):
     """This function estimates the ATE for a sample with different correlation structures between U1
      and V. Four different strategies for , OLS, 2SLS, LATE and perfect randomization are implemented.
      """
-
     # Define a dictionary with a key for each estimation strategy
     effects = {}
     for key_ in ['random', 'grmpy', '2sls', 'ols']:
@@ -68,8 +68,8 @@ def monte_carlo(file, grid_points):
         effects['random'] += [stat]
 
         # Estimate  via grmpy
-        estimate('test.grmpy.ini')
-        stat = get_effect_grmpy(model_spec)
+        rslt = estimate('test.grmpy.ini')
+        stat = rslt['TREATED']['all'][0] - rslt['UNTREATED']['all'][0]
         effects['grmpy'] += [stat]
 
         # Estimate via 2SLS
@@ -117,9 +117,7 @@ def create_plots(effects, true):
         plt.savefig(file_name)
 
 
+x = monte_carlo('test.grmpy.ini', 10)
+create_plots(x, 0.5)
 
-if __name__ == '__main__':
-    x = monte_carlo('test.grmpy.ini', 10)
-    create_plots(x, 0.5)
-    cleanup('init_file')
 

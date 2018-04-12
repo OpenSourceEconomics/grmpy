@@ -284,4 +284,11 @@ def test11():
         dict_2 = read('estimate.grmpy.ini')
         np.testing.assert_equal(dict_1, dict_2)
 
+def test12():
+    """This test ensures that the tutorial script works as intended."""
+    file_path = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini'
+
+    simulate(file_path)
+    estimate(file_path)
+
     cleanup()
