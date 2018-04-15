@@ -3,7 +3,6 @@ import os
 
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
-from math import isclose
 
 
 def check_presence_init(fname):
