@@ -18,9 +18,7 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.read.read import read
 
-from bld.project_paths import project_paths_join as ppj
-
-filename=ppj("IN_FIGURES", "tutorial.grmpy.ini")
+filename = ('tutorial.grmpy.ini')
 
 init_dict = read(filename)
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
@@ -36,8 +34,7 @@ def weights_treatment_parameters(init_dict, GRID):
     coeffs_treated = init_dict['TREATED']['all']
     cov = construct_covariance_matrix(init_dict)
     
-    x = np.loadtxt(ppj("OUT_DATA", "X.csv"), delimiter=",")
-    x = x.reshape(165, 2)
+    x = simulate_covariates(init_dict, 'TREATED')
     # We take the specified distribution for the cost shifters from the paper.
     cost_mean, cost_sd = -0.0026, np.sqrt(0.270)
     v_mean, v_sd = 0.00, np.sqrt(cov[2, 2])
@@ -87,7 +84,7 @@ def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax2.set_ylim(0, 0.35)
 
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES", 'fig-weights-marginal-effect.png'))
+    plt.savefig('fig-weights-marginal-effect.png')
 
 
 if __name__ == '__main__':

@@ -35,8 +35,7 @@ if True:
         dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
-        if seeds.index(seed) == 42:
-            print(np.sum(df.sum()))
+        print(np.sum(df.sum()))
         init_dict = read('test.grmpy.ini')
         start = start_values(init_dict, df, 'init')
         criteria = calculate_criteria(init_dict, df, start)

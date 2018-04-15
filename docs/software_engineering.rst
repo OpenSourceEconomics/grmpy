@@ -50,10 +50,3 @@ Continuous Integration Workflow
 
 We set up a continuous integration workflow around our `GitHub Organization <https://github.com/grmToolbox>`_. We use the continuous integration services provided by `Travis CI <https://travis-ci.org/grmToolbox/grmpy>`_. `tox <https://tox.readthedocs.io/en/latest/>`_ ensures that the package installs correctly with different Python versions.
 
-Suggested Citation
--------------------
-
-.. image:: https://zenodo.org/badge/doi/10.5281/zenodo.1162639.svg
-   :target: http://doi.org/10.5281/zenodo.1162639
-
-We appreciate citations for ``grmpy`` because it helps us to find out how people have been using the package and it motivates further work. Please use our Digital Object Identifier (DOI) and see `https://zenodo.org/record/1162639`_ for further citation styles.

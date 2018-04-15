@@ -13,12 +13,12 @@ We aim for improvements to the ``grmpy`` package in three domains: Objects of In
 Objects of Interest
 ^^^^^^^^^^^^^^^^^^^
 
-* adding marginal surplus and marginal cost parameters as presented in Eisenhauer et al. (2015 :cite:`Eisenhauer2015`)
+* adding marginal surplus and marginal cost parameters as presented by Eisenhauer et al. (:cite:`Eisenhauer2015`)
 
 Estimation Methods
 ^^^^^^^^^^^^^^^^^^
 
-* implementing polynomial and local-instrumental variable estimation as outlined Heckman et al. (2006 :cite:`HeUrVy06`)
+* implementing polynomial and local-instrumental variable estimation as outlined by Heckman et al. (:cite:`HeUrVy06`)
 
 Numerical Methods
 ^^^^^^^^^^^^^^^^^

@@ -72,7 +72,8 @@ def read_desc(fname):
 
 def adjust_output_cholesky(output):
     """The function transfers the output of the cholesky decomposition process so that it is similar
-    in regards of to the distributional information of the init file."""
+    in regards of to the distributional information of the init file.
+    """
     output[1] = output[1] * (output[0] * output[3])
     output[2] = output[2] * (output[0] * output[5])
     output[4] = output[4] * (output[3] * output[5])
@@ -80,6 +81,10 @@ def adjust_output_cholesky(output):
 
 
 def refactor_results(dict_, file, newfile):
+    """The function generates a new init file based on a dictionary with parameter values from a previous
+    estimation process.
+    """
+    
     pseudo = read(file)
 
     for key in ['TREATED', 'UNTREATED', 'COST', 'DIST']:

@@ -18,7 +18,7 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/restudToolbox/package/blob/master/respy/tests/resources/kw_data_one.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/grmToolbox/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
@@ -36,56 +36,58 @@ source      str         specified name for the simulation output files
 
 The *ESTIMATION* block determines the basic information for the estimation process.
 
-=========     ======      ==================
+=========     =======      ==================
 Key            Value       Interpretation
-=========     ======      ==================
+=========     =======      ==================
 agents         int         number of individuals for the estimation simulation
 file           str         specified data inout file for the estimation process
 optimizer      str         optimizer used for the estimation process
 start          str         determines which start values are used for the estimation process
-=========     ======      ==================
+maxiter	       int         maximum numbers of iterations the minimization process performs
+=========     =======      ==================
 
 
 
 **TREATED**
 
-The *TREATED* block specifies the number of covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
+The *TREATED* block specifies the number, order and type (binary or nonbinary) of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   =====  ======    =======  =====   ==================
+Key       Order  Value     Binary   Frac    Interpretation
+=======   =====  ======    =======  =====   ==================
+coeff     int    float     str	    float   intercept coefficient
+coeff     int    float     str 	    float   coefficient of the first covariate
+coeff     int    float     str	    float   coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   =====  ======    =======  =====   ==================
 
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number of covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. Note that the covariates need to be identical to the *TREATED* block.
+The *UNTREATED* block specifies the number, order and type (binary or nonbinary) of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   =====  ======    =======  =====   ==================
+Key       Order  Value     Binary   Frac    Interpretation
+=======   =====  ======    =======  =====   ==================
+coeff     int    float     str	    float   intercept coefficient
+coeff     int    float     str 	    float   coefficient of the first covariate
+coeff     int    float     str	    float   coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   =====  ======    =======  =====   ==================
+
 
 **COST**
 
-The *COST* block specifies the number of covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
+The *COST* block specifies the number, order and type (binary or nonbinary) of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   =====  ======    =======  =====   ==================
+Key       Order  Value     Binary   Frac    Interpretation
+=======   =====  ======    =======  =====   ==================
+coeff     int    float     str	    float   intercept coefficient
+coeff     int    float     str 	    float   coefficient of the first covariate
+coeff     int    float     str	    float   coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   =====  ======    =======  =====   ==================
 
 **DIST**
 
@@ -109,8 +111,6 @@ The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization a
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 gtol       float      the value that has to be larger as the gradient norm before successful termination
 eps        float      value of step size (if *jac* is approximated)
 ========  ======      ==========================
@@ -122,8 +122,6 @@ The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimizati
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 xtol       float      relative error in solution values *xopt* that is acceptable for convergence
 ftol       float      relative error in fun(*xopt*) that is acceptable for convergence
 ========  ======      ==========================
