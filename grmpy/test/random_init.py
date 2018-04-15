@@ -272,7 +272,7 @@ def types(dict_):
     all = [k for k in all if k != 1]
     for i in list(set(all)):
         if np.random.random_sample() < 0.1:
-            frac = np.random.uniform(0, 1)
+            frac = np.random.uniform(0, 0.8)
             for section in ['TREATED', 'UNTREATED', 'COST']:
                 if i in dict_[section]['order']:
                     index = dict_[section]['order'].index(i)

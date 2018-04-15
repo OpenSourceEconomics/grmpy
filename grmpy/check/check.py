@@ -42,11 +42,12 @@ def check_initialization_dict(dict_):
                   'Probably you specified two coefficients for one covariate in the same section.'\
                 .format(key_)
             raise UserError(msg)
-        if dict_[key_]['types'][0] == 'binary':    
-            if (1 - dict_[key_]['types'][1]) <= 0.1:
-                msg = 'The specified probability that a binary variable is equal to one has to be \\\
-                suffiently lower than one.'
-                raise UserError(msg)
+        for x in dict_[key_]['types']:
+            if isinstance(x, list):
+                if x[1] >= 0.9:
+                    msg = 'The specified probability that a binary variable is equal to one has to be \\\
+                           suffiently lower than one.'
+                    raise UserError(msg)
 
 
 def check_init_file(dict_):
