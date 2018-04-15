@@ -2,18 +2,24 @@
 estimation strategy. Additionally the module creates four different figures for the reliability
 section of the documentation.
 """
-from grmpy.test.random_init import print_dict
-from grmpy.estimate.estimate import estimate
-from grmpy.simulate.simulate import simulate
-from grmpy.test.auxiliary import cleanup
-from grmpy.read.read import read
+import warnings
+import linecache
+import shlex
+import os
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from statsmodels.sandbox.regression.gmm import IV2SLS
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
+from os.path import join
+from shutil import move
 import numpy as np
-import linecache
-import shlex
+
+from grmpy.test.random_init import print_dict
+from grmpy.estimate.estimate import estimate
+from grmpy.simulate.simulate import simulate
+from grmpy.read.read import read
 
 def update_correlation_structure(model_dict, rho):
     """This function takes a valid model specification and updates the correlation structure
@@ -60,7 +66,7 @@ def monte_carlo(file, grid_points):
         # Simulate a Data set and specify exogeneous and endogeneous variables
         df_mc = simulate(file)
 
-        endog, exog, instr = df_mc['Y'], df_mc[['X_0', 'D']], df_mc[['X_0', 'X_1']]
+        endog, exog, instr = df_mc['Y'], df_mc[['X0', 'D']], df_mc[['X0', 'X1']]
         d_treated = df_mc['D'] == 1
 
         # Effect randomization
@@ -83,16 +89,17 @@ def monte_carlo(file, grid_points):
     return effects
 
 def create_plots(effects, true):
-    """The function creates the """
+    """The function creates the figures that illustrates the behavior of each estimator of the ATE
+    when the correlation structure changes from 0 to 1."""
 
     # Determine the title for each strategy plot
     for strategy in ['random', 'grmpy', '2sls', 'ols']:
         if strategy == 'random':
             title = 'Perfect randomization'
         elif strategy == 'grmpy':
-            title= 'Local Average Treatment Effect'
+            title= 'Local Instrumental Variables'
         elif strategy == '2sls':
-            title = 'Instrumental Variable'
+            title = 'Instrumental Variables'
         elif strategy == 'ols':
             title = 'Ordinary Least Squares'
 
@@ -116,8 +123,14 @@ def create_plots(effects, true):
         file_name = 'fig_{}_average_effect_estimation.png'.format(strategy)
         plt.savefig(file_name)
 
+if __name__ == '__main__':
+    directory = os.path.dirname(os.path.realpath(__file__))
+    target = os.path.split(os.path.split(os.path.split(directory)[0])[0])[0] + '/docs/figures'
+    x = monte_carlo('test.grmpy.ini', 10)
+    create_plots(x, 0.5)
+    for type in ['grmpy', 'ols', '2sls', 'random']:
+        filename = 'fig_{}_average_effect_estimation.png'.format(type)
+        move(join(directory, filename), join(target, filename))
 
-x = monte_carlo('test.grmpy.ini', 10)
-create_plots(x, 0.5)
 
 

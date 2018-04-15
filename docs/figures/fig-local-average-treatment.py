@@ -1,20 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jan  9 21:25:29 2018
-
-@author: master
-"""
-
 """This module contains the code for a local average treatment graph.
-
 """
-import numpy as np
 import matplotlib.pyplot as plt
 
-from scipy.stats import norm
-
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
+from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.read.read import read
 
@@ -22,7 +11,6 @@ filename = 'tutorial.grmpy.ini'
 
 GRID = [i / 100 for i in range(1, 100, 1)]
 init_dict = read(filename)
-
 
 
 def plot_local_average_treatment(mte):
@@ -79,13 +67,12 @@ def plot_local_average_treatment(mte):
 
 
 if __name__ == '__main__':
-    
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     cov = construct_covariance_matrix(init_dict)
-    x = simulate_covariates(init_dict, 'TREATED')
-    
+    x = simulate_covariates(init_dict)
+    x = x[:, :2]
 
-    mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x) 
-    
+    mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x, init_dict)
+
     plot_local_average_treatment(mte)
