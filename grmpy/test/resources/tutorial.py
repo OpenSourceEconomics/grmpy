@@ -1,9 +1,11 @@
 """This module contains a tutorial illustrating the basic capabilities of the grmpy package."""
 import os
 
-import grmpy
+from grmpy.simulate.simulate import simulate
+from grmpy.estimate.estimate import estimate
 
 if __name__ == '__main__':
+    import grmpy
     f = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini'
-    grmpy.simulate(f)
-    rslt = grmpy.estimate(f)
+    simulate(f)
+    rslt = estimate(f)
