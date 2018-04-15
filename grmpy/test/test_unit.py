@@ -286,11 +286,9 @@ def test11():
 
 def test12():
     """This test ensures that the tutorial configuration works as intended."""
-    f = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.py'
-
-    try:
-        subprocess.check_output(['python', f])
-    except subprocess.CalledProcessError:
-        raise AssertionError
+    p = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini' \
+                                          
+    simulate(p)
+    estimate(p)
 
 cleanup()

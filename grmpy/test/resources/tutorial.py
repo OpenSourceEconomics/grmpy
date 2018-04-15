@@ -4,7 +4,6 @@ import os
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
 
-if __name__ == '__main__':
-    f = os.path.dirname(__file__) + '/tutorial.grmpy.ini'
-    simulate(f)
-    rslt = estimate(f)
+f = os.path.dirname(__file__) + '/tutorial.grmpy.ini'
+simulate(f)
+rslt = estimate(f)
