@@ -2,6 +2,7 @@
 import os
 
 from scipy.stats import wishart
+import subprocess
 import pandas as pd
 import numpy as np
 
@@ -284,10 +285,12 @@ def test11():
         np.testing.assert_equal(dict_1, dict_2)
 
 def test12():
-    """This test ensures that the tutorial script works as intended."""
-    file_path = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini'
+    """This test ensures that the tutorial configuration works as intended."""
+    f = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.py'
 
-    simulate(file_path)
-    estimate(file_path)
+    try:
+        subprocess.check_output(['python', f])
+    except subprocess.CalledProcessError:
+        raise AssertionError
 
-    cleanup()
+cleanup()
