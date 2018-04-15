@@ -44,7 +44,7 @@ def check_initialization_dict(dict_):
                 .format(key_)
             raise UserError(msg)
         if dict_[key_]['types'][0] == 'binary':    
-            if isclose(dict_[key_]['types'][1], 1, rel_tol = 0.1, abs_tol = 0.0):
+            if (1 - dict_[key_]['types'][1]) <= 0.1:
                 msg = 'The specified probability that a binary variable is equal to one has to be \\\
                 suffiently lower than one.'
                 raise UserError(msg)
