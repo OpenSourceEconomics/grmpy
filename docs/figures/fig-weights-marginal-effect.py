@@ -1,29 +1,21 @@
-# -*- coding: utf-8 -*-
+""" This script creates a figure to illustrate how the usual treatment effects can be constructed by
+ using differen weights on the marginal treatment effect.
 """
-Created on Wed Jan 10 13:46:45 2018
-
-@author: master
-"""
-
-import numpy as np
 import matplotlib.pyplot as plt
-
-from scipy.stats import multivariate_normal, norm
-
 from scipy.integrate import quad
 from scipy.stats import norm
+import numpy as np
 
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
+from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.read.read import read
 
-from bld.project_paths import project_paths_join as ppj
-
-filename=ppj("IN_FIGURES", "tutorial.grmpy.ini")
+filename = 'tutorial.grmpy.ini'
 
 init_dict = read(filename)
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
+
 
 def weights_treatment_parameters(init_dict, GRID):
     """This function calculates the weights for the special case in
@@ -35,9 +27,10 @@ def weights_treatment_parameters(init_dict, GRID):
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     cov = construct_covariance_matrix(init_dict)
-    
-    x = np.loadtxt(ppj("OUT_DATA", "X.csv"), delimiter=",")
-    x = x.reshape(165, 2)
+
+    x = simulate_covariates(init_dict)
+    x = x[:, :2]
+
     # We take the specified distribution for the cost shifters from the paper.
     cost_mean, cost_sd = -0.0026, np.sqrt(0.270)
     v_mean, v_sd = 0.00, np.sqrt(cov[2, 2])
@@ -59,13 +52,13 @@ def weights_treatment_parameters(init_dict, GRID):
 
     # Scaling so that the weights integrate to one.
     tut_scaling = quad(tut_integrand, 0.01, 0.99)[0]
-    tut_weights = tut_weights / tut_scaling
+    tut_weights /= tut_scaling
 
     tt_scaling = quad(tt_integrand, 0.01, 0.99)[0]
-    tt_weights = tt_weights / tt_scaling
-    
-    mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x)
-    
+    tt_weights /= tt_scaling
+
+    mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x, init_dict)
+
     return ate_weights, tt_weights, tut_weights, mte
 
 
@@ -87,7 +80,7 @@ def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax2.set_ylim(0, 0.35)
 
     plt.tight_layout()
-    plt.savefig(ppj("OUT_FIGURES", 'fig-weights-marginal-effect.png'))
+    plt.savefig('fig-weights-marginal-effect.png')
 
 
 if __name__ == '__main__':

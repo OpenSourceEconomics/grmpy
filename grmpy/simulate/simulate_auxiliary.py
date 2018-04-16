@@ -90,8 +90,9 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
 
     # Construct list of column labels
     column = ['Y', 'D']
+    
     for i in list(range(X.shape[1])):
-        str_ = 'X_' + str(i)
+        str_ = 'X' + str(i)
         column.append(str_)
     column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
 
@@ -190,8 +191,9 @@ def print_info(init_dict, data_frame):
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
+
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = data_frame[['X_{}'.format(i - 1) for i in help_]]
+        x = data_frame[['X{}'.format(i - 1) for i in help_]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)

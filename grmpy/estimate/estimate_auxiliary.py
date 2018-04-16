@@ -26,10 +26,12 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
             key_ = 'UNTREATED'
         data = data_frame[data_frame['D'] == i]
-        Z = data[['X_{}'.format(j - 1) for j in init_dict['COST']['order']]]
-        X = data[['X_{}'.format(j - 1) for j in init_dict[key_]['order']]]
-        XX = data[['X_{}'.format(j - 1) for j in order_outcome]]
+
+        Z = data[['X{}'.format(j - 1) for j in init_dict['COST']['order']]]
+        X = data[['X{}'.format(j - 1) for j in init_dict[key_]['order']]]
+        XX = data[['X{}'.format(j - 1) for j in order_outcome]]
         g = pd.concat((XX, Z), axis=1)
+
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
         part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
@@ -97,13 +99,15 @@ def start_values(init_dict, data_frame, option):
             # Estimate beta1 and beta0:
             beta = []
             sd_ = []
+
             for i in [1.0, 0.0]:
                 Y = data_frame.Y[data_frame.D == i]
                 if i == 1:
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[['X_{}'.format(j - 1) for j in order]][data_frame.D == i]
+                X = data_frame[['X{}'.format(j - 1) for j in order]][data_frame.D == i]
+
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
@@ -112,6 +116,7 @@ def start_values(init_dict, data_frame, option):
             XZ = data_frame[[j for j in data_frame.columns.values if j.startswith('X')]]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             help_gamma = probitRslt.params
+            
             # Adjust estimated cost-benefit shifter and intercept coefficients
             help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
             adj = [i - 1 for i in init_dict['COST']['order'] if i in help_]
@@ -262,6 +267,7 @@ def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization dictionary."""
     method = init_dict_['ESTIMATION']['optimizer'].split('-')[1]
     opt_dict = init_dict_['SCIPY-' + method]
+    opt_dict["maxiter"] = init_dict_["ESTIMATION"]["maxiter"]
 
     return opt_dict, method
 
@@ -404,9 +410,11 @@ def write_output_estimation(Y, D, X, Y_1, Y_0):
 
     # Construct list of column labels
     column = ['Y', 'D']
+
     for i in list(range(X.shape[1])):
-        str_ = 'X_' + str(i)
+        str_ = 'X' + str(i)
         column.append(str_)
+
     column += ['Y1', 'Y0']
 
     # Generate data frame

@@ -117,6 +117,7 @@ def test7():
     fname_zero = os.path.dirname(grmpy.__file__) + '/test/resources/test_zero.grmpy.ini'
     fname_vzero = os.path.dirname(grmpy.__file__) + '/test/resources/test_vzero.grmpy.ini'
     fname_possd = os.path.dirname(grmpy.__file__) + '/test/resources/test_npsd.grmpy.ini'
+    fname_diff = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary_diff.grmpy.ini'
 
     for i in range(10):
         constr = constraints(agents=1000, probability=1.0)
@@ -177,7 +178,6 @@ def test7():
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
 
-
     dict_ = read(fname_zero)
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_zero)
@@ -185,6 +185,12 @@ def test7():
     dict_ = read(fname_vzero)
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_vzero)
+    
+    dict_ = read(fname_diff)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, estimate, fname_diff)
+    
+    
 
 
 def test8():

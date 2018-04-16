@@ -2,6 +2,7 @@
 import os
 
 from scipy.stats import wishart
+import subprocess
 import pandas as pd
 import numpy as np
 
@@ -37,9 +38,9 @@ def test1():
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
 
-            x_treated = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            x_treated = df[['X{}'.format(i-1) for i in dict_['TREATED']['order']]]
             y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
-            x_untreated = df[['X_{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
+            x_untreated = df[['X{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
             y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
@@ -71,8 +72,8 @@ def test2():
 
             dict_ = read('test.grmpy.ini')
             df = simulate('test.grmpy.ini')
-            x_treated = df[['X_{}'.format(i-1) for i in dict_['TREATED']['order']]]
-            x_untreated = df[['X_{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
+            x_treated = df[['X{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            x_untreated = df[['X{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
 
             if i == 'ALL':
                 np.testing.assert_array_equal(df.Y1, df.U1)
@@ -180,7 +181,7 @@ def test5():
 
         df = simulate('test.grmpy.ini')
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = df[['X_{}'.format(i - 1) for i in help_]]
+        x = df[['X{}'.format(i - 1) for i in help_]]
 
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
         mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x, init_dict)
@@ -250,8 +251,7 @@ def test9():
         dict_ = generate_random_dict(constr)
         np.testing.assert_equal(constr['AGENTS'], dict_['SIMULATION']['agents'])
         np.testing.assert_equal(constr['START'], dict_['ESTIMATION']['start'])
-        for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
-            np.testing.assert_equal(constr['MAXITER'], dict_[key_]['maxiter'])
+        np.testing.assert_equal(constr['MAXITER'], dict_['ESTIMATION']['maxiter'])
 
 def test10():
     """This test checks if the start_values function returns the init file values if the start
@@ -284,4 +284,11 @@ def test11():
         dict_2 = read('estimate.grmpy.ini')
         np.testing.assert_equal(dict_1, dict_2)
 
-    cleanup()
+def test12():
+    """This test ensures that the tutorial configuration works as intended."""
+    p = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini' \
+                                          
+    simulate(p)
+    estimate(p)
+
+cleanup()
