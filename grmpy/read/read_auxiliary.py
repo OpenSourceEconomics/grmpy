@@ -3,6 +3,7 @@ import numpy as np
 
 from grmpy.check.custom_exceptions import UserError
 
+
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) == 5:
@@ -11,7 +12,6 @@ def process(list_, dict_, keyword):
         name, order, val  = list_[0], list_[1], list_[2]
     else:
         name, val = list_[0], list_[1]
-
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []

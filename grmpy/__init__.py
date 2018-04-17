@@ -5,16 +5,13 @@ import pytest
 
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
+from grmpy.grmpy_config import PACKAGE_DIR
+import grmpy.grmpy_config
 
 
 def test():
     """The function allows to run the tests from inside the interpreter."""
-
-    package_directory = os.path.dirname(os.path.realpath(__file__))
     current_directory = os.getcwd()
-
-    os.chdir(package_directory)
-
+    os.chdir(PACKAGE_DIR)
     pytest.main()
-
     os.chdir(current_directory)

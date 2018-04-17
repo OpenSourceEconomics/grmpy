@@ -7,6 +7,8 @@ import numpy as np
 from grmpy.check.check import UserError
 
 
+# TODO: Please change the interface to this function to a dictionary, as here
+# https://github.com/briqInstitute/trempy/blob/master/trempy/tests/test_auxiliary.py
 def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
                 optimizer=None, start=None, maxiter=None, same_size=False, overlap=None,
                 state_diff=None):
@@ -265,7 +267,9 @@ def generate_coeff(num, key_, is_zero, state_diff=False):
 
     return list_, binary_list
 
+# TODO: Please add docstring
 def types(dict_):
+
     all = []
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         all += dict_[key_]['order']
@@ -282,7 +286,7 @@ def types(dict_):
 
     return dict_
 
-
+# TODO: Please add docstring
 def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
     if overlap is True:
         treated_ord = list(range(1, treated_num + 1))
@@ -315,6 +319,7 @@ def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
 
     return dict_
 
+# TODO: Please add docstring
 def overlap_treat_untreat(dict_, treated_num, untreated_num):
     treated_ord = list(range(1, treated_num + 1))
     x = list(range(2, treated_num + 1))
@@ -340,6 +345,7 @@ def overlap_treat_untreat(dict_, treated_num, untreated_num):
 
     return dict_
 
+# TODO: Please add docstring
 def overlap_treat_untreat_cost(dict_, cost_num, overlap):
     num_var = len(set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']))
     if overlap is True:

@@ -1,4 +1,4 @@
-"""The module provides basic axiliary functions for the test modules."""
+"""The module provides basic auxiliary functions for the test modules."""
 import shlex
 import glob
 import os
@@ -10,21 +10,24 @@ from grmpy.read.read import read
 
 def cleanup(options=None):
     """The function deletes package related output files."""
+    fnames = glob.glob("*.grmpy.*")
+
     if options is None:
-        for f in glob.glob("*.grmpy.*"):
+        for f in fnames:
             os.remove(f)
     elif options == 'regression':
-        for f in glob.glob("*.grmpy.*"):
+        for f in fnames:
             if f.startswith('regression'):
                 pass
             else:
                 os.remove(f)
     elif options == 'init_file':
-        for f in glob.glob("*.grmpy.*"):
+        for f in fnames:
             if f.startswith('test.grmpy'):
                 pass
             else:
                 os.remove(f)
+
 
 def save_output(file, option):
     """The function renames a given file and moves it in an output directory."""
