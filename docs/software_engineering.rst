@@ -6,8 +6,8 @@ We now briefly discuss our software engineering practices that help us to ensure
 Test Battery
 ------------
 .. htmlonly::
-.. image:: https://codecov.io/gh/grmToolbox/grmpy/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/grmToolbox/grmpy
+.. image:: https://codecov.io/gh/OpenSourceEconomics/grmpy/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/OpenSourceEconomics/grmpy
 
 We use `pytest <http://docs.pytest.org>`_ as our test runner. We broadly group our tests in three categories:
 
@@ -45,8 +45,8 @@ We use several automatic code review tools to help us improve the readability an
 Continuous Integration Workflow
 -------------------------------
 .. htmlonly::
-.. image:: https://travis-ci.org/grmToolbox/grmpy.svg?branch=master
-   :target: https://travis-ci.org/grmToolbox/grmpy
+.. image:: https://travis-ci.org/OpenSourceEconomics/grmpy.svg?branch=master
+   :target: https://travis-ci.org/OpenSourceEconomics/grmpy
 
-We set up a continuous integration workflow around our `GitHub Organization <https://github.com/grmToolbox>`_. We use the continuous integration services provided by `Travis CI <https://travis-ci.org/grmToolbox/grmpy>`_. `tox <https://tox.readthedocs.io/en/latest/>`_ ensures that the package installs correctly with different Python versions.
+We set up a continuous integration workflow around our `GitHub Organization <https://github.com/OpenSourceEconomics>`_. We use the continuous integration services provided by `Travis CI <https://travis-ci.org/OpenSourceEconomics/grmpy>`_. `tox <https://tox.readthedocs.io/en/latest/>`_ ensures that the package installs correctly with different Python versions.
 

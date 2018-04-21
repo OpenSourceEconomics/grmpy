@@ -6,7 +6,7 @@
 Welcome to grmpy's documentation!
 =================================
 
-`PyPI <https://pypi.python.org/pypi/grmpy>`_ | `GitHub <https://github.com/grmToolbox/grmpy>`_  | `Issues <https://github.com/grmToolbox/grmpy/issues>`_
+`PyPI <https://pypi.python.org/pypi/grmpy>`_ | `GitHub <https://github.com/OpenSourceEconomics/grmpy>`_  | `Issues <https://github.com/OpenSourceEconomics/grmpy/issues>`_
 
 ``grmpy``  is an open-source Python package for the simulation and estimation of the generalized Roy model. It serves as a teaching tool to promote the conceptual framework of the generalized Roy model, illustrate a variety of issues in the econometrics of policy evaluation, and showcase basic software engineering practices.
 

@@ -3,7 +3,7 @@ Contributing
 
 Great, you are interested in contributing to the package.
 
-To get acquainted with the code base, you can check out our `issue tracker <https://github.com/grmToolbox/grmpy/issues>`_ for some immediate and clearly defined tasks. For more involved contributions, please see our roadmap below. All submissions are required to follow this project-agnostic `contribution guide <http://www.contribution-guide.org/>`_
+To get acquainted with the code base, you can check out our `issue tracker <https://github.com/OpenSourceEconomics/grmpy/issues>`_ for some immediate and clearly defined tasks. For more involved contributions, please see our roadmap below. All submissions are required to follow this project-agnostic `contribution guide <http://www.contribution-guide.org/>`_
 
 Roadmap
 -------

@@ -18,7 +18,7 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/grmToolbox/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
@@ -50,44 +50,44 @@ maxiter	       int         maximum numbers of iterations the minimization proces
 
 **TREATED**
 
-The *TREATED* block specifies the number, order and type (binary or nonbinary) of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
 
-=======   =====  ======    =======  =====   ==================
-Key       Order  Value     Binary   Frac    Interpretation
-=======   =====  ======    =======  =====   ==================
-coeff     int    float     str	    float   intercept coefficient
-coeff     int    float     str 	    float   coefficient of the first covariate
-coeff     int    float     str	    float   coefficient of the second covariate
+=======   =====  ======     ==================
+Key       Order  Value      Interpretation
+=======   =====  ======     ==================
+coeff     int    float      intercept coefficient
+coeff     int    float      coefficient of the first covariate
+coeff     int    float      coefficient of the second covariate
  ...
-=======   =====  ======    =======  =====   ==================
+=======   =====  ======     ==================
 
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number, order and type (binary or nonbinary) of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
+The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`
 
-=======   =====  ======    =======  =====   ==================
-Key       Order  Value     Binary   Frac    Interpretation
-=======   =====  ======    =======  =====   ==================
-coeff     int    float     str	    float   intercept coefficient
-coeff     int    float     str 	    float   coefficient of the first covariate
-coeff     int    float     str	    float   coefficient of the second covariate
+=======   =====  ======    ==================
+Key       Order  Value     Interpretation
+=======   =====  ======    ==================
+coeff     int    float     intercept coefficient
+coeff     int    float     coefficient of the first covariate
+coeff     int    float     coefficient of the second covariate
  ...
-=======   =====  ======    =======  =====   ==================
+=======   =====  ======    ==================
 
 
 **COST**
 
-The *COST* block specifies the number, order and type (binary or nonbinary) of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. If a covariate is binary, the column *Frac* gives the probability that the covariate is equal to 1 for a given agent.
+The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
 
-=======   =====  ======    =======  =====   ==================
-Key       Order  Value     Binary   Frac    Interpretation
-=======   =====  ======    =======  =====   ==================
-coeff     int    float     str	    float   intercept coefficient
-coeff     int    float     str 	    float   coefficient of the first covariate
-coeff     int    float     str	    float   coefficient of the second covariate
+=======   =====  ======    ==================
+Key       Order  Value     Interpretation
+=======   =====  ======    ==================
+coeff     int    float     intercept coefficient
+coeff     int    float     coefficient of the first covariate
+coeff     int    float     coefficient of the second covariate
  ...
-=======   =====  ======    =======  =====   ==================
+=======   =====  ======    ==================
 
 **DIST**
 
@@ -130,7 +130,7 @@ ftol       float      relative error in fun(*xopt*) that is acceptable for conve
 Examples
 --------
 
-In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/master/docs/tutorial>`_.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized roy model and to estimate the parameters of interest (given a data set) as specified in your initialization file.
 
 **Simulation**
