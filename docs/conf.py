@@ -60,8 +60,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'grmpy'
-copyright = '2017, Philipp Eisenhauer'
-author = 'Philipp Eisenhauer'
+copyright = '2017, grmpy-dev team'
+author = 'grmpy-dev team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
