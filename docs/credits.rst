@@ -15,6 +15,7 @@ Contributors
 ^^^^^^^^^^^^
 
 `Sebastian Becker <https://github.com/sebecker>`_, `Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/benediktkauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
+
 Acknowledgments
 ^^^^^^^^^^^^^^^
 
