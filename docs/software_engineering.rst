@@ -49,4 +49,3 @@ Continuous Integration Workflow
    :target: https://travis-ci.org/OpenSourceEconomics/grmpy
 
 We set up a continuous integration workflow around our `GitHub Organization <https://github.com/OpenSourceEconomics>`_. We use the continuous integration services provided by `Travis CI <https://travis-ci.org/OpenSourceEconomics/grmpy>`_. `tox <https://tox.readthedocs.io/en/latest/>`_ ensures that the package installs correctly with different Python versions.
-

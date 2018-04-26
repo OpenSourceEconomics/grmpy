@@ -28,4 +28,4 @@ Suggested Citation
 .. image:: https://zenodo.org/badge/doi/10.5281/zenodo.1162639.svg
    :target: http://doi.org/10.5281/zenodo.1162639
 
-We appreciate citations for ``grmpy`` because it helps us to find out how people have been using the package and it motivates further work. Please use our Digital Object Identifier (DOI) and see `here <https://zenodo.org/record/1162639>`_ for further citation styles.
+We appreciate citations for ``grmpy`` because it helps us find out how people have been using the package and it motivates further work. Please use our Digital Object Identifier (DOI) and see `here <https://zenodo.org/record/1162639>`_ for further citation styles.

@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'grmpy'
-copyright = '2017, grmpy-dev team'
+copyright = '2018, grmpy-dev team'
 author = 'grmpy-dev team'
 
 # The version info for the project you're documenting, acts as replacement for
