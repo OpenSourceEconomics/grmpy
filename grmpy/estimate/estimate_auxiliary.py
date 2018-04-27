@@ -267,20 +267,18 @@ def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization dictionary."""
     method = init_dict_['ESTIMATION']['optimizer'].split('-')[1]
     opt_dict = init_dict_['SCIPY-' + method]
-    # TODO: Please review code to only use ' instead of ""
     opt_dict['maxiter'] = init_dict_['ESTIMATION']['maxiter']
 
     return opt_dict, method
 
 
-# TODO: Remove all function arguments that are not used. PyCharm Code review does that for you.
 def simulate_estimation(init_dict, rslt, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
     # Determine parametrization and read in /simulate observables
-    if start is True:
+    if start:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)
         dicts = [start_dict, rslt_dict]
     else:
@@ -301,7 +299,7 @@ def simulate_estimation(init_dict, rslt, start=False):
         df = write_output_estimation(Y, D, X, Y_1, Y_0)
         data_frames += [df]
 
-    if start is True:
+    if start:
         return data_frames[0], data_frames[1]
     else:
         return data_frames[0]
@@ -328,7 +326,7 @@ def process_results(init_dict, rslt, start=False):
                 dict_[key_]['all'] = rslt[key_]['all']
                 dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
         else:
-            if start is True:
+            if start:
                 for key_ in ['TREATED', 'UNTREATED', 'COST']:
                     dict_[key_] = {}
                     dict_[key_]['types'] = init_dict[key_]['types']
@@ -456,7 +454,8 @@ def bfgs_dict():
 
 def adjust_output(opt_rslt, init_dict, start_values, dict_=None):
     """The function adds different information of the minimization process to the estimation
-    output."""
+    output.
+    """
     rslt = distribute_parameters(init_dict, start_values)
     rslt['success'], rslt['status'] = opt_rslt['success'], opt_rslt['status']
     rslt['message'], rslt['nfev'] = opt_rslt['message'], opt_rslt['nfev']
@@ -565,7 +564,7 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
     cov = np.dot(cholesky, cholesky.T)
     sdv = cov[2, 2] ** 0.5
 
-    if dist is True:
+    if dist:
         sd1 = cov[0, 0] ** 0.5
         sd0 = cov[1, 1] ** 0.5
         rho0 = cov[1, 2] / (sd0 * sdv)
@@ -578,7 +577,7 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         sd0, sd1, sdv = dist_para[3] ** 0.5, dist_para[0] ** 0.5, dist_para[5] ** 0.5
         rho1, rho0 = dist_para[2] / (sd1 * sdv), dist_para[4] / (sd0 * sdv)
         rho01 = dist_para[1] / (sd0 * sd1)
-        if test is False:
+        if not test:
             output = x0[:-6] + [sd1, rho01, rho1, sd0, rho0, sdv]
         else:
             output = [sd1, rho01, rho1, sd0, rho0, sdv]

@@ -14,7 +14,6 @@ from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.auxiliary import refactor_results
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
-from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
@@ -26,12 +25,12 @@ def test1():
     """The first test tests whether the relationships in the simulated datasets are appropriate
     in a deterministic and an un-deterministic setting.
     """
+    constr = dict()
     for case in ['deterministic', 'undeterministic']:
         if case == 'deterministic':
-            prob = 1.0
+            constr['DETERMINISTIC'] = True
         else:
-            prob = 0.0
-        constr = constraints(probability=prob)
+            constr['DETERMINISTIC'] = False
         for _ in range(10):
             generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
@@ -55,7 +54,8 @@ def test2():
     """
     for j in range(10):
         for i in ['ALL', 'TREATED', 'UNTREATED', 'COST', 'TREATED & UNTREATED']:
-            constr = constraints(probability=0.0)
+            constr = dict()
+            constr['DETERMINISTIC'] = False
             dict_ = generate_random_dict(constr)
 
             if i == 'ALL':
@@ -110,7 +110,8 @@ def test3():
     values for the estimation process are set to the initialization file values due to perfect
     separation.
     """
-    constr = constraints(probability=0.0, agents=1)
+    constr = dict()
+    constr['AGENTS'], constr['DETERMINISTIC'] = 1, False
     for _ in range(10):
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
@@ -233,7 +234,8 @@ def test7():
 
 def test8():
     """We want to able to smoothly switch between generating and printing random initialization
-    files."""
+    files.
+    """
     for _ in range(10):
         generate_random_dict()
         dict_1 = read('test.grmpy.ini')
@@ -262,7 +264,8 @@ def test10():
     option is set to init.
     """
     for _ in range(10):
-        constr = constraints(0.0)
+        constr = dict()
+        constr['DETERMINISTIC'] = False
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
         print(dict_)
@@ -281,7 +284,9 @@ def test11():
     """
 
     for _ in range(10):
-        constr = constraints(0.0,1000,maxiter=0, start='init' )
+        constr = dict()
+        constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
+        constr['MAXITER'], constr['START'] = 0, 'init'
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         rslt = estimate('test.grmpy.ini')

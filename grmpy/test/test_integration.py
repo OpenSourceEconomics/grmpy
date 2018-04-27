@@ -11,7 +11,6 @@ from grmpy.check.check import check_initialization_dict
 from grmpy.test.random_init import generate_random_dict
 from grmpy.check.custom_exceptions import UserError
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
-from grmpy.test.random_init import constraints
 from grmpy.check.check import check_init_file
 from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
@@ -54,8 +53,9 @@ def test3():
     sample is equal if both samples include an identical number of individuals.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, agents=10000, start='init',
-                             optimizer='SCIPY-BFGS', same_size=True)
+        constr = dict()
+        constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 10000, 'init'
+        constr['optimizer'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
 
         df1 = simulate('test.grmpy.ini')
@@ -75,8 +75,9 @@ def test4():
     the optimizer option.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, agents=10000, start='init',
-                             optimizer='SCIPY-POWELL')
+        constr = dict()
+        constr['DETERMINISTIC'], constr['AGENTS'], constr['start'] = False, 10000, 'init'
+        constr['optimizer'] = 'SCIPY-Powell'
         generate_random_dict(constr)
 
         simulate('test.grmpy.ini')
@@ -86,7 +87,8 @@ def test4():
 def test5():
     """The test checks if the estimation process works properly when maxiter is set to zero."""
     for _ in range(10):
-        constr = constraints(probability=0.0, maxiter=0)
+        constr = dict()
+        constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
@@ -98,7 +100,9 @@ def test6():
     values as start values.
     """
     for _ in range(5):
-        constr = constraints(probability=0.0, maxiter=0, agents=10000, start='init', same_size=True)
+        constr = dict()
+        constr['DETERMINISTIC'], constr['MAXITER'], constr['AGENTS'] = False, 0, 10000
+        constr['START'], constr['SAME_SIZE'] = 'init', True
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
@@ -121,19 +125,13 @@ def test7():
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
 
     for i in range(10):
-        constr = constraints(agents=1000, probability=1.0)
+        constr = dict()
+        constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
         pytest.raises(UserError, check_init_file, dict_)
         pytest.raises(UserError, estimate, 'test.grmpy.ini')
 
-        constr = constraints(agents=0, probability=.0, sample=100)
-        generate_random_dict(constr)
-        dict_ = read('test.grmpy.ini')
-        pytest.raises(UserError, check_initialization_dict, dict_)
-        pytest.raises(UserError, simulate, 'test.grmpy.ini')
-
-        constr = constraints(agents=1000, probability=.0, sample=100)
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
         if len(dict_['COST']['order']) == 1:
@@ -148,12 +146,19 @@ def test7():
         pytest.raises(UserError, simulate, 'test.grmpy.ini')
         pytest.raises(UserError, estimate, 'test.grmpy.ini')
 
+        constr['AGENTS'] = 0
+        generate_random_dict(constr)
+        dict_ = read('test.grmpy.ini')
+        pytest.raises(UserError, check_initialization_dict, dict_)
+        pytest.raises(UserError, simulate, 'test.grmpy.ini')
+
+
         tests = []
         tests += [['TREATED','UNTREATED'], ['TREATED', 'COST'], ['UNTREATED', 'COST']]
         tests += [['TREATED', 'UNTREATED', 'COST']]
 
         for combi in tests:
-            constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+            constr['STATE_DIFF'], constr['OVERLAP'] = True, True
             generate_random_dict(constr)
             dict_ = read('test.grmpy.ini')
             for j in combi:
@@ -195,7 +200,8 @@ def test8():
     """The test checks if an UserError occurs if wrong inputs are specified for a different
     functions/methods.
     """
-    constr = constraints(agents=1000, probability=.0)
+    constr = dict()
+    constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
     generate_random_dict(constr)
     df = simulate('test.grmpy.ini')
     a = []
@@ -217,7 +223,9 @@ def test9():
     and the simulation process works if the constraints function allows for different number of co-
     variates for each treatment state and the occurence of cost-benefit shifters."""
     for _ in range(10):
-        constr = constraints(0.0, agents=1000, state_diff=True, overlap=True)
+        constr = dict()
+        constr['DETERMINISTIC'], constr['AGENT'], constr['STATE_DIFF'] = False, 1000, True
+        constr['OVERLAP'] = True
         generate_random_dict(constr)
         read('test.grmpy.ini')
         simulate('test.grmpy.ini')

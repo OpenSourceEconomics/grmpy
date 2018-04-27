@@ -31,7 +31,8 @@ if True:
     tests = []
     for seed in seeds:
         np.random.seed(seed)
-        constr = constraints(0.0)
+        constr = dict()
+        constr['DETERMINISTIC'] = False
         dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
