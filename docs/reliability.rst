@@ -21,4 +21,3 @@ As can be seen from the figure, the OLS estimator underestimates the effect sign
 
 The second figure shows the estimated ATE from the ``grmpy`` estimation process that is implemented in the second exercise.
 Conversely to the OLS results the estimate of the average effect is really close to the true value even if the unobservables are almost perfectly correlated.
-

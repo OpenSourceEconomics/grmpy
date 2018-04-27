@@ -1,7 +1,7 @@
 Changes
 =======
 
-This is a record of all past ``grmpy`` releases and what went into them in reverse chronological order. We follow `semantic versioning <http://semver.org/>`_ and all releases are available on `PyPI <https://pypi.python.org/pypi/respy>`_.
+This is a record of all past ``grmpy`` releases and what went into them in reverse chronological order. We follow `semantic versioning <http://semver.org/>`_ and all releases are available on `PyPI <https://pypi.python.org/pypi/grmpy>`_.
 
 1.0.0 - 2018-XX-XX
 ------------------

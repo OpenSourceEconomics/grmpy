@@ -2,7 +2,6 @@
 import os
 
 from scipy.stats import wishart
-import subprocess
 import pandas as pd
 import numpy as np
 
@@ -14,25 +13,24 @@ from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import adjust_output_cholesky
 from grmpy.test.auxiliary import refactor_results
-from grmpy.test.random_init import constraints
+from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
-from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
 
 
 def test1():
     """The first test tests whether the relationships in the simulated datasets are appropriate
-    in a deterministic and an undeterministic setting.
+    in a deterministic and an un-deterministic setting.
     """
+    constr = dict()
     for case in ['deterministic', 'undeterministic']:
         if case == 'deterministic':
-            prob = 1.0
+            constr['DETERMINISTIC'] = True
         else:
-            prob = 0.0
-        constr = constraints(probability=prob)
+            constr['DETERMINISTIC'] = False
         for _ in range(10):
             generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
@@ -56,7 +54,8 @@ def test2():
     """
     for j in range(10):
         for i in ['ALL', 'TREATED', 'UNTREATED', 'COST', 'TREATED & UNTREATED']:
-            constr = constraints(probability=0.0)
+            constr = dict()
+            constr['DETERMINISTIC'] = False
             dict_ = generate_random_dict(constr)
 
             if i == 'ALL':
@@ -108,10 +107,11 @@ def test2():
 def test3():
     """The fourth test checks whether the simulation process works if there are only treated or un-
     treated Agents by setting the number of agents to one. Additionally the test checks if the start
-    values for the estimation process are set to the initialization file values due to perfect se-
-    paration.
+    values for the estimation process are set to the initialization file values due to perfect
+    separation.
     """
-    constr = constraints(probability=0.0, agents=1)
+    constr = dict()
+    constr['AGENTS'], constr['DETERMINISTIC'] = 1, False
     for _ in range(10):
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
@@ -121,8 +121,8 @@ def test3():
 
 
 def test4():
-    """The fifth test tests the random init file generating process and the import process. It gen-
-    erates an random init file, imports it again and compares the entries in  both dictionaries.
+    """The fifth test tests the random init file generating process and the import process. It
+    generates an random init file, imports it again and compares the entries in  both dictionaries.
     """
     for _ in range(10):
         gen_dict = generate_random_dict()
@@ -191,8 +191,8 @@ def test5():
 
 
 def test6():
-    """The test ensures that the cholesky decomposition and recomposition works appropriately.
-    For this purpose the test creates a positive smi definite matrix fom a wishart distribution,
+    """The test ensures that the cholesky decomposition and re-composition works appropriately.
+    For this purpose the test creates a positive smi definite matrix fom a Wishart distribution,
     decomposes this matrix with, reconstruct it and compares the matrix with the one that was
     specified as the input for the decomposition process.
     """
@@ -212,10 +212,12 @@ def test6():
         cov_2 = construct_covariance_matrix(pseudo_dict)
         np.testing.assert_array_almost_equal(cov_1, cov_2)
 
+
 def test7():
     """This test ensures that setting different variables in the TREATED and UNTREATED section to
     binary in the initialization file leads to the same type lists for both sections. Further it is
-    verified that it is not possible to set an intercept variable to a binary one."""
+    verified that it is not possible to set an intercept variable to a binary one.
+    """
     fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
     dict_ = read(fname)
 
@@ -229,15 +231,18 @@ def test7():
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
 
+
 def test8():
     """We want to able to smoothly switch between generating and printing random initialization
-    files."""
+    files.
+    """
     for _ in range(10):
         generate_random_dict()
         dict_1 = read('test.grmpy.ini')
         print_dict(dict_1)
         dict_2 = read('test.grmpy.ini')
         np.testing.assert_equal(dict_1, dict_2)
+
 
 def test9():
     """This test ensures that the random process handles the constraints dict appropriately if there
@@ -253,12 +258,14 @@ def test9():
         np.testing.assert_equal(constr['START'], dict_['ESTIMATION']['start'])
         np.testing.assert_equal(constr['MAXITER'], dict_['ESTIMATION']['maxiter'])
 
+
 def test10():
     """This test checks if the start_values function returns the init file values if the start
     option is set to init.
     """
     for _ in range(10):
-        constr = constraints(0.0)
+        constr = dict()
+        constr['DETERMINISTIC'] = False
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
         print(dict_)
@@ -270,12 +277,16 @@ def test10():
 
         np.testing.assert_array_equal(true, x0)
 
+
 def test11():
     """This test checks if the refactor auxiliary function returns an unchanged init file if the
-    maximum number of iterations is set to zero."""
+    maximum number of iterations is set to zero.
+    """
 
     for _ in range(10):
-        constr = constraints(0.0,1000,maxiter=0, start='init' )
+        constr = dict()
+        constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
+        constr['MAXITER'], constr['START'] = 0, 'init'
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
         rslt = estimate('test.grmpy.ini')
@@ -284,11 +295,11 @@ def test11():
         dict_2 = read('estimate.grmpy.ini')
         np.testing.assert_equal(dict_1, dict_2)
 
+
 def test12():
     """This test ensures that the tutorial configuration works as intended."""
-    p = os.path.dirname(grmpy.__file__) + '/test/resources/tutorial.grmpy.ini' \
+    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini' \
                                           
-    simulate(p)
-    estimate(p)
+    simulate(fname)
+    estimate(fname)
 
-cleanup()

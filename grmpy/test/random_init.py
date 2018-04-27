@@ -7,102 +7,70 @@ import numpy as np
 from grmpy.check.check import UserError
 
 
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None, maxiter=None, same_size=False, overlap=None,
-                state_diff=None):
-    """The constraints function returns an dictionary that provides specific characteristics for the
-    random dictionary generating process.
-    """
-    constraints_dict = dict()
-    constraints_dict['DETERMINISTIC'] = np.random.random_sample() < probability
-    if not constraints_dict['DETERMINISTIC'] and is_zero:
-        constraints_dict['IS_ZERO'] = np.random.random_sample() < probability / (1 - probability)
-    else:
-        constraints_dict['IS_ZERO'] = False
-    if agents is None:
-        constraints_dict['AGENTS'] = np.random.randint(1, 1000)
-    else:
-        constraints_dict['AGENTS'] = agents
-    if seed is None:
-        constraints_dict['SEED'] = np.random.randint(1, 10000)
-    else:
-        constraints_dict['SEED'] = seed
-    if sample is None:
-        if constraints_dict['AGENTS'] != 1:
-            constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
-        else:
-            constraints_dict['SAMPLE_SIZE'] = 1
-    else:
-        constraints_dict['SAMPLE_SIZE'] = sample
-    if optimizer is None:
-        constraints_dict['OPTIMIZER'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],
-                                                         p=[0.5, 0.5])
-    else:
-        constraints_dict['OPTIMIZER'] = optimizer
-    if start is None:
-        constraints_dict['START'] = np.random.choice(a=['init', 'auto'])
-    else:
-        constraints_dict['START'] = start
-    if maxiter is None:
-        constraints_dict['MAXITER'] = np.random.randint(0, 10000)
-    else:
-        constraints_dict['MAXITER'] = maxiter
-
-    constraints_dict['SAME_SIZE'] = same_size
-
-    if overlap is None:
-        constraints_dict['OVERLAP'] = np.random.random_sample() < 0.5
-    else:
-        constraints_dict['OVERLAP'] = overlap
-
-    if state_diff is None:
-        constraints_dict['STATE_DIFF'] = np.random.random_sample() < 0.5
-    else:
-        constraints_dict['STATE_DIFF'] = state_diff
-
-    return constraints_dict
-
-
-def generate_random_dict(constraints_dict=None):
+def generate_random_dict(constr=None):
     """The function generates a random initialization dictionary."""
 
-    if constraints_dict is not None:
-        if not isinstance(constraints_dict, dict):
-            msg = '{} is not a dictionary.'.format(constraints_dict)
+    if constr is not None:
+        if not isinstance(constr, dict):
+            msg = '{} is not a dictionary.'.format(constr)
             raise UserError(msg)
-        if len(constraints_dict.keys()) < 9:
-            help_dict = constraints()
-            for key_ in help_dict.keys():
-                if key_ not in constraints_dict.keys():
-                    constraints_dict[key_] = help_dict[key_]
     else:
-        constraints_dict = constraints()
+        constr = dict()
 
-    is_deterministic = constraints_dict['DETERMINISTIC']
+    if 'DETERMINISTIC' in constr.keys():
+        is_deterministic = constr['DETERMINISTIC']
+    else:
+        is_deterministic = np.random.random_sample() < 0.1
 
-    state_diff = constraints_dict['STATE_DIFF']
+    if 'STATE_DIFF' in constr.keys():
+        state_diff = constr['STATE_DIFF']
+    else:
+        state_diff = np.random.random_sample() < 0.5
 
-    optimizer = constraints_dict['OPTIMIZER']
+    if 'OPTIMIZER' in constr.keys():
+        optimizer = constr['OPTIMIZER']
+    else:
+        optimizer = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],p=[0.5, 0.5])
 
-    same_size = constraints_dict['SAME_SIZE']
+    if 'SAME_SIZE' in constr.keys():
+        same_size = constr['SAME_SIZE']
+    else:
+        same_size = False
 
-    is_zero = constraints_dict['IS_ZERO']
+    if 'IS_ZERO' in constr.keys() and not is_deterministic:
+        is_zero = np.random.random_sample() < 0.1 / (1 - 0.1)
+    else:
+        is_zero = False
 
-    overlap = constraints_dict['OVERLAP']
+    if 'OVERLAP' in constr.keys():
+        overlap = constr['OVERLAP']
+    else:
+        overlap = np.random.random_sample() < 0.5
 
-    maxiter = constraints_dict['MAXITER']
+    if 'MAXITER' in constr.keys():
+        maxiter = constr['MAXITER']
+    else:
+        maxiter = np.random.randint(0, 10000)
 
-    agents = constraints_dict['AGENTS']
+    if 'AGENTS' in constr.keys():
+        agents = constr['AGENTS']
+    else:
+        agents = np.random.randint(1, 1000)
 
-    start = constraints_dict['START']
-
-    seed = constraints_dict['SEED']
+    if 'START' in constr.keys():
+        start = constr['START']
+    else:
+        start = np.random.choice(a=['init', 'auto'])
+    if 'SEED' in constr.keys():
+        seed = constr['SEED']
+    else:
+        seed = np.random.randint(1, 10000)
 
     source = my_random_string(8)
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
-    if state_diff is True:
+    if state_diff:
         untreated_num = np.random.randint(1, 10)
     else:
         pass
@@ -113,13 +81,13 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            if state_diff is True:
+            if state_diff:
                 if key_ == 'TREATED':
                     x = treated_num
                 else:
                     x= untreated_num
                 dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_,
-                                                                              is_zero, state_diff)
+                                                                              is_zero)
 
             else:
                 dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
@@ -127,7 +95,7 @@ def generate_random_dict(constraints_dict=None):
         else:
             dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
-    if state_diff is False:
+    if not state_diff:
         dict_ = overlap_treat_cost(dict_, treated_num, cost_num, overlap)
     else:
         dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
@@ -144,7 +112,7 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    if same_size is True:
+    if same_size:
         dict_['ESTIMATION']['agents'] = agents
     else:
         dict_['ESTIMATION']['agents'] = np.random.randint(1, 1000)
@@ -243,17 +211,15 @@ def print_dict(dict_, file_name='test'):
 
 def my_random_string(string_length=10):
     """Returns a random string of length string_length."""
-    random = str(uuid.uuid4()).upper().replace("-", "")
+    random = str(uuid.uuid4()).upper().replace('-', '')
     return random[0:string_length]
 
 
-def generate_coeff(num, key_, is_zero, state_diff=False):
+def generate_coeff(num, key_, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
     keys = ['UNTREATED', 'COST', 'TREATED']
     if not is_zero:
         list_ = np.random.normal(0., 2., [num]).tolist()
-        if key_ in keys:
-            binary_list = ['nonbinary'] * num
     else:
         list_ = np.array([0] * num).tolist()
 
@@ -265,7 +231,10 @@ def generate_coeff(num, key_, is_zero, state_diff=False):
 
     return list_, binary_list
 
+
 def types(dict_):
+    """This function determines if a specified covariate is a binary or a non-binary variable.
+    Additionally it """
     all = []
     for key_ in ['TREATED', 'UNTREATED', 'COST']:
         all += dict_[key_]['order']
@@ -282,9 +251,11 @@ def types(dict_):
 
     return dict_
 
-
 def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
-    if overlap is True:
+    """This function determines the variables that affect the output when selecting into treatment
+    and the costs.
+    """
+    if overlap:
         treated_ord = list(range(1, treated_num + 1))
         x = list(range(2, treated_num + 1))
         cost_ord = []
@@ -315,7 +286,11 @@ def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
 
     return dict_
 
+
 def overlap_treat_untreat(dict_, treated_num, untreated_num):
+    """This function determines the variables that affect the output independent of the decision
+    of an individual.
+    """
     treated_ord = list(range(1, treated_num + 1))
     x = list(range(2, treated_num + 1))
     untreated_ord = []
@@ -340,9 +315,13 @@ def overlap_treat_untreat(dict_, treated_num, untreated_num):
 
     return dict_
 
+
 def overlap_treat_untreat_cost(dict_, cost_num, overlap):
+    """This function determines the variables that affect the output of both treatment states as
+    well as the costs.
+    """
     num_var = len(set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']))
-    if overlap is True:
+    if overlap:
         treated_ord = list(range(1, num_var + 1))
         x = list(range(2, num_var + 1))
         cost_ord = []

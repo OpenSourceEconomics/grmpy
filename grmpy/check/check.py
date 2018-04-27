@@ -33,7 +33,7 @@ def check_initialization_dict(dict_):
         raise UserError(msg)
 
     if dict_['DETERMINISTIC'] is False:
-        if is_pos_def(dict_) is False:
+        if not is_pos_def(dict_):
             msg = 'The specified covariance matrix has to be positive semidefinite.'
             raise UserError(msg)
     for key_ in ['TREATED', 'UNTREATED', 'COST']:

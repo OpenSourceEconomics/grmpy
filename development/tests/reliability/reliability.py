@@ -21,6 +21,8 @@ from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
 from grmpy.read.read import read
 
+
+
 def update_correlation_structure(model_dict, rho):
     """This function takes a valid model specification and updates the correlation structure
     among the unobservables."""

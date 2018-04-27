@@ -2,10 +2,6 @@
 processes of the unobservable and endogenous variables of the model as well as functions regarding
 the info file output.
 """
-import warnings
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 from scipy.stats import norm
 import pandas as pd
 import numpy as np
@@ -246,7 +242,7 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
 
 
 def construct_covariance_matrix(init_dict):
-    """This function constructs the covariance matrix based on the user's initialization file"""
+    """This function constructs the covariance matrix based on the user's initialization file."""
     cov = np.zeros((3, 3))
     cov[np.triu_indices(3)] = init_dict['DIST']['all']
     cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]
