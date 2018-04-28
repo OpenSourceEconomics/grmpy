@@ -13,6 +13,7 @@ def read(file_):
     check_presence_init(file_)
 
     dict_ = {}
+    ordernames=[]
     for line in open(file_).readlines():
 
         list_ = shlex.split(line)
@@ -24,15 +25,15 @@ def read(file_):
         else:
             is_keyword = False
 
-        if is_empty:
+        if is_empty:#empty lines
             continue
 
-        if is_keyword:
+        if is_keyword:#keyword lines
             keyword = list_[0]
             dict_[keyword] = {}
             continue
 
-        process(list_, dict_, keyword)
+        process(list_, dict_, keyword,ordernames)#Only coeff lines
 
     dict_ = auxiliary(dict_)
 

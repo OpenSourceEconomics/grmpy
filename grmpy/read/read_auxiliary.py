@@ -4,7 +4,7 @@ import numpy as np
 from grmpy.check.custom_exceptions import UserError
 
 
-def process(list_, dict_, keyword):
+def process(list_, dict_, keyword, ordernames):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) == 5:
         name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
@@ -21,11 +21,13 @@ def process(list_, dict_, keyword):
         dict_[keyword]['order'] = []
 
     if keyword in ['TREATED', 'UNTREATED', 'COST']:
+        if order not in ordernames:
+            ordernames += [order]
         if len(list_) == 5:
-            dict_[keyword]['order'] += [int(order)]
             dict_[keyword]['types'] += [[type_, float(frac_)]]
+            dict_[keyword]['order'] += [ordernames.index(order)+1]
         else:
-            dict_[keyword]['order'] += [int(order)]
+            dict_[keyword]['order'] += [ordernames.index(order)+1]
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
