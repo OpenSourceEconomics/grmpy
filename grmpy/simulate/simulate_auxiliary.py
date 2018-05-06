@@ -95,10 +95,16 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
     df['D'] = df['D'].apply(np.int64)
-    df.to_pickle(source + '.grmpy.pkl')
+    df2=pd.DataFrame()
+    for i in df.columns.values:
+        if "X" in i:
+            df2[init_dict['varnames'][int(i[1:5])]]=df[i]
+        else:
+            df2[i]=df[i]
+    df2.to_pickle(source + '.grmpy.pkl')
     with open(source + '.grmpy.txt', 'w') as file_:
-        df.to_string(file_, index=False, na_rep='.', col_space=15, justify='left')
-    return df
+        df2.to_string(file_, index=False, na_rep='.', col_space=15, justify='left')
+    return df2
 
 
 def construct_all_coefficients(init_dict):
@@ -189,7 +195,7 @@ def print_info(init_dict, data_frame):
         quantiles = [i * 0.01 for i in quantiles]
 
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = data_frame[['X{}'.format(i - 1) for i in help_]]
+        x = data_frame[[init_dict['varnames'][i-1] for i in help_]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)

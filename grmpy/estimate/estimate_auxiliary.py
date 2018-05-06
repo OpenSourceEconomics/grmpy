@@ -27,9 +27,9 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
             key_ = 'UNTREATED'
         data = data_frame[data_frame['D'] == i]
 
-        Z = data[['X{}'.format(j - 1) for j in init_dict['COST']['order']]]
-        X = data[['X{}'.format(j - 1) for j in init_dict[key_]['order']]]
-        XX = data[['X{}'.format(j - 1) for j in order_outcome]]
+        Z = data[[init_dict['varnames'][j-1] for j in init_dict['COST']['order']]]
+        X = data[[init_dict['varnames'][j-1] for j in init_dict[key_]['order']]]
+        XX = data[[init_dict['varnames'][j-1] for j in order_outcome]]
         g = pd.concat((XX, Z), axis=1)
 
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
@@ -497,9 +497,8 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
 def adjust_print_output(init_dict, rslt):
     """The function arranges the distributional parameters."""
-
     for dict_ in [init_dict, rslt]:
-        if dict_ == init_dict:
+        if [init_dict, rslt].index(dict_)==0:
             key_ = 'starting_values'
         else:
             key_ = 'x_internal'
