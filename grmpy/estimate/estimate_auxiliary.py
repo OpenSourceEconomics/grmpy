@@ -26,7 +26,6 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
             key_ = 'UNTREATED'
         data = data_frame[data_frame['D'] == i]
-
         Z = data[[init_dict['varnames'][j-1] for j in init_dict['COST']['order']]]
         X = data[[init_dict['varnames'][j-1] for j in init_dict[key_]['order']]]
         XX = data[[init_dict['varnames'][j-1] for j in order_outcome]]
@@ -106,21 +105,22 @@ def start_values(init_dict, data_frame, option):
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[['X{}'.format(j - 1) for j in order]][data_frame.D == i]
+                X = data_frame[[init_dict['varnames'][j-1] for j in order]][data_frame.D == i]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
 
             # Estimate gamma via Probit
-            XZ = data_frame[[j for j in data_frame.columns.values if j.startswith('X')]]
+            XZ = data_frame[init_dict['varnames']]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             help_gamma = probitRslt.params
             
             # Adjust estimated cost-benefit shifter and intercept coefficients
             help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
-            adj = [i - 1 for i in init_dict['COST']['order'] if i in help_]
-            for j in adj:
+            adj = [i for i in init_dict['COST']['order'] if i in help_]
+            for i in adj:
+                j = init_dict['varnames'].index(i)
                 if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
                     help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
                 elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
@@ -277,6 +277,7 @@ def simulate_estimation(init_dict, rslt, start=False):
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
+    labels = init_dict['varnames']
     # Determine parametrization and read in /simulate observables
     if start:
         start_dict, rslt_dict = process_results(init_dict, rslt, start)
@@ -296,7 +297,7 @@ def simulate_estimation(init_dict, rslt, start=False):
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U)
 
-        df = write_output_estimation(Y, D, X, Y_1, Y_0)
+        df = write_output_estimation(labels, Y, D, X, Y_1, Y_0)
         data_frames += [df]
 
     if start:
@@ -401,18 +402,14 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write(fmt.format(*[sample] + info))
 
 
-def write_output_estimation(Y, D, X, Y_1, Y_0):
+def write_output_estimation(labels, Y, D, X, Y_1, Y_0):
     """The function converts the simulated variables to a panda data frame."""
 
     # Stack arrays
     data = np.column_stack((Y, D, X, Y_1, Y_0))
 
     # Construct list of column labels
-    column = ['Y', 'D']
-
-    for i in list(range(X.shape[1])):
-        str_ = 'X' + str(i)
-        column.append(str_)
+    column = ['Y', 'D'] + labels
 
     column += ['Y1', 'Y0']
 
@@ -497,8 +494,8 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
 def adjust_print_output(init_dict, rslt):
     """The function arranges the distributional parameters."""
-    for dict_ in [init_dict, rslt]:
-        if [init_dict, rslt].index(dict_)==0:
+    for i, dict_ in enumerate([init_dict, rslt]):
+        if i == 0:
             key_ = 'starting_values'
         else:
             key_ = 'x_internal'

@@ -60,6 +60,11 @@ def check_init_file(dict_):
     elif dict_['DIST']['all'][5] == 0:
         msg = 'The standard deviation of the collected unobservables have to be larger than zero.'
         raise UserError(msg)
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        if len(set(dict_[key_]['order'])) != len(dict_[key_]['order']):
+            v
+            msg = 'There are two start coefficients {} Section'.format(key_)
+            raise UserError
 
 
 

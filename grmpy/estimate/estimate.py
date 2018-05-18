@@ -34,7 +34,10 @@ def estimate(init_file):
 
     # Distribute initialization information.
     data_file = dict_['ESTIMATION']['file']
-    option = dict_['ESTIMATION']['start']
+    if dict_['ESTIMATION']['maxiter'] == 0:
+        option = 'init'
+    else:
+        option = dict_['ESTIMATION']['start']
 
     # Read data frame
     data = pd.read_table(data_file, delim_whitespace=True, header=0)

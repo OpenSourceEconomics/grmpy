@@ -37,11 +37,12 @@ def test2():
     fname = TEST_RESOURCES_DIR + '/regression_vault.grmpy.json'
     tests = json.load(open(fname))
 
-    for i in np.random.choice(range(len(tests)), size=5):
+    for i in range(len(tests)):
         stat, dict_, criteria = tests[i]
         print_dict(dict_)
         df = simulate('test.grmpy.ini')
         init_dict = read('test.grmpy.ini')
+        print(init_dict['varnames'])
         start = start_values(init_dict, df, 'init')
         criteria_ = calculate_criteria(init_dict, df, start)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
@@ -89,7 +90,8 @@ def test5():
     for _ in range(10):
         constr = dict()
         constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
-        generate_random_dict(constr)
+        dict_ = generate_random_dict(constr)
+        print(dict_['DIST'])
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
 
