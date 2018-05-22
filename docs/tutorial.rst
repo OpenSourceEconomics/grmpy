@@ -50,7 +50,7 @@ maxiter	       int         maximum numbers of iterations the minimization proces
 
 **TREATED**
 
-The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
 =======   ======  ======     ==================
 Key       Column  Value      Interpretation
@@ -64,7 +64,7 @@ coeff     int     float      coefficient of the second covariate
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`.
+The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
 =======   ======  ======    ==================
 Key       Column  Value     Interpretation
@@ -78,7 +78,7 @@ coeff     int     float     coefficient of the second covariate
 
 **COST**
 
-The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
+The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
 =======   ======  ======    ==================
 Key       Column  Value     Interpretation
