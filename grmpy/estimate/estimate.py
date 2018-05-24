@@ -40,7 +40,7 @@ def estimate(init_file):
         option = dict_['ESTIMATION']['start']
 
     # Read data frame
-    data = pd.read_table(data_file, delim_whitespace=True, header=0)
+    data = pd.read_pickle(data_file)
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)

@@ -9,6 +9,7 @@ from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
+from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.check.check import UserError
 
 
@@ -110,24 +111,22 @@ def start_values(init_dict, data_frame, option):
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
-
             # Estimate gamma via Probit
             XZ = data_frame[init_dict['varnames']]
             probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
             help_gamma = probitRslt.params
-            
             # Adjust estimated cost-benefit shifter and intercept coefficients
+
             help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
             adj = [i for i in init_dict['COST']['order'] if i in help_]
             for i in adj:
-                j = init_dict['varnames'].index(i)
+                j = init_dict['varnames'][i - 1]
                 if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
                     help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
                 elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
                     help_gamma[j] = np.subtract(beta[0][j], help_gamma[j])
                 elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
                     help_gamma[j] = np.subtract((- beta[1][j]), help_gamma[j])
-
             gamma = []
             for i in init_dict['COST']['order']:
                 gamma += [help_gamma[i - 1]]
@@ -165,6 +164,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
     num_covars_treated = init_dict['AUX']['num_covars_treated']
     num_covars_untreated = init_dict['AUX']['num_covars_untreated']
     rslt = dict()
+
+    rslt['varnames'] = init_dict['varnames']
 
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
@@ -401,6 +402,16 @@ def write_comparison(init_dict, df1, rslt):
 
                 file_.write(fmt.format(*[sample] + info))
 
+        header = '\n\n {} \n\n'.format('MTE Information')
+        file_.write(header)
+        value, args = calculate_mte(rslt, df1)
+        str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
+        file_.write(str_)
+        len_ = len(value) - 1
+        for i in range(len_):
+            if isinstance(value[i], float):
+                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
+
 
 def write_output_estimation(labels, Y, D, X, Y_1, Y_0):
     """The function converts the simulated variables to a panda data frame."""
@@ -578,3 +589,25 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
         else:
             output = [sd1, rho01, rho1, sd0, rho0, sdv]
         return output
+
+def calculate_mte(rslt, data_frame):
+
+    coeffs_untreated = rslt['UNTREATED']['all']
+    coeffs_treated = rslt['TREATED']['all']
+
+    quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
+    args = [str(i) + '%' for i in quantiles]
+    quantiles = [i * 0.01 for i in quantiles]
+
+    distribution = transform_rslt_DIST(rslt['AUX']['x_internal'], dict())
+
+    cov = construct_covariance_matrix(distribution)
+
+    help_ = list(set(rslt['TREATED']['order'] + rslt['UNTREATED']['order']))
+    x = data_frame[[rslt['varnames'][i - 1] for i in help_]]
+
+    value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, rslt)
+
+    return value, args
+
+
