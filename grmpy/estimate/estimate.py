@@ -34,13 +34,19 @@ def estimate(init_file):
 
     # Distribute initialization information.
     data_file = dict_['ESTIMATION']['file']
+
     if dict_['ESTIMATION']['maxiter'] == 0:
         option = 'init'
     else:
         option = dict_['ESTIMATION']['start']
 
+
     # Read data frame
-    data = pd.read_pickle(data_file)
+    if data_file[-3:] == 'pkl':
+        data = pd.read_pickle(data_file)
+    elif data_file[-3:] == 'txt':
+        data = pd.read_table(data_file, delim_whitespace=True, header=0)
+   
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
