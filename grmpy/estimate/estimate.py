@@ -42,9 +42,9 @@ def estimate(init_file):
 
 
     # Read data frame
-    if data_file[-3:] == 'pkl':
+    if data_file[-4:] == '.pkl':
         data = pd.read_pickle(data_file)
-    elif data_file[-3:] == 'txt':
+    elif data_file[-4:] == '.txt':
         data = pd.read_table(data_file, delim_whitespace=True, header=0)
    
     # define starting values

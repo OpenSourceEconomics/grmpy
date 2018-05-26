@@ -48,6 +48,12 @@ def check_initialization_dict(dict_):
                     msg = 'The specified probability that a binary variable is equal to one has to be \\\
                            suffiently lower than one.'
                     raise UserError(msg)
+                    
+    if dict_['ESTIMATION']['file'][-4:] not in ['.pkl', '.txt']:
+        msg = 'The file format specified in the Estimation section of the initialization file is currently not supported by grmpy. \n' \
+              'Please use either .txt or .pkl.'
+        raise UserError(msg)
+        
 
 
 def check_init_file(dict_):
