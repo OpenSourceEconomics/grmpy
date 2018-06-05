@@ -313,6 +313,10 @@ def process_results(init_dict, rslt, start=False):
     start_dict = {}
     num_treated = len(init_dict['TREATED']['all'])
     num_untreated = len(init_dict['UNTREATED']['all'])
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        rslt[key_]['order'] = init_dict[key_]['order']
+    rslt['varnames'] = init_dict['varnames']
+
     dicts = [rslt_dict, start_dict]
     for dict_ in dicts:
         dict_['SIMULATION'] = {}
