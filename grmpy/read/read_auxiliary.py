@@ -33,7 +33,7 @@ def process(list_, dict_, keyword):
     # Type conversion
     if name in ['agents', 'seed', 'maxiter', 'disp']:
         val = int(val)
-    elif name in ['source', 'file', 'optimizer', 'start']:
+    elif name in ['source', 'file', 'optimizer', 'start', 'dependent', 'indicator']:
         val = str(val)
     elif name in ['direc']:
         val = list(val)
@@ -64,6 +64,13 @@ def auxiliary(dict_):
         else:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
+
+    # Ensure that the Estimation section contains information about the indicator and the dependent
+    # variable labels
+    if 'indicator' not in dict_['ESTIMATION'].keys():
+        dict_['ESTIMATION']['indicator'] = 'D'
+    if 'dependent' not in dict_['ESTIMATION'].keys():
+        dict_['ESTIMATION']['dependent'] = 'Y'
 
     # Number of covariates
     num_covars_treated = len(dict_['TREATED']['all'])
@@ -199,3 +206,5 @@ def check_types(dict_):
 
 
     return dict_
+
+

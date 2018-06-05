@@ -120,6 +120,8 @@ def generate_random_dict(constr=None):
     dict_['ESTIMATION']['optimizer'] = optimizer
     dict_['ESTIMATION']['start'] = start
     dict_['ESTIMATION']['maxiter'] = maxiter
+    dict_['ESTIMATION']['dependent'] = 'Y'
+    dict_['ESTIMATION']['indicator'] = 'D'
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         if key_ == 'SCIPY-BFGS':
@@ -163,7 +165,8 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['file', 'start', 'agents', 'optimizer', 'maxiter']
+                    structure = ['file', 'start', 'agents', 'optimizer', 'maxiter', 'dependent',
+                                 'indicator']
                 elif label == 'SCIPY-BFGS':
                     structure = ['gtol', 'eps']
                 else:
@@ -176,8 +179,15 @@ def print_dict(dict_, file_name='test'):
                         str_ = '        {0:<13} {1:>32}\n'
                         file_.write(str_.format(key_, dict_[label][key_]))
                     else:
-                        str_ = '        {0:<10} {1:>35}\n'
-                        file_.write(str_.format(key_, dict_[label][key_]))
+                        if key_ in ['indicator', 'dependent']:
+                            if key_ not in dict_['ESTIMATION'].keys():
+                                continue
+                            else:
+                                str_ = '        {0:<10} {1:>35}\n'
+                                file_.write(str_.format(key_, dict_[label][key_]))
+                        else:
+                            str_ = '        {0:<10} {1:>35}\n'
+                            file_.write(str_.format(key_, dict_[label][key_]))
 
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:

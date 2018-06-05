@@ -18,6 +18,8 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
         _prepare_arguments(init_dict, rslt)
     likl = []
+    indicator = init_dict['ESTIMATION']['indicator']
+    dep = init_dict['ESTIMATION']['dependent']
     order_outcome = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
     for i in [0.0, 1.0]:
         if i == 1.0:
@@ -26,14 +28,14 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         else:
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
             key_ = 'UNTREATED'
-        data = data_frame[data_frame['D'] == i]
+        data = data_frame[data_frame[indicator] == i]
         Z = data[[init_dict['varnames'][j-1] for j in init_dict['COST']['order']]]
         X = data[[init_dict['varnames'][j-1] for j in init_dict[key_]['order']]]
         XX = data[[init_dict['varnames'][j-1] for j in order_outcome]]
         g = pd.concat((XX, Z), axis=1)
 
         choice_ = pd.DataFrame.sum(choice * g, axis=1)
-        part1 = (data['Y'] - pd.DataFrame.sum(beta * X, axis=1)) / sd
+        part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
 
@@ -80,13 +82,14 @@ def _prepare_arguments(init_dict, rslt):
 
 def start_values(init_dict, data_frame, option):
     """The function selects the start values for the minimization process."""
-
     if not isinstance(init_dict, dict):
         msg = 'The input object ({})for specifing the start values isn`t a dictionary.' \
             .format(init_dict)
         raise UserError(msg)
     numbers = [init_dict['AUX']['num_covars_treated'], init_dict['AUX']['num_covars_untreated'],
                init_dict['AUX']['num_covars_cost']]
+    indicator = init_dict['ESTIMATION']['indicator']
+    dep = init_dict['ESTIMATION']['dependent']
 
     if option == 'init':
         # Set coefficients equal the true init file values
@@ -101,19 +104,19 @@ def start_values(init_dict, data_frame, option):
             sd_ = []
 
             for i in [1.0, 0.0]:
-                Y = data_frame.Y[data_frame.D == i]
+                Y = data_frame[dep][data_frame[indicator] == i]
                 if i == 1:
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[[init_dict['varnames'][j-1] for j in order]][data_frame.D == i]
+                X = data_frame[[init_dict['varnames'][j-1] for j in order]][data_frame[indicator] == i]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
             # Estimate gamma via Probit
             XZ = data_frame[init_dict['varnames']]
-            probitRslt = sm.Probit(data_frame.D, XZ).fit(disp=0)
+            probitRslt = sm.Probit(data_frame[indicator], XZ).fit(disp=0)
             help_gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
 
@@ -298,7 +301,7 @@ def simulate_estimation(init_dict, rslt, start=False):
         # Simulate endogeneous variables
         Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U)
 
-        df = write_output_estimation(labels, Y, D, X, Y_1, Y_0)
+        df = write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict)
         data_frames += [df]
 
     if start:
@@ -351,6 +354,8 @@ def write_comparison(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
+    indicator = init_dict['ESTIMATION']['indicator']
+    dep = init_dict['ESTIMATION']['dependent']
     df3, df2 = simulate_estimation(init_dict, rslt, True)
     with open('comparison.grmpy.txt', 'w') as file_:
         # First we note some basic information ab out the dataset.
@@ -358,7 +363,7 @@ def write_comparison(init_dict, df1, rslt):
         file_.write(header)
         info_ = []
         for i, label in enumerate([df1, df2, df3]):
-            info_ += [[label.shape[0], (label['D'] == 1).sum(), (label['D'] == 0).sum()]]
+            info_ += [[label.shape[0], (label[indicator] == 1).sum(), (label[indicator] == 0).sum()]]
 
         fmt = '    {:<25}' + ' {:>20}' * 3 + '\n\n\n'
         file_.write(fmt.format(*['Sample', 'Observed', 'Simulated (finish)',
@@ -387,12 +392,12 @@ def write_comparison(init_dict, df1, rslt):
                 else:
                     data_frame = df3
 
-                data = data_frame['Y']
+                data = data_frame[dep]
 
                 if group == 'Treated':
-                    data = data[data_frame['D'] == 1]
+                    data = data[data_frame[indicator] == 1]
                 elif group == 'Untreated':
-                    data = data[data_frame['D'] == 0]
+                    data = data[data_frame[indicator] == 0]
                 else:
                     pass
                 fmt = '    {:<25}' + ' {:>20.4f}' * 5 + '\n'
@@ -417,20 +422,21 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 
-def write_output_estimation(labels, Y, D, X, Y_1, Y_0):
+def write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict):
     """The function converts the simulated variables to a panda data frame."""
-
+    indicator = init_dict['ESTIMATION']['indicator']
+    dep = init_dict['ESTIMATION']['dependent']
     # Stack arrays
     data = np.column_stack((Y, D, X, Y_1, Y_0))
 
     # Construct list of column labels
-    column = ['Y', 'D'] + labels
+    column = [dep, indicator] + labels
 
-    column += ['Y1', 'Y0']
+    column += [dep + '1', dep + '0']
 
     # Generate data frame
     df = pd.DataFrame(data=data, columns=column)
-    df['D'] = df['D'].apply(np.int64)
+    df[indicator] = df[indicator].apply(np.int64)
     return df
 
 

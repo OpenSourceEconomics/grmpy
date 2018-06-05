@@ -12,8 +12,7 @@ def read(file_):
     """
     check_presence_init(file_)
 
-    dict_ = {}
-    dict_['varnames']=[]
+    dict_ = {'varnames': []}
     for line in open(file_).readlines():
 
         list_ = shlex.split(line)

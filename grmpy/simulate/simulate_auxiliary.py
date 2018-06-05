@@ -85,12 +85,14 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
 
     # Construct list of column labels
-    column = ['Y', 'D']
-    
+    dep, indicator = init_dict['ESTIMATION']['dependent'], init_dict['ESTIMATION']['indicator']
+    indicator
+    column = [dep, indicator]
+
     for i in list(range(X.shape[1])):
         str_ = 'X' + str(i)
         column.append(str_)
-    column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
+    column += [dep + '1', dep + '0', 'U1', 'U0', 'UC', 'V']
 
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
