@@ -61,7 +61,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Work with regression tests for package.')
 
     parser.add_argument('--request', action='store', dest='request', required=True,
-                        help='request (valid: check, create)')
+                        choices=['check', 'create'], help='request')
 
     request = process_arguments(parser)
 

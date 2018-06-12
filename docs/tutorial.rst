@@ -18,7 +18,7 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/restudToolbox/package/blob/master/respy/tests/resources/kw_data_one.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
@@ -36,56 +36,58 @@ source      str         specified name for the simulation output files
 
 The *ESTIMATION* block determines the basic information for the estimation process.
 
-=========     ======      ==================
+=========     =======      ==================
 Key            Value       Interpretation
-=========     ======      ==================
+=========     =======      ==================
 agents         int         number of individuals for the estimation simulation
 file           str         specified data inout file for the estimation process
 optimizer      str         optimizer used for the estimation process
 start          str         determines which start values are used for the estimation process
-=========     ======      ==================
+maxiter	       int         maximum numbers of iterations the minimization process performs
+=========     =======      ==================
 
 
 
 **TREATED**
 
-The *TREATED* block specifies the number of covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   ======  ======     ==================
+Key       Column  Value      Interpretation
+=======   ======  ======     ==================
+coeff     int     float      intercept coefficient
+coeff     int     float      coefficient of the first covariate
+coeff     int     float      coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   ======  ======     ==================
 
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number of covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. Note that the covariates need to be identical to the *TREATED* block.
+The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   ======  ======    ==================
+Key       Column  Value     Interpretation
+=======   ======  ======    ==================
+coeff     int     float     intercept coefficient
+coeff     int     float     coefficient of the first covariate
+coeff     int     float     coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   ======  ======    ==================
+
 
 **COST**
 
-The *COST* block specifies the number of covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
+The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
-=======     ======  ==================
-Key         Value   Interpretation
-=======     ======  ==================
-coeff       float   intercept coefficient
-coeff       float   coefficient of the first covariate
-coeff       float   coefficient of the second covariate
+=======   ======  ======    ==================
+Key       Column  Value     Interpretation
+=======   ======  ======    ==================
+coeff     int     float     intercept coefficient
+coeff     int     float     coefficient of the first covariate
+coeff     int     float     coefficient of the second covariate
  ...
-=======     ======  ==================
+=======   ======  ======    ==================
 
 **DIST**
 
@@ -94,11 +96,11 @@ The *DIST* block specifies the distribution of the unobservables.
 ======= ======      ==========================
 Key     Value       Interpretation
 ======= ======      ==========================
-coeff    float      :math:`\sigma_{U_0}`
-coeff    float      :math:`\sigma_{U_1,U_0}`
-coeff    float      :math:`\sigma_{U_0,V}`
 coeff    float      :math:`\sigma_{U_1}`
+coeff    float      :math:`\sigma_{U_1,U_0}`
 coeff    float      :math:`\sigma_{U_1,V}`
+coeff    float      :math:`\sigma_{U_0}`
+coeff    float      :math:`\sigma_{U_0,V}`
 coeff    float      :math:`\sigma_{V}`
 ======= ======      ==========================
 
@@ -109,8 +111,6 @@ The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization a
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 gtol       float      the value that has to be larger as the gradient norm before successful termination
 eps        float      value of step size (if *jac* is approximated)
 ========  ======      ==========================
@@ -122,8 +122,6 @@ The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimizati
 ========  ======      ==========================
 Key       Value       Interpretation
 ========  ======      ==========================
-disp       bool       set true to print convergence message
-maxiter    int        maximum numbers of iterations the minimization process performs
 xtol       float      relative error in solution values *xopt* that is acceptable for convergence
 ftol       float      relative error in fun(*xopt*) that is acceptable for convergence
 ========  ======      ==========================
@@ -132,7 +130,7 @@ ftol       float      relative error in fun(*xopt*) that is acceptable for conve
 Examples
 --------
 
-In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/grmToolbox/grmpy/tree/master/docs/tutorial>`_.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized roy model and to estimate the parameters of interest (given a data set) as specified in your initialization file.
 
 **Simulation**
@@ -145,7 +143,7 @@ First we will take a look on the simulation feature. For simulating a sample fro
     grmpy.simulate('tutorial.grmpy.ini')
 
 
-This creates a number of output files that contains information about the resulting simulated sample.
+This creates a number of output files that contain information about the resulting simulated sample.
 
 * **data.grmpy.info**, basic information about the simulated sample
 * **data.grmpy.txt**, simulated sample in a simple text file
@@ -160,7 +158,7 @@ The other feature of the package is the estimation of the parameters of interest
 
     grmpy.estimate('tutorial.grmpy.ini')
 
-As in the simulation process this creates a number of output files that contains information about the estimation results.
+As in the simulation process this creates a number of output file that contains information about the estimation results.
 
 * **est.grmpy.info**, basic information of the estimation process
-* **descriptives.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process
+* **comparison.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process

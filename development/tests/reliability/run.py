@@ -10,5 +10,5 @@ simulate('test.grmpy.ini')
 
 
 option = 'true_values'
-estimate('test.grmpy.ini', option)
+estimate('test.grmpy.ini')
 

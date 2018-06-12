@@ -4,77 +4,76 @@ import uuid
 from scipy.stats import wishart
 import numpy as np
 
-
-def constraints(probability=0.1, is_zero=True, agents=None, seed=None, sample=None,
-                optimizer=None, start=None, maxiter=None):
-    """The constraints function returns an dictionary that provides specific characteristics for the
-    random dictionary generating process.
-    """
-    constraints_dict = dict()
-    constraints_dict['DETERMINISTIC'] = np.random.random_sample() < probability
-    if not constraints_dict['DETERMINISTIC'] and is_zero:
-        constraints_dict['IS_ZERO'] = np.random.random_sample() < probability / (1 - probability)
-    else:
-        constraints_dict['IS_ZERO'] = False
-    if agents is None:
-        constraints_dict['AGENTS'] = np.random.randint(1, 1000)
-    else:
-        constraints_dict['AGENTS'] = agents
-    if seed is None:
-        constraints_dict['SEED'] = np.random.randint(1, 10000)
-    else:
-        constraints_dict['SEED'] = seed
-    if sample is None:
-        if constraints_dict['AGENTS'] != 1:
-            constraints_dict['SAMPLE_SIZE'] = np.random.randint(1, constraints_dict['AGENTS'])
-        else:
-            constraints_dict['SAMPLE_SIZE'] = 1
-    else:
-        constraints_dict['SAMPLE_SIZE'] = sample
-    if optimizer is None:
-        constraints_dict['OPTIMIZER'] = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],
-                                                         p=[0.5, 0.5])
-    else:
-        constraints_dict['OPTIMIZER'] = optimizer
-    if start is None:
-        constraints_dict['START'] = np.random.choice(a=['init', 'auto'])
-    else:
-        constraints_dict['START'] = start
-    if maxiter is None:
-        constraints_dict['MAXITER'] = np.random.randint(0, 10000)
-    else:
-        constraints_dict['MAXITER'] = maxiter
-
-    return constraints_dict
+from grmpy.check.check import UserError
 
 
-def generate_random_dict(constraints_dict=None):
+def generate_random_dict(constr=None):
     """The function generates a random initialization dictionary."""
 
-    if constraints_dict is not None:
-        if not isinstance(constraints_dict, dict):
-            raise AssertionError()
+    if constr is not None:
+        if not isinstance(constr, dict):
+            msg = '{} is not a dictionary.'.format(constr)
+            raise UserError(msg)
     else:
-        constraints_dict = constraints()
+        constr = dict()
 
-    is_deterministic = constraints_dict['DETERMINISTIC']
+    if 'DETERMINISTIC' in constr.keys():
+        is_deterministic = constr['DETERMINISTIC']
+    else:
+        is_deterministic = np.random.random_sample() < 0.1
 
-    optimizer = constraints_dict['OPTIMIZER']
+    if 'STATE_DIFF' in constr.keys():
+        state_diff = constr['STATE_DIFF']
+    else:
+        state_diff = np.random.random_sample() < 0.5
 
-    is_zero = constraints_dict['IS_ZERO']
+    if 'OPTIMIZER' in constr.keys():
+        optimizer = constr['OPTIMIZER']
+    else:
+        optimizer = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],p=[0.5, 0.5])
 
-    maxiter = constraints_dict['MAXITER']
+    if 'SAME_SIZE' in constr.keys():
+        same_size = constr['SAME_SIZE']
+    else:
+        same_size = False
 
-    agents = constraints_dict['AGENTS']
+    if 'IS_ZERO' in constr.keys() and not is_deterministic:
+        is_zero = np.random.random_sample() < 0.1 / (1 - 0.1)
+    else:
+        is_zero = False
 
-    start = constraints_dict['START']
+    if 'OVERLAP' in constr.keys():
+        overlap = constr['OVERLAP']
+    else:
+        overlap = np.random.random_sample() < 0.5
 
-    seed = constraints_dict['SEED']
+    if 'MAXITER' in constr.keys():
+        maxiter = constr['MAXITER']
+    else:
+        maxiter = np.random.randint(0, 10000)
+
+    if 'AGENTS' in constr.keys():
+        agents = constr['AGENTS']
+    else:
+        agents = np.random.randint(1, 1000)
+
+    if 'START' in constr.keys():
+        start = constr['START']
+    else:
+        start = np.random.choice(a=['init', 'auto'])
+    if 'SEED' in constr.keys():
+        seed = constr['SEED']
+    else:
+        seed = np.random.randint(1, 10000)
 
     source = my_random_string(8)
 
     dict_ = {}
     treated_num = np.random.randint(1, 10)
+    if state_diff:
+        untreated_num = np.random.randint(1, 10)
+    else:
+        pass
     cost_num = np.random.randint(1, 10)
     # Coefficients
     for key_ in ['UNTREATED', 'TREATED', 'COST']:
@@ -82,12 +81,26 @@ def generate_random_dict(constraints_dict=None):
         dict_[key_] = {}
 
         if key_ in ['UNTREATED', 'TREATED']:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(treated_num, key_, is_zero)
-            if key_ == 'TREATED':
-                dict_[key_]['types'] = dict_['UNTREATED']['types']
-        else:
-            dict_[key_]['coeff'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
+            if state_diff:
+                if key_ == 'TREATED':
+                    x = treated_num
+                else:
+                    x= untreated_num
+                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_,
+                                                                              is_zero)
 
+            else:
+                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
+                                                                              is_zero)
+        else:
+            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
+
+    if not state_diff:
+        dict_ = overlap_treat_cost(dict_, treated_num, cost_num, overlap)
+    else:
+        dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
+        dict_ = overlap_treat_untreat_cost(dict_, cost_num, overlap)
+    dict_ = types(dict_)
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
@@ -99,14 +112,16 @@ def generate_random_dict(constraints_dict=None):
             dict_['SIMULATION'][key_] = source
     # Estimation parameters
     dict_['ESTIMATION'] = {}
-    dict_['ESTIMATION']['agents'] = agents
+    if same_size:
+        dict_['ESTIMATION']['agents'] = agents
+    else:
+        dict_['ESTIMATION']['agents'] = np.random.randint(1, 1000)
     dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
     dict_['ESTIMATION']['optimizer'] = optimizer
     dict_['ESTIMATION']['start'] = start
+    dict_['ESTIMATION']['maxiter'] = maxiter
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
-        dict_[key_]['disp'] = 0
-        dict_[key_]['maxiter'] = maxiter
         if key_ == 'SCIPY-BFGS':
             dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
             dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
@@ -120,13 +135,13 @@ def generate_random_dict(constraints_dict=None):
         b = wishart.rvs(df=10, scale=np.identity(3), size=1)
     else:
         b = np.zeros((3, 3))
-    dict_['DIST']['coeff'] = []
-    dict_['DIST']['coeff'].append(b[0, 0] ** 0.5)
-    dict_['DIST']['coeff'].append(b[0, 1])
-    dict_['DIST']['coeff'].append(b[0, 2])
-    dict_['DIST']['coeff'].append(b[1, 1] ** 0.5)
-    dict_['DIST']['coeff'].append(b[1, 2])
-    dict_['DIST']['coeff'].append(b[2, 2] ** 0.5)
+    dict_['DIST']['all'] = []
+    dict_['DIST']['all'].append(b[0, 0] ** 0.5)
+    dict_['DIST']['all'].append(b[0, 1])
+    dict_['DIST']['all'].append(b[0, 2])
+    dict_['DIST']['all'].append(b[1, 1] ** 0.5)
+    dict_['DIST']['all'].append(b[1, 2])
+    dict_['DIST']['all'].append(b[2, 2] ** 0.5)
     print_dict(dict_)
     return dict_
 
@@ -148,11 +163,11 @@ def print_dict(dict_, file_name='test'):
                 if label == 'SIMULATION':
                     structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
-                    structure = ['file', 'start', 'agents', 'optimizer']
+                    structure = ['file', 'start', 'agents', 'optimizer', 'maxiter']
                 elif label == 'SCIPY-BFGS':
-                    structure = ['maxiter', 'gtol', 'eps']
+                    structure = ['gtol', 'eps']
                 else:
-                    structure = ['maxiter', 'xtol', 'ftol']
+                    structure = ['xtol', 'ftol']
                 for key_ in structure:
                     if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
                         str_ = '        {0:<25} {1:>20}\n'
@@ -166,52 +181,170 @@ def print_dict(dict_, file_name='test'):
 
 
             elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
-                for i, _ in enumerate(dict_[label]['coeff']):
-                    if 'types' in dict_[label].keys():
-                        if isinstance(dict_[label]['types'][i], list):
-                            str_ = '        {0:<10} {1:>35.4f} {2:>10} {3:>5.4f}\n'
-                            file_.write(
-                                str_.format(
-                                    'coeff', dict_[label]['coeff'][i], dict_[label]['types'][i][0],
-                                    dict_[label]['types'][i][1])
-                            )
-                        else:
-                            if write_nonbinary:
-                                str_ = '        {0:<10} {1:>35.4f} {2:>17}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i],
-                                                        dict_[label]['types'][i]))
+                for i, _ in enumerate(dict_[label]['all']):
+                    if 'order' in dict_[label].keys():
+                        if 'types' in dict_[label].keys():
+                            if isinstance(dict_[label]['types'][i], list):
+                                str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>10} {4:>5.4f}\n'
+                                file_.write(
+                                    str_.format(
+                                        'coeff', dict_[label]['order'][i], dict_[label]['all'][i],
+                                        dict_[label]['types'][i][0],dict_[label]['types'][i][1])
+                                )
                             else:
-                                str_ = '        {0:<10} {1:>35.4f}\n'
-                                file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                                if write_nonbinary:
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
+                                    file_.write(str_.format('coeff',dict_[label]['order'][i],
+                                                            dict_[label]['all'][i],
+                                                            dict_[label]['types'][i]))
+                                else:
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f}\n'
+                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
+                                                            dict_[label]['all'][i]))
 
                     else:
                         str_ = '        {0:<10} {1:>35.4f}\n'
-                        file_.write(str_.format('coeff', dict_[label]['coeff'][i]))
+                        file_.write(str_.format('coeff', dict_[label]['all'][i]))
 
             file_.write('\n')
 
 
 def my_random_string(string_length=10):
     """Returns a random string of length string_length."""
-    random = str(uuid.uuid4()).upper().replace("-", "")
+    random = str(uuid.uuid4()).upper().replace('-', '')
     return random[0:string_length]
 
 
 def generate_coeff(num, key_, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
+    keys = ['UNTREATED', 'COST', 'TREATED']
     if not is_zero:
         list_ = np.random.normal(0., 2., [num]).tolist()
-        if key_ in ['UNTREATED', 'COST']:
-            binary_list = ['nonbinary'] * num
-            for i, _ in enumerate(binary_list):
-                if np.random.random_sample() < 0.1:
-                    if i is not 0:
-                        frac = np.random.uniform(0, 1)
-                        binary_list[i] = ['binary', frac]
-        else:
-            binary_list = []
     else:
-        binary_list = ['nonbinary'] * num
         list_ = np.array([0] * num).tolist()
 
+    if key_ in keys:
+        binary_list = ['nonbinary'] * num
+    else:
+        binary_list = []
+
+
     return list_, binary_list
+
+
+def types(dict_):
+    """This function determines if a specified covariate is a binary or a non-binary variable.
+    Additionally it """
+    all = []
+    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        all += dict_[key_]['order']
+    all = [k for k in all if k != 1]
+    for i in list(set(all)):
+        if np.random.random_sample() < 0.1:
+            frac = np.random.uniform(0, 0.8)
+            for section in ['TREATED', 'UNTREATED', 'COST']:
+                if i in dict_[section]['order']:
+                    index = dict_[section]['order'].index(i)
+                    dict_[section]['types'][index] = ['binary', frac]
+        else:
+            pass
+
+    return dict_
+
+def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
+    """This function determines the variables that affect the output when selecting into treatment
+    and the costs.
+    """
+    if overlap:
+        treated_ord = list(range(1, treated_num + 1))
+        x = list(range(2, treated_num + 1))
+        cost_ord = []
+        y = 1
+        for i in list(range(cost_num)):
+            if i == 0:
+                cost_ord += [1]
+            else:
+                if np.random.random_sample() < 0.2:
+                    if len(x) == 0:
+                        cost_ord += [treated_ord[treated_num - 1] + y]
+                        y += 1
+                    else:
+                        a = np.random.choice(x)
+                        cost_ord += [int(a)]
+                        x = [j for j in x if j != a]
+                else:
+                    cost_ord += [treated_ord[treated_num - 1] + y]
+                    y += 1
+    else:
+        treated_ord = list(range(1, treated_num + 1))
+        cost_ord = list(range(treated_num + 1, treated_num + cost_num))
+        cost_ord = [1] + cost_ord
+
+    dict_['TREATED']['order'] = treated_ord
+    dict_['UNTREATED']['order'] = treated_ord
+    dict_['COST']['order'] = cost_ord
+
+    return dict_
+
+
+def overlap_treat_untreat(dict_, treated_num, untreated_num):
+    """This function determines the variables that affect the output independent of the decision
+    of an individual.
+    """
+    treated_ord = list(range(1, treated_num + 1))
+    x = list(range(2, treated_num + 1))
+    untreated_ord = []
+    y = 1
+    for i in list(range(untreated_num)):
+        if i == 0:
+            untreated_ord += [1]
+        else:
+            if np.random.random_sample() < 0.3:
+                if len(x) == 0:
+                    untreated_ord += [treated_ord[treated_num - 1] + y]
+                    y += 1
+                else:
+                    a = np.random.choice(x)
+                    untreated_ord += [int(a)]
+                    x = [j for j in x if j != a]
+            else:
+                untreated_ord += [treated_ord[treated_num - 1] + y]
+                y += 1
+    dict_['TREATED']['order'] = treated_ord
+    dict_['UNTREATED']['order'] = untreated_ord
+
+    return dict_
+
+
+def overlap_treat_untreat_cost(dict_, cost_num, overlap):
+    """This function determines the variables that affect the output of both treatment states as
+    well as the costs.
+    """
+    num_var = len(set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']))
+    if overlap:
+        treated_ord = list(range(1, num_var + 1))
+        x = list(range(2, num_var + 1))
+        cost_ord = []
+        y = 1
+        for i in list(range(cost_num)):
+            if i == 0:
+                cost_ord += [1]
+            else:
+                if np.random.random_sample() < .2:
+                    if len(x) == 0:
+                        cost_ord += [treated_ord[num_var - 1] + y]
+                        y += 1
+                    else:
+                        a = np.random.choice(x)
+                        cost_ord += [int(a)]
+                        x = [j for j in x if j != a]
+                else:
+                    cost_ord += [treated_ord[num_var - 1] + y]
+                    y += 1
+    else:
+        cost_ord = list(range(num_var + 1, num_var + cost_num))
+        cost_ord = [1] + cost_ord
+
+    dict_['COST']['order'] = cost_ord
+
+    return dict_
