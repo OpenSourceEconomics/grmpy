@@ -52,6 +52,7 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
         pass
     else:
         dict_['crit'][str(len(dict_['crit']))] = likl
+
     return likl
 
 
@@ -269,7 +270,9 @@ def print_logfile(init_dict, rslt):
 
 def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization dictionary."""
-    method = init_dict_['ESTIMATION']['optimizer'].split('-')[1]
+    method = init_dict_['ESTIMATION']['optimizer'].split('-')[1:]
+    if isinstance(method,list):
+        method = '-'.join(method)
     opt_dict = init_dict_['SCIPY-' + method]
     opt_dict['maxiter'] = init_dict_['ESTIMATION']['maxiter']
 
