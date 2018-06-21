@@ -14,7 +14,6 @@ import numpy as np
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
-from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
@@ -36,7 +35,6 @@ if True:
         dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
-        print(np.sum(df.sum()))
         init_dict = read('test.grmpy.ini')
         start = start_values(init_dict, df, 'init')
         criteria = calculate_criteria(init_dict, df, start)

@@ -52,13 +52,13 @@ def simulate_outcomes(init_dict, X, U):
     the realized outcome Y.
     """
     X = pd.DataFrame(X)
-    Z = X[[i - 1 for i in init_dict['COST']['order']]].as_matrix()
+    Z = X[[i - 1 for i in init_dict['CHOICE']['order']]].as_matrix()
     X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
     X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
-    coeffs_cost = init_dict['COST']['all']
+    coeffs_cost = init_dict['CHOICE']['all']
 
     # Calculate potential outcomes and costs
     Y_1 = np.dot(coeffs_treated, X_treated.T) + U[:, 0]
@@ -66,7 +66,7 @@ def simulate_outcomes(init_dict, X, U):
     C = np.dot(coeffs_cost, Z.T) + U[:, 2]
 
     # Calculate expected benefit and the resulting treatment dummy
-    D = np.array((Y_1 - Y_0 - C > 0).astype(int))
+    D = np.array((C > 0).astype(int))
 
     # Observed outcomes
     Y = D * Y_1 + (1 - D) * Y_0
@@ -112,7 +112,7 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
 def construct_all_coefficients(init_dict):
     """This function constructs all coefficients from the initialization dictionary."""
     coeffs_all = []
-    for label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+    for label in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
         coeffs_all += init_dict[label]['all'].tolist()
 
     return coeffs_all

@@ -15,12 +15,12 @@ def process(list_, dict_, keyword):
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []
-    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE'] and 'types' not in dict_[keyword].keys():
         dict_[keyword]['types'] = []
-    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'order' not in dict_[keyword].keys():
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE'] and 'order' not in dict_[keyword].keys():
         dict_[keyword]['order'] = []
 
-    if keyword in ['TREATED', 'UNTREATED', 'COST']:
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE']:
         if order not in dict_['varnames']:
             dict_['varnames'] += [order]
         if len(list_) == 5:
@@ -57,8 +57,8 @@ def auxiliary(dict_):
     else:
         is_deterministic = False
 
-    for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
-        if key_ in ['UNTREATED', 'TREATED', 'COST']:
+    for key_ in ['UNTREATED', 'TREATED', 'CHOICE', 'DIST']:
+        if key_ in ['UNTREATED', 'TREATED', 'CHOICE']:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
         else:
@@ -75,7 +75,7 @@ def auxiliary(dict_):
     # Number of covariates
     num_covars_treated = len(dict_['TREATED']['all'])
     num_covars_untreated = len(dict_['UNTREATED']['all'])
-    num_covars_cost = len(dict_['COST']['all'])
+    num_covars_cost = len(dict_['CHOICE']['all'])
 
     dict_['AUX']['num_covars_treated'] = num_covars_treated
     dict_['AUX']['num_covars_untreated'] = num_covars_untreated
@@ -87,7 +87,7 @@ def auxiliary(dict_):
     # Starting values
     dict_['AUX']['init_values'] = []
 
-    for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
         dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
 
         for j in sorted(dict_[key_].keys()):
@@ -106,17 +106,17 @@ def check_types(dict_):
     costs.
     """
     list_ = []
-    covars = set(dict_['TREATED']['order'] +  dict_['UNTREATED']['order'] +  dict_['COST']['order'])
+    covars = set(dict_['TREATED']['order'] +  dict_['UNTREATED']['order'] +  dict_['CHOICE']['order'])
     for i in covars:
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
-                        i in dict_['COST']['order']:
+                        i in dict_['CHOICE']['order']:
             if i == 1:
-                keys = ['TREATED', 'UNTREATED', 'COST']
+                keys = ['TREATED', 'UNTREATED', 'CHOICE']
                 for key_ in keys:
                     index = dict_[key_]['order'].index(i)
                     dict_[key_]['types'][index] = 'nonbinary'
             else:
-                keys = ['TREATED', 'UNTREATED', 'COST']
+                keys = ['TREATED', 'UNTREATED', 'CHOICE']
                 for key_ in keys:
                     index = dict_[key_]['order'].index(i)
                     if isinstance(dict_[key_]['types'][index], list):
@@ -131,10 +131,10 @@ def check_types(dict_):
                                 msg = 'Your initilaization file has two different binary ' \
                                       'specification for the same covariate.'
                                 raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
         elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i not in dict_['COST']['order']:
+                        i not in dict_['CHOICE']['order']:
             keys = ['TREATED', 'UNTREATED']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -155,8 +155,8 @@ def check_types(dict_):
             list_ += [dict_['UNTREATED']['types'][index]]
 
         elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i in dict_['COST']['order']:
-            keys = ['UNTREATED', 'COST']
+                        i in dict_['CHOICE']['order']:
+            keys = ['UNTREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
                 if isinstance(dict_[key_]['types'][index], list):
@@ -171,11 +171,11 @@ def check_types(dict_):
                             msg = 'Your initilaization file has two different binary ' \
                                   'specification for the same covariate.'
                             raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
         elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and\
-                        i in dict_['COST']['order']:
-            keys = ['TREATED', 'COST']
+                        i in dict_['CHOICE']['order']:
+            keys = ['TREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
                 if isinstance(dict_[key_]['types'][index], list):
@@ -190,7 +190,7 @@ def check_types(dict_):
                             msg = 'Your initilaization file has two different binary ' \
                                   'specification for the same covariate.'
                             raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
         else:
             if i in dict_['TREATED']['order']:
@@ -200,8 +200,8 @@ def check_types(dict_):
                 index = dict_['UNTREATED']['order'].index(i)
                 list_ += [dict_['UNTREATED']['types'][index]]
             else:
-                index = dict_['COST']['order'].index(i)
-                list_ += [dict_['COST']['types'][index]]
+                index = dict_['CHOICE']['order'].index(i)
+                list_ += [dict_['CHOICE']['types'][index]]
     dict_['AUX']['types'] = list_
 
 

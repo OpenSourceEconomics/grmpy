@@ -76,7 +76,7 @@ def generate_random_dict(constr=None):
         pass
     cost_num = np.random.randint(1, 10)
     # Coefficients
-    for key_ in ['UNTREATED', 'TREATED', 'COST']:
+    for key_ in ['UNTREATED', 'TREATED', 'CHOICE']:
 
         dict_[key_] = {}
 
@@ -150,7 +150,7 @@ def generate_random_dict(constr=None):
 
 def print_dict(dict_, file_name='test'):
     """The function creates an init file from a given dictionary."""
-    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'COST', 'DIST', 'SCIPY-BFGS',
+    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'DIST', 'SCIPY-BFGS',
               'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
 
@@ -190,7 +190,7 @@ def print_dict(dict_, file_name='test'):
                             file_.write(str_.format(key_, dict_[label][key_]))
 
 
-            elif label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+            elif label in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
                 for i, _ in enumerate(dict_[label]['all']):
                     if 'order' in dict_[label].keys():
                         if 'types' in dict_[label].keys():
@@ -227,7 +227,7 @@ def my_random_string(string_length=10):
 
 def generate_coeff(num, key_, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
-    keys = ['UNTREATED', 'COST', 'TREATED']
+    keys = ['UNTREATED', 'CHOICE', 'TREATED']
     if not is_zero:
         list_ = np.random.normal(0., 2., [num]).tolist()
     else:
@@ -246,13 +246,13 @@ def types(dict_):
     """This function determines if a specified covariate is a binary or a non-binary variable.
     Additionally it """
     all = []
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         all += dict_[key_]['order']
     all = [k for k in all if k != 1]
     for i in list(set(all)):
         if np.random.random_sample() < 0.1:
             frac = np.random.uniform(0, 0.8)
-            for section in ['TREATED', 'UNTREATED', 'COST']:
+            for section in ['TREATED', 'UNTREATED', 'CHOICE']:
                 if i in dict_[section]['order']:
                     index = dict_[section]['order'].index(i)
                     dict_[section]['types'][index] = ['binary', frac]
@@ -292,7 +292,7 @@ def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
 
     dict_['TREATED']['order'] = treated_ord
     dict_['UNTREATED']['order'] = treated_ord
-    dict_['COST']['order'] = cost_ord
+    dict_['CHOICE']['order'] = cost_ord
 
     return dict_
 
@@ -355,6 +355,6 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
         cost_ord = list(range(num_var + 1, num_var + cost_num))
         cost_ord = [1] + cost_ord
 
-    dict_['COST']['order'] = cost_ord
+    dict_['CHOICE']['order'] = cost_ord
 
     return dict_

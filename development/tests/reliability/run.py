@@ -6,7 +6,6 @@ import sys
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
 
-simulate('test.grmpy.ini')
 
 
 option = 'true_values'

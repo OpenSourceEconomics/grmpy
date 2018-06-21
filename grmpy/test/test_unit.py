@@ -52,13 +52,13 @@ def test2():
     different setups.
     """
     for j in range(10):
-        for i in ['ALL', 'TREATED', 'UNTREATED', 'COST', 'TREATED & UNTREATED']:
+        for i in ['ALL', 'TREATED', 'UNTREATED', 'CHOICE', 'TREATED & UNTREATED']:
             constr = dict()
             constr['DETERMINISTIC'] = False
             dict_ = generate_random_dict(constr)
 
             if i == 'ALL':
-                for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                     dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
             elif i == 'TREATED & UNTREATED':
                 for key_ in ['TREATED', 'UNTREATED']:
@@ -129,10 +129,10 @@ def test4():
         print_dict(gen_dict, init_file_name)
         imp_dict = read(init_file_name + '.grmpy.ini')
         dicts = [gen_dict, imp_dict]
-        for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+        for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
             np.testing.assert_array_almost_equal(gen_dict[key_]['all'], imp_dict[key_]['all'],
                                                  decimal=4)
-            if key_ in ['TREATED', 'UNTREATED', 'COST']:
+            if key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                 for dict_ in dicts:
 
                     if not dict_[key_]['order'] == dict_[key_]['order']:
@@ -228,7 +228,7 @@ def test7():
             index_untreated = dict_['UNTREATED']['order'].index(i)
             if not dict_['TREATED']['types'][index_treated] == dict_['UNTREATED']['types'][index_untreated]:
                 raise AssertionError()
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
 
@@ -271,7 +271,7 @@ def test10():
         dict_ = read('test.grmpy.ini')
         print(dict_)
         true = []
-        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
             true += list(dict_[key_]['all'])
         df = simulate('test.grmpy.ini')
         x0 = start_values(dict_, df, 'init')[:-6]

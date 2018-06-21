@@ -36,7 +36,7 @@ def check_initialization_dict(dict_):
         if not is_pos_def(dict_):
             msg = 'The specified covariance matrix has to be positive semidefinite.'
             raise UserError(msg)
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if len(dict_[key_]['order']) > len(set(dict_[key_]['order'])):
             msg = 'There is a problem in the {} section of the initialization file. \n         ' \
                   'Probably you specified two coefficients for one covariate in the same section.'\
@@ -66,7 +66,7 @@ def check_init_file(dict_):
     elif dict_['DIST']['all'][5] == 0:
         msg = 'The standard deviation of the collected unobservables have to be larger than zero.'
         raise UserError(msg)
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if len(set(dict_[key_]['order'])) != len(dict_[key_]['order']):
             v
             msg = 'There are two start coefficients {} Section'.format(key_)

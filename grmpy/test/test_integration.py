@@ -56,7 +56,7 @@ def test3():
     for _ in range(5):
         constr = dict()
         constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 10000, 'init'
-        constr['optimizer'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
+        constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
 
         df1 = simulate('test.grmpy.ini')
@@ -136,13 +136,13 @@ def test7():
 
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
-        if len(dict_['COST']['order']) == 1:
-            dict_['COST']['all'] = list(dict_['COST']['all'])
-            dict_['COST']['all'] += [1.000]
-            dict_['COST']['order'] += [2]
-            dict_['COST']['types'] += ['nonbinary']
+        if len(dict_['CHOICE']['order']) == 1:
+            dict_['CHOICE']['all'] = list(dict_['CHOICE']['all'])
+            dict_['CHOICE']['all'] += [1.000]
+            dict_['CHOICE']['order'] += [2]
+            dict_['CHOICE']['types'] += ['nonbinary']
 
-        dict_['COST']['order'][1] = 1
+        dict_['CHOICE']['order'][1] = 1
         print_dict(dict_)
         pytest.raises(UserError, check_initialization_dict, dict_)
         pytest.raises(UserError, simulate, 'test.grmpy.ini')
@@ -156,8 +156,8 @@ def test7():
 
 
         tests = []
-        tests += [['TREATED','UNTREATED'], ['TREATED', 'COST'], ['UNTREATED', 'COST']]
-        tests += [['TREATED', 'UNTREATED', 'COST']]
+        tests += [['TREATED','UNTREATED'], ['TREATED', 'CHOICE'], ['UNTREATED', 'CHOICE']]
+        tests += [['TREATED', 'UNTREATED', 'CHOICE']]
 
         for combi in tests:
             constr['STATE_DIFF'], constr['OVERLAP'] = True, True

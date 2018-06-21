@@ -15,7 +15,7 @@ from grmpy.check.check import UserError
 
 def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
-    beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v, choice = \
+    beta1, beta0, gamma, sd1, sd0, sdv, rho1v, rho0v = \
         _prepare_arguments(init_dict, rslt)
     likl = []
     indicator = init_dict['ESTIMATION']['indicator']
@@ -29,12 +29,10 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
             key_ = 'UNTREATED'
         data = data_frame[data_frame[indicator] == i]
-        Z = data[[init_dict['varnames'][j-1] for j in init_dict['COST']['order']]]
+        Z = data[[init_dict['varnames'][j-1] for j in init_dict['CHOICE']['order']]]
         X = data[[init_dict['varnames'][j-1] for j in init_dict[key_]['order']]]
-        XX = data[[init_dict['varnames'][j-1] for j in order_outcome]]
-        g = pd.concat((XX, Z), axis=1)
 
-        choice_ = pd.DataFrame.sum(choice * g, axis=1)
+        choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
         part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
         part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
@@ -60,25 +58,13 @@ def _prepare_arguments(init_dict, rslt):
     """The function prepares the coefficients for the log-liklihood function."""
     beta1 = np.array(rslt['TREATED']['all'])
     beta0 = np.array(rslt['UNTREATED']['all'])
-    gamma = np.array(rslt['COST']['all'])
+    gamma = np.array(rslt['CHOICE']['all'])
     sd0 = rslt['DIST']['all'][0]
     sd1 = rslt['DIST']['all'][1]
     sdv = init_dict['DIST']['all'][5]
     rho1, rho0 = rslt['DIST']['all'][3], rslt['DIST']['all'][2]
-    choice = []
-    for i in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']):
-        if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
-            index_treated = init_dict['TREATED']['order'].index(i)
-            index_untreated = init_dict['UNTREATED']['order'].index(i)
-            choice += [beta1[index_treated] - beta0[index_untreated]]
-        elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
-            index = init_dict['TREATED']['order'].index(i)
-            choice += [beta1[index]]
-        elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
-            index = init_dict['UNTREATED']['order'].index(i)
-            choice += [-beta0[index]]
-    choice = np.concatenate((np.array(choice), -gamma))
-    return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0, choice
+
+    return beta1, beta0, gamma, sd1, sd0, sdv, rho1, rho0
 
 
 def start_values(init_dict, data_frame, option):
@@ -116,24 +102,10 @@ def start_values(init_dict, data_frame, option):
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
             # Estimate gamma via Probit
-            XZ = data_frame[init_dict['varnames']]
-            probitRslt = sm.Probit(data_frame[indicator], XZ).fit(disp=0)
-            help_gamma = probitRslt.params
+            Z = data_frame[[init_dict['varnames'][j-1] for j in init_dict['CHOICE']['order']]]
+            probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
+            gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
-
-            help_ = init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']
-            adj = [i for i in init_dict['COST']['order'] if i in help_]
-            for i in adj:
-                j = init_dict['varnames'][i - 1]
-                if i in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
-                    help_gamma[j] = np.subtract(np.subtract(beta[0][j], beta[1][j]), help_gamma[j])
-                elif i in init_dict['TREATED']['order'] and i not in init_dict['UNTREATED']['order']:
-                    help_gamma[j] = np.subtract(beta[0][j], help_gamma[j])
-                elif i not in init_dict['TREATED']['order'] and i in init_dict['UNTREATED']['order']:
-                    help_gamma[j] = np.subtract((- beta[1][j]), help_gamma[j])
-            gamma = []
-            for i in init_dict['COST']['order']:
-                gamma += [help_gamma[i - 1]]
 
             # Arrange starting values
             x0 = np.concatenate((beta[0], beta[1]))
@@ -173,14 +145,14 @@ def distribute_parameters(init_dict, start_values, dict_=None):
 
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
-    rslt['COST'] = dict()
+    rslt['CHOICE'] = dict()
     rslt['DIST'] = dict()
 
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_treated]
     rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
-    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    rslt['CHOICE']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         rslt[key_]['order'] = init_dict[key_]['order']
         rslt[key_]['types'] = init_dict[key_]['types']
 
@@ -319,7 +291,7 @@ def process_results(init_dict, rslt, start=False):
     start_dict = {}
     num_treated = len(init_dict['TREATED']['all'])
     num_untreated = len(init_dict['UNTREATED']['all'])
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         rslt[key_]['order'] = init_dict[key_]['order']
     rslt['varnames'] = init_dict['varnames']
 
@@ -331,7 +303,7 @@ def process_results(init_dict, rslt, start=False):
         dict_['AUX'] = {}
         dict_['AUX']['types'] = init_dict['AUX']['types']
         if dict_ == rslt_dict:
-            for key_ in ['TREATED', 'UNTREATED', 'COST']:
+            for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                 dict_[key_] = {}
                 dict_[key_]['types'] = init_dict[key_]['types']
                 dict_[key_]['order'] = init_dict[key_]['order']
@@ -339,14 +311,14 @@ def process_results(init_dict, rslt, start=False):
                 dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
         else:
             if start:
-                for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                     dict_[key_] = {}
                     dict_[key_]['types'] = init_dict[key_]['types']
                     dict_[key_]['order'] = init_dict[key_]['order']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
                                             num_treated: num_treated + num_untreated]
-                dict_['COST']['all'] = init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
+                dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
                 dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
@@ -419,7 +391,7 @@ def write_comparison(init_dict, df1, rslt):
         value, args = calculate_mte(rslt, df1)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
-        len_ = len(value) - 1
+        len_ = len(value)
         for i in range(len_):
             if isinstance(value[i], float):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
@@ -494,13 +466,13 @@ def adjust_output_maxiter_zero(init_dict, start_values):
     rslt = dict()
     rslt['TREATED'] = dict()
     rslt['UNTREATED'] = dict()
-    rslt['COST'] = dict()
+    rslt['CHOICE'] = dict()
     rslt['DIST'] = dict()
 
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_treated]
     rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
-    rslt['COST']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
+    rslt['CHOICE']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
 
     rslt['DIST']['all'] = start_values[-6:]
 
@@ -603,14 +575,17 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
             output = [sd1, rho01, rho1, sd0, rho0, sdv]
         return output
 
-def calculate_mte(rslt, data_frame):
+def calculate_mte(rslt, data_frame, quant=None):
 
     coeffs_untreated = rslt['UNTREATED']['all']
     coeffs_treated = rslt['TREATED']['all']
 
-    quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-    args = [str(i) + '%' for i in quantiles]
-    quantiles = [i * 0.01 for i in quantiles]
+    if quant is None:
+        quantiles = [1] + np.arange(2.5, 100, 2.5).tolist() + [99]
+        args = [str(i) + '%' for i in quantiles]
+        quantiles = [i * 0.01 for i in quantiles]
+    else:
+        quantiles = quant
 
     distribution = transform_rslt_DIST(rslt['AUX']['x_internal'], dict())
 
@@ -620,7 +595,9 @@ def calculate_mte(rslt, data_frame):
     x = data_frame[[rslt['varnames'][i - 1] for i in help_]]
 
     value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, rslt)
-
-    return value, args
+    if quant is None:
+        return value, args
+    else:
+        return value
 
 

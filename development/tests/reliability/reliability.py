@@ -44,7 +44,6 @@ def get_effect_grmpy(dict_):
     name = dict_['SIMULATION']['source']
     linecache.clearcache()
     line = linecache.getline('{}.grmpy.info'.format(name), 25)
-    print(line)
     stat = float(shlex.split(line)[1])
     return stat
 

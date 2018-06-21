@@ -90,7 +90,7 @@ def refactor_results(dict_, file, newfile):
     
     pseudo = read(file)
 
-    for key in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+    for key in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
         if key == 'DIST':
             pseudo['DIST']['all'] = dict_['AUX']['x_internal'][-6:]
         else:
