@@ -1,11 +1,12 @@
-from grmpy.estimate.estimate import estimate
+import matplotlib.pyplot as plt
 from os.path import join
 from shutil import move
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from grmpy.estimate.estimate_auxiliary import calculate_mte
 import pandas as pd
+import numpy as np
+import os
+
+from grmpy.estimate.estimate_auxiliary import calculate_mte
+from grmpy.estimate.estimate import estimate
 
 def plot_est_mte(rslt, data_frame):
     name = 'comparison'
