@@ -1,12 +1,15 @@
 """This module provides auxiliary functions for the import process of the init file."""
 import numpy as np
+import ast
 
 from grmpy.check.custom_exceptions import UserError
 
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
-    if len(list_) == 5:
+    if len(list_) > 5:
+        name, order, val, type_, categories, prob = list_[0], list_[1], list_[2], list_[3], list_[4], list_[5]
+    elif len(list_) == 5:
         name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
     elif len(list_) in [3,4]:
         name, order, val  = list_[0], list_[1], list_[2]
@@ -19,13 +22,18 @@ def process(list_, dict_, keyword):
         dict_[keyword]['types'] = []
     if keyword in ['TREATED', 'UNTREATED', 'CHOICE'] and 'order' not in dict_[keyword].keys():
         dict_[keyword]['order'] = []
-
     if keyword in ['TREATED', 'UNTREATED', 'CHOICE']:
         if order not in dict_['varnames']:
             dict_['varnames'] += [order]
-        if len(list_) == 5:
-            dict_[keyword]['types'] += [[type_, float(frac_)]]
-            dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+        if len(list_) >= 5:
+            if type_ == 'binary':
+                dict_[keyword]['types'] += [[type_, float(frac_)]]
+                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+            elif type_ == 'categorical':
+                categories = list(eval(categories))
+                prob = list(eval(prob))
+                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+                dict_[keyword]['types'] += [['categorical', categories, prob]]
         else:
             dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
             dict_[keyword]['types'] += ['nonbinary']

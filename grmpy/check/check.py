@@ -1,4 +1,5 @@
 """This module provides some capabilities to check the integrity of the package."""
+import numpy as np
 import os
 
 from grmpy.check.custom_exceptions import UserError
@@ -44,11 +45,23 @@ def check_initialization_dict(dict_):
             raise UserError(msg)
         for x in dict_[key_]['types']:
             if isinstance(x, list):
-                if x[1] >= 0.9:
-                    msg = 'The specified probability that a binary variable is equal to one has to be \\\
-                           suffiently lower than one.'
-                    raise UserError(msg)
-                    
+                if x[0] == 'binary':
+                    if x[1] >= 0.9:
+                        msg = 'The specified probability that a binary variable is equal to one \
+                                   has to be suffiently lower than one.'
+                        raise UserError(msg)
+                elif x[0] == 'categorical':
+                    if 1 in x[1]:
+                        index = x[1].index(1)
+                        if x[2][index] >= 0.9:
+                            msg = 'The specified probability that a categorical variable is equal\
+                                        to one has to be suffiently lower than one.'
+                            raise UserError(msg)
+                    if np.testing.assert_approx_equal(sum(x[2]),1.):
+                        msg = 'The specified probability for all possible categories of a ' \
+                              'categorical variable have to sum up to 1.'
+                        raise UserError(msg)
+
     if dict_['ESTIMATION']['file'][-4:] not in ['.pkl', '.txt']:
         msg = 'The file format specified in the Estimation section of the initialization file is currently not supported by grmpy. \n' \
               'Please use either .txt or .pkl.'

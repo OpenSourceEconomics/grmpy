@@ -25,10 +25,18 @@ def simulate_covariates(init_dict):
     X[:, 0] = 1.0
     for i in list(range(num_covars)):
         if isinstance(types[i], list):
-            if i != 0:
-                frac = types[i][1]
-                binary = np.random.binomial(1, frac, size=num_agents)
-                X[:, i] = binary
+            if types[i][0] == 'binary':
+                if i != 0:
+                    frac = types[i][1]
+                    binary = np.random.binomial(1, frac, size=num_agents)
+                    X[:, i] = binary
+                else:
+                    pass
+            elif types[i][0] == 'categorical':
+                prob = types[i][2]
+                cat = types[i][1]
+                rand = np.random.choice(cat, size=num_agents, p=prob)
+                X[:,i] = rand
 
     return X
 

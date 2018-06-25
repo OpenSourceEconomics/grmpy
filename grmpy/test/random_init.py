@@ -195,12 +195,31 @@ def print_dict(dict_, file_name='test'):
                     if 'order' in dict_[label].keys():
                         if 'types' in dict_[label].keys():
                             if isinstance(dict_[label]['types'][i], list):
-                                str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>10} {4:>5.4f}\n'
-                                file_.write(
-                                    str_.format(
-                                        'coeff', dict_[label]['order'][i], dict_[label]['all'][i],
-                                        dict_[label]['types'][i][0],dict_[label]['types'][i][1])
-                                )
+                                if dict_[label]['types'][i][0]== 'binary':
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>14} {4:>5.4f}\n'
+                                    file_.write(
+                                        str_.format(
+                                            'coeff', dict_[label]['order'][i],
+                                            dict_[label]['all'][i], dict_[label]['types'][i][0],
+                                            dict_[label]['types'][i][1])
+                                    )
+                                elif dict_[label]['types'][i][0]== 'categorical':
+                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>19} '
+                                    for j in [1,2]:
+                                        str_ += ' ('
+                                        for counter, k in enumerate(dict_[label]['types'][i][j]):
+                                            if counter < len(dict_[label]['types'][i][j]) - 1:
+                                                str_  += '{:>1}'.format(str(k)) + ','
+                                            else:
+                                                str_ += '{}'.format(str(k)) + ')'
+                                    str_ += '\n'
+                                    file_.write(
+                                        str_.format(
+                                            'coeff', dict_[label]['order'][i],
+                                            dict_[label]['all'][i], dict_[label]['types'][i][0])
+                                    )
+
+
                             else:
                                 if write_nonbinary:
                                     str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
@@ -250,12 +269,21 @@ def types(dict_):
         all += dict_[key_]['order']
     all = [k for k in all if k != 1]
     for i in list(set(all)):
-        if np.random.random_sample() < 0.1:
-            frac = np.random.uniform(0, 0.8)
-            for section in ['TREATED', 'UNTREATED', 'CHOICE']:
-                if i in dict_[section]['order']:
-                    index = dict_[section]['order'].index(i)
-                    dict_[section]['types'][index] = ['binary', frac]
+        if np.random.random_sample() < 0.2:
+            if np.random.random_sample() < 0.5:
+                frac = np.random.uniform(0, 0.8)
+                for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+                    if i in dict_[section]['order']:
+                        index = dict_[section]['order'].index(i)
+                        dict_[section]['types'][index] = ['binary', frac]
+            else:
+                num = np.random.choice([3,4,5,6,7], size=1)
+                cat = list(range(1,int(num) + 1))
+                prob = prob_weights(num)
+                for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+                    if i in dict_[section]['order']:
+                        index = dict_[section]['order'].index(i)
+                        dict_[section]['types'][index] = ['categorical', cat, prob]
         else:
             pass
 
@@ -358,3 +386,23 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
     dict_['CHOICE']['order'] = cost_ord
 
     return dict_
+
+def prob_weights(n):
+    """This function creates the probabilities for categorical variables given the number of
+    different categories"""
+    x = 0.95
+    weights = []
+    for i in range(int(n)):
+        if i == 0:
+            prob = np.random.choice(np.arange(0.05,0.5, 0.05))
+        else:
+            if i == n-1:
+                prob = 1 - sum(weights)
+            else:
+                if x/2 == 0.05:
+                    prob = 0.05
+                else:
+                    prob = np.random.choice(np.arange(0.05, x/2, 0.05))
+        x = round(x -prob, 4)
+        weights += [prob]
+    return list(np.around(weights,2))
