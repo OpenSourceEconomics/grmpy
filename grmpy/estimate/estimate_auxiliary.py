@@ -270,11 +270,11 @@ def simulate_estimation(init_dict, rslt, start=False):
         # Set seed value
         np.random.seed(seed)
         # Simulate unobservables
-        U, _ = simulate_unobservables(dict_)
+        U, V = simulate_unobservables(dict_)
         X = simulate_covariates(rslt_dict)
 
         # Simulate endogeneous variables
-        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U)
+        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U, V)
 
         df = write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict)
         data_frames += [df]

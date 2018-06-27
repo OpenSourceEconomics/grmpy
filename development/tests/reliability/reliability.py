@@ -36,6 +36,10 @@ def update_correlation_structure(model_dict, rho):
     model_dict['DIST']['all'][2] = cov
 
     # We print out the specification to an initialization file with the name mc_init.grmpy.ini.
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
+        x = [model_dict['varnames'][j-1] for j in model_dict[key_]['order']]
+        model_dict[key_]['order'] = x
+
     print_dict(model_dict)
 
 def get_effect_grmpy(dict_):
@@ -67,7 +71,7 @@ def monte_carlo(file, grid_points):
         # Simulate a Data set and specify exogeneous and endogeneous variables
         df_mc = simulate(file)
 
-        endog, exog, instr = df_mc['Y'], df_mc[['X0', 'D']], df_mc[['X0', 'X1']]
+        endog, exog, instr = df_mc['Y'], df_mc[['X1', 'D']], df_mc[['X1', 'X2']]
         d_treated = df_mc['D'] == 1
 
         # Effect randomization
@@ -129,9 +133,6 @@ if __name__ == '__main__':
     target = os.path.split(os.path.split(os.path.split(directory)[0])[0])[0] + '/docs/figures'
     x = monte_carlo('test.grmpy.ini', 10)
     create_plots(x, 0.5)
-    for type in ['grmpy', 'ols', '2sls', 'random']:
-        filename = 'fig_{}_average_effect_estimation.png'.format(type)
-        move(join(directory, filename), join(target, filename))
 
 
 

@@ -125,6 +125,7 @@ def test7():
     fname_vzero = TEST_RESOURCES_DIR + '/test_vzero.grmpy.ini'
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.ini'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
+    fname_categorical = TEST_RESOURCES_DIR + '/test_categorical.grmpy.ini'
 
     for i in range(10):
         constr = dict()
@@ -184,6 +185,10 @@ def test7():
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
+
+    dict_ = read(fname_categorical)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, simulate, fname_categorical)
 
     dict_ = read(fname_zero)
     pytest.raises(UserError, check_init_file, dict_)

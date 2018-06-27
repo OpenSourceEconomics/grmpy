@@ -44,7 +44,6 @@ def test1():
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
             np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0), decimal=7)
 
 
 def test2():
@@ -100,7 +99,6 @@ def test2():
 
             np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0))
 
 
 def test3():
@@ -269,7 +267,6 @@ def test10():
         constr['DETERMINISTIC'] = False
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
-        print(dict_)
         true = []
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
             true += list(dict_[key_]['all'])
@@ -303,4 +300,5 @@ def test12():
                                           
     simulate(fname)
     estimate(fname)
+
 
