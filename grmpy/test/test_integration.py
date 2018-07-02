@@ -228,7 +228,7 @@ def test9():
     """This test ensures that the random initialization file generating process, the read in process
     and the simulation process works if the constraints function allows for different number of co-
     variates for each treatment state and the occurence of cost-benefit shifters."""
-    for _ in range(10):
+    for _ in range(5):
         constr = dict()
         constr['DETERMINISTIC'], constr['AGENT'], constr['STATE_DIFF'] = False, 1000, True
         constr['OVERLAP'] = True
