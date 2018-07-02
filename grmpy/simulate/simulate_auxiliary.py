@@ -68,7 +68,7 @@ def simulate_outcomes(init_dict, X, U, V):
     # Calculate potential outcomes and choice
     Y_1 = np.dot(coeffs_treated, X_treated.T) + U[:, 0]
     Y_0 = np.dot(coeffs_untreated, X_untreated.T) + U[:, 1]
-    C = np.dot(coeffs_choice, Z.T) + V
+    C = np.dot(coeffs_choice, Z.T) - V
 
     # Calculate expected benefit and the resulting treatment dummy
     D = np.array((C > 0).astype(int))
@@ -248,7 +248,7 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             MTE += ['---']
         else:
             MTE += [
-                np.mean(np.dot(para_diff, x.T)) - ((cov[2, 1] - cov[2, 0]) / cov[2, 2]) * norm.ppf(
+                np.mean(np.dot(x, para_diff)) - ((cov[2, 1] - cov[2, 0]) / cov[2, 2]) * norm.ppf(
                     i)]
 
     return MTE

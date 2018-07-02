@@ -58,7 +58,6 @@ def test3():
         constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 10000, 'init'
         constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
-
         df1 = simulate('test.grmpy.ini')
         rslt = estimate('test.grmpy.ini')
         init_dict = read('test.grmpy.ini')
