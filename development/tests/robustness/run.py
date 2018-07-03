@@ -1,3 +1,7 @@
+"""This script replicates the estimation results from Cainero 2011 via the grmpy estimation method.
+Additionally it returns a figure of the Marginal treatment effect based on the estimation results.
+"""
+
 import matplotlib.pyplot as plt
 from os.path import join
 from shutil import move
@@ -9,6 +13,8 @@ from grmpy.estimate.estimate_auxiliary import calculate_mte
 from grmpy.estimate.estimate import estimate
 
 def plot_est_mte(rslt, data_frame):
+    """This function calculates the marginal treatment effect for different quartiles of the
+    unobservable V. ased on the calculation results."""
     name = 'comparison'
     quantiles = np.arange(0.01, 1., 0.005).tolist()
     mte = calculate_mte(rslt, data_frame, quantiles)
