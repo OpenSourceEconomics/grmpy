@@ -1,5 +1,5 @@
-This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
-Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: main.aux
 The style file: apacite.bst
 Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
@@ -11,46 +11,46 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-Database file #1: ../../submodules/bibliography/literature.bib
+Database file #1: ../submodules/bibliography/literature.bib
 apacite.bst [2013/07/21 v6.03 APA bibliography style]
 You've used 3 entries,
             6951 wiz_defined-function locations,
-            1291 strings with 11389 characters,
-and the built_in function-call counts, 9017 in all, are:
-= -- 1197
-> -- 68
-< -- 468
-+ -- 533
-- -- 7
-* -- 606
-:= -- 1722
-add.period$ -- 16
+            1292 strings with 11098 characters,
+and the built_in function-call counts, 4678 in all, are:
+= -- 580
+> -- 39
+< -- 180
++ -- 184
+- -- 8
+* -- 269
+:= -- 810
+add.period$ -- 12
 call.type$ -- 3
-change.case$ -- 69
+change.case$ -- 51
 chr.to.int$ -- 0
 cite$ -- 6
-duplicate$ -- 215
-empty$ -- 267
-format.name$ -- 92
-if$ -- 1663
+duplicate$ -- 130
+empty$ -- 221
+format.name$ -- 60
+if$ -- 935
 int.to.chr$ -- 0
-int.to.str$ -- 13
+int.to.str$ -- 9
 missing$ -- 0
-newline$ -- 83
-num.names$ -- 28
-pop$ -- 75
+newline$ -- 73
+num.names$ -- 24
+pop$ -- 112
 preamble$ -- 1
 purify$ -- 12
 quote$ -- 0
-skip$ -- 585
+skip$ -- 318
 stack$ -- 0
-substring$ -- 617
-swap$ -- 135
-text.length$ -- 26
+substring$ -- 205
+swap$ -- 81
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 368
+type$ -- 240
 warning$ -- 0
-while$ -- 38
+while$ -- 22
 width$ -- 0
-write$ -- 103
+write$ -- 85
