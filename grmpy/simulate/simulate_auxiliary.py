@@ -248,8 +248,8 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             MTE += ['---']
         else:
             MTE += [
-                np.mean(np.dot(x, para_diff)) - ((cov[2, 1] - cov[2, 0]) / cov[2, 2]) * norm.ppf(
-                    i)]
+                np.mean(np.dot(x, para_diff)) + ((cov[2, 0] - cov[2, 1])) * norm.ppf(i)
+            ]
 
     return MTE
 

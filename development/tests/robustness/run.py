@@ -16,15 +16,16 @@ def plot_est_mte(rslt, data_frame):
     """This function calculates the marginal treatment effect for different quartiles of the
     unobservable V. ased on the calculation results."""
     name = 'comparison'
-    quantiles = np.arange(0.01, 1., 0.005).tolist()
+    quantiles = np.arange(0.001, 1., 0.0005).tolist()
     mte = calculate_mte(rslt, data_frame, quantiles)
+    mte = [i/4 for i in mte]
 
     ax = plt.figure().add_subplot(111)
 
     ax.set_ylabel(r"$B^{MTE}$")
     ax.set_xlabel("$u_S$")
     ax.plot(quantiles, mte, label='MTE')
-    ax.set_ylim([-0.5, 0.7])
+    ax.set_ylim([-0.4, 0.5])
 
     plt.legend()
 

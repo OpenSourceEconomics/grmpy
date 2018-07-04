@@ -20,7 +20,6 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
     likl = []
     indicator = init_dict['ESTIMATION']['indicator']
     dep = init_dict['ESTIMATION']['dependent']
-    order_outcome = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
     for i in [0.0, 1.0]:
         if i == 1.0:
             beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
