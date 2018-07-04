@@ -1,0 +1,97 @@
+\begin{thebibliography}{}
+
+\bibitem [\protect \citeauthoryear {%
+Carneiro%
+, Heckman%
+\BCBL {}\ \BBA {} Vytlacil%
+}{%
+Carneiro%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2011}}%
+}]{%
+Carneiro.2011}
+\APACinsertmetastar {%
+Carneiro.2011}%
+\begin{APACrefauthors}%
+Carneiro, P.%
+, Heckman, J\BPBI J.%
+\BCBL {}\ \BBA {} Vytlacil, E\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2011}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Estimating Marginal Returns to Education} {Estimating
+  marginal returns to education}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{American Economic Review}{101}{6}{2754--2781}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Heckman%
+\ \BBA {} Vytlacil%
+}{%
+Heckman%
+\ \BBA {} Vytlacil%
+}{%
+{\protect \APACyear {2007}}%
+{\protect \APACexlab {{\protect \BCnt {1}}}}}]{%
+Heckman.2007e}
+\APACinsertmetastar {%
+Heckman.2007e}%
+\begin{APACrefauthors}%
+Heckman, J\BPBI J.%
+\BCBT {}\ \BBA {} Vytlacil, E\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007{\protect \BCnt {1}}}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Econometric Evaluation of Social Programs, Part {I}:
+  Causal Effects, Structural Models and Econometric Policy Evaluation}
+  {Econometric evaluation of social programs, part {I}: Causal effects,
+  structural models and econometric policy evaluation}.{\BBCQ}
+\newblock
+\BIn{} J\BPBI J.~Heckman\ \BBA {} E\BPBI E.~Leamer\ (\BEDS), \APACrefbtitle
+  {Handbook of Econometrics} {Handbook of econometrics}\ (\BVOL~6B, \BPGS\
+  4779--4874).
+\newblock
+\APACaddressPublisher{Amsterdam, Netherlands}{Elsevier Science}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Heckman%
+\ \BBA {} Vytlacil%
+}{%
+Heckman%
+\ \BBA {} Vytlacil%
+}{%
+{\protect \APACyear {2007}}%
+{\protect \APACexlab {{\protect \BCnt {2}}}}}]{%
+Heckman.2007f}
+\APACinsertmetastar {%
+Heckman.2007f}%
+\begin{APACrefauthors}%
+Heckman, J\BPBI J.%
+\BCBT {}\ \BBA {} Vytlacil, E\BPBI J.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2007{\protect \BCnt {2}}}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Econometric Evaluation of Social Programs, Part {II}:
+  Using the Marginal Treatment Effect to Organize Alternative Economic
+  Estimators to Evaluate Social Programs and to Forecast their Effects in New
+  Environments} {Econometric evaluation of social programs, part {II}: Using
+  the marginal treatment effect to organize alternative economic estimators to
+  evaluate social programs and to forecast their effects in new
+  environments}.{\BBCQ}
+\newblock
+\BIn{} J\BPBI J.~Heckman\ \BBA {} E\BPBI E.~Leamer\ (\BEDS), \APACrefbtitle
+  {Handbook of Econometrics} {Handbook of econometrics}\ (\BVOL~6B, \BPGS\
+  4875--5144).
+\newblock
+\APACaddressPublisher{Amsterdam, Netherlands}{Elsevier Science}.
+\PrintBackRefs{\CurrentBib}
+
+\end{thebibliography}
