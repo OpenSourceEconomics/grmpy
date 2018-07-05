@@ -32,7 +32,7 @@ The second figure shows the estimated ATE from the ``grmpy`` estimation process.
 Robustness
 **********
 
-For checking the robustness of the package's estimation process we replicate the results for the marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`). For this purpose we created a jupyter notebook that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/tree/master/development/tests/robustness/replication.grmpy.ini>`_. The init file corresponds to the specifications of the authors. As shown in the figure below the results are really close to the original results. The deviation seems to be negligible because of the usage of mock data.
+For checking the robustness of the package's estimation process we replicate the results for the marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`). For this purpose we created a jupyter notebook that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/tree/master/development/tests/robustness/replication.grmpy.ini>`_. The init file corresponds to the specifications of the authors. As shown in the figure below the results are really close to the original results. The deviation seems to be negligible because of the usage of a mock dataset.
 
 .. figure:: ../docs/figures/fig-marginal-benefit-parametric-replication.png
     :align: center
