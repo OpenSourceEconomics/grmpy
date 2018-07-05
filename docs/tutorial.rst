@@ -40,10 +40,12 @@ The *ESTIMATION* block determines the basic information for the estimation proce
 Key            Value       Interpretation
 =========     =======      ==================
 agents         int         number of individuals for the estimation simulation
-file           str         specified data inout file for the estimation process
+file           str         specified data input file for the estimation process
 optimizer      str         optimizer used for the estimation process
 start          str         determines which start values are used for the estimation process
 maxiter	       int         maximum numbers of iterations the minimization process performs
+dependent	   str         indicates the dependent variable for the estimation process
+indicator	   str         defines the label of the treatment indicator variable
 =========     =======      ==================
 
 
@@ -52,42 +54,42 @@ maxiter	       int         maximum numbers of iterations the minimization proces
 
 The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
 
-=======   =====  ======     ==================
-Key       Order  Value      Interpretation
-=======   =====  ======     ==================
-coeff     int    float      intercept coefficient
-coeff     int    float      coefficient of the first covariate
-coeff     int    float      coefficient of the second covariate
+=======   ======  ======     ==================
+Key       Column   Value      Interpretation
+=======   ======  ======     ==================
+coeff     str     float      intercept coefficient
+coeff     str     float      coefficient of the first covariate
+coeff     str     float      coefficient of the second covariate
  ...
-=======   =====  ======     ==================
+=======   ======  ======     ==================
 
 
 **UNTREATED**
 
 The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`
 
-=======   =====  ======    ==================
-Key       Order  Value     Interpretation
-=======   =====  ======    ==================
-coeff     int    float     intercept coefficient
-coeff     int    float     coefficient of the first covariate
-coeff     int    float     coefficient of the second covariate
+=======   =====   ======    ==================
+Key       Column   Value     Interpretation
+=======   ======  ======    ==================
+coeff     str     float     intercept coefficient
+coeff     str     float     coefficient of the first covariate
+coeff     str     float     coefficient of the second covariate
  ...
-=======   =====  ======    ==================
+=======   ======  ======    ==================
 
 
 **COST**
 
 The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`.
 
-=======   =====  ======    ==================
-Key       Order  Value     Interpretation
-=======   =====  ======    ==================
-coeff     int    float     intercept coefficient
-coeff     int    float     coefficient of the first covariate
-coeff     int    float     coefficient of the second covariate
+=======   ======  ======    ==================
+Key       Column   Value     Interpretation
+=======   ======  ======    ==================
+coeff     str     float     intercept coefficient
+coeff     str     float     coefficient of the first covariate
+coeff     str     float     coefficient of the second covariate
  ...
-=======   =====  ======    ==================
+=======   ======  ======    ==================
 
 **DIST**
 

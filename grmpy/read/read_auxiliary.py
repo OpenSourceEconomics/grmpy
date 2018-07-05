@@ -1,6 +1,5 @@
 """This module provides auxiliary functions for the import process of the init file."""
 import numpy as np
-import ast
 
 from grmpy.check.custom_exceptions import UserError
 
