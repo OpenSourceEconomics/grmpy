@@ -50,7 +50,7 @@ def test2():
     """The third test  checks whether the relationships hold if the coefficients are zero in
     different setups.
     """
-    for j in range(10):
+    for _ in range(10):
         for i in ['ALL', 'TREATED', 'UNTREATED', 'CHOICE', 'TREATED & UNTREATED']:
             constr = dict()
             constr['DETERMINISTIC'] = False
@@ -296,9 +296,7 @@ def test11():
 
 def test12():
     """This test ensures that the tutorial configuration works as intended."""
-    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini' \
-                                          
+    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
     simulate(fname)
     estimate(fname)
-
 

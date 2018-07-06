@@ -29,8 +29,8 @@ def process(list_, dict_, keyword):
                 dict_[keyword]['types'] += [[type_, float(frac_)]]
                 dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
             elif type_ == 'categorical':
-                categories = list(eval(categories))
-                prob = list(eval(prob))
+                categories = convert_categories_probs(categories, 'categories')
+                prob = convert_categories_probs(prob)
                 dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
                 dict_[keyword]['types'] += [['categorical', categories, prob]]
         else:
@@ -214,4 +214,21 @@ def check_types(dict_):
 
     return dict_
 
+
+def convert_categories_probs(string, option=None):
+    """The function processes the categories respectively the corresponding probabilities and
+    returns them in a list format.
+    """
+    string = string.strip('()').split(',')
+    list_ = []
+    for i in string:
+        if option == 'categories':
+            try:
+                int(i)
+                list_ += [int(i)]
+            except ValueError:
+                list_ += [i]
+        else:
+            list_ += [float(i)]
+    return list_
 

@@ -37,12 +37,11 @@ def test2():
     fname = TEST_RESOURCES_DIR + '/regression_vault.grmpy.json'
     tests = json.load(open(fname))
 
-    for i in range(len(tests)):
-        stat, dict_, criteria = tests[i]
+    for test in tests:
+        stat, dict_, criteria = test
         print_dict(dict_)
         df = simulate('test.grmpy.ini')
         init_dict = read('test.grmpy.ini')
-        print(init_dict['varnames'])
         start = start_values(init_dict, df, 'init')
         criteria_ = calculate_criteria(init_dict, df, start)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
@@ -126,7 +125,7 @@ def test7():
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
     fname_categorical = TEST_RESOURCES_DIR + '/test_categorical.grmpy.ini'
 
-    for i in range(10):
+    for _ in range(10):
         constr = dict()
         constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
         generate_random_dict(constr)
@@ -196,7 +195,7 @@ def test7():
     dict_ = read(fname_vzero)
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_vzero)
-    
+
     dict_ = read(fname_diff)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, estimate, fname_diff)

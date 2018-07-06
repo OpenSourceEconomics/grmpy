@@ -21,6 +21,7 @@ def simulate_covariates(init_dict):
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
+
     # We now perform some selective replacements.
     X[:, 0] = 1.0
     for i in list(range(num_covars)):
@@ -248,7 +249,7 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             MTE += ['---']
         else:
             MTE += [
-                np.mean(np.dot(x, para_diff)) + ((cov[2, 0] - cov[2, 1])) * norm.ppf(i)
+                np.mean(np.dot(x, para_diff)) + (cov[2, 0] - cov[2, 1]) * norm.ppf(i)
             ]
 
     return MTE

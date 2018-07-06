@@ -87,7 +87,6 @@ def refactor_results(dict_, file, newfile):
     """The function generates a new init file based on a dictionary with parameter values from a previous
     estimation process.
     """
-    
     pseudo = read(file)
 
     for key in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:

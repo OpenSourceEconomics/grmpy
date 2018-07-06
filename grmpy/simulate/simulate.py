@@ -40,8 +40,8 @@ def simulate(init_file):
 
     # Calculate Criteria function value
     if not init_dict['DETERMINISTIC']:
-       x0 = start_values(init_dict, df, 'init')
-       init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
+        x0 = start_values(init_dict, df, 'init')
+        init_dict['AUX']['criteria_value'] = calculate_criteria(init_dict, df, x0)
 
     # Print Log file
     print_info(init_dict, df)

@@ -17,6 +17,7 @@ from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.check.check import check_initialization_dict
 from grmpy.check.check import check_presence_init
 from grmpy.check.check import check_init_file
+from grmpy.check.auxiliary import read_data
 from grmpy.read.read import read
 
 
@@ -42,11 +43,8 @@ def estimate(init_file):
 
 
     # Read data frame
-    if data_file[-4:] == '.pkl':
-        data = pd.read_pickle(data_file)
-    elif data_file[-4:] == '.txt':
-        data = pd.read_table(data_file, delim_whitespace=True, header=0)
-   
+    data = read_data(data_file)
+
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)

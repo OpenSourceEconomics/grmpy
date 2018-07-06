@@ -20,7 +20,7 @@ def plot_est_mte(rslt, data_frame):
     quantiles = [0.0001] + np.arange(0.01, 1., 0.01).tolist() + [0.9999]
     mte_original = json.load(open('mte_original.json', 'r'))
 
-    #Calculate the MTE
+    # Calculate the MTE
     mte = calculate_mte(rslt, data_frame, quantiles)
     mte = [i/4 for i in mte]
 

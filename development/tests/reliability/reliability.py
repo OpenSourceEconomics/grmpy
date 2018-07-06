@@ -160,8 +160,8 @@ if __name__ == '__main__':
     x = monte_carlo('reliability.grmpy.ini', 10)
     ATE = get_effect_grmpy('aer-simulation-mock.pkl')
     create_plots(x, ATE)
-    for type in ['grmpy', 'ols']:
-        filename = 'fig_{}_average_effect_estimation.png'.format(type)
+    for type_ in ['grmpy', 'ols']:
+        filename = 'fig_{}_average_effect_estimation.png'.format(type_)
         move(join(directory, filename), join(target, filename))
 
 

@@ -264,11 +264,11 @@ def generate_coeff(num, key_, is_zero):
 def types(dict_):
     """This function determines if a specified covariate is a binary or a non-binary variable.
     Additionally it """
-    all = []
+    all_ = []
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        all += dict_[key_]['order']
-    all = [k for k in all if k != 1]
-    for i in list(set(all)):
+        all_ += dict_[key_]['order']
+    all_ = [k for k in all_ if k != 1]
+    for i in list(set(all_)):
         if np.random.random_sample() < 0.2:
             if np.random.random_sample() < 0.5:
                 frac = np.random.uniform(0, 0.8)
