@@ -1,4 +1,6 @@
 exclude_paths:
   - development/working/*
   - setup.py
-  - .mywaflib/waflib/**
+  - docs/presentation/*
+  - docs/conf.py
+
