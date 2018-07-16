@@ -17,6 +17,8 @@ from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
+from grmpy.check.auxiliary import read_data
+from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
 
@@ -300,3 +302,23 @@ def test12():
     fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
     simulate(fname)
     estimate(fname)
+
+
+def test13():
+    """This test checks if our data import process is able to handle .txt, .dta and .pkl files."""
+
+    pkl = TEST_RESOURCES_DIR + '/data.grmpy.pkl'
+    dta = TEST_RESOURCES_DIR + '/data.grmpy.dta'
+    txt = TEST_RESOURCES_DIR + '/data.grmpy.txt'
+
+    real_sum = -3211.20122
+    real_column_values = ['Y', 'D', 'X1', 'X2', 'X3', 'X5', 'X4', 'Y1', 'Y0', 'U1', 'U0', 'V']
+
+    for data in [pkl, dta, txt]:
+        df = read_data(data)
+        sum = np.sum(df.sum())
+        columns = list(df)
+        np.testing.assert_array_almost_equal(sum, real_sum, decimal=5)
+        np.testing.assert_equal(columns, real_column_values)
+
+    cleanup()

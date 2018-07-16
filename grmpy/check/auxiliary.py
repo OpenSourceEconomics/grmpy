@@ -20,7 +20,7 @@ def read_data(data_file):
         data = pd.read_table(data_file, delim_whitespace=True, header=0)
     elif data_file[-4:] == '.dta':
         data = pd.read_stata(data_file)
-
+        data = data.drop(['index'], axis=1)
     return data
 
 
