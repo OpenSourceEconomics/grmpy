@@ -126,7 +126,6 @@ def test7():
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.ini'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
 
-
     for _ in range(10):
         constr = dict()
         constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
