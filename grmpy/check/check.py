@@ -44,7 +44,6 @@ def check_initialization_dict(dict_):
                 .format(key_)
             raise UserError(msg)
     error, msg = check_special_conf(dict_)
-    print(error)
     if error is True:
         raise UserError(msg)
 

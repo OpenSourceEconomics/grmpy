@@ -45,17 +45,11 @@ def check_special_conf(dict_):
                     if any(i >= 0.9 for i in x[2]):
                         msg = str_.format(x[0], 'a specific category')
                         invalid = True
-                    elif np.testing.assert_approx_equal(sum(x[2]), 1.):
+                    elif not np.isclose(sum(x[2]), 1., 0.01):
                         msg = 'The specified probability for all possible categories of a ' \
                               'categorical variable have to sum up to 1.'
                         invalid = True
-                else:
-                    msg = 'The option you added to a variable in the {} section is invalid.'\
-                        .format(key_)
 
                 return invalid, msg
 
-            else:
-                pass
-
-        return invalid, ' '
+    return invalid, ' '

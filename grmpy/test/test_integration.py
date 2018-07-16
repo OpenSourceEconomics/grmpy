@@ -119,11 +119,13 @@ def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
     estimation process with initialization file values as start values for an deterministic setting.
     """
-    fname_diff = TEST_RESOURCES_DIR + '/test_binary_diff.grmpy.ini'
+    fname_diff_categorical = TEST_RESOURCES_DIR + '/test_categorical_diff.grmpy.ini'
+    fname_categorical = TEST_RESOURCES_DIR + '/test_categorical.grmpy.ini'
+    fname_diff_binary = TEST_RESOURCES_DIR + '/test_binary_diff.grmpy.ini'
     fname_vzero = TEST_RESOURCES_DIR + '/test_vzero.grmpy.ini'
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.ini'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
-    fname_categorical = TEST_RESOURCES_DIR + '/test_categorical.grmpy.ini'
+
 
     for _ in range(10):
         constr = dict()
@@ -195,9 +197,13 @@ def test7():
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, estimate, fname_vzero)
 
-    dict_ = read(fname_diff)
+    dict_ = read(fname_diff_binary)
     pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, estimate, fname_diff)
+    pytest.raises(UserError, estimate, fname_diff_binary)
+
+    dict_ = read(fname_diff_categorical)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, estimate, fname_diff_categorical)
 
 
 def test8():
