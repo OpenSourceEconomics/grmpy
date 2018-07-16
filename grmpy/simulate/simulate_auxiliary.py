@@ -8,7 +8,7 @@ import numpy as np
 
 
 def simulate_covariates(init_dict):
-    """The function simulates the covariates for the cost and the output functions."""
+    """The function simulates the covariates for the choice and the output functions."""
     # Distribute information
     num_agents = init_dict['SIMULATION']['agents']
 
@@ -21,14 +21,23 @@ def simulate_covariates(init_dict):
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
+
     # We now perform some selective replacements.
     X[:, 0] = 1.0
     for i in list(range(num_covars)):
         if isinstance(types[i], list):
-            if i != 0:
-                frac = types[i][1]
-                binary = np.random.binomial(1, frac, size=num_agents)
-                X[:, i] = binary
+            if types[i][0] == 'binary':
+                if i != 0:
+                    frac = types[i][1]
+                    binary = np.random.binomial(1, frac, size=num_agents)
+                    X[:, i] = binary
+                else:
+                    pass
+            elif types[i][0] == 'categorical':
+                prob = types[i][2]
+                cat = types[i][1]
+                rand = np.random.choice(cat, size=num_agents, p=prob)
+                X[:, i] = rand
 
     return X
 
@@ -41,32 +50,29 @@ def simulate_unobservables(init_dict):
     U = np.random.multivariate_normal(np.zeros(3), cov, num_agents)
     V = np.array(U[:, 2])
 
-    # Here we keep track of the implied value for U_C.
-    U[:, 2] = V + (U[:, 0] - U[:, 1])
-
     return U, V
 
 
-def simulate_outcomes(init_dict, X, U):
+def simulate_outcomes(init_dict, X, U, V):
     """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
     the realized outcome Y.
     """
     X = pd.DataFrame(X)
-    Z = X[[i - 1 for i in init_dict['COST']['order']]].as_matrix()
+    Z = X[[i - 1 for i in init_dict['CHOICE']['order']]].as_matrix()
     X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
     X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].as_matrix()
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
-    coeffs_cost = init_dict['COST']['all']
+    coeffs_choice = init_dict['CHOICE']['all']
 
-    # Calculate potential outcomes and costs
+    # Calculate potential outcomes and choice
     Y_1 = np.dot(coeffs_treated, X_treated.T) + U[:, 0]
     Y_0 = np.dot(coeffs_untreated, X_untreated.T) + U[:, 1]
-    C = np.dot(coeffs_cost, Z.T) + U[:, 2]
+    C = np.dot(coeffs_choice, Z.T) - V
 
     # Calculate expected benefit and the resulting treatment dummy
-    D = np.array((Y_1 - Y_0 - C > 0).astype(int))
+    D = np.array((C > 0).astype(int))
 
     # Observed outcomes
     Y = D * Y_1 + (1 - D) * Y_0
@@ -82,29 +88,36 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     source = init_dict['SIMULATION']['source']
 
     # Stack arrays
-    data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], U[:, 2], V))
+    data = np.column_stack((Y, D, X, Y_1, Y_0, U[:, 0], U[:, 1], V))
 
     # Construct list of column labels
-    column = ['Y', 'D']
-    
+    dep, indicator = init_dict['ESTIMATION']['dependent'], init_dict['ESTIMATION']['indicator']
+    column = [dep, indicator]
+
     for i in list(range(X.shape[1])):
         str_ = 'X' + str(i)
         column.append(str_)
-    column += ['Y1', 'Y0', 'U1', 'U0', 'UC', 'V']
+    column += [dep + '1', dep + '0', 'U1', 'U0', 'V']
 
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
-    df['D'] = df['D'].apply(np.int64)
-    df.to_pickle(source + '.grmpy.pkl')
+    df[indicator] = df[indicator].apply(np.int64)
+    df2 = pd.DataFrame()
+    for i in df.columns.values:
+        if "X" in i:
+            df2[init_dict['varnames'][int(i[1:5])]] = df[i]
+        else:
+            df2[i] = df[i]
+    df2.to_pickle(source + '.grmpy.pkl')
     with open(source + '.grmpy.txt', 'w') as file_:
-        df.to_string(file_, index=False, na_rep='.', col_space=15, justify='left')
-    return df
+        df2.to_string(file_, index=False, na_rep='.', col_space=15, justify='left')
+    return df2
 
 
 def construct_all_coefficients(init_dict):
     """This function constructs all coefficients from the initialization dictionary."""
     coeffs_all = []
-    for label in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+    for label in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
         coeffs_all += init_dict[label]['all'].tolist()
 
     return coeffs_all
@@ -112,10 +125,12 @@ def construct_all_coefficients(init_dict):
 
 def print_info(init_dict, data_frame):
     """The function writes an info file for the specific data frame."""
+
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
     source = init_dict['SIMULATION']['source']
+    dep, indicator = init_dict['ESTIMATION']['dependent'], init_dict['ESTIMATION']['indicator']
 
     # Construct auxiliary information
     coeffs_all = construct_all_coefficients(init_dict)
@@ -127,7 +142,8 @@ def print_info(init_dict, data_frame):
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
 
-        info_ = [data_frame.shape[0], (data_frame['D'] == 1).sum(), (data_frame['D'] == 0).sum()]
+        info_ = [data_frame.shape[0], (data_frame[indicator] == 1).sum(),
+                 (data_frame[indicator] == 0).sum()]
 
         fmt = '  {:<10}' + ' {:>20}' * 1 + '\n\n'
         file_.write(fmt.format(*['', 'Count']))
@@ -149,16 +165,16 @@ def print_info(init_dict, data_frame):
             for group in ['All', 'Treated', 'Untreated']:
 
                 if label == 'Outcomes':
-                    data = data_frame['Y']
+                    data = data_frame[dep]
                 elif label == 'Effects':
-                    data = data_frame['Y1'] - data_frame['Y0']
+                    data = data_frame[dep + '1'] - data_frame[dep + '0']
                 else:
                     raise AssertionError
 
                 if group == 'Treated':
-                    data = data[data_frame['D'] == 1]
+                    data = data[data_frame[indicator] == 1]
                 elif group == 'Untreated':
-                    data = data[data_frame['D'] == 0]
+                    data = data[data_frame[indicator] == 0]
                 else:
                     pass
                 fmt = '  {:<10}' + ' {:>20.4f}' * 5 + '\n'
@@ -189,7 +205,7 @@ def print_info(init_dict, data_frame):
         quantiles = [i * 0.01 for i in quantiles]
 
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = data_frame[['X{}'.format(i - 1) for i in help_]]
+        x = data_frame[[init_dict['varnames'][i-1] for i in help_]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
@@ -218,7 +234,8 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
                 index_treated = dict_['TREATED']['order'].index(i)
                 index_untreated = dict_['UNTREATED']['order'].index(i)
-                diff = dict_['TREATED']['all'][index_treated] - dict_['UNTREATED']['all'][index_untreated]
+                diff = dict_['TREATED']['all'][index_treated] \
+                    - dict_['UNTREATED']['all'][index_untreated]
             elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order']:
                 index = dict_['TREATED']['order'].index(i)
                 diff = dict_['TREATED']['all'][index]
@@ -235,8 +252,8 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             MTE += ['---']
         else:
             MTE += [
-                np.mean(np.dot(para_diff, x.T)) - ((cov[2, 1] - cov[2, 0]) / cov[2, 2]) * norm.ppf(
-                    i)]
+                np.mean(np.dot(x, para_diff)) + (cov[2, 0] - cov[2, 1]) * norm.ppf(i)
+            ]
 
     return MTE
 

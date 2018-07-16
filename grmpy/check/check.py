@@ -1,6 +1,7 @@
 """This module provides some capabilities to check the integrity of the package."""
 import os
 
+from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
 
@@ -36,18 +37,22 @@ def check_initialization_dict(dict_):
         if not is_pos_def(dict_):
             msg = 'The specified covariance matrix has to be positive semidefinite.'
             raise UserError(msg)
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if len(dict_[key_]['order']) > len(set(dict_[key_]['order'])):
             msg = 'There is a problem in the {} section of the initialization file. \n         ' \
                   'Probably you specified two coefficients for one covariate in the same section.'\
                 .format(key_)
             raise UserError(msg)
-        for x in dict_[key_]['types']:
-            if isinstance(x, list):
-                if x[1] >= 0.9:
-                    msg = 'The specified probability that a binary variable is equal to one has to be \\\
-                           suffiently lower than one.'
-                    raise UserError(msg)
+    error, msg = check_special_conf(dict_)
+    if error is True:
+        raise UserError(msg)
+
+    if dict_['ESTIMATION']['file'][-4:] not in ['.pkl', '.txt', 'dta']:
+        msg = 'The {} format specified in the Estimation section of the initialization file' \
+              ' is currently not supported by grmpy. \n' \
+              '         Please use either .txt, .pkl or .dta files.'\
+            .format(dict_['ESTIMATION']['file'][-4:])
+        raise UserError(msg)
 
 
 def check_init_file(dict_):
@@ -60,9 +65,7 @@ def check_init_file(dict_):
     elif dict_['DIST']['all'][5] == 0:
         msg = 'The standard deviation of the collected unobservables have to be larger than zero.'
         raise UserError(msg)
-
-
-
-
-
-
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
+        if len(set(dict_[key_]['order'])) != len(dict_[key_]['order']):
+            msg = 'There are two start coefficients {} Section'.format(key_)
+            raise UserError(msg)

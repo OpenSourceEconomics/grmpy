@@ -32,7 +32,7 @@ def simulate(init_file):
     X = simulate_covariates(init_dict)
 
     # Simulate endogeneous variables of the model
-    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, U)
+    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, U, V)
 
     # Write output file
     df = write_output(init_dict, Y, D, X, Y_1, Y_0, U, V)

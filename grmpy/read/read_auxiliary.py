@@ -6,32 +6,42 @@ from grmpy.check.custom_exceptions import UserError
 
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
-    if len(list_) == 5:
+    if len(list_) > 5:
+        name, order, val, type_, categories, prob = list_[0], list_[1], list_[2], list_[3], \
+                                                    list_[4], list_[5]
+    elif len(list_) == 5:
         name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
-    elif len(list_) in [3,4]:
-        name, order, val  = list_[0], list_[1], list_[2]
+    elif len(list_) in [3, 4]:
+        name, order, val = list_[0], list_[1], list_[2]
     else:
         name, val = list_[0], list_[1]
 
     if name not in dict_[keyword].keys() and name in ['coeff']:
         dict_[keyword][name] = []
-    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'types' not in dict_[keyword].keys():
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE'] and 'types' not in dict_[keyword].keys():
         dict_[keyword]['types'] = []
-    if keyword in ['TREATED', 'UNTREATED', 'COST'] and 'order' not in dict_[keyword].keys():
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE'] and 'order' not in dict_[keyword].keys():
         dict_[keyword]['order'] = []
-
-    if keyword in ['TREATED', 'UNTREATED', 'COST']:
-        if len(list_) == 5:
-            dict_[keyword]['order'] += [int(order)]
-            dict_[keyword]['types'] += [[type_, float(frac_)]]
+    if keyword in ['TREATED', 'UNTREATED', 'CHOICE']:
+        if order not in dict_['varnames']:
+            dict_['varnames'] += [order]
+        if len(list_) >= 5:
+            if type_ == 'binary':
+                dict_[keyword]['types'] += [[type_, float(frac_)]]
+                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+            elif type_ == 'categorical':
+                categories = convert_categories_probs(categories, 'categories')
+                prob = convert_categories_probs(prob)
+                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+                dict_[keyword]['types'] += [['categorical', categories, prob]]
         else:
-            dict_[keyword]['order'] += [int(order)]
+            dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
     if name in ['agents', 'seed', 'maxiter', 'disp']:
         val = int(val)
-    elif name in ['source', 'file', 'optimizer', 'start']:
+    elif name in ['source', 'file', 'optimizer', 'start', 'dependent', 'indicator']:
         val = str(val)
     elif name in ['direc']:
         val = list(val)
@@ -55,30 +65,37 @@ def auxiliary(dict_):
     else:
         is_deterministic = False
 
-    for key_ in ['UNTREATED', 'TREATED', 'COST', 'DIST']:
-        if key_ in ['UNTREATED', 'TREATED', 'COST']:
+    for key_ in ['UNTREATED', 'TREATED', 'CHOICE', 'DIST']:
+        if key_ in ['UNTREATED', 'TREATED', 'CHOICE']:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
         else:
             dict_[key_]['all'] = dict_[key_]['coeff']
             dict_[key_]['all'] = np.array(dict_[key_]['all'])
 
+    # Ensure that the Estimation section contains information about the indicator and the dependent
+    # variable labels
+    if 'indicator' not in dict_['ESTIMATION'].keys():
+        dict_['ESTIMATION']['indicator'] = 'D'
+    if 'dependent' not in dict_['ESTIMATION'].keys():
+        dict_['ESTIMATION']['dependent'] = 'Y'
+
     # Number of covariates
     num_covars_treated = len(dict_['TREATED']['all'])
     num_covars_untreated = len(dict_['UNTREATED']['all'])
-    num_covars_cost = len(dict_['COST']['all'])
+    num_covars_cost = len(dict_['CHOICE']['all'])
 
     dict_['AUX']['num_covars_treated'] = num_covars_treated
     dict_['AUX']['num_covars_untreated'] = num_covars_untreated
     dict_['AUX']['num_covars_cost'] = num_covars_cost
 
     # Number of parameters
-    dict_['AUX']['num_paras'] = num_covars_treated +  num_covars_untreated + num_covars_cost + 2 + 2
+    dict_['AUX']['num_paras'] = num_covars_treated + num_covars_untreated + num_covars_cost + 2 + 2
 
     # Starting values
     dict_['AUX']['init_values'] = []
 
-    for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
         dict_['AUX']['init_values'] += dict_[key_]['all'].tolist()
 
         for j in sorted(dict_[key_].keys()):
@@ -97,17 +114,17 @@ def check_types(dict_):
     costs.
     """
     list_ = []
-    covars = set(dict_['TREATED']['order'] +  dict_['UNTREATED']['order'] +  dict_['COST']['order'])
+    covars = set(dict_['TREATED']['order'] + dict_['UNTREATED']['order'] + dict_['CHOICE']['order'])
     for i in covars:
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
-                        i in dict_['COST']['order']:
+                        i in dict_['CHOICE']['order']:
             if i == 1:
-                keys = ['TREATED', 'UNTREATED', 'COST']
+                keys = ['TREATED', 'UNTREATED', 'CHOICE']
                 for key_ in keys:
                     index = dict_[key_]['order'].index(i)
                     dict_[key_]['types'][index] = 'nonbinary'
             else:
-                keys = ['TREATED', 'UNTREATED', 'COST']
+                keys = ['TREATED', 'UNTREATED', 'CHOICE']
                 for key_ in keys:
                     index = dict_[key_]['order'].index(i)
                     if isinstance(dict_[key_]['types'][index], list):
@@ -122,10 +139,10 @@ def check_types(dict_):
                                 msg = 'Your initilaization file has two different binary ' \
                                       'specification for the same covariate.'
                                 raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
-        elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i not in dict_['COST']['order']:
+        elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] \
+                and i not in dict_['CHOICE']['order']:
             keys = ['TREATED', 'UNTREATED']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -145,9 +162,9 @@ def check_types(dict_):
                             raise UserError(msg)
             list_ += [dict_['UNTREATED']['types'][index]]
 
-        elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i in dict_['COST']['order']:
-            keys = ['UNTREATED', 'COST']
+        elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] \
+                and i in dict_['CHOICE']['order']:
+            keys = ['UNTREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
                 if isinstance(dict_[key_]['types'][index], list):
@@ -162,11 +179,11 @@ def check_types(dict_):
                             msg = 'Your initilaization file has two different binary ' \
                                   'specification for the same covariate.'
                             raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
-        elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and\
-                        i in dict_['COST']['order']:
-            keys = ['TREATED', 'COST']
+        elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] \
+                and i in dict_['CHOICE']['order']:
+            keys = ['TREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
                 if isinstance(dict_[key_]['types'][index], list):
@@ -181,7 +198,7 @@ def check_types(dict_):
                             msg = 'Your initilaization file has two different binary ' \
                                   'specification for the same covariate.'
                             raise UserError(msg)
-            list_ += [dict_['COST']['types'][index]]
+            list_ += [dict_['CHOICE']['types'][index]]
 
         else:
             if i in dict_['TREATED']['order']:
@@ -191,9 +208,26 @@ def check_types(dict_):
                 index = dict_['UNTREATED']['order'].index(i)
                 list_ += [dict_['UNTREATED']['types'][index]]
             else:
-                index = dict_['COST']['order'].index(i)
-                list_ += [dict_['COST']['types'][index]]
+                index = dict_['CHOICE']['order'].index(i)
+                list_ += [dict_['CHOICE']['types'][index]]
     dict_['AUX']['types'] = list_
 
-
     return dict_
+
+
+def convert_categories_probs(string, option=None):
+    """The function processes the categories respectively the corresponding probabilities and
+    returns them in a list format.
+    """
+    string = string.strip('()').split(',')
+    list_ = []
+    for i in string:
+        if option == 'categories':
+            try:
+                int(i)
+                list_ += [int(i)]
+            except ValueError:
+                list_ += [i]
+        else:
+            list_ += [float(i)]
+    return list_

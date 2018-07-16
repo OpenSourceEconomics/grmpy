@@ -17,6 +17,8 @@ from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
+from grmpy.check.auxiliary import read_data
+from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 import grmpy
 
@@ -35,31 +37,29 @@ def test1():
             generate_random_dict(constr)
             df = simulate('test.grmpy.ini')
             dict_ = read('test.grmpy.ini')
-
-            x_treated = df[['X{}'.format(i-1) for i in dict_['TREATED']['order']]]
+            x_treated = df[[dict_['varnames'][i-1] for i in dict_['TREATED']['order']]]
             y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
-            x_untreated = df[['X{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
+            x_untreated = df[[dict_['varnames'][i-1] for i in dict_['UNTREATED']['order']]]
             y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
             np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0), decimal=7)
 
 
 def test2():
     """The third test  checks whether the relationships hold if the coefficients are zero in
     different setups.
     """
-    for j in range(10):
-        for i in ['ALL', 'TREATED', 'UNTREATED', 'COST', 'TREATED & UNTREATED']:
+    for _ in range(10):
+        for i in ['ALL', 'TREATED', 'UNTREATED', 'CHOICE', 'TREATED & UNTREATED']:
             constr = dict()
             constr['DETERMINISTIC'] = False
             dict_ = generate_random_dict(constr)
 
             if i == 'ALL':
-                for key_ in ['TREATED', 'UNTREATED', 'COST']:
+                for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                     dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
             elif i == 'TREATED & UNTREATED':
                 for key_ in ['TREATED', 'UNTREATED']:
@@ -71,8 +71,8 @@ def test2():
 
             dict_ = read('test.grmpy.ini')
             df = simulate('test.grmpy.ini')
-            x_treated = df[['X{}'.format(i-1) for i in dict_['TREATED']['order']]]
-            x_untreated = df[['X{}'.format(i-1) for i in dict_['UNTREATED']['order']]]
+            x_treated = df[[dict_['varnames'][i-1] for i in dict_['TREATED']['order']]]
+            x_untreated = df[[dict_['varnames'][i-1] for i in dict_['UNTREATED']['order']]]
 
             if i == 'ALL':
                 np.testing.assert_array_equal(df.Y1, df.U1)
@@ -101,7 +101,6 @@ def test2():
 
             np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
             np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
-            np.testing.assert_array_almost_equal(df.V, (df.UC - df.U1 + df.U0))
 
 
 def test3():
@@ -130,10 +129,10 @@ def test4():
         print_dict(gen_dict, init_file_name)
         imp_dict = read(init_file_name + '.grmpy.ini')
         dicts = [gen_dict, imp_dict]
-        for key_ in ['TREATED', 'UNTREATED', 'COST', 'DIST']:
+        for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
             np.testing.assert_array_almost_equal(gen_dict[key_]['all'], imp_dict[key_]['all'],
                                                  decimal=4)
-            if key_ in ['TREATED', 'UNTREATED', 'COST']:
+            if key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                 for dict_ in dicts:
 
                     if not dict_[key_]['order'] == dict_[key_]['order']:
@@ -141,6 +140,8 @@ def test4():
                     if len(dict_[key_]['order']) != len(set(dict_[key_]['order'])):
                         raise AssertionError()
                     if dict_[key_]['order'][0] != 1:
+                        print(key_)
+                        print(dict_[key_]['order'])
                         raise AssertionError()
 
                 for i in range(len(gen_dict[key_]['types'])):
@@ -181,7 +182,7 @@ def test5():
 
         df = simulate('test.grmpy.ini')
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = df[['X{}'.format(i - 1) for i in help_]]
+        x = df[[init_dict['varnames'][i-1] for i in help_]]
 
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
         mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x, init_dict)
@@ -225,9 +226,10 @@ def test7():
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
             index_treated = dict_['TREATED']['order'].index(i)
             index_untreated = dict_['UNTREATED']['order'].index(i)
-            if not dict_['TREATED']['types'][index_treated] == dict_['UNTREATED']['types'][index_untreated]:
+            if not dict_['TREATED']['types'][index_treated]\
+                    == dict_['UNTREATED']['types'][index_untreated]:
                 raise AssertionError()
-    for key_ in ['TREATED', 'UNTREATED', 'COST']:
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if isinstance(dict_[key_]['types'][0], list):
             raise AssertionError()
 
@@ -268,9 +270,8 @@ def test10():
         constr['DETERMINISTIC'] = False
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
-        print(dict_)
         true = []
-        for key_ in ['TREATED', 'UNTREATED', 'COST']:
+        for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
             true += list(dict_[key_]['all'])
         df = simulate('test.grmpy.ini')
         x0 = start_values(dict_, df, 'init')[:-6]
@@ -298,8 +299,26 @@ def test11():
 
 def test12():
     """This test ensures that the tutorial configuration works as intended."""
-    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini' \
-                                          
+    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
     simulate(fname)
     estimate(fname)
 
+
+def test13():
+    """This test checks if our data import process is able to handle .txt, .dta and .pkl files."""
+
+    pkl = TEST_RESOURCES_DIR + '/data.grmpy.pkl'
+    dta = TEST_RESOURCES_DIR + '/data.grmpy.dta'
+    txt = TEST_RESOURCES_DIR + '/data.grmpy.txt'
+
+    real_sum = -3211.20122
+    real_column_values = ['Y', 'D', 'X1', 'X2', 'X3', 'X5', 'X4', 'Y1', 'Y0', 'U1', 'U0', 'V']
+
+    for data in [pkl, dta, txt]:
+        df = read_data(data)
+        sum = np.sum(df.sum())
+        columns = list(df)
+        np.testing.assert_array_almost_equal(sum, real_sum, decimal=5)
+        np.testing.assert_equal(columns, real_column_values)
+
+    cleanup()
