@@ -1,7 +1,7 @@
 """This module provides some capabilities to check the integrity of the package."""
-import numpy as np
 import os
 
+from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
 
@@ -19,6 +19,7 @@ def check_presence_estimation_dataset(init_dict):
     if not os.path.isfile(data_file):
         msg = 'The data file specified in your initialization file doesn`t exist.'
         raise UserError(msg)
+
 
 def check_initialization_dict(dict_):
     """This function performs some basic checks regarding the integrity of the user's request.
@@ -42,26 +43,10 @@ def check_initialization_dict(dict_):
                   'Probably you specified two coefficients for one covariate in the same section.'\
                 .format(key_)
             raise UserError(msg)
-        for x in dict_[key_]['types']:
-            if isinstance(x, list):
-                # Check for binary variables
-                if x[0] == 'binary':
-                    if x[1] >= 0.9:
-                        msg = 'The specified probability that a binary variable is equal to one \
-                                   has to be sufficiently lower than one.'
-                        raise UserError(msg)
-                # Check for categorical variables
-                elif x[0] == 'categorical':
-                    if 1 in x[1]:
-                        index = x[1].index(1)
-                        if x[2][index] >= 0.9:
-                            msg = 'The specified probability that a categorical variable is equal\
-                                        to one has to be sufficiently lower than one.'
-                            raise UserError(msg)
-                    if np.testing.assert_approx_equal(sum(x[2]),1.):
-                        msg = 'The specified probability for all possible categories of a ' \
-                              'categorical variable have to sum up to 1.'
-                        raise UserError(msg)
+    error, msg = check_special_conf(dict_)
+    print(error)
+    if error is True:
+        raise UserError(msg)
 
     if dict_['ESTIMATION']['file'][-4:] not in ['.pkl', '.txt', 'dta']:
         msg = 'The {} format specified in the Estimation section of the initialization file' \
@@ -85,9 +70,3 @@ def check_init_file(dict_):
         if len(set(dict_[key_]['order'])) != len(dict_[key_]['order']):
             msg = 'There are two start coefficients {} Section'.format(key_)
             raise UserError(msg)
-
-
-
-
-
-

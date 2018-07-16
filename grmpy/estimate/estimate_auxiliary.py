@@ -95,7 +95,8 @@ def start_values(init_dict, data_frame, option):
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[[init_dict['varnames'][j-1] for j in order]][data_frame[indicator] == i]
+                X = data_frame[[init_dict['varnames'][j-1] for j in order]][
+                    i == data_frame[indicator]]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
@@ -116,7 +117,7 @@ def start_values(init_dict, data_frame, option):
                   ' The intialization specifications are used as start ' \
                   'values during the further process.'
             # Set coefficients equal the true init file values
-            x0 = init_dict['AUX']['init_values'][: numbers[0] + numbers[1] +numbers[2]]
+            x0 = init_dict['AUX']['init_values'][: numbers[0] + numbers[1] + numbers[2]]
             sd_ = None
             init_dict['ESTIMATION']['warning'] = msg
             option = 'init'
@@ -149,7 +150,8 @@ def distribute_parameters(init_dict, start_values, dict_=None):
 
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_treated]
-    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['UNTREATED']['all'] = \
+        start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
     rslt['CHOICE']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         rslt[key_]['order'] = init_dict[key_]['order']
@@ -242,7 +244,7 @@ def print_logfile(init_dict, rslt):
 def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization dictionary."""
     method = init_dict_['ESTIMATION']['optimizer'].split('-')[1:]
-    if isinstance(method,list):
+    if isinstance(method, list):
         method = '-'.join(method)
     opt_dict = init_dict_['SCIPY-' + method]
     opt_dict['maxiter'] = init_dict_['ESTIMATION']['maxiter']
@@ -317,7 +319,8 @@ def process_results(init_dict, rslt, start=False):
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
                 dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
                                             num_treated: num_treated + num_untreated]
-                dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
+                dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_treated
+                                                                             + num_untreated:-6]
                 dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
@@ -337,7 +340,8 @@ def write_comparison(init_dict, df1, rslt):
         file_.write(header)
         info_ = []
         for i, label in enumerate([df1, df2, df3]):
-            info_ += [[label.shape[0], (label[indicator] == 1).sum(), (label[indicator] == 0).sum()]]
+            info_ += [[label.shape[0], (label[indicator] == 1).sum(),
+                       (label[indicator] == 0).sum()]]
 
         fmt = '    {:<25}' + ' {:>20}' * 3 + '\n\n\n'
         file_.write(fmt.format(*['Sample', 'Observed', 'Simulated (finish)',
@@ -470,7 +474,8 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_treated]
-    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
+    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated
+                                            + num_covars_untreated]
     rslt['CHOICE']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
 
     rslt['DIST']['all'] = start_values[-6:]
@@ -574,6 +579,7 @@ def backward_cholesky_transformation(x0, dist=False, test=False):
             output = [sd1, rho01, rho1, sd0, rho0, sdv]
         return output
 
+
 def calculate_mte(rslt, data_frame, quant=None):
 
     coeffs_untreated = rslt['UNTREATED']['all']
@@ -598,5 +604,3 @@ def calculate_mte(rslt, data_frame, quant=None):
         return value, args
     else:
         return value
-
-

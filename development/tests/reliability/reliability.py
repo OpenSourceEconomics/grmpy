@@ -21,6 +21,7 @@ from grmpy.test.random_init import print_dict
 from grmpy.estimate.estimate import estimate
 from grmpy.read.read import read
 
+
 def create_data():
     """This function creates the a data set based on the results from Caineiro 2011."""
 
@@ -37,24 +38,23 @@ def create_data():
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
-
     # Simulate unobservables
     U, V = simulate_unobservables(init_dict)
 
-    df['U1'], df['U0'], df['V'] =  U[:, 0], U[:, 1], V
-
+    df['U1'], df['U0'], df['V'] = U[:, 0], U[:, 1], V
 
     # Simulate choice and output
-    df[dep +'1'] = np.dot(df[label_out],init_dict['TREATED']['all']) + df['U1']
-    df[dep +'0'] = np.dot(df[label_out], init_dict['UNTREATED']['all']) + df['U0']
+    df[dep + '1'] = np.dot(df[label_out], init_dict['TREATED']['all']) + df['U1']
+    df[dep + '0'] = np.dot(df[label_out], init_dict['UNTREATED']['all']) + df['U0']
     df[indicator] = np.array(
-        np.dot(df[label_choice],init_dict['CHOICE']['all']) - df['V'] > 0).astype(int)
-    df[dep] = df[indicator] * df[dep + '1'] + (1 - df[indicator]) * df[dep +'0']
+        np.dot(df[label_choice], init_dict['CHOICE']['all']) - df['V'] > 0).astype(int)
+    df[dep] = df[indicator] * df[dep + '1'] + (1 - df[indicator]) * df[dep + '0']
 
     # Save the data
     df.to_pickle('aer-simulation-mock.pkl')
 
     return df
+
 
 def update_correlation_structure(model_dict, rho):
     """This function takes a valid model specification and updates the correlation structure
@@ -107,11 +107,12 @@ def monte_carlo(file, grid_points):
 
         # Simulate a Data set and specify exogeneous and endogeneous variables
         df_mc = create_data()
-        endog,exog, exog_ols = df_mc['wage'], df_mc[X], df_mc[['state'] + X]
+        endog, exog, exog_ols = df_mc['wage'], df_mc[X], df_mc[['state'] + X]
 
         # Estimate  via grmpy
         rslt = estimate('reliability.grmpy.ini')
-        stat = np.dot(np.mean(exog),rslt['TREATED']['all']) - np.dot(np.mean(exog),rslt['UNTREATED']['all'])
+        stat = np.dot(np.mean(exog), rslt['TREATED']['all']) - np.dot(np.mean(exog),
+                                                                      rslt['UNTREATED']['all'])
         effects['grmpy'] += [stat]
 
         # Estimate via OLS
@@ -122,6 +123,7 @@ def monte_carlo(file, grid_points):
 
     return effects
 
+
 def create_plots(effects, true):
     """The function creates the figures that illustrates the behavior of each estimator of the ATE
     when the correlation structure changes from 0 to 1."""
@@ -131,7 +133,7 @@ def create_plots(effects, true):
         if strategy == 'ols':
             title = 'Ordinary Least Squares'
         elif strategy == 'grmpy':
-            title= 'Local Instrumental Variables'
+            title = 'Local Instrumental Variables'
 
     # Create a figure for each estimation strategy
         ax = plt.figure().add_subplot(111)
@@ -163,6 +165,3 @@ if __name__ == '__main__':
     for type_ in ['grmpy', 'ols']:
         filename = 'fig_{}_average_effect_estimation.png'.format(type_)
         move(join(directory, filename), join(target, filename))
-
-
-

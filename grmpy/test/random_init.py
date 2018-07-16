@@ -30,7 +30,7 @@ def generate_random_dict(constr=None):
     if 'OPTIMIZER' in constr.keys():
         optimizer = constr['OPTIMIZER']
     else:
-        optimizer = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'],p=[0.5, 0.5])
+        optimizer = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'], p=[0.5, 0.5])
 
     if 'SAME_SIZE' in constr.keys():
         same_size = constr['SAME_SIZE']
@@ -85,13 +85,12 @@ def generate_random_dict(constr=None):
                 if key_ == 'TREATED':
                     x = treated_num
                 else:
-                    x= untreated_num
-                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_,
-                                                                              is_zero)
+                    x = untreated_num
+                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_, is_zero)
 
             else:
                 dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
-                                                                              is_zero)
+                                                                          is_zero)
         else:
             dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
 
@@ -154,11 +153,9 @@ def print_dict(dict_, file_name='test'):
               'SCIPY-POWELL']
     write_nonbinary = np.random.random_sample() < 0.5
 
-
     with open(file_name + '.grmpy.ini', 'w') as file_:
 
         for label in labels:
-
             file_.write('   {}'.format(label) + '\n\n')
 
             if label in ['SIMULATION', 'ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL']:
@@ -189,13 +186,12 @@ def print_dict(dict_, file_name='test'):
                             str_ = '        {0:<10} {1:>35}\n'
                             file_.write(str_.format(key_, dict_[label][key_]))
 
-
             elif label in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
                 for i, _ in enumerate(dict_[label]['all']):
                     if 'order' in dict_[label].keys():
                         if 'types' in dict_[label].keys():
                             if isinstance(dict_[label]['types'][i], list):
-                                if dict_[label]['types'][i][0]== 'binary':
+                                if dict_[label]['types'][i][0] == 'binary':
                                     str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>14} {4:>5.4f}\n'
                                     file_.write(
                                         str_.format(
@@ -203,13 +199,13 @@ def print_dict(dict_, file_name='test'):
                                             dict_[label]['all'][i], dict_[label]['types'][i][0],
                                             dict_[label]['types'][i][1])
                                     )
-                                elif dict_[label]['types'][i][0]== 'categorical':
+                                elif dict_[label]['types'][i][0] == 'categorical':
                                     str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>19} '
-                                    for j in [1,2]:
+                                    for j in [1, 2]:
                                         str_ += ' ('
                                         for counter, k in enumerate(dict_[label]['types'][i][j]):
                                             if counter < len(dict_[label]['types'][i][j]) - 1:
-                                                str_  += '{:>1}'.format(str(k)) + ','
+                                                str_ += '{:>1}'.format(str(k)) + ','
                                             else:
                                                 str_ += '{}'.format(str(k)) + ')'
                                     str_ += '\n'
@@ -219,11 +215,10 @@ def print_dict(dict_, file_name='test'):
                                             dict_[label]['all'][i], dict_[label]['types'][i][0])
                                     )
 
-
                             else:
                                 if write_nonbinary:
                                     str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
-                                    file_.write(str_.format('coeff',dict_[label]['order'][i],
+                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
                                                             dict_[label]['all'][i],
                                                             dict_[label]['types'][i]))
                                 else:
@@ -257,7 +252,6 @@ def generate_coeff(num, key_, is_zero):
     else:
         binary_list = []
 
-
     return list_, binary_list
 
 
@@ -277,8 +271,8 @@ def types(dict_):
                         index = dict_[section]['order'].index(i)
                         dict_[section]['types'][index] = ['binary', frac]
             else:
-                num = np.random.choice([3,4,5,6,7], size=1)
-                cat = list(range(1,int(num) + 1))
+                num = np.random.choice([3, 4, 5, 6, 7], size=1)
+                cat = list(range(1, int(num) + 1))
                 prob = prob_weights(num)
                 for section in ['TREATED', 'UNTREATED', 'CHOICE']:
                     if i in dict_[section]['order']:
@@ -288,6 +282,7 @@ def types(dict_):
             pass
 
     return dict_
+
 
 def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
     """This function determines the variables that affect the output when selecting into treatment
@@ -387,6 +382,7 @@ def overlap_treat_untreat_cost(dict_, cost_num, overlap):
 
     return dict_
 
+
 def prob_weights(n):
     """This function creates the probabilities for categorical variables given the number of
     different categories"""
@@ -394,7 +390,7 @@ def prob_weights(n):
     weights = []
     for i in range(int(n)):
         if i == 0:
-            prob = np.random.choice(np.arange(0.05,0.5, 0.05))
+            prob = np.random.choice(np.arange(0.05, 0.5, 0.05))
         else:
             if i == n-1:
                 prob = 1 - sum(weights)
@@ -403,6 +399,6 @@ def prob_weights(n):
                     prob = 0.05
                 else:
                     prob = np.random.choice(np.arange(0.05, x/2, 0.05))
-        x = round(x -prob, 4)
+        x = round(x - prob, 4)
         weights += [prob]
-    return list(np.around(weights,2))
+    return list(np.around(weights, 2))

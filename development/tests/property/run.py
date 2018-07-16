@@ -2,13 +2,10 @@
 """The test provides the basic capabilities to run numerous property tests."""
 import datetime
 
-import statsmodels
 import subprocess
-
 
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.random_init import print_dict
-from grmpy.test.random_init import constraints
 import grmpy
 
 # We simply specify a minimum number of minutes for our package to run with different requests.
@@ -22,7 +19,7 @@ while True:
 
     print('\n Iteration ', counter)
 
-    constr = constraints()
+    constr = dict()
 
     constr['DETERMINISTIC'] = False
     dict_ = generate_random_dict(constr)

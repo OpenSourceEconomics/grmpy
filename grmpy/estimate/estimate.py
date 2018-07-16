@@ -1,7 +1,6 @@
 """The module provides an estimation process given the simulated data set and the initialization
 file."""
 from scipy.optimize import minimize
-import pandas as pd
 import numpy as np
 
 from grmpy.estimate.estimate_auxiliary import adjust_output_maxiter_zero
@@ -40,7 +39,6 @@ def estimate(init_file):
         option = 'init'
     else:
         option = dict_['ESTIMATION']['start']
-
 
     # Read data frame
     data = read_data(data_file)

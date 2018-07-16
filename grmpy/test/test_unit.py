@@ -224,7 +224,8 @@ def test7():
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
             index_treated = dict_['TREATED']['order'].index(i)
             index_untreated = dict_['UNTREATED']['order'].index(i)
-            if not dict_['TREATED']['types'][index_treated] == dict_['UNTREATED']['types'][index_untreated]:
+            if not dict_['TREATED']['types'][index_treated]\
+                    == dict_['UNTREATED']['types'][index_untreated]:
                 raise AssertionError()
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
         if isinstance(dict_[key_]['types'][0], list):
@@ -299,4 +300,3 @@ def test12():
     fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
     simulate(fname)
     estimate(fname)
-

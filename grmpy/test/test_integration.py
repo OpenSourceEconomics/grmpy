@@ -153,9 +153,8 @@ def test7():
         pytest.raises(UserError, check_initialization_dict, dict_)
         pytest.raises(UserError, simulate, 'test.grmpy.ini')
 
-
         tests = []
-        tests += [['TREATED','UNTREATED'], ['TREATED', 'CHOICE'], ['UNTREATED', 'CHOICE']]
+        tests += [['TREATED', 'UNTREATED'], ['TREATED', 'CHOICE'], ['UNTREATED', 'CHOICE']]
         tests += [['TREATED', 'UNTREATED', 'CHOICE']]
 
         for combi in tests:
@@ -171,7 +170,7 @@ def test7():
                     dict_[j]['types'] += ['nonbinary']
                 else:
                     pass
-                dict_[j]['order'][1] = len(dict_['AUX']['types']) +1
+                dict_[j]['order'][1] = len(dict_['AUX']['types']) + 1
 
                 frac = np.random.uniform(0.1, 0.8)
                 dict_[j]['types'][1] = ['binary', frac]
@@ -199,7 +198,7 @@ def test7():
     dict_ = read(fname_diff)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, estimate, fname_diff)
-    
+
 
 def test8():
     """The test checks if an UserError occurs if wrong inputs are specified for a different
@@ -220,8 +219,6 @@ def test8():
     pytest.raises(UserError, start_values, a, df, 'init')
     pytest.raises(UserError, generate_random_dict, a)
 
-    cleanup()
-
 
 def test9():
     """This test ensures that the random initialization file generating process, the read in process
@@ -236,6 +233,4 @@ def test9():
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
 
-
-
-
+    cleanup()

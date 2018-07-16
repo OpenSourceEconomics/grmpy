@@ -37,7 +37,7 @@ def simulate_covariates(init_dict):
                 prob = types[i][2]
                 cat = types[i][1]
                 rand = np.random.choice(cat, size=num_agents, p=prob)
-                X[:,i] = rand
+                X[:, i] = rand
 
     return X
 
@@ -102,12 +102,12 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     # Generate data frame, save it with pickle and create a txt file
     df = pd.DataFrame(data=data, columns=column)
     df[indicator] = df[indicator].apply(np.int64)
-    df2=pd.DataFrame()
+    df2 = pd.DataFrame()
     for i in df.columns.values:
         if "X" in i:
-            df2[init_dict['varnames'][int(i[1:5])]]=df[i]
+            df2[init_dict['varnames'][int(i[1:5])]] = df[i]
         else:
-            df2[i]=df[i]
+            df2[i] = df[i]
     df2.to_pickle(source + '.grmpy.pkl')
     with open(source + '.grmpy.txt', 'w') as file_:
         df2.to_string(file_, index=False, na_rep='.', col_space=15, justify='left')
@@ -125,6 +125,7 @@ def construct_all_coefficients(init_dict):
 
 def print_info(init_dict, data_frame):
     """The function writes an info file for the specific data frame."""
+
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
@@ -141,7 +142,8 @@ def print_info(init_dict, data_frame):
         header = '\n\n Number of Observations \n\n'
         file_.write(header)
 
-        info_ = [data_frame.shape[0], (data_frame[indicator] == 1).sum(), (data_frame[indicator] == 0).sum()]
+        info_ = [data_frame.shape[0], (data_frame[indicator] == 1).sum(),
+                 (data_frame[indicator] == 0).sum()]
 
         fmt = '  {:<10}' + ' {:>20}' * 1 + '\n\n'
         file_.write(fmt.format(*['', 'Count']))
@@ -232,7 +234,8 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
             if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
                 index_treated = dict_['TREATED']['order'].index(i)
                 index_untreated = dict_['UNTREATED']['order'].index(i)
-                diff = dict_['TREATED']['all'][index_treated] - dict_['UNTREATED']['all'][index_untreated]
+                diff = dict_['TREATED']['all'][index_treated] \
+                    - dict_['UNTREATED']['all'][index_untreated]
             elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order']:
                 index = dict_['TREATED']['order'].index(i)
                 diff = dict_['TREATED']['all'][index]

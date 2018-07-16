@@ -7,11 +7,12 @@ from grmpy.check.custom_exceptions import UserError
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) > 5:
-        name, order, val, type_, categories, prob = list_[0], list_[1], list_[2], list_[3], list_[4], list_[5]
+        name, order, val, type_, categories, prob = list_[0], list_[1], list_[2], list_[3], \
+                                                    list_[4], list_[5]
     elif len(list_) == 5:
         name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
-    elif len(list_) in [3,4]:
-        name, order, val  = list_[0], list_[1], list_[2]
+    elif len(list_) in [3, 4]:
+        name, order, val = list_[0], list_[1], list_[2]
     else:
         name, val = list_[0], list_[1]
 
@@ -89,7 +90,7 @@ def auxiliary(dict_):
     dict_['AUX']['num_covars_cost'] = num_covars_cost
 
     # Number of parameters
-    dict_['AUX']['num_paras'] = num_covars_treated +  num_covars_untreated + num_covars_cost + 2 + 2
+    dict_['AUX']['num_paras'] = num_covars_treated + num_covars_untreated + num_covars_cost + 2 + 2
 
     # Starting values
     dict_['AUX']['init_values'] = []
@@ -113,7 +114,7 @@ def check_types(dict_):
     costs.
     """
     list_ = []
-    covars = set(dict_['TREATED']['order'] +  dict_['UNTREATED']['order'] +  dict_['CHOICE']['order'])
+    covars = set(dict_['TREATED']['order'] + dict_['UNTREATED']['order'] + dict_['CHOICE']['order'])
     for i in covars:
         if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
                         i in dict_['CHOICE']['order']:
@@ -140,8 +141,8 @@ def check_types(dict_):
                                 raise UserError(msg)
             list_ += [dict_['CHOICE']['types'][index]]
 
-        elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i not in dict_['CHOICE']['order']:
+        elif i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] \
+                and i not in dict_['CHOICE']['order']:
             keys = ['TREATED', 'UNTREATED']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -161,8 +162,8 @@ def check_types(dict_):
                             raise UserError(msg)
             list_ += [dict_['UNTREATED']['types'][index]]
 
-        elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and\
-                        i in dict_['CHOICE']['order']:
+        elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] \
+                and i in dict_['CHOICE']['order']:
             keys = ['UNTREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -180,8 +181,8 @@ def check_types(dict_):
                             raise UserError(msg)
             list_ += [dict_['CHOICE']['types'][index]]
 
-        elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] and\
-                        i in dict_['CHOICE']['order']:
+        elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order'] \
+                and i in dict_['CHOICE']['order']:
             keys = ['TREATED', 'CHOICE']
             for key_ in keys:
                 index = dict_[key_]['order'].index(i)
@@ -211,7 +212,6 @@ def check_types(dict_):
                 list_ += [dict_['CHOICE']['types'][index]]
     dict_['AUX']['types'] = list_
 
-
     return dict_
 
 
@@ -231,4 +231,3 @@ def convert_categories_probs(string, option=None):
         else:
             list_ += [float(i)]
     return list_
-

@@ -22,3 +22,40 @@ def read_data(data_file):
         data = pd.read_stata(data_file)
 
     return data
+
+
+def check_special_conf(dict_):
+    """This function ensures that an init file uses appropriate specifications for binary and
+    categorical variables.
+    """
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
+        for x in dict_[key_]['types']:
+            invalid = False
+            msg = ' '
+            if isinstance(x, list):
+                # Check for binary variables
+                str_ = 'The specified probability that a {} variable is equal to {} has to be ' \
+                       'sufficiently lower than one.'
+                if x[0] == 'binary':
+                    if x[1] >= 0.9:
+                        msg = str_.format(x[0], 'one')
+                        invalid = True
+                # Check for categorical variables
+                elif x[0] == 'categorical':
+                    if any(i >= 0.9 for i in x[2]):
+                        msg = str_.format(x[0], 'a specific category')
+                        invalid = True
+                    elif np.testing.assert_approx_equal(sum(x[2]), 1.):
+                        msg = 'The specified probability for all possible categories of a ' \
+                              'categorical variable have to sum up to 1.'
+                        invalid = True
+                else:
+                    msg = 'The option you added to a variable in the {} section is invalid.'\
+                        .format(key_)
+
+                return invalid, msg
+
+            else:
+                pass
+
+        return invalid, ' '

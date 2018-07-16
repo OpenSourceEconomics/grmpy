@@ -12,6 +12,7 @@ import os
 from grmpy.estimate.estimate_auxiliary import calculate_mte
 from grmpy.estimate.estimate import estimate
 
+
 def plot_est_mte(rslt, data_frame):
     """This function calculates the marginal treatment effect for different quartiles of the
     unobservable V. ased on the calculation results."""
@@ -37,6 +38,7 @@ def plot_est_mte(rslt, data_frame):
 
     plt.tight_layout()
     plt.savefig('fig-marginal-benefit-parametric-replication.png')
+
 
 if __name__ == '__main__':
 
