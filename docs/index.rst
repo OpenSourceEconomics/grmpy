@@ -44,7 +44,7 @@ Please see `here <https://github.com/HumanCapitalEconomics/econometrics/blob/mas
 
     * If the interaction with pypi gets too cumbersome, we can consider using bumpversion, zest.releaser, or hatch ...
 
-    * We need all figures formatted exactly identical, referenced in the main text and figure headings. There is no apparent naming convention for the python scripts and files in the figures subdirectory.
+    * We need all figures formatted exactly identical, referenced in the main text and figure headings. There is no apparent naming convention for the python scripts and files in the figures subdirectory. Do we need the __init__ file, remove carneiro paper screenshot.
 
     * We want the table of content in the pdf two go to depth two, but now show up in the html version at all.
 

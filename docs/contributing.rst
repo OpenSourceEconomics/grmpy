@@ -20,6 +20,18 @@ Estimation Methods
 
 * implementing polynomial and local-instrumental variable estimation as outlined by Heckman et al. (:cite:`HeUrVy06`)
 
+* implementing capability to control for unobservables by adding a factor structure assumption as in Eisenhauer manuscript
+
+.. todo::
+
+    Add proper citation of my course manuscript
+
+Program Structure
+^^^^^^^^^^^^^^^^^
+
+* refactoring code to incorporate elements of object-oriented programming
+
+
 Numerical Methods
 ^^^^^^^^^^^^^^^^^
 
