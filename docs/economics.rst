@@ -1,13 +1,26 @@
+.. todo::
+
+    Please revisit the proper formatting of the headers that follow the structure in my manuscript. Also, please revamp the whole doc so that we are using Atx-style headers, see here https://daringfireball.net/projects/markdown/syntax#header
+
 ﻿Economics
 =========
 
-This section provides a general discussion of the generalized Roy model and selected issues in the econometrics of policy evaluation. The ``grmpy`` package implements a parametric normal version of the model, please see the next section for details.
+This section provides a general discussion of the generalized Roy model and selected issues in the econometrics of policy evaluation.
 
 Generalized Roy Model
 *********************
 
-The generalized Roy model (:cite:`Roy1951`; :cite:`HecVyr05`) provides a coherent framework to explore the econometrics of policy evaluation. Its parametric version is characterized by the following set of equations.
+.. todo::
 
+    Multiple citations are sometimes separated by comma sometimes by semicolon. Please determine the proper way and impose it throughout.
+
+﻿Economics
+
+The generalized Roy model (:cite:`Roy1951`; :cite:`HecVyr05`) provides a coherent framework to explore the econometrics of policy evaluation. Its is characterized by the following set of equations.
+
+.. todo::
+
+    Please ensure a proper left alignment of the labels for the equation groups. Also please put them in boldface.
 
 .. math::
     \text{Potential Outcomes} &  \\
@@ -34,7 +47,7 @@ The evaluation problem arises because either :math:`Y_1` or :math:`Y_0` is obser
 Selected Issues
 ***************
 
-We now highlight some selected issues in the econometrics of policy evaluation that can be fruitfully discussed within the framework of the model.
+Using the setup of the generalized Roy model, we now highlight several important concepts in the economics and econometrics of policy evaluation. We discuss sources of agent heterogeneity and motivate alternative objects of interest.
 
 Agent Heterogeneity
 -------------------
@@ -55,12 +68,20 @@ The information available to the econometrician and the agent determines the set
 Essential Heterogeneity
 -----------------------
 
-If agents select their treatment status based on benefits unobserved by the econometrician (selection on unobservables), then there is no unique effect of a treatment or a policy even after conditioning on observable characteristics. Average benefits are different from marginal benefits, and different policies select individuals at different margins. Conventional econometric methods that only account for selection on observables, like matching (:cite:`CocRub72`; :cite:`RoRu1983` ; :cite:`HeIcSmTo98`), are not able to identify any parameter of interest (:cite:`HecVyr05`; :cite:`HeUrVy06`).
+If agents select their treatment status based on benefits unobserved by the econometrician (selection on unobservables), then there is no unique effect of a treatment or a policy even after conditioning on observable characteristics. Average benefits are different from marginal benefits, and different policies select individuals at different margins. Conventional econometric methods that only account for selection on observables, like matching (:cite:`CocRub72`; :cite:`RoRu1983` ; :cite:`HeIcSmTo98`), are not able to identify any parameter of interest (:cite:`HecVyr05`; :cite:`HeUrVy06`). For example, Carneiro (2011) present evidence on agents selecting their level of education based on their unobservable gains and demonstrate the importance of adjusting the estimation strategy to allow for this fact. Heckman & Schmierer (2010) propose a variety of tests for the the presence of essential heterogeneity.
+
+.. todo::
+
+    Set up proper citations.
 
 Objects of Interest
 *******************
 
 Treatment effect heterogeneity requires to be precise about the effect being discussed. There is no single effect of neither a policy nor a treatment. For each specific policy question, the object of interest must be carefully defined (:cite:`HecVyr05`, :cite:`HecVyr07a`, :cite:`HecVyr07b`). We present several potential objects of interest and discuss what question they are suited to answer. We start with the average effect parameters. However, these neglect possible effect heterogeneity. Therefore, we explore their distributional counterparts as well.
+
+.. todo::
+
+    I want ALL objects of interest  written like this  :math:`B^{ATE}` for ATE. This requires to iterate through the whole document.
 
 Conventional Average Treatment Effects
 --------------------------------------
@@ -73,9 +94,23 @@ treated (TT) or untreated (TUT).
       TT & = E [Y_1 - Y_0 | D = 1]\\
       TUT & = E [Y_1 - Y_0 | D = 0]\\
 
-The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus TT > TUT. If agents select their treatment status at random, then all parameters are equal. The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The ATE is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The TT is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
-compulsory participation, then the TUT is the policy relevant parameter. To ensure a tight link between the posed policy question and the parameter of interest, Heckman
-and Vytlacil (:cite:`HecVyr01`) propose the policy-relevant treatment effect (PRTE). They consider policies that do not change potential outcomes, but only affect individual choices. Thus, they account for voluntary program participation. Policy-Relevant Average Treatment Effects The PRTE captures the average change in outcomes per net person shifted by a change from a baseline state :math:`B` to an alternative policy :math:`A`. Let :math:`D_B` and :math:`D_A` denote the choice taken under the baseline and the alternative policy regime
+All average effect parameter possibly hide considerable treatment effect heterogeneity. The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus TT > TUT. If agents select their treatment status at random, then all parameters are equal.
+
+.. todo::
+
+    Integrate a version of this figure https://github.com/HumanCapitalEconomics/economics/blob/master/distribution/04_static_model.pdf slide 26 in the documentation , this includes its reference in the text with a brief description.
+
+The policy relevance of the conventional treatment effect parameters is limited. They are only informative about extreme policy alternatives. The ATE is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The TT is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
+compulsory participation, then the TUT is the policy relevant parameter.
+
+
+To ensure a tight link between the posed policy question and the parameter of interest, Heckman
+and Vytlacil (:cite:`HecVyr01`) propose the policy-relevant treatment effect (PRTE). They consider policies that do not change potential outcomes, but only affect individual choices. Thus, they account for voluntary program participation.
+
+Policy-Relevant Average Treatment Effect
+----------------------------------------
+
+Policy-Relevant Average Treatment Effects The PRTE captures the average change in outcomes per net person shifted by a change from a baseline state :math:`B` to an alternative policy :math:`A`. Let :math:`D_B` and :math:`D_A` denote the choice taken under the baseline and the alternative policy regime
 respectively. Then, observed outcomes are determined as
 
 .. math::
@@ -88,7 +123,7 @@ A policy change induces some agents to change their treatment status (DB != DA),
       PRTE  = E[D_A] - E[D_B](E[Y_A] - E[Y_B]).
 
 In our empirical illustration, in which we consider education policies, the lack of policy relevance of the conventional effect parameters is particularly evident. Rather than directly assigning individuals a certain level of education, policy makers can only indirectly affect schooling choices, e.g. by altering tuition cost through subsidies. The individuals drawn into treatment by such a policy will neither be a random sample of the whole population, nor the whole population of
-the previously (un-)treated. That is why we estimate the policy-relevant effects of alternative education policies and contrast them with the conventional treatment effect parameters. We also show how the PRTE varies for alternative policy proposals as different agents are induced to change their treatment status.
+the previously (un-)treated.
 
 Local Average Treatment Effect
 ------------------------------
@@ -120,6 +155,12 @@ Parameter :math:`j, \Delta j (x)`, can be written as
 .. math::
     \Delta j (x) = \int_{0}^{1} MTE(x, u_S) hj(x, u_S) du_S,
 
+
+.. todo::
+
+    The notation for the weights does not match the figures.
+
+
 where the weights :math:`hj (x, u_S)` are specific to parameter j, integrate to one, and can be constructed from data.
 
 .. figure:: ../docs/figures/fig-weights-marginal-effect.png
@@ -144,3 +185,9 @@ Distribution of Potential Outcomes
 
 Several interesting aspects of policies cannot be evaluated without knowing the joint distribution of potential outcomes (see :cite:`AbbHec07` and :cite:`HeSmCl97`). The joint distribution of :math:`(Y_1, Y_0)` allows to calculate the whole distribution of benefits. Based on it, the average treatment and policy effects can be
 constructed just as the median and all other quantiles. In addition, the portion of people that benefit from treatment can be calculated for the overall population :math:`Pr(Y_1 - Y_0 > 0)` or among any subgroup of particular interest to policy makers :math:`Pr(Y_1 - Y_0 > 0 | X)`. This is important as a treatment which is beneficial for agents on average can still be harmful for some. The absence of an average effect might be the result of part of the population having a positive effect, which is just offset by a negative effect on the rest of the population. This kind of treatment effect heterogeneity is informative as it provides the starting point for an adaptive research strategy that tries to understand the driving force behind these differences (:cite:`HSMV96`, :cite:`HSMV97`).
+
+.. todo::
+
+    * Integrate a version of this figure https://github.com/HumanCapitalEconomics/economics/blob/master/distribution/04_static_model.pdf slide 44-45 in the documentation , this includes its reference in the text with a brief description.
+
+    * add fotnote 5 from my manuscript into text 

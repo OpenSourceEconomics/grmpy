@@ -16,13 +16,15 @@ We build on the following main references:
 
     James J. Heckman and Edward J. Vytlacil. `Econometric evaluation of social programs, part II: Using the marginal treatment effect to organize alternative econometric estimators to evaluate social programs, and to forecast their effects in new environments. <http://ac.els-cdn.com/S1573441207060710/1-s2.0-S1573441207060710-main.pdf?_tid=5ccb4ace-6bbf-11e7-807b-00000aab0f26&acdnat=1500385710_c3706f18138fabe356b0f3ebddd75670>`_ In *Handbook of Econometrics*, volume 6B, chapter 71, pages 4875–5143. Elsevier Science, 2007.
 
+The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. The documentation concludes with some housekeeping issues.
+
+Please see `here <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`_ for a host of lectures material on the econometrics of policy evaluation.
+
 .. htmlonly::
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 
-**Contents:**
-
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 0
 
     economics
     installation
@@ -41,3 +43,11 @@ We build on the following main references:
     This `todoList` is just a random collection of future features to be implemented. It is not printed on Read the Docs.
 
     * If the interaction with pypi gets too cumbersome, we can consider using bumpversion, zest.releaser, or hatch ...
+
+    * We need all figures formatted exactly identical, referenced in the main text and figure headings. There is no apparent naming convention for the python scripts and files in the figures subdirectory. Do we need the __init__ file, remove carneiro paper screenshot.
+
+    * We want the table of content in the pdf two go to depth two, but now show up in the html version at all.
+
+    * The main reference formatting does not look identical to the citations on the website.
+
+    * We want to get rid of the malformatting warnings during build.
