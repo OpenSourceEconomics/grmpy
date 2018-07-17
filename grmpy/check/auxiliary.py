@@ -45,7 +45,7 @@ def check_special_conf(dict_):
                     if any(i >= 0.9 for i in x[2]):
                         msg = str_.format(x[0], 'a specific category')
                         invalid = True
-                    elif not np.isclose(sum(x[2]), 1., 0.01):
+                    elif not np.isclose(sum(x[2]), 1., 0.1):
                         msg = 'The specified probability for all possible categories of a ' \
                               'categorical variable have to sum up to 1.'
                         invalid = True

@@ -205,7 +205,7 @@ def print_info(init_dict, data_frame):
         quantiles = [i * 0.01 for i in quantiles]
 
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = data_frame[[init_dict['varnames'][i-1] for i in help_]]
+        x = data_frame[[init_dict['varnames'][i - 1] for i in help_]]
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)

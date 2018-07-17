@@ -3,10 +3,17 @@ import warnings
 import sys
 import os
 
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 import numpy as np
 
+IS_PRODUCTION = True
+
 # We want to turn off selected warnings.
-warnings.simplefilter(action='ignore', category=FutureWarning)
+
+if IS_PRODUCTION is True:
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+    warnings.simplefilter(action='ignore', category=ConvergenceWarning)
+    warnings.simplefilter(action='ignore', category=RuntimeWarning)
 
 # We only support modern Python.
 np.testing.assert_equal(sys.version_info[0], 3)

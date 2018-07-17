@@ -7,10 +7,10 @@ from grmpy.check.custom_exceptions import UserError
 def process(list_, dict_, keyword):
     """The function processes keyword parameters and creates dictionary elements."""
     if len(list_) > 5:
-        name, order, val, type_, categories, prob = list_[0], list_[1], list_[2], list_[3], \
-                                                    list_[4], list_[5]
+        name, order, val, type_, categories, prob = \
+            list_[0], list_[1], list_[2], list_[3], list_[4], list_[5]
     elif len(list_) == 5:
-        name, order,  val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
+        name, order, val, type_, frac_ = list_[0], list_[1], list_[2], list_[3], list_[4]
     elif len(list_) in [3, 4]:
         name, order, val = list_[0], list_[1], list_[2]
     else:
@@ -28,14 +28,14 @@ def process(list_, dict_, keyword):
         if len(list_) >= 5:
             if type_ == 'binary':
                 dict_[keyword]['types'] += [[type_, float(frac_)]]
-                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+                dict_[keyword]['order'] += [dict_['varnames'].index(order) + 1]
             elif type_ == 'categorical':
                 categories = convert_categories_probs(categories, 'categories')
                 prob = convert_categories_probs(prob)
-                dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+                dict_[keyword]['order'] += [dict_['varnames'].index(order) + 1]
                 dict_[keyword]['types'] += [['categorical', categories, prob]]
         else:
-            dict_[keyword]['order'] += [dict_['varnames'].index(order)+1]
+            dict_[keyword]['order'] += [dict_['varnames'].index(order) + 1]
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
@@ -116,8 +116,8 @@ def check_types(dict_):
     list_ = []
     covars = set(dict_['TREATED']['order'] + dict_['UNTREATED']['order'] + dict_['CHOICE']['order'])
     for i in covars:
-        if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] and \
-                        i in dict_['CHOICE']['order']:
+        if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order'] \
+                and i in dict_['CHOICE']['order']:
             if i == 1:
                 keys = ['TREATED', 'UNTREATED', 'CHOICE']
                 for key_ in keys:

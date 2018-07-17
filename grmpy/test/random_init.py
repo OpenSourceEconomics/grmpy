@@ -390,15 +390,16 @@ def prob_weights(n):
     weights = []
     for i in range(int(n)):
         if i == 0:
-            prob = np.random.choice(np.arange(0.05, 0.5, 0.05))
+            prob = np.random.choice(np.arange(0.1, 0.5, 0.05))
         else:
-            if i == n-1:
+            if i == n - 1:
                 prob = 1 - sum(weights)
             else:
-                if x/2 == 0.05:
+                if x / 2 == 0.05:
                     prob = 0.05
                 else:
-                    prob = np.random.choice(np.arange(0.05, x/2, 0.05))
+                    prob = np.random.choice(np.arange(0.05, x / 2, 0.05))
+
         x = round(x - prob, 4)
         weights += [prob]
     return list(np.around(weights, 2))

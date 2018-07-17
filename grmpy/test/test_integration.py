@@ -36,6 +36,9 @@ def test2():
     """
     fname = TEST_RESOURCES_DIR + '/regression_vault.grmpy.json'
     tests = json.load(open(fname))
+    random_choice = np.random.choice(range(len(tests)), 5)
+    print(random_choice)
+    tests = [tests[i] for i in random_choice]
 
     for test in tests:
         stat, dict_, criteria = test
@@ -54,7 +57,7 @@ def test3():
     """
     for _ in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 10000, 'init'
+        constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 1000, 'init'
         constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
         df1 = simulate('test.grmpy.ini')
@@ -88,8 +91,7 @@ def test5():
     for _ in range(10):
         constr = dict()
         constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
-        dict_ = generate_random_dict(constr)
-        print(dict_['DIST'])
+        generate_random_dict(constr)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
 
@@ -109,10 +111,11 @@ def test6():
         dict_ = read_desc('comparison.grmpy.txt')
         for key_ in ['All', 'Treated', 'Untreated']:
             np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
-            np.testing.assert_array_equal(dict_[key_]['Observed Sample'],
-                                          dict_[key_]['Simulated Sample (finish)'])
-            np.testing.assert_array_equal(dict_[key_]['Simulated Sample (finish)'],
-                                          dict_[key_]['Simulated Sample (start)'])
+            np.testing.assert_almost_equal(
+                dict_[key_]['Observed Sample'], dict_[key_]['Simulated Sample (finish)'], 0.001)
+            np.testing.assert_array_almost_equal(
+                dict_[key_]['Simulated Sample (finish)'],
+                dict_[key_]['Simulated Sample (start)'], 0.001)
 
 
 def test7():
@@ -126,7 +129,7 @@ def test7():
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.ini'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.ini'
 
-    for _ in range(10):
+    for _ in range(5):
         constr = dict()
         constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
         generate_random_dict(constr)

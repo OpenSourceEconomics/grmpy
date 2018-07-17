@@ -54,7 +54,6 @@ def read_desc(fname):
                     dict_[list_[0]] = {}
                     dict_[list_[0]]['Number'] = list_[1:]
             elif 20 <= i < 23:
-                print(list_)
                 if list_[0] == 'Observed':
                     dict_['All'][list_[0] + ' ' + list_[1]] = list_[2:]
                 else:
@@ -69,6 +68,15 @@ def read_desc(fname):
                     dict_['Untreated'][list_[0] + ' ' + list_[1]] = list_[2:]
                 else:
                     dict_['Untreated'][list_[0] + ' ' + list_[1] + ' ' + list_[2]] = list_[3:]
+
+        # Process the string in int and float values
+        for key_ in dict_.keys():
+
+            dict_[key_]['Number'] = [int(i) for i in dict_[key_]['Number']]
+            for subkey \
+                    in ['Observed Sample', 'Simulated Sample (finish)', 'Simulated Sample (start)']:
+                dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey]]
+        print(dict_['Treated'])
 
     return dict_
 

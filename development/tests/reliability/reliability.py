@@ -3,10 +3,7 @@ tion strategy. For this purpose data and the associated parameterization from Ca
 used. Additionally the module creates two different figures for the reliability section of the
 documentation.
 """
-import warnings
 import os
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
@@ -14,7 +11,6 @@ from os.path import join
 from shutil import move
 import pandas as pd
 import numpy as np
-
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.test.random_init import print_dict
@@ -31,8 +27,8 @@ def create_data():
 
     # Distribute information
     indicator, dep = init_dict['ESTIMATION']['indicator'], init_dict['ESTIMATION']['dependent']
-    label_out = [init_dict['varnames'][j-1] for j in init_dict['TREATED']['order']]
-    label_choice = [init_dict['varnames'][j-1] for j in init_dict['CHOICE']['order']]
+    label_out = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
+    label_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
     seed = init_dict['SIMULATION']['seed']
 
     # Set random seed to ensure recomputabiltiy
@@ -70,7 +66,7 @@ def update_correlation_structure(model_dict, rho):
 
     # We print out the specification to an initialization file with the name mc_init.grmpy.ini.
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        x = [model_dict['varnames'][j-1] for j in model_dict[key_]['order']]
+        x = [model_dict['varnames'][j - 1] for j in model_dict[key_]['order']]
         model_dict[key_]['order'] = x
     print_dict(model_dict, 'reliability')
 
@@ -80,7 +76,7 @@ def get_effect_grmpy(file):
     df = pd.read_pickle(file)
     dict_ = read('reliability.grmpy.ini')
     beta_diff = dict_['TREATED']['all'] - dict_['UNTREATED']['all']
-    covars = [dict_['varnames'][j-1] for j in dict_['TREATED']['order']]
+    covars = [dict_['varnames'][j - 1] for j in dict_['TREATED']['order']]
     ATE = np.mean(np.dot(df[covars], beta_diff))
 
     return ATE

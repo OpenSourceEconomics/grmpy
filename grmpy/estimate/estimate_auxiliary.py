@@ -28,8 +28,8 @@ def log_likelihood(init_dict, data_frame, rslt, dict_=None):
             beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
             key_ = 'UNTREATED'
         data = data_frame[data_frame[indicator] == i]
-        Z = data[[init_dict['varnames'][j-1] for j in init_dict['CHOICE']['order']]]
-        X = data[[init_dict['varnames'][j-1] for j in init_dict[key_]['order']]]
+        Z = data[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
+        X = data[[init_dict['varnames'][j - 1] for j in init_dict[key_]['order']]]
 
         choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
         part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
@@ -95,14 +95,14 @@ def start_values(init_dict, data_frame, option):
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[[init_dict['varnames'][j-1] for j in order]][
+                X = data_frame[[init_dict['varnames'][j - 1] for j in order]][
                     i == data_frame[indicator]]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale)]
             # Estimate gamma via Probit
-            Z = data_frame[[init_dict['varnames'][j-1] for j in init_dict['CHOICE']['order']]]
+            Z = data_frame[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
             gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
@@ -317,10 +317,10 @@ def process_results(init_dict, rslt, start=False):
                     dict_[key_]['types'] = init_dict[key_]['types']
                     dict_[key_]['order'] = init_dict[key_]['order']
                 dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
-                dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][
-                                            num_treated: num_treated + num_untreated]
-                dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_treated
-                                                                             + num_untreated:-6]
+                dict_['UNTREATED']['all'] = \
+                    init_dict['AUX']['starting_values'][num_treated: num_treated + num_untreated]
+                dict_['CHOICE']['all'] = \
+                    init_dict['AUX']['starting_values'][num_treated + num_untreated:-6]
                 dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'][-6:], dict_)
                 return start_dict, rslt_dict
             else:
@@ -474,8 +474,8 @@ def adjust_output_maxiter_zero(init_dict, start_values):
 
     # Distribute parameters
     rslt['TREATED']['all'] = start_values[:num_covars_treated]
-    rslt['UNTREATED']['all'] = start_values[num_covars_treated:num_covars_treated
-                                            + num_covars_untreated]
+    rslt['UNTREATED']['all'] = \
+        start_values[num_covars_treated:num_covars_treated + num_covars_untreated]
     rslt['CHOICE']['all'] = start_values[num_covars_treated + num_covars_untreated:(-6)]
 
     rslt['DIST']['all'] = start_values[-6:]

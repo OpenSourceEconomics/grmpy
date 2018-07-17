@@ -23,7 +23,7 @@ def plot_est_mte(rslt, data_frame):
 
     # Calculate the MTE
     mte = calculate_mte(rslt, data_frame, quantiles)
-    mte = [i/4 for i in mte]
+    mte = [i / 4 for i in mte]
 
     # Plot both curves
     ax = plt.figure().add_subplot(111)
