@@ -36,17 +36,17 @@ source      str         specified name for the simulation output files
 
 The *ESTIMATION* block determines the basic information for the estimation process.
 
-=========     =======      ==================
-Key            Value       Interpretation
-=========     =======      ==================
-agents         int         number of individuals for the estimation simulation
-file           str         specified data input file for the estimation process
-optimizer      str         optimizer used for the estimation process
-start          str         determines which start values are used for the estimation process
-maxiter	       int         maximum numbers of iterations the minimization process performs
-dependent	   str         indicates the dependent variable for the estimation process
-indicator	   str         defines the label of the treatment indicator variable
-=========     =======      ==================
+=========     =======      =====================================================
+Key           Value        Interpretation
+=========     =======      =====================================================
+agents        int          number of individuals for the estimation simulation
+file          str          specified data input file for the estimation process
+optimizer     str          optimizer used for the estimation process
+start         str          determines which start values are used for the estimation process
+maxiter	      int          maximum numbers of iterations the minimization process performs
+dependent	  str          indicates the dependent variable for the estimation process
+indicator	  str          defines the label of the treatment indicator variable
+=========     =======      =====================================================
 
 
 
@@ -54,39 +54,39 @@ indicator	   str         defines the label of the treatment indicator variable
 
 The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
 
-=======   ======  ======     ==================
-Key       Column   Value      Interpretation
-=======   ======  ======     ==================
+=======   ======  ======     ===================================
+Key       Column  Value      Interpretation
+=======   ======  ======     ===================================
 coeff     str     float      intercept coefficient
 coeff     str     float      coefficient of the first covariate
 coeff     str     float      coefficient of the second covariate
-=======   ======  ======     ==================
+=======   ======  ======     ===================================
 
 
 **UNTREATED**
 
 The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
-=======   =====   ======    ==================
-Key       Column   Value     Interpretation
-=======   ======  ======    ==================
-coeff     str     float     intercept coefficient
-coeff     str     float     coefficient of the first covariate
-coeff     str     float     coefficient of the second covariate
-=======   ======  ======    ==================
+=======   ======  ======     ===================================
+Key       Column  Value      Interpretation
+=======   ======  ======     ===================================
+coeff     str     float      intercept coefficient
+coeff     str     float      coefficient of the first covariate
+coeff     str     float      coefficient of the second covariate
+=======   ======  ======     ===================================
 
 
 **COST**
 
 The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
 
-=======   ======  ======    ==================
-Key       Column   Value     Interpretation
-=======   ======  ======    ==================
-coeff     str     float     intercept coefficient
-coeff     str     float     coefficient of the first covariate
-coeff     str     float     coefficient of the second covariate
-=======   ======  ======    ==================
+=======   ======  ======     ===================================
+Key       Column  Value      Interpretation
+=======   ======  ======     ===================================
+coeff     str     float      intercept coefficient
+coeff     str     float      coefficient of the first covariate
+coeff     str     float      coefficient of the second covariate
+=======   ======  ======     ===================================
 
 **DIST**
 
@@ -107,23 +107,23 @@ coeff    float      :math:`\sigma_{V}`
 
 The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-bfgs.html#optimize-minimize-bfgs>`_.
 
-========  ======      ==========================
+========  ======      ==================================================================================
 Key       Value       Interpretation
-========  ======      ==========================
-gtol       float      the value that has to be larger as the gradient norm before successful termination
-eps        float      value of step size (if *jac* is approximated)
-========  ======      ==========================
+========  ======      ==================================================================================
+gtol      float       the value that has to be larger as the gradient norm before successful termination
+eps       float       value of step size (if *jac* is approximated)
+========  ======      ==================================================================================
 
 **SCIPY-POWELL**
 
 The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-powell.html#optimize-minimize-powell>`_.
 
-========  ======      ==========================
+========  ======      ===========================================================================
 Key       Value       Interpretation
-========  ======      ==========================
+========  ======      ===========================================================================
 xtol       float      relative error in solution values *xopt* that is acceptable for convergence
 ftol       float      relative error in fun(*xopt*) that is acceptable for convergence
-========  ======      ==========================
+========  ======      ===========================================================================
 
 
 Examples

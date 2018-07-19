@@ -6,7 +6,7 @@ The following section illustrates the reliability of the estimation strategy beh
     Carneiro, Pedro, James J. Heckman, and Edward J. Vytlacil. `Estimating Marginal Returns to Education. <https://pubs.aeaweb.org/doi/pdfplus/10.1257/aer.101.6.2754>`_ *American Economic Review*, 101 (6):2754-81, 2011.
 
 Reliability
-***********
+-----------
 
 The estimation results and data from Carneiro 2011 build the basis of the reliability test setup. The data is extended by combining them with simulated unobservables that follow a distribution that is pre-specified in the following `initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/develop/development/tests/reliability/reliability.grmpy.ini>`_. In the next step the potential outcomes and the choice of each individual are calculated by using the estimation results.
 
@@ -30,7 +30,7 @@ As can be seen from the figure, the OLS estimator underestimates the effect sign
 The second figure shows the estimated ATE from the ``grmpy`` estimation process. Conversely to the OLS results the estimate of the average effect is close to the true value even if the unobservables are almost perfectly correlated.
 
 Robustness
-**********
+----------
 
 For checking the robustness of the package's estimation process we replicate the results for the marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`). For this purpose we created a jupyter notebook that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/tree/master/development/tests/robustness/replication.grmpy.ini>`_. The init file corresponds to the specifications of the authors. As shown in the figure below the results are really close to the original results. The deviation seems to be negligible because of the usage of a mock dataset.
 

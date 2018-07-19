@@ -24,7 +24,8 @@ Please see `here <https://github.com/HumanCapitalEconomics/econometrics/blob/mas
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 
 .. toctree::
-    :maxdepth: 0
+    :hidden:
+    :maxdepth: 1
 
     economics
     installation
