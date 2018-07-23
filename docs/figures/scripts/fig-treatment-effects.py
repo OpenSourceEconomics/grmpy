@@ -8,7 +8,7 @@ import numpy as np
 def plot_treatment_effect():
 
     x_axis = np.arange(-2, 4, 0.001)
-    ax = plt.figure(figsize=(12, 6))
+    ax = plt.figure(figsize=(14, 6))
 
     for fig in [121, 122]:
         if fig == 121:

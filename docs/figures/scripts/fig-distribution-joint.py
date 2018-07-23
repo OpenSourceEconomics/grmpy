@@ -20,7 +20,7 @@ rv.pdf(pos)
 
 ax = plt.figure().add_subplot(111)
 
-levels = np.linspace(0.1, 1.0, 10,  endpoint=True)
+levels = np.linspace(0.1, 1.0, 10, endpoint=True)
 cns = plt.contourf(X, Y, rv.pdf(pos) / np.max(rv.pdf(pos)), levels=levels)
 
 ax.set_ylabel('$Y_1$')
@@ -37,7 +37,7 @@ plt.colorbar(cns)
 
 ax.text(3.3, 3.3, r'$45^o$')
 
-plt.savefig(OUTPUT_DIR + 'fig-distribution-joint-potential.png')
+plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-potential.png')
 
 # This plot shows the joint distribution of surplus and benefits.
 x = np.linspace(y_min, y_max, 100)
@@ -53,7 +53,7 @@ rv.pdf(pos)
 
 ax = plt.figure().add_subplot(111)
 
-levels = np.linspace(0.1, 1.0, 10,  endpoint=True)
+levels = np.linspace(0.1, 1.0, 10, endpoint=True)
 cns = plt.contourf(X, Y, rv.pdf(pos) / np.max(rv.pdf(pos)), levels=levels)
 
 ax.set_ylabel('$B$')
@@ -81,4 +81,4 @@ ax.text(x=3.5, y=-3.5, s='III')
 
 ax.text(x=-3.5, y=-3.5, s='IV')
 
-plt.savefig(OUTPUT_DIR + 'fig-distribution-joint-surplus.png')
+plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-surplus.png')

@@ -21,4 +21,3 @@ def create_figures():
 if __name__ == '__main__':
 
     create_figures()
-    

@@ -7,8 +7,6 @@ import os
 
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
-from os.path import join
-from shutil import move
 import pandas as pd
 import numpy as np
 
@@ -148,7 +146,7 @@ def create_plots(effects, true):
         ax.yaxis.get_major_ticks()[0].set_visible(False)
         plt.title(title)
         plt.legend()
-        file_name = 'fig_{}_average_effect_estimation.png'.format(strategy)
+        file_name = 'fig-{}-average-effect-estimation.png'.format(strategy)
         plt.savefig(file_name)
 
 
@@ -158,6 +156,3 @@ if __name__ == '__main__':
     x = monte_carlo('reliability.grmpy.ini', 10)
     ATE = get_effect_grmpy('aer-simulation-mock.pkl')
     create_plots(x, ATE)
-    for type_ in ['grmpy', 'ols']:
-        filename = 'fig_{}_average_effect_estimation.png'.format(type_)
-        move(join(directory, filename), join(target, filename))
