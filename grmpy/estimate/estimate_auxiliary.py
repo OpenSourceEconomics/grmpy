@@ -1,9 +1,11 @@
 """The module provides auxiliary functions for the estimation process"""
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
+from statsmodels.tools.numdiff import approx_hess3
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
+import math
 
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
@@ -184,10 +186,13 @@ def calculate_criteria(init_dict, data_frame, start_values):
     return criteria
 
 
-def print_logfile(init_dict, rslt):
+def print_logfile(init_dict, rslt, data):
     """The function writes the log file for the estimation process."""
     # Adjust output
     init_dict, rslt = adjust_print_output(init_dict, rslt)
+    rslt = calculate_se(rslt, init_dict, data)
+    auxiliary_list = process_se_log(rslt, init_dict)
+    print(auxiliary_list)
     with open('est.grmpy.info', 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
@@ -234,11 +239,11 @@ def print_logfile(init_dict, rslt):
 
             else:
                 file_.write(fmt.format(*['', 'Identifier', 'Start', 'Finish']) + '\n\n')
-                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2
+                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2 + '{:>10}'
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
                         fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
-                                   rslt['AUX']['x_internal'][i])))
+                                   rslt['AUX']['x_internal'][i], auxiliary_list[i])))
 
 
 def optimizer_options(init_dict_):
@@ -604,3 +609,78 @@ def calculate_mte(rslt, data_frame, quant=None):
         return value, args
     else:
         return value
+
+
+def calculate_se(rslt, init_dict, data_frame):
+    """This function calculates the standard errors for given parameterization via an approximation
+    of the hessian matrix."""
+
+    x0 = process_estimation_results(rslt['AUX']['x_internal'].tolist())
+    hess = approx_hess3(x0, loglikelihood_without_cholsky, args=(init_dict, data_frame),
+                        epsilon=0.000001)
+    hess_inv = np.linalg.inv(hess)
+    se = np.sqrt(np.diag(hess_inv) / data_frame.shape[0])
+    rslt['AUX']['standard_errors'] = se
+    rslt['AUX']['hess_inv'] = hess_inv
+    return rslt
+
+
+def process_estimation_results(x0):
+    """This """
+    pseudo_x0 = x0[:-6]
+    pseudo_dist = [x0[-1]] + [x0[-6]] + x0[-4:-1]
+    x0 = pseudo_x0 + pseudo_dist
+    return x0
+
+
+def loglikelihood_without_cholsky(x, init_dict, data_frame):
+    """The function provides the log-likelihood function for the calculation of the standard errors.
+    """
+    n_treated = init_dict['AUX']['num_covars_treated']
+    n_untreated = n_treated + int(init_dict['AUX']['num_covars_untreated'])
+
+    beta1 = x[:n_treated]
+    beta0 = x[n_treated:n_untreated]
+    gamma = x[n_untreated:-5]
+    sd1, sd0, sdv, rho1v, rho0v = x[-4], x[-2], x[-5], x[-3], x[-1]
+    likl = []
+    indicator = init_dict['ESTIMATION']['indicator']
+    dep = init_dict['ESTIMATION']['dependent']
+    for i in [0.0, 1.0]:
+        if i == 1.0:
+            beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
+            key_ = 'TREATED'
+        else:
+            beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
+            key_ = 'UNTREATED'
+        data = data_frame[data_frame[indicator] == i]
+        Z = data[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
+        X = data[[init_dict['varnames'][j - 1] for j in init_dict[key_]['order']]]
+
+        choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
+        part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
+        part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * sdv ** 2))
+        dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
+
+        if i == 1.0:
+            contrib = (1.0 / sd) * dist_1 * dist_2
+
+        else:
+            contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
+
+        likl.append(contrib)
+    likl = np.append(likl[0], likl[1])
+    likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
+
+    return likl
+
+
+def process_se_log(rslt, init_dict):
+    """This function processes the standard error values for the log file."""
+    se = ['------' if math.isnan(i) else str(i) for i in np.round(rslt['AUX']['standard_errors'], 4)
+          ]
+    aux = [se[-4], '------', se[-3], se[-2], se[-1], se[-5]]
+    list_ = se[:-5]
+    list_ += aux
+    list_ = ['({})'.format(i) if len(i) == 6 else '({}0)'.format(i) for i in list_]
+    return list_

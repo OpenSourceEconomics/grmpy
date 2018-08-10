@@ -54,8 +54,9 @@ def estimate(init_file):
         opt_rslt = minimize(
             minimizing_interface, x0, args=(dict_, data, rslt_dict), method=method, options=opts)
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], rslt_dict)
+
     # Print Output files
-    print_logfile(dict_, rslt)
+    print_logfile(dict_, rslt, data)
     write_comparison(dict_, data, rslt)
 
     return rslt
