@@ -7,11 +7,12 @@ import pandas as pd
 import numpy as np
 import json
 
-from grmpy.estimate.estimate_auxiliary import calculate_mte
+from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.estimate.estimate import estimate
+from grmpy.read.read import read
 
 
-def plot_est_mte(rslt, data_frame):
+def plot_est_mte(rslt, init_dict, data_frame):
     """This function calculates the marginal treatment effect for different quartiles of the
     unobservable V. ased on the calculation results."""
 
@@ -23,9 +24,9 @@ def plot_est_mte(rslt, data_frame):
     mte_original_u = mte_[2]
 
     # Calculate the MTE and confidence intervals
-    mte = calculate_mte(rslt, data_frame, quantiles)
+    mte = calculate_mte(rslt, init_dict, data_frame, quantiles)
     mte = [i / 4 for i in mte]
-    mte_up, mte_d = calculate_cof_int(rslt, data_frame, mte, quantiles)
+    mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
     # Plot both curves
     ax = plt.figure().add_subplot(111)
 
@@ -47,7 +48,7 @@ def plot_est_mte(rslt, data_frame):
     return mte
 
 
-def calculate_cof_int(rslt, data_frame, mte, quantiles):
+def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     """This function calculates the confidence interval of the marginal treatment effect."""
 
     # Import parameters and inverse hessian matrix
@@ -57,10 +58,10 @@ def calculate_cof_int(rslt, data_frame, mte, quantiles):
     # Distribute parameters
     dist_cov = hess_inv[-4:, -4:]
     param_cov = hess_inv[:46, :46]
-    dist_gradients = np.array([params[-4], params[-6], params[-2], params[-3]])
+    dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
 
     # Process data
-    covariates = [rslt['varnames'][j - 1] for j in rslt['TREATED']['order']]
+    covariates = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
     x = np.mean(data_frame[covariates]).tolist()
     x_neg = [-i for i in x]
     x += x_neg
@@ -69,7 +70,8 @@ def calculate_cof_int(rslt, data_frame, mte, quantiles):
     # Create auxiliary parameters
     part1 = np.dot(x, np.dot(param_cov, x))
     part2 = np.dot(dist_gradients, np.dot(dist_cov, dist_gradients))
-
+    print(part1)
+    print(part2)
     # Prepare two lists for storing the values
     mte_up = []
     mte_d = []
@@ -80,7 +82,6 @@ def calculate_cof_int(rslt, data_frame, mte, quantiles):
         aux = np.sqrt(part1 + value) / 4
         mte_up += [mte[counter] + norm.ppf(0.95) * aux]
         mte_d += [mte[counter] - norm.ppf(0.95) * aux]
-    print(mte_up, mte_d)
 
     return mte_up, mte_d
 
@@ -88,10 +89,11 @@ def calculate_cof_int(rslt, data_frame, mte, quantiles):
 if __name__ == '__main__':
 
     filename = 'fig-marginal-benefit-parametric-replication.png'
-
+    init_dict = read('replication.grmpy.ini')
     # Estimate the coefficients
     rslt = estimate('replication.grmpy.ini')
+    print(rslt['AUX']['x_internal'])
 
     # Calculate and plot the marginal treatment effect
-    data = pd.read_pickle('aer-replication-mock.pkl')
-    mte = plot_est_mte(rslt, data)
+    data = pd.read_pickle('aer-replication-true.pkl')
+    mte = plot_est_mte(rslt, init_dict, data)

@@ -320,3 +320,16 @@ def test13():
         np.testing.assert_equal(columns, real_column_values)
 
     cleanup()
+for _ in range(1000):
+
+    cov = np.random.uniform(0,1,2)
+    var = np.random.uniform(1,2,3)
+    aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
+    dict_ = {'DIST': {'all': aux}}
+    before = [var[0], cov[0]/var[0], var[2], cov[1]/var[2]]
+    x0 = start_value_adjustment([], dict_, 'init')
+    after = backward_transformation(x0)
+    np.testing.assert_array_almost_equal(before,after, decimal=6)
+
+
+cleanup()

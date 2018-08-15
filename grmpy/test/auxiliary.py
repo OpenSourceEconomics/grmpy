@@ -3,7 +3,6 @@ import shlex
 import glob
 import os
 
-from grmpy.estimate.estimate_auxiliary import transform_rslt_DIST
 from grmpy.test.random_init import print_dict
 from grmpy.read.read import read
 
@@ -91,17 +90,3 @@ def adjust_output_cholesky(output):
     return output
 
 
-def refactor_results(dict_, file, newfile):
-    """The function generates a new init file based on a dictionary with parameter values from a
-    previous estimation process.
-    """
-    pseudo = read(file)
-
-    for key in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
-        if key == 'DIST':
-            pseudo['DIST']['all'] = dict_['AUX']['x_internal'][-6:]
-        else:
-            pseudo[key]['all'] = dict_[key]['all'].tolist()
-
-    pseudo = transform_rslt_DIST(dict_['AUX']['x_internal'], pseudo)
-    print_dict(pseudo, newfile)
