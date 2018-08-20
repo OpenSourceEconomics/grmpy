@@ -3,8 +3,6 @@ tion strategy. For this purpose data and the associated parameterization from Ca
 used. Additionally the module creates two different figures for the reliability section of the
 documentation.
 """
-import os
-
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 import pandas as pd
@@ -18,7 +16,6 @@ from grmpy.read.read import read
 
 def create_data():
     """This function creates the a data set based on the results from Caineiro 2011."""
-
     # Read in initialization file and the data set
     init_dict = read('reliability.grmpy.ini')
     df = pd.read_pickle('aer-simulation-mock.pkl')
@@ -71,11 +68,11 @@ def update_correlation_structure(model_dict, rho):
 
 def get_effect_grmpy(file):
     """This function simply returns the ATE of the data set."""
-    df = pd.read_pickle(file)
     dict_ = read('reliability.grmpy.ini')
+    df = pd.read_pickle('aer-simulation-mock.pkl')
     beta_diff = dict_['TREATED']['all'] - dict_['UNTREATED']['all']
     covars = [dict_['varnames'][j - 1] for j in dict_['TREATED']['order']]
-    ATE = np.mean(np.dot(df[covars], beta_diff))
+    ATE = np.dot(np.mean(df[covars]), beta_diff)
 
     return ATE
 
@@ -87,7 +84,7 @@ def monte_carlo(file, grid_points):
 
     # Define a dictionary with a key for each estimation strategy
     effects = {}
-    for key_ in ['grmpy', 'ols']:
+    for key_ in ['grmpy', 'ols', 'true']:
         effects[key_] = []
 
     # Loop over different correlations between V and U_1
@@ -103,10 +100,15 @@ def monte_carlo(file, grid_points):
         df_mc = create_data()
         endog, exog, exog_ols = df_mc['wage'], df_mc[X], df_mc[['state'] + X]
 
+        # Calculate true average treatment effect
+        ATE = np.mean(df_mc['wage1'] - df_mc['wage0'])
+        effects['true'] += [ATE]
+
         # Estimate  via grmpy
         rslt = estimate('reliability.grmpy.ini')
-        stat = np.dot(np.mean(exog), rslt['TREATED']['all']) - np.dot(np.mean(exog),
-                                                                      rslt['UNTREATED']['all'])
+        beta_diff = rslt['TREATED']['all'] - rslt['UNTREATED']['all']
+        stat = np.dot(np.mean(exog), beta_diff)
+
         effects['grmpy'] += [stat]
 
         # Estimate via OLS
@@ -133,12 +135,12 @@ def create_plots(effects, true):
         ax = plt.figure().add_subplot(111)
 
         grid = np.linspace(0.00, 0.99, len(effects[strategy]))
-        true_ = np.tile(true, len(effects[strategy]))
 
         ax.set_xlim(0, 1)
         ax.set_ylim(0.3, 0.55)
         ax.set_ylabel(r"Effect")
         ax.set_xlabel(r"$\rho_{U_1, V}$")
+        true_ = np.tile(true, len(effects[strategy]))
         ax.plot(grid, effects[strategy], label="Estimate")
 
         ax.plot(grid, true_, label="True")
@@ -151,8 +153,9 @@ def create_plots(effects, true):
 
 
 if __name__ == '__main__':
-    directory = os.path.dirname(os.path.realpath(__file__))
-    target = os.path.split(os.path.split(os.path.split(directory)[0])[0])[0] + '/docs/figures'
-    x = monte_carlo('reliability.grmpy.ini', 10)
-    ATE = get_effect_grmpy('aer-simulation-mock.pkl')
+
+    ATE = get_effect_grmpy('reliability.grmpy.ini')
+
+    x = monte_carlo('reliability.grmpy.ini', 15)
+
     create_plots(x, ATE)

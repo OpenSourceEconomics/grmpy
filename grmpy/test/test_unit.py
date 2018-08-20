@@ -1,18 +1,15 @@
 """The module provides unit tests for different aspects of the simulation process."""
 import os
 
-from scipy.stats import wishart
 import pandas as pd
 import numpy as np
 
-from grmpy.estimate.estimate_auxiliary import backward_cholesky_transformation
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
-from grmpy.estimate.estimate_auxiliary import provide_cholesky_decom
+from grmpy.estimate.estimate_auxiliary import backward_transformation
+from grmpy.estimate.estimate_auxiliary import start_value_adjustment
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
-from grmpy.test.auxiliary import adjust_output_cholesky
-from grmpy.test.auxiliary import refactor_results
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
@@ -116,7 +113,7 @@ def test3():
         dict_ = read('test.grmpy.ini')
         df = simulate('test.grmpy.ini')
         start = start_values(dict_, df, 'auto')
-        np.testing.assert_equal(dict_['AUX']['init_values'][:(-6)], start[:(-6)])
+        np.testing.assert_equal(dict_['AUX']['init_values'][:(-6)], start[:(-4)])
 
 
 def test4():
@@ -195,21 +192,16 @@ def test6():
     decomposes this matrix with, reconstruct it and compares the matrix with the one that was
     specified as the input for the decomposition process.
     """
-    pseudo_dict = {'DIST': {'all': []}, 'AUX': {'init_values': []}}
-    for _ in range(20):
-        b = wishart.rvs(df=10, scale=np.identity(3), size=1)
-        parameter = b[np.triu_indices(3)]
-        for i in [0, 3, 5]:
-            parameter[i] **= 0.5
-        pseudo_dict['DIST']['all'] = parameter
-        pseudo_dict['AUX']['init_values'] = parameter
-        cov_1 = construct_covariance_matrix(pseudo_dict)
-        x0, _ = provide_cholesky_decom(pseudo_dict, [], 'init')
-        output = backward_cholesky_transformation(x0, test=True)
-        output = adjust_output_cholesky(output)
-        pseudo_dict['DIST']['all'] = output
-        cov_2 = construct_covariance_matrix(pseudo_dict)
-        np.testing.assert_array_almost_equal(cov_1, cov_2)
+    for _ in range(1000):
+
+        cov = np.random.uniform(0, 1, 2)
+        var = np.random.uniform(1, 2, 3)
+        aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
+        dict_ = {'DIST': {'all': aux}}
+        before = [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
+        x0 = start_value_adjustment([], dict_, 'init')
+        after = backward_transformation(x0)
+        np.testing.assert_array_almost_equal(before, after, decimal=6)
 
 
 def test7():
@@ -272,7 +264,7 @@ def test10():
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
             true += list(dict_[key_]['all'])
         df = simulate('test.grmpy.ini')
-        x0 = start_values(dict_, df, 'init')[:-6]
+        x0 = start_values(dict_, df, 'init')[:-4]
 
         np.testing.assert_array_equal(true, x0)
 
@@ -287,12 +279,13 @@ def test11():
         constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
         constr['MAXITER'], constr['START'] = 0, 'init'
         generate_random_dict(constr)
-        simulate('test.grmpy.ini')
+        init_dict = read('test.grmpy.ini')
+        df = simulate('test.grmpy.ini')
+        start = start_values(init_dict, df, 'init')
+        start = backward_transformation(start)
         rslt = estimate('test.grmpy.ini')
-        refactor_results(rslt, 'test.grmpy.ini', 'estimate')
-        dict_1 = read('test.grmpy.ini')
-        dict_2 = read('estimate.grmpy.ini')
-        np.testing.assert_equal(dict_1, dict_2)
+
+        np.testing.assert_equal(start, rslt['AUX']['x_internal'])
 
 
 def test12():
@@ -320,16 +313,3 @@ def test13():
         np.testing.assert_equal(columns, real_column_values)
 
     cleanup()
-for _ in range(1000):
-
-    cov = np.random.uniform(0,1,2)
-    var = np.random.uniform(1,2,3)
-    aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
-    dict_ = {'DIST': {'all': aux}}
-    before = [var[0], cov[0]/var[0], var[2], cov[1]/var[2]]
-    x0 = start_value_adjustment([], dict_, 'init')
-    after = backward_transformation(x0)
-    np.testing.assert_array_almost_equal(before,after, decimal=6)
-
-
-cleanup()

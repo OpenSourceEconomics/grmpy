@@ -3,9 +3,6 @@ import shlex
 import glob
 import os
 
-from grmpy.test.random_init import print_dict
-from grmpy.read.read import read
-
 
 def cleanup(options=None):
     """The function deletes package related output files."""
@@ -75,7 +72,6 @@ def read_desc(fname):
             for subkey \
                     in ['Observed Sample', 'Simulated Sample (finish)', 'Simulated Sample (start)']:
                 dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey]]
-        print(dict_['Treated'])
 
     return dict_
 
@@ -88,5 +84,3 @@ def adjust_output_cholesky(output):
     output[2] = output[2] * (output[0] * output[5])
     output[4] = output[4] * (output[3] * output[5])
     return output
-
-

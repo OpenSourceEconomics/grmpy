@@ -54,6 +54,7 @@ def generate_random_dict(constr=None):
 
     if 'AGENTS' in constr.keys():
         agents = constr['AGENTS']
+
     else:
         agents = np.random.randint(1, 1000)
 
@@ -133,7 +134,8 @@ def generate_random_dict(constr=None):
     # Variance and covariance parameters
     dict_['DIST'] = {}
     if not is_deterministic:
-        b = wishart.rvs(df=10, scale=np.identity(3), size=1)
+        scale_matrix = np.identity(3) * 0.1
+        b = wishart.rvs(df=10, scale=scale_matrix, size=1)
     else:
         b = np.zeros((3, 3))
     dict_['DIST']['all'] = []

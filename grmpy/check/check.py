@@ -1,6 +1,8 @@
 """This module provides some capabilities to check the integrity of the package."""
 import os
 
+import numpy as np
+
 from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.custom_exceptions import UserError
 from grmpy.check.auxiliary import is_pos_def
@@ -69,3 +71,9 @@ def check_init_file(dict_):
         if len(set(dict_[key_]['order'])) != len(dict_[key_]['order']):
             msg = 'There are two start coefficients {} Section'.format(key_)
             raise UserError(msg)
+
+
+def check_start_values(x0):
+    if False in np.isfinite(x0):
+        msg = '---'
+        raise UserError(msg)

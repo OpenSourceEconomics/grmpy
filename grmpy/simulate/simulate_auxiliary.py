@@ -251,7 +251,6 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
         if cov[2, 2] == 0.00:
             MTE += ['---']
         else:
-            print(np.mean(np.dot(x, para_diff)))
             MTE += [
                 np.mean(np.dot(x, para_diff)) + (cov[2, 0] - cov[2, 1]) * norm.ppf(i)
             ]

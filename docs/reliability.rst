@@ -17,13 +17,13 @@ For illustrating the reliability we estimate the ATE during each step with two d
 The first estimation uses a simple OLS approach.
 
 
-.. figure:: ../docs/figures/fig_ols_average_effect_estimation.png
+.. figure:: ../docs/figures/fig-ols-average-effect-estimation.png
     :align: center
 
 
 As can be seen from the figure, the OLS estimator underestimates the effect significantly. The stronger the correlation between the unobservable variables the more or less stronger the downwards bias.
 
-.. figure:: ../docs/figures/fig_grmpy_average_effect_estimation.png
+.. figure:: ../docs/figures/fig-grmpy-average-effect-estimation.png
     :align: center
 
 

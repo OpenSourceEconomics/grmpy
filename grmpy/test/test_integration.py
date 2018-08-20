@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
-from grmpy.estimate.estimate_auxiliary import simulate_estimation
+from grmpy.estimate.estimate_output import simulate_estimation
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.check.check import check_initialization_dict
 from grmpy.test.random_init import generate_random_dict
@@ -37,7 +37,6 @@ def test2():
     fname = TEST_RESOURCES_DIR + '/regression_vault.grmpy.json'
     tests = json.load(open(fname))
     random_choice = np.random.choice(range(len(tests)), 5)
-    print(random_choice)
     tests = [tests[i] for i in random_choice]
 
     for test in tests:
@@ -97,7 +96,7 @@ def test5():
 
 
 def test6():
-    """Additionally to test5 this test checks if the descriptives file provides the expected
+    """Additionally to test5 this test checks if the comparison file provides the expected
     output when maxiter is set to zero and the estimation process uses the initialization file
     values as start values.
     """
@@ -105,7 +104,9 @@ def test6():
         constr = dict()
         constr['DETERMINISTIC'], constr['MAXITER'], constr['AGENTS'] = False, 0, 10000
         constr['START'], constr['SAME_SIZE'] = 'init', True
-        generate_random_dict(constr)
+        dict_ = generate_random_dict(constr)
+        dict_['DIST']['all'][1], dict_['DIST']['all'][5] = 0.0, 1.0
+        print_dict(dict_)
         simulate('test.grmpy.ini')
         estimate('test.grmpy.ini')
         dict_ = read_desc('comparison.grmpy.txt')
@@ -232,7 +233,7 @@ def test9():
     """This test ensures that the random initialization file generating process, the read in process
     and the simulation process works if the constraints function allows for different number of co-
     variates for each treatment state and the occurence of cost-benefit shifters."""
-    for _ in range(5):
+    for i in range(5):
         constr = dict()
         constr['DETERMINISTIC'], constr['AGENT'], constr['STATE_DIFF'] = False, 1000, True
         constr['OVERLAP'] = True

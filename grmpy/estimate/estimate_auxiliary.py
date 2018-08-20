@@ -1,13 +1,14 @@
 """The module provides auxiliary functions for the estimation process"""
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
-from statsmodels.tools.numdiff import approx_hess3
+from statsmodels.tools.numdiff import approx_hess_cs
+from numpy.linalg import LinAlgError
 from scipy.stats import norm
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
 
+from grmpy.check.check import check_start_values
 from grmpy.check.check import UserError
-
 
 
 def start_values(init_dict, data_frame, option):
@@ -47,15 +48,16 @@ def start_values(init_dict, data_frame, option):
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
             gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
-
             # Arrange starting values
             x0 = np.concatenate((beta[0], beta[1], gamma, sd_))
+            check_start_values(x0)
 
-        except (PerfectSeparationError, ValueError):
+        except (PerfectSeparationError, ValueError, UserError):
             msg = 'The estimation process wasn`t able to provide automatic start values due to ' \
                   'perfect seperation. \n                                                     ' \
                   ' The intialization specifications are used as start ' \
                   'values during the further process.'
+
             # Set coefficients equal the true init file values
             x0 = init_dict['AUX']['init_values'][:-6]
             init_dict['ESTIMATION']['warning'] = msg
@@ -63,8 +65,8 @@ def start_values(init_dict, data_frame, option):
 
     x0 = start_value_adjustment(x0, init_dict, option)
     x0 = np.array(x0)
-
     return x0
+
 
 def start_value_adjustment(x, init_dict, option):
     """This function transforms the rho values so that they are always between zero and 1.
@@ -90,18 +92,16 @@ def start_value_adjustment(x, init_dict, option):
 
 def backward_transformation(x0, dict_=None):
     """The function generates a dictionary for the representation of the optimization output."""
-    x =x0.copy()
+    x = x0.copy()
     for k in [-4, -3, -2, -1]:
         if k in [-3, -1]:
             x[k] = (np.exp(2 * x[k]) - 1) / (np.exp(2 * x[k]) + 1)
         else:
             x[k] = np.exp(x[k])
-
     if dict_ is None:
         pass
     else:
         dict_['parameter'][str(len(dict_['parameter']))] = x
-
     return x
 
 
@@ -113,11 +113,9 @@ def log_likelihood(x0, init_dict, data_frame, dict_=None):
 
     beta1, beta0, gamma = x0[:num_treated], x0[num_treated:num_untreated], x0[num_untreated:-4]
     sd1, sd0, rho1v, rho0v, sdv = x0[-4], x0[-2], x0[-3], x0[-1], 1.0
-
     # Set labels for indicator and the dependent variable
     indicator = init_dict['ESTIMATION']['indicator']
     dep = init_dict['ESTIMATION']['dependent']
-
     # Provide parameterization for D=1 and D=0 and provide auxiliary list likl
     likl = []
     for i in [0.0, 1.0]:
@@ -134,7 +132,7 @@ def log_likelihood(x0, init_dict, data_frame, dict_=None):
 
         choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
         part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
-        part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - rho ** 2) * (sdv ** 2)))
+        part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - (rho ** 2)) * (sdv ** 2)))
         dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
 
         if i == 1.0:
@@ -177,27 +175,33 @@ def minimizing_interface(x0, init_dict, data_frame, dict_):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
     x0 = backward_transformation(x0, dict_)
-
     # Calculate likelihood for pre-specified arguments
     likl = log_likelihood(x0, init_dict, data_frame, dict_)
 
     return likl
 
-def process_output(init_dict, dict_, x0):
+
+def process_output(init_dict, dict_, x0, flag):
     """The function checks if the criteria function value is smaller for the optimization output as
     for the start values.
     """
-    warning = 'The optimization algorithm has failed to provide the parametrization that ' \
-              'leads to the minimal criterion function value. \n                           ' \
-              '                           The estimation output is automatically adjusted.'
 
     x = min(dict_['crit'], key=dict_['crit'].get)
-    if dict_['crit'][str(x)] < init_dict['AUX']['criteria']:
-        x0 = dict_['parameter'][str(x)].tolist()
-        crit = dict_['crit'][str(x)]
-
-
+    if flag == 'adjustment':
+        if dict_['crit'][str(x)] < init_dict['AUX']['criteria']:
+            x0 = dict_['parameter'][str(x)].tolist()
+            crit = dict_['crit'][str(x)]
+            warning = 'The optimization algorithm has failed to provide the parametrization that ' \
+                      'leads to the minimal criterion function value. \n                         ' \
+                      '                             The estimation output is automatically ' \
+                      'adjusted.'
+    if flag == 'notfinite':
+        x0 = init_dict['AUX']['starting_values']
+        crit = init_dict['AUX']['criteria']
+        warning = 'Tho optimization process is not able to provide finite values. This is ' \
+                  'probably due to perfect separation.'
     return x0, crit, warning
+
 
 def check_rslt_parameters(init_dict, data_frame, dict_, x0):
     """This function checks if the algorithms has provided a parameterization with a lower criterium
@@ -205,10 +209,14 @@ def check_rslt_parameters(init_dict, data_frame, dict_, x0):
      """
     crit = calculate_criteria(init_dict, data_frame, x0)
     x = min(dict_['crit'], key=dict_['crit'].get)
-    if dict_['crit'][str(x)] <= crit:
-        return True
+    if False in np.isfinite(x0).tolist():
+        check, flag = True, 'notfinite'
+
+    elif dict_['crit'][str(x)] <= crit:
+        check, flag = True, 'adjustment'
     else:
-        return False
+        check, flag = False, None
+    return check, flag
 
 
 def bfgs_dict():
@@ -219,7 +227,7 @@ def bfgs_dict():
     return rslt_dict
 
 
-def adjust_output(opt_rslt, init_dict, x0, data_frame,  dict_=None):
+def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
     """The function adds different information of the minimization process to the estimation
     output.
     """
@@ -232,35 +240,39 @@ def adjust_output(opt_rslt, init_dict, x0, data_frame,  dict_=None):
         x = backward_transformation(x0)
         rslt['success'], rslt['status'] = False, 2
         rslt['message'], rslt['nfev'], rslt['crit'] = '---', 0, init_dict['AUX']['criteria']
-        rslt['warning'] = '---'
+        rslt['warning'] = ['---']
 
     else:
-        # Check if the algirthm has returned the values with the lowest criterium function value
-        check = check_rslt_parameters(init_dict, data_frame, dict_, x0)
-
+        # Check if the algorithm has returned the values with the lowest criterium function value
+        check, flag = check_rslt_parameters(init_dict, data_frame, dict_, x0)
         # Adjust values if necessary
         if check:
-            x, crit, warning = process_output(init_dict, dict_, x0)
+            x, crit, warning = process_output(init_dict, dict_, x0, flag)
             rslt['crit'] = crit
-            rslt['warning'] = warning
+            rslt['warning'] = [warning]
 
         else:
             x = backward_transformation(x0)
             rslt['crit'] = opt_rslt['fun']
-            rslt['warning'] = '---'
+            rslt['warning'] = ['---']
 
         rslt['success'], rslt['status'] = opt_rslt['success'], opt_rslt['status']
         rslt['message'], rslt['nfev'] = opt_rslt['message'], opt_rslt['nfev']
-     # transform x0
+
+    # Adjust Result dict
     rslt['AUX']['x_internal'] = x
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        rslt[key_]={}
-        rslt[key_]['types'] = init_dict[key_]['order']
-        rslt[key_]['order'] = init_dict[key_]['order']
+    rslt['ESTIMATION'] = init_dict['ESTIMATION']
+    for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'AUX']:
+        if key_ == 'AUX':
+            rslt['varnames'] = init_dict['varnames']
+        else:
+            rslt[key_] = {}
+            rslt[key_]['order'] = init_dict[key_]['order']
+        rslt[key_]['types'] = init_dict[key_]['types']
+
     rslt['TREATED']['all'] = np.array(x[:num_treated])
     rslt['UNTREATED']['all'] = np.array(x[num_treated:num_untreated])
     rslt['CHOICE']['all'] = np.array(x[num_untreated:-4])
-
     rslt = calculate_se(rslt, init_dict, data_frame)
     return rslt
 
@@ -271,15 +283,34 @@ def calculate_se(rslt, init_dict, data_frame):
 
     x0 = rslt['AUX']['x_internal']
 
-    hess = approx_hess3(x0, log_likelihood, args=(init_dict, data_frame))
-    hess_inv = np.linalg.inv(hess)
-    se = np.sqrt(np.diag(hess_inv) / data_frame.shape[0])
-    rslt['AUX']['standard_errors'] = se
-    rslt['AUX']['hess_inv'] = hess_inv
-    rslt['AUX']['confidence_intervals'] =[]
-    for counter, param in enumerate(x0):
-        upper = param + norm.ppf(0.975) * se[counter]
-        lower = param - norm.ppf(0.975) * se[counter]
-        rslt['AUX']['confidence_intervals'] += [[lower, upper]]
-    return rslt
+    if init_dict['ESTIMATION']['maxiter'] == 0:
+        rslt['AUX']['standard_errors'] = [np.nan] * len(x0)
+        rslt['AUX']['hess_inv'] = '---'
+        rslt['AUX']['confidence_intervals'] = [[np.nan, np.nan]] * len(x0)
+    else:
+        # Calculate the hessian matrix, check if it is p
+        hess = approx_hess_cs(x0, log_likelihood, args=(init_dict, data_frame))
+        try:
+            hess_inv = np.linalg.inv(hess)
+            se = np.sqrt(np.diag(hess_inv) / data_frame.shape[0])
+            rslt['AUX']['standard_errors'] = se
+            rslt['AUX']['hess_inv'] = hess_inv
+            rslt['AUX']['confidence_intervals'] = []
+            for counter, param in enumerate(x0):
+                upper = param + norm.ppf(0.975) * se[counter]
+                lower = param - norm.ppf(0.975) * se[counter]
+                rslt['AUX']['confidence_intervals'] += [[lower, upper]]
 
+        except LinAlgError:
+            rslt['AUX']['standard_errors'] = [np.nan] * len(x0)
+            rslt['AUX']['hess_inv'] = '---'
+            rslt['AUX']['confidence_intervals'] = [[np.nan, np.nan]] * len(x0)
+
+        # Check if standard errors are defined, if not add warning message
+        if False in np.isfinite(rslt['AUX']['standard_errors']):
+            rslt['warning'] += ['The estimation process was not able to provide standard errors for'
+                                ' the estimation results, because the approximation \n            '
+                                '                                          of the hessian matrix '
+                                'leads to a singular Matrix']
+
+    return rslt

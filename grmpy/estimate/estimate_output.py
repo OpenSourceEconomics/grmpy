@@ -3,7 +3,6 @@ import numpy as np
 import math
 
 
-from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
@@ -44,12 +43,23 @@ def print_logfile(init_dict, rslt):
                     elif section == 'Criterion':
                         fmt += '       {:>20.4f}\n'
                         file_.write(fmt.format('', section + ':', rslt['crit']))
-                    elif section in ['Message', 'Warning']:
+                    elif section in ['Warning']:
+
                         fmt += '                     {:>20}\n'
-                        file_.write(fmt.format('', section + ':', rslt[section.lower()]) + '\n')
+                        for counter, _ in enumerate(rslt[section.lower()]):
+                            if counter == 0:
+                                file_.write(fmt.format('', section + ':',
+                                                       rslt[section.lower()][counter] + '\n'))
+                            else:
+                                file_.write(fmt.format('', '', rslt[section.lower()][counter] +
+                                                       '\n'))
                         if section == 'Warning':
                             if 'warning' in init_dict['ESTIMATION'].keys():
                                 file_.write(fmt.format('', '', init_dict['ESTIMATION']['warning']))
+                    elif section in ['Message']:
+                        fmt += '                     {:>20}\n'
+                        file_.write(fmt.format('', section + ':', rslt[section.lower()]) + '\n')
+
                     else:
                         fmt += '  {:>20}\n'
                         file_.write(fmt.format('', section + ':', rslt[section.lower()]))
@@ -60,7 +70,7 @@ def print_logfile(init_dict, rslt):
 
             else:
                 file_.write(fmt.format(*['', 'Identifier', 'Start', 'Finish']) + '\n\n')
-                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2 + '{:>10}' + '{:>10.4f}'* 2
+                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2 + '{:>10}' + '{:>10.4f}' * 2
                 for i in range(len(rslt['AUX']['x_internal'])):
                     file_.write('{0}\n'.format(
                         fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
@@ -133,7 +143,7 @@ def write_comparison(init_dict, df1, rslt):
 
         header = '\n\n {} \n\n'.format('MTE Information')
         file_.write(header)
-        value, args = calculate_mte(rslt, df1)
+        value, args = calculate_mte(rslt, init_dict, df1)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
         len_ = len(value)
@@ -168,10 +178,11 @@ def simulate_estimation(init_dict, rslt, start=False):
     labels = init_dict['varnames']
     # Determine parametrization and read in /simulate observables
     if start:
-        start_dict, rslt_dict = process_results(init_dict, rslt, start)
+        start_dict = process_results(init_dict, None)
+        rslt_dict = process_results(init_dict, rslt)
         dicts = [start_dict, rslt_dict]
     else:
-        rslt_dict = process_results(init_dict, rslt, start)
+        rslt_dict = process_results(init_dict, rslt)
         dicts = [rslt_dict]
     data_frames = []
     for dict_ in dicts:
@@ -194,49 +205,46 @@ def simulate_estimation(init_dict, rslt, start=False):
         return data_frames[0]
 
 
-
-def process_results(init_dict, rslt, start=False):
+def process_results(init_dict, rslt):
     """The function processes the results dictionary for the following simulation."""
-    rslt_dict = dict(rslt)
-    start_dict = dict(rslt)
-    num_treated = init_dict['AUX']['num_covars_treated']
-    num_untreated = num_treated + init_dict['AUX']['num_covars_untreated']
+    if rslt is None:
+        num_treated = init_dict['AUX']['num_covars_treated']
+        num_untreated = num_treated + init_dict['AUX']['num_covars_untreated']
+        dict_ = dict()
+        for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
+            dict_[key_] = {}
+            if key_ != 'DIST':
+                dict_[key_]['order'] = init_dict[key_]['order']
+                dict_[key_]['types'] = init_dict[key_]['types']
+        dict_['varnames'] = init_dict['varnames']
+        dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
+        dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][num_treated:num_untreated]
+        dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_untreated:-4]
+        dict_['DIST']['all'] = transform_rslt_DIST(init_dict['AUX']['starting_values'])
+    else:
+        dict_ = dict(rslt)
+        dict_['DIST'] = {}
+        dict_['DIST']['all'] = transform_rslt_DIST(rslt['AUX']['x_internal'])
+    dict_['SIMULATION'] = {}
+    dict_['SIMULATION'] = dict(init_dict['SIMULATION'])
+    return dict_
 
-    dicts = [rslt_dict, start_dict]
-    for dict_ in dicts:
-        dict_['SIMULATION'] = {}
-        dict_['SIMULATION'] = dict(init_dict['SIMULATION'])
-        if dict_ == rslt_dict:
-                dict_ = transform_rslt_DIST(rslt['AUX']['x_internal'], dict_)
-        else:
-            if start:
-                dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
-                dict_['UNTREATED']['all'] = \
-                    init_dict['AUX']['starting_values'][num_treated:num_untreated]
-                dict_['CHOICE']['all'] = \
-                    init_dict['AUX']['starting_values'][num_untreated:-4]
-                dict_ = transform_rslt_DIST(init_dict['AUX']['starting_values'], dict_)
-                return start_dict, rslt_dict
-            else:
-                return rslt_dict
 
-
-def transform_rslt_DIST(rslt, dict_):
+def transform_rslt_DIST(rslt):
     """The function converts the correlation parameters from the estimation outcome to
     covariances for the simulation of the estimation sample.
     """
-    dict_['DIST'] = {}
-    aux = rslt[-4:]
+    aux = rslt[-4:].copy()
     cov01 = 0.0
     cov0V = aux[1] * aux[0]
     cov1V = aux[3] * aux[2]
 
-    dict_['DIST']['all'] = [aux[0], cov01, cov0V, aux[2], cov1V, 1.0]
+    list_ = [aux[0], cov01, cov0V, aux[2], cov1V, 1.0]
 
-    for i, element in enumerate(dict_['DIST']['all']):
-        dict_['DIST']['all'][i] = round(element, 4)
+    for i, element in enumerate(list_):
+        list_[i] = round(element, 4)
 
-    return dict_
+    return list_
 
 
 def calculate_mte(rslt, init_dict, data_frame, quant=None):
@@ -250,11 +258,10 @@ def calculate_mte(rslt, init_dict, data_frame, quant=None):
     else:
         quantiles = quant
 
-    cov = np.zeros((3,3))
+    cov = np.zeros((3, 3))
     cov[2, 0] = rslt['AUX']['x_internal'][-3] * rslt['AUX']['x_internal'][-4]
     cov[2, 1] = rslt['AUX']['x_internal'][-1] * rslt['AUX']['x_internal'][-2]
-    cov[2,2] = 1.0
-    print(cov)
+    cov[2, 2] = 1.0
     help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
     x = data_frame[[init_dict['varnames'][i - 1] for i in help_]]
 

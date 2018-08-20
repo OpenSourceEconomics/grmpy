@@ -27,7 +27,8 @@ def plot_est_mte(rslt, init_dict, data_frame):
     mte = calculate_mte(rslt, init_dict, data_frame, quantiles)
     mte = [i / 4 for i in mte]
     mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
-    # Plot both curves
+    # Plot both curveslscpu | grep MHz
+
     ax = plt.figure().add_subplot(111)
 
     ax.set_ylabel(r"$B^{MTE}$")
@@ -70,8 +71,6 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     # Create auxiliary parameters
     part1 = np.dot(x, np.dot(param_cov, x))
     part2 = np.dot(dist_gradients, np.dot(dist_cov, dist_gradients))
-    print(part1)
-    print(part2)
     # Prepare two lists for storing the values
     mte_up = []
     mte_d = []
@@ -88,12 +87,10 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
 
 if __name__ == '__main__':
 
-    filename = 'fig-marginal-benefit-parametric-replication.png'
     init_dict = read('replication.grmpy.ini')
     # Estimate the coefficients
     rslt = estimate('replication.grmpy.ini')
-    print(rslt['AUX']['x_internal'])
 
     # Calculate and plot the marginal treatment effect
-    data = pd.read_pickle('aer-replication-true.pkl')
+    data = pd.read_pickle('aer-replication-mock.pkl')
     mte = plot_est_mte(rslt, init_dict, data)
