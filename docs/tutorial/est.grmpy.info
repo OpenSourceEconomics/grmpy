@@ -1,0 +1,44 @@
+
+ 
+  Optimization Information
+
+             Optimizer:                               SCIPY-POWELL
+             Start values:                            init
+             Success:                                 1
+             Status:                                  0
+             Number of Evaluations:                   391
+             Criterion:                               2.9262
+             Message:                                 Optimization terminated successfully.
+
+             Warning:                                 The optimization algorithm has failed to provide the parametrization that leads to the minimal criterion function value. 
+                                                      The estimation output is automatically adjusted.
+
+
+ 
+  Criterion Function
+
+                                        Start               Finish
+
+
+                           2.9401679867125328   2.9262282454282698
+
+
+ 
+  Economic Parameters
+
+              Identifier                Start               Finish
+
+
+
+                       0               1.2303               1.0326
+                       1              -2.3070              -2.2543
+                       2              -1.7192              -1.6908
+                       3              -1.6871              -1.4907
+                       4               2.4869               2.5539
+                       5              -0.3900              -0.2931
+                       6               2.1559               2.0022
+                       7              -0.0336              -0.2951
+                       8               0.4333               0.4442
+                       9               2.8355               2.9830
+                      10              -0.2075              -0.3089
+                      11               2.8874               2.8446

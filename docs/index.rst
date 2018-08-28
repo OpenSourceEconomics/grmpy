@@ -20,7 +20,6 @@ The remainder of this documentation is structured as follows. We first present t
 
 Please see `here <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`_ for a host of lectures material on the econometrics of policy evaluation.
 
-.. htmlonly::
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 
 .. toctree::

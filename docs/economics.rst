@@ -57,7 +57,7 @@ The information available to the econometrician and the agent determines the set
 Essential Heterogeneity
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-If agents select their treatment status based on benefits unobserved by the econometrician (selection on unobservables), then there is no unique effect of a treatment or a policy even after conditioning on observable characteristics. Average benefits are different from marginal benefits, and different policies select individuals at different margins. Conventional econometric methods that only account for selection on observables, like matching (:cite:`CocRub72`, :cite:`RoRu1983`, :cite:`HeIcSmTo98`), are not able to identify any parameter of interest (:cite:`HecVyr05`, :cite:`HeUrVy06`). For example, Carneiro (2011) present evidence on agents selecting their level of education based on their unobservable gains and demonstrate the importance of adjusting the estimation strategy to allow for this fact. Heckman and Schmierer (:cite:`Heckman2010`) propose a variety of tests for the the presence of essential heterogeneity.
+If agents select their treatment status based on benefits unobserved by the econometrician (selection on unobservables), then there is no unique effect of a treatment or a policy even after conditioning on observable characteristics. Average benefits are different from marginal benefits, and different policies select individuals at different margins. Conventional econometric methods that only account for selection on observables, like matching (:cite:`CocRub72`, :cite:`RoRu1983`, :cite:`HeIcSmTo98`), are not able to identify any parameter of interest (:cite:`HecVyr05`, :cite:`HeUrVy06`). For example, Carneiro (2011) (:cite:`Carneiro2011`) present evidence on agents selecting their level of education based on their unobservable gains and demonstrate the importance of adjusting the estimation strategy to allow for this fact. Heckman and Schmierer (:cite:`Heckman2010`) propose a variety of tests for the the presence of essential heterogeneity.
 
 .. todo::
 
@@ -75,9 +75,9 @@ It is common to summarize the average benefits of treatment for different subset
 treated :math:`\left(B^{TT}\right)` or untreated :math:`\left(B^{TUT}\right)`.
 
   .. math::
-      &B^{ATE} & = E [Y_1 - Y_0]\\
-      &B^{TT} & = E [Y_1 - Y_0 | D = 1]\\
-      &B^{TUT} & = E [Y_1 - Y_0 | D = 0]\\
+       B^{ATE} & = E [Y_1 - Y_0]\\
+       B^{TT} & = E [Y_1 - Y_0 | D = 1]\\
+       B^{TUT} & = E [Y_1 - Y_0 | D = 0]\\
 
 All average effect parameter possibly hide considerable treatment effect heterogeneity. The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, then agents that take up treatment benefit more than those that do not and thus :math:`B^{TT}` > :math:`B^{ATE}`. If agents select their treatment status at random, then all parameters are equal.
 

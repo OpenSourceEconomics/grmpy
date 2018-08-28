@@ -105,7 +105,7 @@ coeff    float      :math:`\sigma_{V}`
 
 **SCIPY-BFGS**
 
-The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-bfgs.html#optimize-minimize-bfgs>`_.
+The *SCIPY-BFGS* block contains the specifications for the *BFGS* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-bfgs.html#optimize-minimize-bfgs>`__.
 
 ========  ======      ==================================================================================
 Key       Value       Interpretation
@@ -116,7 +116,7 @@ eps       float       value of step size (if *jac* is approximated)
 
 **SCIPY-POWELL**
 
-The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-powell.html#optimize-minimize-powell>`_.
+The *SCIPY-POWELL* block contains the specifications for the *POWELL* minimization algorithm. For more information see: `SciPy documentation <https://docs.scipy.org/doc/scipy-0.19.0/reference/optimize.minimize-powell.html#optimize-minimize-powell>`__.
 
 ========  ======      ===========================================================================
 Key       Value       Interpretation

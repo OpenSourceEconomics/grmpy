@@ -3,7 +3,7 @@ Contact and Credits
 
 If you have any questions or comments, please do not hesitate to contact us directly.
 
-.. image:: https://badges.gitter.im/Join%20Chat.svg
+.. image:: figures/Join_Chat.svg
    :target: https://gitter.im/OpenSourceEconomics/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link
 
 Development Lead
