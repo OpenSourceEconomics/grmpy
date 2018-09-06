@@ -15,11 +15,11 @@ You can install the stable version of the package the usual way.
 Source Files
 ------------
 
-You can download the sources directly from our `GitHub repository <https://github.com/grmToolbox/grmpy>`_.
+You can download the sources directly from our `GitHub repository <https://github.com/OpenSourceEconomics/grmpy.git>`_.
 
 .. code-block:: bash
 
-   $ git clone https://github.com/grmToolbox/grmpy.git
+   $ git clone https://github.com/OpenSourceEconomics/grmpy.git
 
 Once you obtained a copy of the source files, installing the package in editable model is straightforward.
 

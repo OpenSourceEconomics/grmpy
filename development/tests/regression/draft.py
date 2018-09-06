@@ -14,7 +14,6 @@ import numpy as np
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.test.random_init import generate_random_dict
-from grmpy.test.random_init import constraints
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
@@ -31,7 +30,8 @@ if True:
     tests = []
     for seed in seeds:
         np.random.seed(seed)
-        constr = constraints(0.0)
+        constr = dict()
+        constr['DETERMINISTIC'] = False
         dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())

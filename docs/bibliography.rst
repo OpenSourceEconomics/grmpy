@@ -1,8 +1,6 @@
+Bibliography
+============
 
-
-    Bibliography
-    ============
-
-    .. bibliography:: refs.bib
-        :all:
-        :style: plain
+        .. bibliography:: refs.bib
+                :all:
+                :style: plain

@@ -43,7 +43,8 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.bibtex'
+    'sphinxcontrib.bibtex',
+    'sphinx.ext.imgconverter'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,8 +61,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'grmpy'
-copyright = '2017, Philipp Eisenhauer'
-author = 'Philipp Eisenhauer'
+copyright = '2018, grmpy-dev team'
+author = 'grmpy-dev team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -110,7 +111,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []
 
 
 # -- Options for HTMLHelp output ------------------------------------------

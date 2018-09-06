@@ -1,0 +1,41 @@
+
+
+ Number of Observations 
+
+    Sample                                Observed   Simulated (finish)    Simulated (start)
+
+
+    All                                        165                  165                  165
+    Treated                                     85                   82                   85
+    Untreated                                   80                   83                   80
+
+
+ Distribution of Outcomes
+
+
+
+   All       
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                        -0.9731               3.5915              -3.1624              -0.7353               1.3333
+    Simulated Sample (finish)              -1.1360               3.6056              -3.3865              -1.0287               1.1485
+    Simulated Sample (start)               -0.9731               3.5915              -3.1624              -0.7353               1.3333
+
+
+   Treated   
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                         0.7786               2.9453              -1.4063               0.7854               2.8025
+    Simulated Sample (finish)               0.8548               2.8269              -1.1979               0.6074               3.0556
+    Simulated Sample (start)                0.7786               2.9453              -1.4063               0.7854               2.8025
+
+
+   Untreated 
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                        -2.8342               3.2779              -5.6002              -2.2535              -0.3869
+    Simulated Sample (finish)              -3.1028               3.1980              -5.5829              -2.5706              -0.8200
+    Simulated Sample (start)               -2.8342               3.2779              -5.6002              -2.2535              -0.3869

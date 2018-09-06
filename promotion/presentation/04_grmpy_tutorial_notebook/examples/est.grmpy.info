@@ -1,0 +1,50 @@
+
+ 
+  Optimization Information
+
+             Optimizer:                               SCIPY-BFGS
+
+             Start values:                            init
+
+             Success:                                 1
+
+             Status:                                  0
+
+             Number of Evaluations:                   252
+
+             Criteria:                                1.7345
+
+             Message:                                 Optimization terminated successfully.
+
+             Warning:                                 The optimization algorithm has failed to provide the parametrization that leads to the minimal criteria function value. 
+                                                      The estimation output is automatically adjusted.
+
+
+ 
+  Criterion Function
+
+                                        Start              Current
+
+
+                           1.7391206721884809   1.7345002234631333
+
+
+ 
+  Economic Parameters
+
+              Identifier                Start              Current
+
+
+
+                       0               1.2303               1.1756
+                       1              -2.3070              -2.3842
+                       2              -1.7192              -1.5642
+                       3              -1.6871              -1.6834
+                       4               2.4869               2.2350
+                       5              -0.3900              -0.4218
+                       6               1.0833               1.1072
+                       7               0.3256               0.3063
+                       8               0.1439              -0.0423
+                       9               0.8630               0.8928
+                      10              -0.5509              -0.6639
+                      11               0.7744               0.7903
