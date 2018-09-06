@@ -69,14 +69,48 @@ def print_logfile(init_dict, rslt):
                 file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
 
             else:
-                file_.write(fmt.format(*['', 'Identifier', 'Start', 'Finish']) + '\n\n')
-                fmt = '  {:>10}' * 2 + ' {:>20.4f}' * 2 + '{:>10}' + '{:>10.4f}' * 2
-                for i in range(len(rslt['AUX']['x_internal'])):
-                    file_.write('{0}\n'.format(
-                        fmt.format('', str(i), init_dict['AUX']['starting_values'][i],
-                                   rslt['AUX']['x_internal'][i], auxiliary[i],
-                                   rslt['AUX']['confidence_intervals'][i][0],
-                                   rslt['AUX']['confidence_intervals'][i][1])))
+
+                write_identifier_section(init_dict, rslt, auxiliary, file_)
+
+
+def write_identifier_section(init_dict, rslt, auxiliary, file_):
+    """This function prints the information about the estimation results in the output file."""
+
+    fmt_ = '\n  {:<10}' + '{:>10}' + ' {:>18}' + '{:>16}' + '\n\n'
+
+    file_.write(fmt_.format(*['', '', 'Start', 'Finish']))
+
+    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 3 + '{:>20}'
+
+    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', '95% Conf. Int.'
+                              ]) + '\n')
+
+    num_treated = len(init_dict['TREATED']['order'])
+    num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
+    num_choice = num_untreated + len(init_dict['CHOICE']['order'])
+
+    identifier_treated = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
+    identifier_untreated = [init_dict['varnames'][j - 1] for j in init_dict['UNTREATED']['order']]
+    identifier_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
+    identifier_distribution = ['sigma1', 'rho1', 'sigma0', 'rho0']
+    identifier = \
+        identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
+    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' + '{:>14}' + '{:>10.4f}' * 2
+    for i in range(len(rslt['AUX']['x_internal'])):
+        if i == 0:
+            file_.write('\n  {:<10} \n'.format('TREATED'))
+        elif i == num_treated:
+            file_.write('\n  {:<10} \n'.format('UNTREATED'))
+        elif i == num_untreated:
+            file_.write('\n  {:<10} \n'.format('CHOICE'))
+        elif i == num_choice:
+            file_.write('\n  {:<10} \n'.format('DIST'))
+
+        file_.write('{0}\n'.format(
+            fmt.format('', identifier[i], init_dict['AUX']['starting_values'][i],
+                       rslt['AUX']['x_internal'][i], auxiliary[i],
+                       rslt['AUX']['confidence_intervals'][i][0],
+                       rslt['AUX']['confidence_intervals'][i][1])))
 
 
 def write_comparison(init_dict, df1, rslt):
