@@ -57,6 +57,13 @@ def estimate(init_file):
         rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], data, rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)
-    write_comparison(dict_, data, rslt)
+
+    if 'comparison' in dict_['ESTIMATION'].keys():
+        if dict_['ESTIMATION']['comparison'] == 0:
+            pass
+        else:
+            write_comparison(dict_, data, rslt)
+    else:
+        write_comparison(dict_, data, rslt)
 
     return rslt

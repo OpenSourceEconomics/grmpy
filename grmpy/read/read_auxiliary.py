@@ -39,9 +39,9 @@ def process(list_, dict_, keyword):
             dict_[keyword]['types'] += ['nonbinary']
 
     # Type conversion
-    if name in ['agents', 'seed', 'maxiter', 'disp']:
+    if name in ['agents', 'seed', 'maxiter', 'disp', 'comparison']:
         val = int(val)
-    elif name in ['source', 'file', 'optimizer', 'start', 'dependent', 'indicator']:
+    elif name in ['source', 'file', 'optimizer', 'start', 'dependent', 'indicator', 'output_file']:
         val = str(val)
     elif name in ['direc']:
         val = list(val)

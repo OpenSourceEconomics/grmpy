@@ -13,7 +13,13 @@ def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
     auxiliary = process_se_log(rslt, init_dict)
-    with open('est.grmpy.info', 'w') as file_:
+
+    if 'output_file' in init_dict['ESTIMATION'].keys():
+        file_name = init_dict['ESTIMATION']['output_file']
+    else:
+        file_name = 'est.grmpy.info'
+
+    with open(file_name, 'w') as file_:
 
         for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
             header = '\n \n  {:<10}\n\n'.format(label)
