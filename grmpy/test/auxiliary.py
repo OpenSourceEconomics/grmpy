@@ -25,18 +25,6 @@ def cleanup(options=None):
                 os.remove(f)
 
 
-def save_output(file, option):
-    """The function renames a given file and moves it in an output directory."""
-    if not os.path.isfile(file):
-        raise AssertionError()
-    directory = os.path.join(os.getcwd(), 'estimation_output')
-    os.rename(file, option)
-    if not os.path.isdir(directory):
-        os.makedirs(directory)
-    os.rename(os.path.join(os.getcwd(), option),
-              os.path.join(directory, option))
-
-
 def read_desc(fname):
     """The function reads the descriptives output file and returns a dictionary that contains the
     relevant parameters for test6 in test_integration.py.
@@ -74,13 +62,3 @@ def read_desc(fname):
                 dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey]]
 
     return dict_
-
-
-def adjust_output_cholesky(output):
-    """The function transfers the output of the cholesky decomposition process so that it is similar
-    in regards of to the distributional information of the init file.
-    """
-    output[1] = output[1] * (output[0] * output[3])
-    output[2] = output[2] * (output[0] * output[5])
-    output[4] = output[4] * (output[3] * output[5])
-    return output
