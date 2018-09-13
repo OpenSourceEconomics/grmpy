@@ -3,8 +3,7 @@ Contact and Credits
 
 If you have any questions or comments, please do not hesitate to contact us directly.
 
-.. image:: _static/Slack_Technologies_Logo.svg
-   :scale: 30 %
+.. image:: _static/slack_badge.png
    :target: https://join.slack.com/t/oseconomics/shared_invite/enQtNDM0OTM2NTMwNzU0LWM0ZjM4ZTZkYjYyNTEyN2I4ODQ3MjFjMjM5NmZmZmRlZWJmOGYxMTEyOGQxYmM4YTU1ZTZkOWQyNWU4YjlmOTg
 
 
