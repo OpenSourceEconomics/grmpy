@@ -122,6 +122,9 @@ def generate_random_dict(constr=None):
     dict_['ESTIMATION']['maxiter'] = maxiter
     dict_['ESTIMATION']['dependent'] = 'Y'
     dict_['ESTIMATION']['indicator'] = 'D'
+    dict_['ESTIMATION']['output_file'] = 'est.grmpy.info'
+    dict_['ESTIMATION']['comparison'] = '1'
+
     for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
         dict_[key_] = {}
         if key_ == 'SCIPY-BFGS':
@@ -165,7 +168,7 @@ def print_dict(dict_, file_name='test'):
                     structure = ['seed', 'agents', 'source']
                 elif label == 'ESTIMATION':
                     structure = ['file', 'start', 'agents', 'optimizer', 'maxiter', 'dependent',
-                                 'indicator']
+                                 'indicator', 'output_file', 'comparison']
                 elif label == 'SCIPY-BFGS':
                     structure = ['gtol', 'eps']
                 else:
