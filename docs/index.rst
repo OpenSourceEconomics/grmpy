@@ -12,13 +12,16 @@ Welcome to grmpy's documentation!
 
 We build on the following main references:
 
-    James J. Heckman and Edward J. Vytlacil. `Econometric evaluation of social programs, part I: Causal models, structural models and econometric policy evaluation. <http://ac.els-cdn.com/S1573441207060709/1-s2.0-S1573441207060709-main.pdf?_tid=b933f5c8-6bbe-11e7-8ae8-00000aacb35d&acdnat=1500385435_c69182d36b79b66bbce5f5a7c593617c>`_ In *Handbook of Econometrics*, volume 6B, chapter 70, pages 4779–4874. Elsevier Science, 2007.
+    James J. Heckman and Edward J. Vytlacil. `Econometric evaluation of social programs, part I: Causal models, structural models and econometric policy evaluation. <https://www.sciencedirect.com/science/article/pii/S1573441207060709>`_ In *Handbook of Econometrics*, volume 6B, chapter 70, pages 4779–4874. Elsevier Science, 2007.
 
-    James J. Heckman and Edward J. Vytlacil. `Econometric evaluation of social programs, part II: Using the marginal treatment effect to organize alternative econometric estimators to evaluate social programs, and to forecast their effects in new environments. <http://ac.els-cdn.com/S1573441207060710/1-s2.0-S1573441207060710-main.pdf?_tid=5ccb4ace-6bbf-11e7-807b-00000aab0f26&acdnat=1500385710_c3706f18138fabe356b0f3ebddd75670>`_ In *Handbook of Econometrics*, volume 6B, chapter 71, pages 4875–5143. Elsevier Science, 2007.
+    James J. Heckman and Edward J. Vytlacil. `Econometric evaluation of social programs, part II: Using the marginal treatment effect to organize alternative econometric estimators to evaluate social programs, and to forecast their effects in new environments. <https://www.sciencedirect.com/science/article/pii/S1573441207060710>`_ In *Handbook of Econometrics*, volume 6B, chapter 71, pages 4875–5143. Elsevier Science, 2007.
 
-The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. The documentation concludes with some housekeeping issues.
+    Jaap H. Abbring and James J. Heckman. `Econometric evaluation of social programs, part III: Distributional treatment effects, dynamic treatment effects, dynamic discrete choice, and general equilibrium policy evaluation. <https://www.sciencedirect.com/science/article/pii/S1573441207060722>`_ *Handbook of Econometrics*, volume 6B, chapter 72, pages 5145-5303. Elsevier Science, 2007.
 
-Please see `here <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`_ for a host of lectures material on the econometrics of policy evaluation.
+
+The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. In addition we provide some information on the software engineering tools that are used for transparency and reliability purposes. The documentation concludes with further details for potential contributors, contact information as well as a listing of the latest releases.
+
+The package is used as a teaching tool for a course on the econometrics of policy evaluation at the University of Bonn. The affiliated lecture material is available on `GitHub <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`_ .
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 

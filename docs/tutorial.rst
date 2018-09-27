@@ -46,6 +46,8 @@ start         str          determines which start values are used for the estima
 maxiter	      int          maximum numbers of iterations the minimization process performs
 dependent	  str          indicates the dependent variable for the estimation process
 indicator	  str          defines the label of the treatment indicator variable
+output_file	  str          The name for the estimation output file
+comparison	  int          defines the label of the treatment indicator variable
 =========     =======      =====================================================
 
 

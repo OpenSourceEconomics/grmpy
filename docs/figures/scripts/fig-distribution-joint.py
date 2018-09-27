@@ -37,7 +37,7 @@ plt.colorbar(cns)
 
 ax.text(3.3, 3.3, r'$45^o$')
 
-plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-potential.png')
+plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-potential.png', dpi=300)
 
 # This plot shows the joint distribution of surplus and benefits.
 x = np.linspace(y_min, y_max, 100)
