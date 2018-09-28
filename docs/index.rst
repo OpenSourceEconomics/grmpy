@@ -6,7 +6,7 @@
 Welcome to grmpy's documentation!
 =================================
 
-`PyPI <https://pypi.python.org/pypi/grmpy>`_ | `GitHub <https://github.com/OpenSourceEconomics/grmpy>`_  | `Issues <https://github.com/OpenSourceEconomics/grmpy/issues>`_
+`PyPI <https://pypi.python.org/pypi/grmpy>`_ | `GitHub <https://github.com/OpenSourceEconomics/grmpy>`__  | `Issues <https://github.com/OpenSourceEconomics/grmpy/issues>`_
 
 ``grmpy``  is an open-source Python package for the simulation and estimation of the generalized Roy model. It serves as a teaching tool to promote the conceptual framework of the generalized Roy model, illustrate a variety of issues in the econometrics of policy evaluation, and showcase basic software engineering practices.
 
@@ -19,9 +19,9 @@ We build on the following main references:
     Jaap H. Abbring and James J. Heckman. `Econometric evaluation of social programs, part III: Distributional treatment effects, dynamic treatment effects, dynamic discrete choice, and general equilibrium policy evaluation. <https://www.sciencedirect.com/science/article/pii/S1573441207060722>`_ *Handbook of Econometrics*, volume 6B, chapter 72, pages 5145-5303. Elsevier Science, 2007.
 
 
-The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. In addition we provide some information on the software engineering tools that are used for transparency and reliability purposes. The documentation concludes with further details for potential contributors, contact information as well as a listing of the latest releases.
+The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. In addition we provide some information on the software engineering tools that are used for transparency and reliability purposes. The documentation concludes with further information on contributing, contact details as well as a listing of the latest releases.
 
-The package is used as a teaching tool for a course on the econometrics of policy evaluation at the University of Bonn. The affiliated lecture material is available on `GitHub <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`_ .
+The package is used as a teaching tool for a course on the econometrics of policy evaluation at the University of Bonn. The affiliated lecture material is available on `GitHub <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`__ .
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 

@@ -81,4 +81,4 @@ ax.text(x=3.5, y=-3.5, s='III')
 
 ax.text(x=-3.5, y=-3.5, s='IV')
 
-plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-surplus.png')
+plt.savefig(OUTPUT_DIR + '/fig-distribution-joint-surplus.png', dpi=300)

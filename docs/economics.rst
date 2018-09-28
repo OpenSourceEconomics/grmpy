@@ -6,7 +6,7 @@ This section provides a general discussion of the generalized Roy model and sele
 Generalized Roy Model
 ---------------------
 
-The generalized Roy model (:cite:`Roy1951`, :cite:`HecVyr05`) provides a coherent framework to  explore the econometrics of policy evaluation. Its is characterized by the following set of equations.
+The generalized Roy model (:cite:`HecVyr05`, :cite:`Roy1951`) provides a coherent framework to  explore the econometrics of policy evaluation. Its is characterized by the following set of equations.
 
 .. math::
     :nowrap:
@@ -30,7 +30,7 @@ Roy model (:cite:`Roy1951`).
 
 From the perspective of the econometrician, :math:`(X, Z)` are observable while :math:`(U_1, U_0, V)` are not. :math:`X` are the observed determinants of potential outcomes :math:`(Y_1, Y_0)`, and :math:`Z` are the observed determinants of the cost of treatment :math:`C`. Potential outcomes and cost are decomposed into their means :math:`(\mu_1(X), \mu_0(X), \mu_C(Z))` and their deviations from the mean :math:`(U_1, U_0, V)`. :math:`(X, Z)` might have common elements. Observables and unobservables jointly determine program participation :math:`D`.
 
-If their ex ante costs :math:`C` from participation is positive, then agents select into treatment. Yet, this does not require their expected objective benefit :math:`B` to be positive as well. Note that the unobservable term :math:`V` enters the cost function :math:`C` with a negative sign. Therefore conditional on :math: `Z` , high values of :math:`V` indicate a lower propensity for selecting into treatment and vice versa.
+If their ex ante costs :math:`C` from participation is positive, then agents select into treatment. Yet, this does not require their expected objective benefit :math:`B` to be positive as well. Note that the unobservable term :math:`V` enters the cost function :math:`C` with a negative sign. Therefore conditional on :math:`Z` , high values of :math:`V` indicate a lower propensity for selecting into treatment and vice versa.
 
 The evaluation problem arises because either :math:`Y_1` or :math:`Y_0` is observed. Thus, the effect of treatment cannot be determined on an individual level. If the treatment choice :math:`D` depends on the potential outcomes, then there is also a selection problem. If that is the case, then the treated and untreated differ not only in their treatment status but in other characteristics as well. A naive comparison of the treated and untreated leads to misleading conclusions. Jointly, the evaluation and selection problem are the two fundamental problems of causal inference (:cite:`Holland86`).
 
@@ -73,24 +73,24 @@ Conventional Average Treatment Effects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is common to summarize the average benefits of treatment for different subsets of the population. In general, the focus is on the average effect in the whole population, the average treatment effect :math:`B^{ATE}`, or the average effect on the
-treated :math:`B^{TT}` or untreated :math:`B^{TUT}\right`.
+treated :math:`B^{TT}` or untreated :math:`B^{TUT}`.
 
   .. math::
        B^{ATE} & = E [Y_1 - Y_0]\\
        B^{TT} & = E [Y_1 - Y_0 | D = 1]\\
        B^{TUT} & = E [Y_1 - Y_0 | D = 0]\\
 
-All average effect parameter possibly hide considerable treatment effect heterogeneity. The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, like in the presence of essential heterogeneity, then agents that take up treatment benefit more than those that do not and thus :math:`B^{TT}` > :math:`B^{ATE}`. If agents select their treatment status at random, then all parameters are equal.
+All average effect parameter possibly hide considerable treatment effect heterogeneity. The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, like in the presence of essential heterogeneity, then agents that take up treatment benefit more than those that do not and thus :math:`B^{TT}` > :math:`B^{ATE}`. If agents select their treatment status at random, which is equivalent with the absence of essential heterogeneity, then all parameters are equal. Figure 1 illustrates an example for both cases. Both graphs show the distribution of benefits which is characterized by the difference of potential outcomes :math:`Y_1 - Y_0`. Additionally the figures show the related conventional effects whereupon on the left side individuals select their treatment status based on unobservable gains whereas the right side displays conventional effects in the absence of essential heterogeneity.
 
 .. figure:: ../docs/figures/fig-treatment-effects-with-and-without-eh.png
    :align: center
 
-   Conventional treatment effects with and without essential heterogeneity
+   **Fig. 1:** Conventional treatment effects with and without essential heterogeneity
 
 
 
 The policy relevance of the conventional treatment effect parameters is limited in the presence of essential heterogeneity. They are only informative about extreme policy alternatives. The :math:`B^{ATE}` is of interest to policy makers if they weigh the possibility of moving a full economy from a baseline to an alternative state or are able to assign agents to treatment at random. The :math:`B^{TT}` is informative if the complete elimination of a program already in place is considered. Conversely, if the same program is examined for
-compulsory participation, then the :math: `B^{TUT}` is the policy relevant parameter.
+compulsory participation, then the :math:`B^{TUT}` is the policy relevant parameter.
 
 
 To ensure a tight link between the posed policy question and the parameter of interest, :cite:`HecVyr01` propose the policy-relevant treatment effect :math:`B^{PRTE}`. They consider policies that do not change potential outcomes, but only affect individual choices. Thus, they account for voluntary program participation.
@@ -121,9 +121,9 @@ The Local Average Treatment Effect :math:`B^{LATE}` was introduced by :cite:`Imb
 .. figure:: ../docs/figures/fig-local-average-treatment.png
    :align: center
 
-   :math:`B^{LATE}` at different values of :math:`u_S`
+   **Fig. 2:** :math:`B^{LATE}` at different values of :math:`u_S`
 
-Unfortunately, the people induced to go into treatment by a change in any particular instrument need not to be the same as the people induced to to select into treatment by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may bot be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, Instrumental Variables (IV) estimates using the components of :math:`Z` as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. :cite:`Heckman10` develop this argument in detail.
+Unfortunately, the people induced to go into treatment by a change in any particular instrument need not to be the same as the people induced to to select into treatment by policy changes other than those corresponding exactly to the variation in the instrument. A desired policy effect may be directly correspond to the variation in the IV. Moreover, if there is a vector of instruments that generates choice and the components of the vector are intercorrelated, Instrumental Variables (IV) estimates using the components of :math:`Z` as the instruments, one at a time, do not, in general, identify the policy effect corresponding to varying that instruments, keeping all other instruments fixed, the ceteris paribus effect of the change in the instrument. :cite:`Heckman10` develop this argument in detail.
 
 The average effect of a policy and the average effect of a treatment are linked by the marginal treatment effect :math:`\left(B^{MTE}\right)`. The :math:`B^{MTE}` was introduced into the literature by :cite:`BjöMof87` and extended by :cite:`HecVyr01`, :cite:`HecVyr05` and :cite:`HecVyr07b`.
 
@@ -144,21 +144,19 @@ Parameter :math:`j, \Delta j (x)`, can be written as
     \Delta j (x) = \int_{0}^{1} B^{MTE}(x, u_S) \omega^{j}(x, u_S) du_S,
 
 
-where the weights :math:`\omega^{j} (x, u_S)` are specific to parameter :math:`j`, integrate to one, and can be constructed from data.
+where the weights :math:`\omega^{j} (x, u_S)` are specific to parameter :math:`j`, integrate to one, and can be constructed from data. For instance figure 3 shows weights for the :math:`B^{ATE}`, :math:`B^{TT}` and the :math:`B^{TUT}` as well as the corresponding :math:`B^{MTE}`. Contrary, figure 2 that the concept of :math:`B^{LATE}` is closely related to the idea of :math:`B^{MTE}`. It illustrates that :math:`B^{LATE}` evaluates :math:`B^{MTE}` along a particular interval of the distribution of the unobservable Variable :math:`V`. The specific range depends on the chosen instrument.
 
 .. figure:: ../docs/figures/fig-weights-marginal-effect.png
    :align: center
 
-   Weights for the marginal treatment effect for different parameters.
+   **Fig. 3:** Weights for the marginal treatment effect for different parameters.
 
-All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`B^{MTE}(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits.
+All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`B^{MTE}(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits. This can be seen in figure 4 which illustrates :math:`B^{MTE}` in the absence of essential heterogeneity, represented by the dotted orange line as well as an example for the :math:`B^{MTE}` in the presence of essential heterogeneity portrayed by the blue graph.
 
 .. figure:: ../docs/figures/fig-eh-marginal-effect.png
    :align: center
 
-   :math:`B^{MTE}` in the presence and absence of essential heterogeneity.
-
-
+   **Fig 4:** :math:`B^{MTE}` in the presence and absence of essential heterogeneity.
 
 So far, we have only discussed average effect parameters. However, these conceal possible treatment effect heterogeneity, which provides important information about a treatment. Hence, we now present their distributional counterparts (:cite:`AaHeVy2005`).
 
@@ -174,15 +172,10 @@ The absence of an average effect might be the result of part of the population h
 .. figure:: ../docs/figures/fig-distribution-joint-potential.png
    :align: center
 
-   Distribution of potential Outcomes
+   **Fig 5:** Distribution of potential Outcomes
 
 
 .. figure:: ../docs/figures/fig-distribution-joint-surplus.png
   :align: center
 
-  Distribution of benefits and surplus
-
-
-.. todo::
-
-    * add fotnote 5 from my manuscript into text
+  **Fig. 6:** Distribution of benefits and surplus

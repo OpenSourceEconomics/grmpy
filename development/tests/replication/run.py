@@ -27,25 +27,38 @@ def plot_est_mte(rslt, init_dict, data_frame):
     mte = calculate_mte(rslt, init_dict, data_frame, quantiles)
     mte = [i / 4 for i in mte]
     mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
-    # Plot both curveslscpu | grep MHz
+    # Plot both curves
+    ax = plt.figure(figsize=(14, 6))
 
-    ax = plt.figure().add_subplot(111)
+    ax1 = ax.add_subplot(121)
 
-    ax.set_ylabel(r"$B^{MTE}$")
-    ax.set_xlabel("$u_S$")
-    ax.plot(quantiles, mte, label='grmpy MTE', color='blue')
-    ax.plot(quantiles, mte_up, color='blue', linestyle=':')
-    ax.plot(quantiles, mte_d, color='blue', linestyle=':')
-    ax.plot(quantiles, mte_original, label='original MTE', color='red')
-    ax.plot(quantiles, mte_original_d, color='red', linestyle=':')
-    ax.plot(quantiles, mte_original_u, color='red', linestyle=':')
+    ax1.set_ylabel(r"$B^{MTE}$")
+    ax1.set_xlabel("$u_S$")
+    l1, = ax1.plot(quantiles, mte, color='blue')
+    l2, = ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
+    l3, = ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
 
-    ax.set_ylim([-0.4, 0.5])
+    ax1.set_ylim([-0.4, 0.5])
 
-    plt.legend()
+
+    ax2 = ax.add_subplot(122)
+
+    ax2.set_ylabel(r"$B^{MTE}$")
+    ax2.set_xlabel("$u_S$")
+
+    l4, = ax2.plot(quantiles, mte_original, color='red')
+    l5, =  ax2.plot(quantiles, mte_original_d, color='red', linestyle=':')
+    l6, = ax2.plot(quantiles, mte_original_u, color='red', linestyle=':')
+    ax2.set_ylim([-0.4, 0.5])
+
+    plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'],prop={'size': 18})
+
 
     plt.tight_layout()
-    plt.savefig('fig-marginal-benefit-parametric-replication.png')
+
+    plt.savefig('fig-marginal-benefit-parametric-replication.png', dpi=300)
+
+
     return mte
 
 

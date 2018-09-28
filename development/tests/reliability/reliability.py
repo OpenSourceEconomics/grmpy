@@ -129,7 +129,7 @@ def create_plots(effects, true):
         if strategy == 'ols':
             title = 'Ordinary Least Squares'
         elif strategy == 'grmpy':
-            title = 'Local Instrumental Variables'
+            title = 'grmpy'
 
     # Create a figure for each estimation strategy
         ax = plt.figure().add_subplot(111)
@@ -156,6 +156,6 @@ if __name__ == '__main__':
 
     ATE = get_effect_grmpy('reliability.grmpy.ini')
 
-    x = monte_carlo('reliability.grmpy.ini', 15)
+    x = monte_carlo('reliability.grmpy.ini', 20)
 
     create_plots(x, ATE)
