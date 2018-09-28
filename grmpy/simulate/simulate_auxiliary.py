@@ -58,9 +58,9 @@ def simulate_outcomes(init_dict, X, U, V):
     the realized outcome Y.
     """
     X = pd.DataFrame(X)
-    Z = X[[i - 1 for i in init_dict['CHOICE']['order']]].as_matrix()
-    X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].as_matrix()
-    X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].as_matrix()
+    Z = X[[i - 1 for i in init_dict['CHOICE']['order']]].values
+    X_treated = X[[i - 1 for i in init_dict['TREATED']['order']]].values
+    X_untreated = X[[i - 1 for i in init_dict['UNTREATED']['order']]].values
     # Distribute information
     coeffs_untreated = init_dict['UNTREATED']['all']
     coeffs_treated = init_dict['TREATED']['all']
