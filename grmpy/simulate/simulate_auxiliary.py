@@ -198,7 +198,7 @@ def print_info(init_dict, data_frame):
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
         file_.write(str_)
 
-        header = '\n\n {} \n\n'.format('MTE Information')
+        header = '\n\n {} \n\n'.format('Marginal Treatment Effect')
         file_.write(header)
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]

@@ -8,7 +8,7 @@ import numpy as np
 import json
 
 from grmpy.estimate.estimate_output import calculate_mte
-from grmpy.estimate.estimate import estimate
+from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
 
     init_dict = read('replication.grmpy.ini')
     # Estimate the coefficients
-    rslt = estimate('replication.grmpy.ini')
+    rslt = fit('replication.grmpy.ini')
 
     # Calculate and plot the marginal treatment effect
     data = pd.read_pickle('aer-replication-mock.pkl')

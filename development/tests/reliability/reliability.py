@@ -10,7 +10,7 @@ import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.test.random_init import print_dict
-from grmpy.estimate.estimate import estimate
+from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 
 
@@ -105,7 +105,7 @@ def monte_carlo(file, grid_points):
         effects['true'] += [ATE]
 
         # Estimate  via grmpy
-        rslt = estimate('reliability.grmpy.ini')
+        rslt = fit('reliability.grmpy.ini')
         beta_diff = rslt['TREATED']['all'] - rslt['UNTREATED']['all']
         stat = np.dot(np.mean(exog), beta_diff)
 

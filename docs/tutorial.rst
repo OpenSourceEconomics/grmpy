@@ -6,12 +6,12 @@ We now illustrate the basic capabilities of the ``grmpy`` package. We start with
 Assumptions
 ------------
 
-The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the cost associated with treatment participations :math:`(Y_1, Y_0, C)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, U_C)`.
+The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the selection process :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
 
 .. math::
     Y_1 & = X \beta_1 + U_1 \\
     Y_0 & = X \beta_0 + U_0 \\
-    C   & = Z \gamma + U_C \\
+    D^{*}   & = Z \gamma + U_C \\
 
 We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into treatment if their surplus from doing so is positive :math:`S = Y_1 - Y_0 - C`. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
 
@@ -36,25 +36,25 @@ source      str         specified name for the simulation output files
 
 The *ESTIMATION* block determines the basic information for the estimation process.
 
-=========     =======      =====================================================
-Key           Value        Interpretation
-=========     =======      =====================================================
-agents        int          number of individuals for the estimation simulation
-file          str          specified data input file for the estimation process
-optimizer     str          optimizer used for the estimation process
-start         str          determines which start values are used for the estimation process
-maxiter	      int          maximum numbers of iterations the minimization process performs
-dependent	  str          indicates the dependent variable for the estimation process
-indicator	  str          defines the label of the treatment indicator variable
-output_file	  str          The name for the estimation output file
-comparison	  int          defines the label of the treatment indicator variable
-=========     =======      =====================================================
+===========     ======      ==================
+Key             Value        Interpretation
+===========     ======      ==================
+agents          int         number of individuals (for the comparison file)
+file            str         name of the estimation specific init file
+optimizer       str         optimizer used for the estimation process
+start           str         flag for the start values
+maxiter	        int         maximum numbers of iterations
+dependent	str         indicates the dependent variable
+indicator       str         label of the treatment indicator variable
+output_file	str         name for the estimation output file
+comparison	int         flag for enabling the comparison file creation
+===========     ======      ==================
 
 
 
 **TREATED**
 
-The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. In particular, the string in the column **Column** specifies the label of the variable in the relevant dataset.
 
 =======   ======  ======     ===================================
 Key       Column  Value      Interpretation
@@ -67,7 +67,7 @@ coeff     str     float      coefficient of the second covariate
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
+The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`.
 
 =======   ======  ======     ===================================
 Key       Column  Value      Interpretation
@@ -78,9 +78,9 @@ coeff     str     float      coefficient of the second covariate
 =======   ======  ======     ===================================
 
 
-**COST**
+**CHOICE**
 
-The *COST* block specifies the number and order of the covariates determining the cost of treatment and the values for the coefficients :math:`\gamma`. In particular, the integer in the column **Column** specifies the column in the relevant dataset.
+The *CHOICE* block specifies the number and order of the covariates determining the selection process and the values for the coefficients :math:`\gamma`.
 
 =======   ======  ======     ===================================
 Key       Column  Value      Interpretation
@@ -132,7 +132,7 @@ Examples
 --------
 
 In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
-So far the package provides the features to simulate a sample from the generalized roy model and to estimate the parameters of interest (given a data set) as specified in your initialization file.
+So far the package provides the features to simulate a sample from the generalized Roy model and to estimate the parameters of interest for a provided sample as specified in your initialization file.
 
 **Simulation**
 
@@ -157,7 +157,7 @@ The other feature of the package is the estimation of the parameters of interest
 
 ::
 
-    grmpy.estimate('tutorial.grmpy.ini')
+    grmpy.fit('tutorial.grmpy.ini')
 
 As in the simulation process this creates a number of output file that contains information about the estimation results.
 

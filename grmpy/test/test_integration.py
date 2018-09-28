@@ -13,10 +13,10 @@ from grmpy.check.custom_exceptions import UserError
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.check.check import check_init_file
 from grmpy.test.random_init import print_dict
-from grmpy.estimate.estimate import estimate
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import read_desc
 from grmpy.test.auxiliary import cleanup
+from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 
 
@@ -60,7 +60,7 @@ def test3():
         constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
         df1 = simulate('test.grmpy.ini')
-        rslt = estimate('test.grmpy.ini')
+        rslt = fit('test.grmpy.ini')
         init_dict = read('test.grmpy.ini')
         df2 = simulate_estimation(init_dict, rslt)
         start = start_values(init_dict, df1, 'init')
@@ -82,7 +82,7 @@ def test4():
         generate_random_dict(constr)
 
         simulate('test.grmpy.ini')
-        estimate('test.grmpy.ini')
+        fit('test.grmpy.ini')
 
 
 def test5():
@@ -92,7 +92,7 @@ def test5():
         constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
         generate_random_dict(constr)
         simulate('test.grmpy.ini')
-        estimate('test.grmpy.ini')
+        fit('test.grmpy.ini')
 
 
 def test6():
@@ -108,7 +108,7 @@ def test6():
         dict_['DIST']['all'][1], dict_['DIST']['all'][5] = 0.0, 1.0
         print_dict(dict_)
         simulate('test.grmpy.ini')
-        estimate('test.grmpy.ini')
+        fit('test.grmpy.ini')
         dict_ = read_desc('comparison.grmpy.txt')
         for key_ in ['All', 'Treated', 'Untreated']:
             np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
@@ -136,7 +136,7 @@ def test7():
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
         pytest.raises(UserError, check_init_file, dict_)
-        pytest.raises(UserError, estimate, 'test.grmpy.ini')
+        pytest.raises(UserError, fit, 'test.grmpy.ini')
 
         generate_random_dict(constr)
         dict_ = read('test.grmpy.ini')
@@ -150,7 +150,7 @@ def test7():
         print_dict(dict_)
         pytest.raises(UserError, check_initialization_dict, dict_)
         pytest.raises(UserError, simulate, 'test.grmpy.ini')
-        pytest.raises(UserError, estimate, 'test.grmpy.ini')
+        pytest.raises(UserError, fit, 'test.grmpy.ini')
 
         constr['AGENTS'] = 0
         generate_random_dict(constr)
@@ -194,19 +194,19 @@ def test7():
 
     dict_ = read(fname_zero)
     pytest.raises(UserError, check_init_file, dict_)
-    pytest.raises(UserError, estimate, fname_zero)
+    pytest.raises(UserError, fit, fname_zero)
 
     dict_ = read(fname_vzero)
     pytest.raises(UserError, check_init_file, dict_)
-    pytest.raises(UserError, estimate, fname_vzero)
+    pytest.raises(UserError, fit, fname_vzero)
 
     dict_ = read(fname_diff_binary)
     pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, estimate, fname_diff_binary)
+    pytest.raises(UserError, fit, fname_diff_binary)
 
     dict_ = read(fname_diff_categorical)
     pytest.raises(UserError, check_initialization_dict, dict_)
-    pytest.raises(UserError, estimate, fname_diff_categorical)
+    pytest.raises(UserError, fit, fname_diff_categorical)
 
 
 def test8():
@@ -221,8 +221,8 @@ def test8():
     dict_ = read('test.grmpy.ini')
     dict_['ESTIMATION']['file'] = 'data.grmpy.ini'
     print_dict(dict_, 'false_data')
-    pytest.raises(UserError, estimate, 'tast.grmpy.ini')
-    pytest.raises(UserError, estimate, 'false_data.grmpy.ini')
+    pytest.raises(UserError, fit, 'tast.grmpy.ini')
+    pytest.raises(UserError, fit, 'false_data.grmpy.ini')
     pytest.raises(UserError, simulate, 'tast.grmpy.ini')
     pytest.raises(UserError, read, 'tast.grmpy.ini')
     pytest.raises(UserError, start_values, a, df, 'init')
@@ -240,6 +240,6 @@ def test9():
         generate_random_dict(constr)
         read('test.grmpy.ini')
         simulate('test.grmpy.ini')
-        estimate('test.grmpy.ini')
+        fit('test.grmpy.ini')
 
     cleanup()

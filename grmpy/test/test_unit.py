@@ -13,9 +13,9 @@ from grmpy.test.random_init import generate_random_dict
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
-from grmpy.estimate.estimate import estimate
 from grmpy.check.auxiliary import read_data
 from grmpy.test.auxiliary import cleanup
+from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 import grmpy
 
@@ -283,7 +283,7 @@ def test11():
         df = simulate('test.grmpy.ini')
         start = start_values(init_dict, df, 'init')
         start = backward_transformation(start)
-        rslt = estimate('test.grmpy.ini')
+        rslt = fit('test.grmpy.ini')
 
         np.testing.assert_equal(start, rslt['AUX']['x_internal'])
 
@@ -292,7 +292,7 @@ def test12():
     """This test ensures that the tutorial configuration works as intended."""
     fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
     simulate(fname)
-    estimate(fname)
+    fit(fname)
 
 
 def test13():
