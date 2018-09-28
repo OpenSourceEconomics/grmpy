@@ -27,6 +27,7 @@ def plot_est_mte(rslt, init_dict, data_frame):
     mte = calculate_mte(rslt, init_dict, data_frame, quantiles)
     mte = [i / 4 for i in mte]
     mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
+
     # Plot both curves
     ax = plt.figure(figsize=(14, 6))
 
@@ -40,7 +41,6 @@ def plot_est_mte(rslt, init_dict, data_frame):
 
     ax1.set_ylim([-0.4, 0.5])
 
-
     ax2 = ax.add_subplot(122)
 
     ax2.set_ylabel(r"$B^{MTE}$")
@@ -51,13 +51,11 @@ def plot_est_mte(rslt, init_dict, data_frame):
     l6, = ax2.plot(quantiles, mte_original_u, color='red', linestyle=':')
     ax2.set_ylim([-0.4, 0.5])
 
-    plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'],prop={'size': 18})
-
+    plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'], prop={'size': 18})
 
     plt.tight_layout()
 
     plt.savefig('fig-marginal-benefit-parametric-replication.png', dpi=300)
-
 
     return mte
 

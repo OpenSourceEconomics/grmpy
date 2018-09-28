@@ -4,8 +4,8 @@ import os
 import pytest
 
 from grmpy.simulate.simulate import simulate
-from grmpy.estimate.estimate import estimate
 from grmpy.grmpy_config import PACKAGE_DIR
+from grmpy.estimate.estimate import fit
 import grmpy.grmpy_config
 
 

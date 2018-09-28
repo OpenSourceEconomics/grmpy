@@ -1,4 +1,6 @@
-"""The module includes an integration and a regression test for the simulation process."""
+"""The module includes an integration and a regression test for the simulation and the estiomation
+ process.
+ """
 import json
 
 import numpy as np
