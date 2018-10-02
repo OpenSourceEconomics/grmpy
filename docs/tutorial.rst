@@ -18,7 +18,7 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/master/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/develop/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
 
 **SIMULATION**
 
@@ -131,7 +131,7 @@ ftol       float      relative error in fun(*xopt*) that is acceptable for conve
 Examples
 --------
 
-In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
+In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/develop/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized Roy model and to estimate the parameters of interest for a provided sample as specified in your initialization file.
 
 **Simulation**
