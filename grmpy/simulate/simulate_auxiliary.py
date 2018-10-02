@@ -235,13 +235,10 @@ def write_identifier_section_simulate(init_dict, file_):
     identifier_treated = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
     identifier_untreated = [init_dict['varnames'][j - 1] for j in init_dict['UNTREATED']['order']]
     identifier_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
-    identifier_distribution = ['sigma1', 'rho10', 'rho1', 'sigma0', 'rho0', 'sigmaV']
+    identifier_distribution = ['sigma1', 'sigma10', 'sigma1v', 'sigma0', 'sigma0v', 'sigmaV']
     identifier = \
         identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
     coeffs = init_dict['AUX']['init_values'].copy()
-    coeffs[-5] = coeffs[-5] / (coeffs[-6] * coeffs[-3])
-    coeffs[-4] = coeffs[-4] / (coeffs[-6] * coeffs[-1])
-    coeffs[-2] = coeffs[-2] / (coeffs[-3] * coeffs[-1])
     fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}'
     for i in range(len(init_dict['AUX']['init_values'])):
         if i == 0:

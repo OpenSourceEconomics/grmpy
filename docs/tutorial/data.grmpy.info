@@ -78,8 +78,8 @@
 
   DIST       
                sigma1               0.1000
-               rho10                0.0000
-               rho1                 0.0000
+               sigma10              0.0000
+               sigma1v              0.0000
                sigma0               0.1000
-               rho0                 0.0000
+               sigma0v              0.0000
                sigmaV               1.0000
