@@ -56,8 +56,8 @@ def effects(data):
     ay.set_yticks([])
 
     # Rename axes
-    ay.set_ylabel('$f_{Y_1 - Y_0}$')
-    ay.set_xlabel('$Y_1 - Y_0$')
+    ay.set_ylabel('$f_{Y_1 - Y_0}$', fontsize=16)
+    ay.set_xlabel('$Y_1 - Y_0$', fontsize=16)
 
     for effect in [ATE, TT, TUT]:
         if effect == ATE:
