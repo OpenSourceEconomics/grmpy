@@ -192,7 +192,7 @@ def print_info(init_dict, data_frame):
         header = '\n\n {} \n\n'.format('Criterion Function')
         file_.write(header)
         if 'criteria_value' in init_dict['AUX'].keys():
-            str_ = '  {0:<10}      {1:<20.12f}\n\n'.format('Value',
+            str_ = '  {0:<10}      {1:<21.12f}\n\n'.format('Value',
                                                            init_dict['AUX']['criteria_value'])
         else:
             str_ = '  {0:>10} {1:>20}\n\n'.format('Value', '---')
@@ -209,7 +209,7 @@ def print_info(init_dict, data_frame):
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
-        len_ = len(value) - 1
+        len_ = len(value)
         for i in range(len_):
             if isinstance(value[i], float):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
@@ -217,10 +217,46 @@ def print_info(init_dict, data_frame):
                 file_.write('  {0:>10} {1:>20.4}\n'.format(str(args[i]), value[i]))
 
         # Write out parameterization of the model.
-        file_.write('\n\n {} \n\n'.format('Parameterization'))
-        file_.write('  {:>10} {:>20}\n\n'.format('Identifier', 'Value'))
-        for i, coeff in enumerate(coeffs_all):
-            file_.write('  {0:>10} {1:>20.4f}\n'.format(i, coeff))
+        write_identifier_section_simulate(init_dict, file_)
+
+
+def write_identifier_section_simulate(init_dict, file_):
+    file_.write('\n\n {} \n\n'.format('Parameterization'))
+
+    """This function prints the information about the estimation results in the output file."""
+
+    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}'
+
+    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef']) + '\n')
+
+    num_treated = len(init_dict['TREATED']['order'])
+    num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
+    num_choice = num_untreated + len(init_dict['CHOICE']['order'])
+
+    identifier_treated = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
+    identifier_untreated = [init_dict['varnames'][j - 1] for j in init_dict['UNTREATED']['order']]
+    identifier_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
+    identifier_distribution = ['sigma1', 'rho10', 'rho1', 'sigma0', 'rho0', 'sigmaV']
+    identifier = \
+        identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
+    coeffs = init_dict['AUX']['init_values'].copy()
+    coeffs[-5] = coeffs[-5] / (coeffs[-6] * coeffs[-3])
+    coeffs[-4] = coeffs[-4] / (coeffs[-6] * coeffs[-1])
+    coeffs[-2] = coeffs[-2] / (coeffs[-3] * coeffs[-1])
+    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}'
+    for i in range(len(init_dict['AUX']['init_values'])):
+        if i == 0:
+            file_.write('\n  {:<10} \n'.format('TREATED'))
+        elif i == num_treated:
+            file_.write('\n  {:<10} \n'.format('UNTREATED'))
+        elif i == num_untreated:
+            file_.write('\n  {:<10} \n'.format('CHOICE'))
+        elif i == num_choice:
+            file_.write('\n  {:<10} \n'.format('DIST'))
+
+        file_.write('{0}\n'.format(
+            fmt.format('', identifier[i], coeffs[i])))
+
 
 
 def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
