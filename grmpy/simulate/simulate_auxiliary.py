@@ -133,7 +133,6 @@ def print_info(init_dict, data_frame):
     dep, indicator = init_dict['ESTIMATION']['dependent'], init_dict['ESTIMATION']['indicator']
 
     # Construct auxiliary information
-    coeffs_all = construct_all_coefficients(init_dict)
     cov = construct_covariance_matrix(init_dict)
 
     with open(source + '.grmpy.info', 'w') as file_:
@@ -256,7 +255,6 @@ def write_identifier_section_simulate(init_dict, file_):
 
         file_.write('{0}\n'.format(
             fmt.format('', identifier[i], coeffs[i])))
-
 
 
 def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
