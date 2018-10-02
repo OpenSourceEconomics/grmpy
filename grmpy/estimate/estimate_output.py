@@ -292,7 +292,7 @@ def calculate_mte(rslt, init_dict, data_frame, quant=None):
     coeffs_untreated = rslt['UNTREATED']['all']
 
     if quant is None:
-        quantiles = [1] + np.arange(2.5, 100, 2.5).tolist() + [99]
+        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
     else:
