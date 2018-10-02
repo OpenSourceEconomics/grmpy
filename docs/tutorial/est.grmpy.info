@@ -1,0 +1,50 @@
+
+ 
+  Optimization Information
+
+             Optimizer:                               SCIPY-BFGS
+             Start values:                            init
+             Success:                                 1
+             Status:                                  0
+             Number of Evaluations:                   348
+             Criterion:                              -0.2711
+             Message:                                 Optimization terminated successfully.
+
+             Warning:                                 The optimization algorithm has failed to provide the parametrization that leads to the minimal criterion function value. 
+                                                      The estimation output is automatically adjusted.
+
+
+ 
+  Criterion Function
+
+                                        Start               Finish
+
+
+                         -0.27041879055191226 -0.27110025522643966
+
+
+ 
+  Economic Parameters
+
+
+                                    Start          Finish
+
+ Section       Identifier           Coef           Coef        Std err      95% Conf. Int.
+
+  TREATED    
+               const                1.0000         0.9992      (0.0038)    0.9917    1.0067
+               X2                   0.5550         0.5530      (0.0013)    0.5506    0.5555
+
+  UNTREATED  
+               const                0.5000         0.5091      (0.0073)    0.4947    0.5234
+               X2                   0.2500         0.2505      (0.0017)    0.2473    0.2538
+
+  CHOICE     
+               const                0.3780         0.3745      (0.0132)    0.3486    0.4003
+               X3                  -0.3900        -0.3607      (0.0137)   -0.3875   -0.3339
+
+  DIST       
+               sigma1               0.1000         0.0994      (0.0009)    0.0976    0.1011
+               rho1                 0.0000         0.0237      (0.0664)   -0.1065    0.1540
+               sigma0               0.1000         0.1003      (0.0013)    0.0977    0.1028
+               rho0                 0.0000        -0.1070      (0.0721)   -0.2484    0.0343

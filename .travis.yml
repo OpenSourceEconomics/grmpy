@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.6"
+
+install:
+    - pip install -r requirements.txt
+    - pip install pytest-cov
+    - pip install codecov
+
+script:
+    - py.test --cov=grmpy
+
+after_success:
+    - codecov

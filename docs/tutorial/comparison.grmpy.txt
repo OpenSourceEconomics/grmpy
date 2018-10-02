@@ -1,0 +1,68 @@
+
+
+ Number of Observations 
+
+    Sample                                Observed   Simulated (finish)    Simulated (start)
+
+
+    All                                      10000                10000                10000
+    Treated                                   6391                 6375                 6391
+    Untreated                                 3609                 3625                 3609
+
+
+ Distribution of Outcomes
+
+
+
+   All       
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                         0.8196               0.5328               0.4401               0.7467               1.1652
+    Simulated Sample (finish)               0.8176               0.5277               0.4457               0.7455               1.1526
+    Simulated Sample (start)                0.8196               0.5328               0.4401               0.7467               1.1652
+
+
+   Treated   
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                         1.0018               0.5580               0.6305               1.0059               1.3721
+    Simulated Sample (finish)               0.9974               0.5537               0.6268               0.9928               1.3680
+    Simulated Sample (start)                1.0018               0.5580               0.6305               1.0059               1.3721
+
+
+   Untreated 
+
+                                              Mean             Std-Dev.                  25%                  50%                  75%
+
+    Observed Sample                         0.4968               0.2689               0.3218               0.5001               0.6782
+    Simulated Sample (finish)               0.5015               0.2687               0.3272               0.5009               0.6827
+    Simulated Sample (start)                0.4968               0.2689               0.3218               0.5001               0.6782
+
+
+ MTE Information 
+
+    Quantile                Value
+
+          1%               0.4603
+          5%               0.4692
+         10%               0.4740
+         15%               0.4772
+         20%               0.4797
+         25%               0.4819
+         30%               0.4839
+         35%               0.4857
+         40%               0.4874
+         45%               0.4891
+         50%               0.4908
+         55%               0.4924
+         60%               0.4941
+         65%               0.4958
+         70%               0.4976
+         75%               0.4996
+         80%               0.5018
+         85%               0.5043
+         90%               0.5075
+         95%               0.5123
+         99%               0.5212
