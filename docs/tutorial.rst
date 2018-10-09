@@ -6,14 +6,15 @@ We now illustrate the basic capabilities of the ``grmpy`` package. We start with
 Assumptions
 ------------
 
-The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the selection process :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
+The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the choice :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
 
 .. math::
     Y_1 & = X \beta_1 + U_1 \\
     Y_0 & = X \beta_0 + U_0 \\
-    D^{*}   & = Z \gamma + U_C \\
+    D = \mathbf{1}\{D^{*} > 0}\\
+    D^{*}   & = Z \gamma -V \\
 
-We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into treatment if their surplus from doing so is positive :math:`S = Y_1 - Y_0 - C`. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
+We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into latent indicator variable :math:`D^{*}` is positive. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
 
 Model Specification
 -------------------
@@ -132,11 +133,11 @@ Examples
 --------
 
 In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/develop/docs/tutorial>`_.
-So far the package provides the features to simulate a sample from the generalized Roy model and to estimate the parameters of interest for a provided sample as specified in your initialization file.
+So far the package provides the features to simulate a sample from the generalized Roy model and to estimate some parameters of interest for a provided sample as specified in your initialization file.
 
 **Simulation**
 
-First we will take a look on the simulation feature. For simulating a sample from the generalized roy model you use the simulate function provided by the package. For simulating a sample of your choice you have to provide the path of your initalization file as an input to the function.
+First we will take a look on the simulation feature. For simulating a sample from the generalized Roy model you use the ``simulate()`` function provided by the package. For simulating a sample of your choice you have to provide the path of your initialization file as an input to the function.
 ::
 
     import grmpy
