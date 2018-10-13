@@ -21,7 +21,7 @@ We build on the following main references:
 
 The remainder of this documentation is structured as follows. We first present the basic economic model and provide installation instructions. We then illustrate the basic use case of the package in a tutorial and showcase some evidence regarding its reliability. In addition we provide some information on the software engineering tools that are used for transparency and dependability purposes. The documentation concludes with further information on contributing, contact details as well as a listing of the latest releases.
 
-The package is used as a teaching tool for a course on the econometrics of human capital at the University of Bonn. The affiliated lecture material is available on `GitHub <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`__ .
+The package is used as a teaching tool for a course on the analysis human capital at the University of Bonn. The affiliated lecture material is available on `GitHub <https://github.com/HumanCapitalEconomics/econometrics/blob/master/README.md>`__ .
 
 .. image:: https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000   :target:
 
