@@ -8,11 +8,12 @@ Assumptions
 
 The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the choice :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
 
+
 .. math::
-    Y_1 & = X \beta_1 + U_1 \\
-    Y_0 & = X \beta_0 + U_0 \\
-    D &= \mathbf{1}\{D^{*} > 0} \\
-    D^{*}   & = Z \gamma -V 
+    Y_1  &= X \beta_1 + U_1 \\
+    Y_0  &= X \beta_0 + U_0 \\
+    D &= I[D^{*} > 0] \\
+    D^{*}    &= Z \gamma -V
 
 We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into latent indicator variable :math:`D^{*}` is positive. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
 
