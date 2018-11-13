@@ -1,92 +1,81 @@
+%!TEX root = ../main.tex
+
+\RequirePackage{bibentry}
+\makeatletter\let\saved@bibitem\@bibitem\makeatother
+
 \documentclass{beamer}
+\makeatletter\let\@bibitem\saved@bibitem\makeatother
+
 \renewcommand{\baselinestretch}{1.2}\normalsize
+\usetheme{default}
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{footline}[frame number]
 
-\usepackage{tabu}
-\usepackage{etex}
-\usepackage{bm}
-\usepackage{bigints}
-\usepackage{graphicx}
-\usepackage{dsfont}
-
-\usepackage{relsize}
-\usepackage[natbibapa]{apacite}
-\usepackage{bm}																								\usepackage{bbm}
-
-\usepackage{algpseudocode}
-\usepackage{algorithmicx}
 \usepackage{verbatim}
-\usepackage{setspace}																					\usepackage{hyperref}
+\usepackage{etex}
+
+% BIBLIOGRAPHY APACITE
+\usepackage[apaciteclassic]{apacite}
+\usepackage{notoccite}
+\usepackage{bibentry}
 
 
+% MATHEMATICS AND FONTS
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 
 \renewcommand{\vec}[1]{\mathbf{#1}}
 
-\hypersetup{colorlinks=true,urlcolor=blue}														%Zeilenabst�nde)
-\usepackage{threeparttable}
-\usepackage{subfig}
-\usepackage{epstopdf}
-\usepackage{lscape}																							%Querformat
-\usepackage[latin1]{inputenc}
-
-\usepackage{graphicx}
-\graphicspath{{../../material/}}
-
-\usepackage{booktabs}
-\usepackage{color}
-\definecolor{dkgreen}{rgb}{0,0.6,0}
-\definecolor{gray}{rgb}{0.5,0.5,0.5}
-\definecolor{mauve}{rgb}{0.58,0,0.82}
-
-\usepackage{listings}
-\lstset{
-	numberstyle=\tiny,
-	numbersep=5pt,
-	breaklines=true,
-	showstringspaces=false,
-	frame=l ,
-	xleftmargin=15pt,
-	xrightmargin=15pt,
-	basicstyle=\ttfamily\scriptsize,
-	stepnumber=1,
-	keywordstyle=\color{blue},          % keyword style
-  	commentstyle=\color{dkgreen},       % comment style
-  	stringstyle=\color{mauve}         % string literal style
-}
-\lstset{language=Python}
-
+\usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{amssymb}
-%\usepackage{uarial}
+\usepackage{bbm}
+\usepackage{algpseudocode} 
+\usepackage{setspace}
 
+\usepackage{arev}
+\usepackage[latin1]{inputenc} 
+\usepackage[T1]{fontenc} 
+
+%To include the cover slide
+\usepackage[final]{pdfpages}
+
+
+% GRAPHS
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{caption}
+\graphicspath{{material/}}
+\usepackage{relsize}
+\usepackage{lscape}	
+\usepackage{fancybox}
+\usepackage{epstopdf} 
+
+
+% TABLES AND OTHER ENVIRONMENTS
 \usepackage{tabularx}
-\usepackage{fancybox}																						%Boxen und Rahmen
-\usepackage{appendix}
+\usepackage{longtable}
+\usepackage{booktabs} 
+\usepackage{color,colortbl} 
+\usepackage{threeparttable}
+
 \usepackage{enumerate}
 
-%EURO Symbol
-\usepackage{longtable}																					%Mehrseitige Tabellen
 \usepackage{fix-cm}
-\usepackage[T1]{fontenc}
-\usepackage{color,colortbl}																			%Farbige Tabellen
-\usepackage{threeparttable}
-\usepackage{hyperref}
-\usepackage{amsfonts}
 
-\usepackage{graphicx}
-\usepackage{caption}
+\usepackage{bookmark}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,citecolor=black}
+
 
 \usepackage{tikz}
 \tikzset{
-  treenode/.style = {shape=rectangle, rounded corners,
-                     draw, align=center,
-                     top color=white, bottom color=blue!20},
-  root/.style     = {treenode, font=\Large, bottom color=red!30},
-  env/.style      = {treenode, font=\ttfamily\normalsize},
-  dummy/.style    = {circle,draw}
+	treenode/.style = {shape=rectangle, rounded corners,
+		draw, align=center,
+		top color=white, bottom color=blue!20},
+	root/.style     = {treenode, font=\Large, bottom color=red!30},
+	env/.style      = {treenode, font=\ttfamily\normalsize},
+	dummy/.style    = {circle,draw}
 }
 %\usepackage{cmbright}
 \def\newblock{\hskip .11em plus .33em minus .07em}
@@ -95,6 +84,7 @@
 \newcommand{\cov}{\mathrm{cov}\thin}
 \newcommand{\thin}{\thinspace}
 \newcommand{\thick}{\thickspace}
+\newcommand{\Lim}[1]{\raisebox{0.5ex}{\scalebox{0.8}{$\displaystyle \lim_{#1}\;$}}}
 
 \newcommand{\vect}[1]{\mathbf{#1}}
 \newcommand{\myfrac}[3][0pt]{\genfrac{}{}{}{}{\raisebox{#1}{$#2$}}{\raisebox{-#1}{$#3$}}}
@@ -104,7 +94,7 @@
 \newcommand{\E}{\mathrm{E}}		%Expectation
 \newcommand{\Prob}{\mbox{Pr}}		%Expectation
 \newcommand{\Iden}{\mathbb{I}}	%Identity Matrix
-\newcommand{\Ind}{\mathds{1}}	%Indicator Function
+\newcommand{\Ind}{\mathrm{I}}	%Indicator Function
 \newcommand{\Tau}{\mathcal{T}\thin}
 
 \newcommand{\var}{\mathrm{var}\thin}
@@ -152,12 +142,12 @@
 
 
 \newcommand{\beginbackup}{
-   \newcounter{framenumbervorappendix}
-   \setcounter{framenumbervorappendix}{\value{framenumber}}
+	\newcounter{framenumbervorappendix}
+	\setcounter{framenumbervorappendix}{\value{framenumber}}
 }
 \newcommand{\backupend}{
-   \addtocounter{framenumbervorappendix}{-\value{framenumber}}
-   \addtocounter{framenumber}{\value{framenumbervorappendix}}
+	\addtocounter{framenumbervorappendix}{-\value{framenumber}}
+	\addtocounter{framenumber}{\value{framenumbervorappendix}}
 }
 
 
@@ -168,28 +158,28 @@
 \usepackage{lipsum}
 \makeatletter
 \renewcommand{\itemize}[1][]{%
-  \beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
-  \ifnum \@itemdepth >2\relax\@toodeep\else
-    \advance\@itemdepth\@ne
-    \beamer@computepref\@itemdepth% sets \beameritemnestingprefix
-    \usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
-    \usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
-    \usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
-    \list
-      {\usebeamertemplate{itemize \beameritemnestingprefix item}}
-      {\def\makelabel##1{%
-          {%
-            \hss\llap{{%
-                \usebeamerfont*{itemize \beameritemnestingprefix item}%
-                \usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
-          }%
-        }%
-      }
-  \fi%
-  \beamer@cramped%
-  \justifying% NEW
-  %\raggedright% ORIGINAL
-  \beamer@firstlineitemizeunskip%
+	\beamer@ifempty{#1}{}{\def\beamer@defaultospec{#1}}%
+	\ifnum \@itemdepth >2\relax\@toodeep\else
+	\advance\@itemdepth\@ne
+	\beamer@computepref\@itemdepth% sets \beameritemnestingprefix
+	\usebeamerfont{itemize/enumerate \beameritemnestingprefix body}%
+	\usebeamercolor[fg]{itemize/enumerate \beameritemnestingprefix body}%
+	\usebeamertemplate{itemize/enumerate \beameritemnestingprefix body begin}%
+	\list
+	{\usebeamertemplate{itemize \beameritemnestingprefix item}}
+	{\def\makelabel##1{%
+			{%
+				\hss\llap{{%
+						\usebeamerfont*{itemize \beameritemnestingprefix item}%
+						\usebeamercolor[fg]{itemize \beameritemnestingprefix item}##1}}%
+			}%
+		}%
+	}
+	\fi%
+	\beamer@cramped%
+	\justifying% NEW
+	%\raggedright% ORIGINAL
+	\beamer@firstlineitemizeunskip%
 }
 
 \justifying
@@ -200,23 +190,6 @@
 \newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
-
-\AtBeginSection[]{
-  \begin{frame}
-  \vfill
-  \centering
-  \begin{NoHyper}
-  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-    \usebeamerfont{title}\insertsectionhead\par%
-  \end{beamercolorbox}
-  \vfill
-  \end{NoHyper}
-  \end{frame}
-}
-
-
-\usetheme{default}
-
 
 
 
