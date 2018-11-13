@@ -17,8 +17,8 @@ Y_1 = \beta_1 X + U_1      &\qquad C = \gamma Z + U_C \\
 Y_0 = \beta_0 X + U_0      &\qquad \\
     & \\
 \text{Observed Outcomes}  &\qquad \text{Choice} \\
-Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
-                       &\qquad D = \mathrm{I}[S > 0] \\
+Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
+                       &\qquad D = \mathrm{I}[D^{*} > 0] \\
 \end{align*}
 \end{frame}
 
@@ -66,7 +66,7 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
   \item Simulation parameters (number of observations, name of the output files)
   \item Estimation parameters (optimization algorithm, start values)
   \item Optimization parameters
-  \item Coefficients and covariance parameters, dummy variables...
+  \item Coefficients and covariance parameters, dummy variables ...
   \end{itemize}
 \end{itemize}
 \end{frame}
@@ -125,7 +125,7 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
   \item \textit{init:} The estimation process uses the coefficient values specified in the initialization file as the start values for the estimation process.
   \item \textit{auto:} The start values are determined via a simple OLS followed by a Probit regression for the choice indicator.
   \end{itemize}
-  \item The estimation results are printed to an \href{examples/est.grmpy.info}{output file}
+  \item The estimation results are printed to an \href{examples/est.grmpy.info}{output file}.
 \end{itemize}
 \end{frame}
 
