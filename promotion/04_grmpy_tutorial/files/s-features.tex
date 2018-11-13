@@ -6,6 +6,8 @@
 
 \begin{frame}
 \textbf{Setup}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item Normal linear-in-parameters version of the generalized Roy model.
 \end{itemize}
@@ -26,6 +28,8 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 
 \begin{frame}
 \textbf{Features}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item \textit{grmpy} is currently capable of the following features:
 \begin{itemize}\setlength\itemsep{1em}
@@ -44,6 +48,8 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 
 \begin{frame}
 \textbf{Install the package}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item OS, Linux : Use the pip install manager (\textit{pip install grmpy}) or download the package via \href{https://github.com/grmToolbox/grmpy}{GitHub} and install it manually.
 \item Windows:  The same procedure as for Linux, OS but you have to verify that the numpy package is already installed on your machine.
@@ -52,6 +58,8 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 
 \begin{frame}
 \textbf{Initialization file}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item The initialization file provides the user with the opportunity to specify all parameters of his/her model, for instance:\medskip
   \begin{itemize}\setlength\itemsep{1em}
@@ -60,13 +68,24 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
   \item Optimization parameters
   \item Coefficients and covariance parameters, dummy variables...
   \end{itemize}
-\item \href{examples/tutorial.grmpy.ini}{Example}
-\item for a detailed explanation see: \href{http://grmpy.readthedocs.io/en/latest/tutorial.html}{\textit{grmpy}-documentation}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
+\textbf{Initialization file}
+
+\medskip
+\begin{itemize}
+\item \href{examples/tutorial.grmpy.ini}{Example}
+\item for a detailed explanation see: \href{http://grmpy.readthedocs.io/en/latest/tutorial.html}{\textit{grmpy}-documentation}
+\end{itemize}
+\vfill
+\end{frame}
+
+\begin{frame}
 \textbf{Simulation}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item \textit{grmpy.simulate():}\medskip
 \begin{itemize}\setlength\itemsep{1em}
@@ -83,6 +102,8 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 
 \begin{frame}
 \textbf{Estimation}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item \textit{grmpy.estimate():}\medskip
   \begin{itemize}\setlength\itemsep{1em}
@@ -110,6 +131,8 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 
 \begin{frame}
 \textbf{Test battery}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item We also provide a test battery that includes several tests to ensure that the processes perform as intended.\medskip
 \begin{itemize}\setlength\itemsep{1em}
@@ -127,15 +150,16 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad S = Y_1 - Y_0 - C \\
 \end{frame}
 
 \begin{frame}
-\textbf{Replication Carneiro (2011)}
+
   \begin{figure}
+  	\caption{Replication Carneiro (2011)}
     \includegraphics[scale=0.5]{figures/fig-marginal-benefit-parametric-replication.png}
   \end{figure}
 \end{frame}
 
 \begin{frame}
-\textbf{Performance comparison}
 \begin{figure}
+  \caption{Performance comparison}
   \includegraphics[scale=0.5]{figures/fig1.png}
 \end{figure}
 
