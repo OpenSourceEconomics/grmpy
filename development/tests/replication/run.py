@@ -34,7 +34,7 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax1 = ax.add_subplot(121)
 
     ax1.set_ylabel(r"$B^{MTE}$")
-    ax1.set_xlabel("$u_S$")
+    ax1.set_xlabel("$u_D$")
     l1, = ax1.plot(quantiles, mte, color='blue')
     l2, = ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
     l3, = ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
@@ -44,11 +44,11 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax2 = ax.add_subplot(122)
 
     ax2.set_ylabel(r"$B^{MTE}$")
-    ax2.set_xlabel("$u_S$")
+    ax2.set_xlabel("$u_D$")
 
-    l4, = ax2.plot(quantiles, mte_original, color='red')
-    l5, =  ax2.plot(quantiles, mte_original_d, color='red', linestyle=':')
-    l6, = ax2.plot(quantiles, mte_original_u, color='red', linestyle=':')
+    l4, = ax2.plot(quantiles, mte_original, color='orange')
+    l5, =  ax2.plot(quantiles, mte_original_d, color='orange', linestyle=':')
+    l6, = ax2.plot(quantiles, mte_original_u, color='orange', linestyle=':')
     ax2.set_ylim([-0.4, 0.5])
 
     plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'], prop={'size': 18})

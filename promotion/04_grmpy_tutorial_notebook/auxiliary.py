@@ -309,7 +309,7 @@ def plot_est_mte(rslt, file):
     ax1 = ax.add_subplot(121)
 
     ax1.set_ylabel(r"$B^{MTE}$")
-    ax1.set_xlabel("$u_S$")
+    ax1.set_xlabel("$u_D$")
     l1, = ax1.plot(quantiles, mte, color='blue')
     l2, = ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
     l3, = ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
@@ -319,11 +319,11 @@ def plot_est_mte(rslt, file):
     ax2 = ax.add_subplot(122)
 
     ax2.set_ylabel(r"$B^{MTE}$")
-    ax2.set_xlabel("$u_S$")
+    ax2.set_xlabel("$u_D$")
 
-    l4, = ax2.plot(quantiles, mte_original, color='red')
-    l5, = ax2.plot(quantiles, mte_original_d, color='red', linestyle=':')
-    l6, = ax2.plot(quantiles, mte_original_u, color='red', linestyle=':')
+    l4, = ax2.plot(quantiles, mte_original, color='orange')
+    l5, = ax2.plot(quantiles, mte_original_d, color='orange', linestyle=':')
+    l6, = ax2.plot(quantiles, mte_original_u, color='orange', linestyle=':')
     ax2.set_ylim([-0.4, 0.5])
 
     plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'], prop={'size': 18})
@@ -335,14 +335,14 @@ def plot_est_mte(rslt, file):
     ax = plt.figure().add_subplot(111)
 
     ax.set_ylabel(r"$B^{MTE}$", fontsize=20)
-    ax.set_xlabel("$u_S$", fontsize=20)
+    ax.set_xlabel("$u_D$", fontsize=20)
     ax.tick_params(axis='both', which='major', labelsize=20)
     ax.plot(quantiles, mte, label='grmpy $B^{MTE}$', color='blue', linewidth=2)
     ax.plot(quantiles, mte_up, color='blue', linestyle=':')
     ax.plot(quantiles, mte_d, color='blue', linestyle=':')
-    ax.plot(quantiles, mte_original, label='original$B^{MTE}$', color='red', linewidth=2)
-    ax.plot(quantiles, mte_original_d, color='red', linestyle=':')
-    ax.plot(quantiles, mte_original_u, color='red', linestyle=':')
+    ax.plot(quantiles, mte_original, label='original$B^{MTE}$', color='orange', linewidth=2)
+    ax.plot(quantiles, mte_original_d, color='orange', linestyle=':')
+    ax.plot(quantiles, mte_original_u, color='orange', linestyle=':')
 
     ax.set_ylim([-0.4, 0.5])
 
