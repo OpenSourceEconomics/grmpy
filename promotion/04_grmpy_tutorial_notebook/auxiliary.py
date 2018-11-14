@@ -6,6 +6,8 @@ from scipy.stats import norm
 import seaborn as sns
 import pandas as pd
 import numpy as np
+import linecache
+import shlex
 import json
 
 from linearmodels.iv import IV2SLS
@@ -247,40 +249,31 @@ def create_plots(effects, true):
             ax[plot_num1, plot_num2].yaxis.get_major_ticks()[0].set_visible(False)
 
             if plot_num == [0, 0]:
-                color = 'green'
                 strategy = 'random'
                 label = '$E[Y|D=1] - E[Y|D=0]$'
                 title = 'Naive comparison'
-                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title,
-                                                    color=color)
+                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [0, 1]:
-                color = 'blue'
                 label = 'OLS'
                 strategy = 'ols'
                 title = 'Ordinary Least Squares'
-                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title,
-                                                    color=color)
+                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [1, 0]:
-                color = 'red'
                 strategy = 'iv'
                 label = 'IV'
                 title = 'Instrumental Variables'
-                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title,
-                                                    color=color)
+                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [1, 1]:
-                color = 'purple'
                 strategy = 'grmpy'
                 label = 'grmpy'
                 title = 'grmpy'
-                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title,
-                                                    color=color)
+                l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
             ax[plot_num1, plot_num2].title.set_text(title)
 
-            ax[plot_num1, plot_num2].legend([l1, l2], ['True', '{}'.format(label)],
-                                            prop={'size': 12})
+    plt.figlegend((l1, l2), ('True', 'Estimate'), 'upper right', fontsize=15)
     plt.show()
 
 
@@ -343,12 +336,7 @@ def plot_est_mte(rslt, file):
     ax.plot(quantiles, mte_original, label='original$B^{MTE}$', color='orange', linewidth=2)
     ax.plot(quantiles, mte_original_d, color='orange', linestyle=':')
     ax.plot(quantiles, mte_original_u, color='orange', linestyle=':')
-
     ax.set_ylim([-0.4, 0.5])
-
-    ax.legend(prop={'size': 30})
-
-    plt.tight_layout()
 
     plt.show()
 
@@ -389,3 +377,49 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
         mte_d += [mte[counter] - norm.ppf(0.95) * aux]
 
     return mte_up, mte_d
+
+
+def plot_joint_distribution_unobservables(df, df_eh):
+    """This function plots the joint distribution of the relevant unobservables."""
+    g1 = sns.jointplot(df['V'], df['U1'], stat_func=None).set_axis_labels('$V$', '$U_1$',
+                                                                          fontsize=15)
+    g1.fig.subplots_adjust(top=0.9)
+    g1.fig.suptitle('Abscence of essential heterogeneity', fontsize=18)
+
+    g2 = sns.jointplot(df_eh['V'], df_eh['U1'], stat_func=None).set_axis_labels('$V$', '$U_1$',
+                                                                                fontsize=15)
+    g2.fig.subplots_adjust(top=0.9)
+    g2.fig.suptitle('Presence of essential heterogeneity', fontsize=18)
+
+
+def plot_marginal_effects(file1, file2):
+    """This function plots the marginal effect of treatment given the output files of a grmpy
+    simulation process.
+    """
+    ax = plt.figure().add_subplot(111)
+
+    ax.set_xlim(0, 1)
+    ax.set_ylabel(r"$B^{MTE}$", fontsize=18)
+    ax.set_xlabel("$u_S$", fontsize=18)
+
+    for fname in [file1, file2]:
+        parameter = []
+        linecache.clearcache()
+        for num in range(40, 60):
+            line = linecache.getline(fname, num)
+            parameter += [float(shlex.split(line)[1])]
+
+        if parameter.count(parameter[0]) == len(parameter):
+            label = 'Absence'
+        else:
+            label = 'Presence'
+
+        grid = np.linspace(0.01, 1, num=20, endpoint=True)
+        ax.plot(grid, parameter, label=label)
+
+    plt.legend(prop={'size': 18})
+
+    plt.show()
+
+
+
