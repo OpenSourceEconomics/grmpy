@@ -1,4 +1,4 @@
-name: grmpy
+name: grmpy_tutorial
 
 dependencies:
   - python=3.6
