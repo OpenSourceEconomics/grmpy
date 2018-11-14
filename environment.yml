@@ -8,5 +8,6 @@ dependencies:
   - pytest
   - pytest-xdist
   - scipy
-  - sphinxcontrib.bibtex
-  - sphinx_rtd_theme
+  - pip:
+    - sphinxcontrib.bibtex
+    - sphinx_rtd_theme

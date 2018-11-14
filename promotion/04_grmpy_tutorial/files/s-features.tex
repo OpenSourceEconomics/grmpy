@@ -17,8 +17,9 @@ Y_1 = \beta_1 X + U_1      &\qquad C = \gamma Z + U_C \\
 Y_0 = \beta_0 X + U_0      &\qquad \\
     & \\
 \text{Observed Outcomes}  &\qquad \text{Choice} \\
-Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
-                       &\qquad D = \mathrm{I}[D^{*} > 0] \\
+Y = D Y_1 + (1 - D)Y_0 &\qquad D = \mathrm{I}[D^{*} > 0] \\
+                       &\qquad D^{*} = \mu_D(X, Z) - V \\
+                       &\qquad U_D = F_V(V)
 \end{align*}
 \end{frame}
 
@@ -35,9 +36,11 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
 \begin{itemize}\setlength\itemsep{1em}
   \item Simulating a dataset based on your own specifications.
   \item Providing some useful information about the simulated dataset for instance:
+  
+  \medskip
     \begin{itemize}\setlength\itemsep{1em}
     \item Distributional outcome characteristics
-    \item ATE, TT, TUT
+    \item $B^{ATE}, B^{TT}, B^{TUT}$
     \item MTE by ventile
     \end{itemize}
   \item Estimating the coefficients of interest given a dataset (of a specific form).
@@ -52,7 +55,7 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
 \medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item OS, Linux : Use the pip install manager (\textit{pip install grmpy}) or download the package via \href{https://github.com/grmToolbox/grmpy}{GitHub} and install it manually.
-\item Windows:  The same procedure as for Linux, OS but you have to verify that the numpy package is already installed on your machine.
+\item Windows:  The same procedure as for Linux, OS but you have to verify that the \textit{numpy} package is already installed on your machine.
 \end{itemize}
 \end{frame}
 
@@ -65,7 +68,7 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
   \begin{itemize}\setlength\itemsep{1em}
   \item Simulation parameters (number of observations, name of the output files)
   \item Estimation parameters (optimization algorithm, start values)
-  \item Optimization parameters
+  \item Optimizer spezifications
   \item Coefficients and covariance parameters, dummy variables ...
   \end{itemize}
 \end{itemize}
@@ -87,10 +90,14 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
 
 \medskip
 \begin{itemize}\setlength\itemsep{1em}
-\item \textit{grmpy.simulate():}\medskip
+\item \textit{grmpy.simulate():}
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item Input: path of the initialization file.
 \item The function returns a data frame based on your specifications and different output files.
+
+\medskip
 \begin{itemize}\setlength\itemsep{1em}
 \item The data set as a pickle and a txt file.
 \item An \href{examples/data.grmpy.info}{Info file} that provides the distributional characteristics of the data as well as information about the different treatment effects.
@@ -105,10 +112,12 @@ Y = D Y_1 + (1 - D)Y_0 &\qquad D^{*} = \mu_D(Z) - V \\
 
 \medskip
 \begin{itemize}\setlength\itemsep{1em}
-\item \textit{grmpy.estimate():}\medskip
+\item \textit{grmpy.fit():}\medskip
   \begin{itemize}\setlength\itemsep{1em}
   \item Input: path of the initialization file.
   \item At the moment the estimation process is only capable of two different optimization algorithms:
+  
+  \medskip
     \begin{itemize}\setlength\itemsep{1em}
     \item Broyden Fletcher Goldfarb Shanno (BFGS) algorithm
     \item  Powell's conjugate direction method
@@ -179,7 +188,7 @@ See: \href{examples/est.grmpy.info}{Example}
 \textbf{Online documentation}
 \vfill
 \begin{figure}
-  \includegraphics[scale=0.2]{figures/docu.png}
+  \includegraphics[scale=0.3]{figures/docu.png}
 \end{figure}
 \vfill
 \end{frame}
