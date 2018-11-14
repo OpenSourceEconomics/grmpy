@@ -8,6 +8,8 @@ dependencies:
   - pytest
   - pytest-xdist
   - scipy
+  - matplotlib
+  - linearmodels
   - pip:
     - sphinxcontrib.bibtex
     - sphinx_rtd_theme
