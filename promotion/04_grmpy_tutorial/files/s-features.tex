@@ -12,15 +12,15 @@
 \item Normal linear-in-parameters version of the generalized Roy model.
 \end{itemize}
 \begin{align*}
-\text{Potential Outcomes} &\qquad \text{Cost} \\
-Y_1 = \beta_1 X + U_1      &\qquad C = \gamma Z + U_C \\
-Y_0 = \beta_0 X + U_0      &\qquad \\
+\text{Potential Outcomes} &\qquad \\
+Y_1 = \beta_1 X + U_1      &\qquad Y_0 = \beta_0 X + U_0 \\
     & \\
 \text{Observed Outcomes}  &\qquad \text{Choice} \\
 Y = D Y_1 + (1 - D)Y_0 &\qquad D = \mathrm{I}[D^{*} > 0] \\
                        &\qquad D^{*} = \mu_D(X, Z) - V \\
                        &\qquad U_D = F_V(V)
 \end{align*}
+The unobservables follow a normal distribution $(U_1, U_0, V) \sim N(0, \Sigma)$ with mean zero and covariance matrix $\Sigma$. 
 \end{frame}
 
 \begin{frame}\begin{center}
