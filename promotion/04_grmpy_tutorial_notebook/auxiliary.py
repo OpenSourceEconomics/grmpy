@@ -250,25 +250,21 @@ def create_plots(effects, true):
 
             if plot_num == [0, 0]:
                 strategy = 'random'
-                label = '$E[Y|D=1] - E[Y|D=0]$'
                 title = 'Naive comparison'
                 l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [0, 1]:
-                label = 'OLS'
                 strategy = 'ols'
                 title = 'Ordinary Least Squares'
                 l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [1, 0]:
                 strategy = 'iv'
-                label = 'IV'
                 title = 'Instrumental Variables'
                 l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
 
             elif plot_num == [1, 1]:
                 strategy = 'grmpy'
-                label = 'grmpy'
                 title = 'grmpy'
                 l2, = ax[plot_num1, plot_num2].plot(grid, effects[strategy], label=title)
             ax[plot_num1, plot_num2].title.set_text(title)
@@ -422,4 +418,7 @@ def plot_marginal_effects(file1, file2):
     plt.show()
 
 
-
+def plot_joint_distribution_potential(df):
+    """This function plots the joint distribution of potential outcomes."""
+    sns.jointplot(df['Y1'], df['Y0'], stat_func=None).set_axis_labels('$Y_1$', r'$Y_0$',
+                                                                      fontsize=15)

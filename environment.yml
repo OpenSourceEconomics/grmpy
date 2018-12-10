@@ -9,7 +9,10 @@ dependencies:
   - pytest-xdist
   - scipy
   - matplotlib
-  - linearmodels
+  - flake8
   - pip:
     - sphinxcontrib.bibtex
     - sphinx_rtd_theme
+    - linearmodels
+
+
