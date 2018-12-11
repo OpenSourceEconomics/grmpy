@@ -194,7 +194,8 @@ def process_output(init_dict, dict_, x0, flag):
             warning = 'The optimization algorithm has failed to provide the parametrization that ' \
                       'leads to the minimal criterion function value. \n                         ' \
                       '                             The estimation output is automatically ' \
-                      'adjusted.'
+                      'adjusted and provides the parameterization with the smallest criterion ' \
+                      'function value that was reached during the optimization.'
     if flag == 'notfinite':
         x0 = init_dict['AUX']['starting_values']
         crit = init_dict['AUX']['criteria']

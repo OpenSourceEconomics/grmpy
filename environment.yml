@@ -14,5 +14,6 @@ dependencies:
     - sphinxcontrib.bibtex
     - sphinx_rtd_theme
     - linearmodels
+    - oyaml
 
 

@@ -5,3 +5,4 @@ flake8==3.5.0
 pytest==3.2.1
 statsmodels==0.8
 linearmodels==4.9
+oyaml==0.7
