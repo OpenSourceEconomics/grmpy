@@ -87,8 +87,6 @@ def first_try(constr=None):
         choice_num = treated_num + choice_num
         num = [[1, treated_num], [1, treated_num], [treated_num, choice_num]]
 
-    # Determine if there are variables that affect more than one section
-
     init_dict = {}
 
     # Coefficients
@@ -153,6 +151,7 @@ def first_try(constr=None):
 
 def generate_coeff(num, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
+
     if not is_zero:
         params = np.random.normal(0., 2., [len(range(num[0] - 1, num[1]))]).tolist()
     else:
@@ -165,7 +164,9 @@ def generate_coeff(num, is_zero):
 
 def types(init_dict):
     """This function determines if there are any binary variables. If so the funtion specifies the
-    rate for which the variable is equal to one."""
+    rate for which the variable is equal to one.
+    """
+
     variables = [i for i in init_dict['VARTYPES'].keys() if i != 'X1']
     for var in variables:
         if np.random.random_sample() < 0.1:
@@ -178,13 +179,15 @@ def types(init_dict):
 
 
 def comb_overlap(init_dict, state_diff, overlap):
-    """This function evaluates if there are variables that affect a combination of sections. Therefore the function chooses a combination of sections as well as """
+    """This function evaluates which variables affect more than one section."""
+
     if state_diff and overlap:
         cases = [list(i) for i in combinations(list(init_dict.keys()), 2)] + [list(init_dict.keys())]
         case = np.random.choice(cases)
     elif not state_diff and overlap:
         case = [list(init_dict.keys())]
     case = [i for i in case if len(init_dict[i]['order']) > 1]
+
     if len(case) != 0:
         aux_dict = {j: len(init_dict[j]['order']) for j in case}
         min_key = min(aux_dict, key=aux_dict.get)
@@ -198,6 +201,7 @@ def comb_overlap(init_dict, state_diff, overlap):
 
 def print_dict(init_dict, file_name='test'):
     """This function prints the initialization dict as a yaml file."""
+    
     ordered_dict = collections.OrderedDict()
     order = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'VARTYPES', 'SCIPY-BFGS',
              'SCIPY-POWELL']
