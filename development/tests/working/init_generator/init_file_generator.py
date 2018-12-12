@@ -92,8 +92,8 @@ def first_try(constr=None):
     # Coefficients
     for counter, section in enumerate(['TREATED', 'UNTREATED', 'CHOICE']):
         init_dict[section] = {}
-        init_dict[section]['params'], init_dict[section]['order'] = [], []
-        init_dict[section]['params'], init_dict[section]['order'] = generate_coeff(num[counter], is_zero)
+        init_dict[section]['params'], init_dict[section]['order'] = \
+            generate_coeff(num[counter], is_zero)
 
     # Specify if there are variables that affect a combination of sections
     init_dict = comb_overlap(init_dict, state_diff, overlap)
@@ -101,7 +101,7 @@ def first_try(constr=None):
     # Specify if some variables are binary
     init_dict['VARTYPES'] = {}
     for variable in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order'] +
-                                init_dict['CHOICE']['order']):
+                        init_dict['CHOICE']['order']):
         init_dict['VARTYPES'][variable] = 'nonbinary'
 
     init_dict = types(init_dict)
@@ -129,7 +129,8 @@ def first_try(constr=None):
 
     init_dict['SCIPY-BFGS'], init_dict['SCIPY-POWELL'] = {}, {}
     init_dict['SCIPY-BFGS']['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
-    init_dict['SCIPY-BFGS']['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
+    init_dict['SCIPY-BFGS']['eps'] = \
+        np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
     init_dict['SCIPY-POWELL']['xtol'] = np.random.uniform(0.00009, 0.00011)
     init_dict['SCIPY-POWELL']['ftol'] = np.random.uniform(0.00009, 0.00011)
 
@@ -144,7 +145,7 @@ def first_try(constr=None):
         b = np.zeros((3, 3))
     init_dict['DIST']['params'] = [float(i) for i in list(b[np.triu_indices(3)])]
 
-    print_dict(init_dict)
+    print_dict_new(init_dict)
 
     return init_dict
 
@@ -152,6 +153,7 @@ def first_try(constr=None):
 def generate_coeff(num, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
 
+    # Generate a random paramterization and specify the variable order
     if not is_zero:
         params = np.random.normal(0., 2., [len(range(num[0] - 1, num[1]))]).tolist()
     else:
@@ -181,13 +183,19 @@ def types(init_dict):
 def comb_overlap(init_dict, state_diff, overlap):
     """This function evaluates which variables affect more than one section."""
 
+    # List all possible overlaps between the different sections and chose a random combination
     if state_diff and overlap:
-        cases = [list(i) for i in combinations(list(init_dict.keys()), 2)] + [list(init_dict.keys())]
+        cases = [list(i) for i in combinations(list(init_dict.keys()), 2)] + [list(
+            init_dict.keys())]
         case = np.random.choice(cases)
+        case = [i for i in case if len(init_dict[i]['order']) > 1]
     elif not state_diff and overlap:
-        case = [list(init_dict.keys())]
-    case = [i for i in case if len(init_dict[i]['order']) > 1]
+        case = list(init_dict.keys())
+        case = [i for i in case if len(init_dict[i]['order']) > 1]
+    else:
+        case = []
 
+    # Select a random number of variables that effect the chosen combination of sections
     if len(case) != 0:
         aux_dict = {j: len(init_dict[j]['order']) for j in case}
         min_key = min(aux_dict, key=aux_dict.get)
@@ -199,13 +207,16 @@ def comb_overlap(init_dict, state_diff, overlap):
     return init_dict
 
 
-def print_dict(init_dict, file_name='test'):
+def print_dict_new(init_dict, file_name='test'):
     """This function prints the initialization dict as a yaml file."""
-    
+
+    # Transfer the init dict in an ordered one to ensure that the init file is aligned appropriately
     ordered_dict = collections.OrderedDict()
-    order = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'VARTYPES', 'SCIPY-BFGS',
-             'SCIPY-POWELL']
+    order = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'DIST', 'VARTYPES',
+             'SCIPY-BFGS', 'SCIPY-POWELL']
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
+    # Print the initialization file
     with open('{}.yml'.format(file_name), 'w') as outfile:
-        yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4, width=99, default_flow_style=False)
+        yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4, width=99,
+                  default_flow_style=False)

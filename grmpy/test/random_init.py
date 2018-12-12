@@ -66,6 +66,10 @@ def generate_random_dict(constr=None):
         seed = constr['SEED']
     else:
         seed = np.random.randint(1, 10000)
+    if 'CATEGORICAL' in constr.keys():
+        categorical = constr['CATEGORICAL']
+    else:
+        categorical = np.random.choice([True, False])
 
     source = my_random_string(8)
 
@@ -100,7 +104,7 @@ def generate_random_dict(constr=None):
     else:
         dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
         dict_ = overlap_treat_untreat_cost(dict_, cost_num, overlap)
-    dict_ = types(dict_)
+    dict_ = types(dict_, categorical)
     # Simulation parameters
     dict_['SIMULATION'] = {}
     for key_ in ['agents', 'source', 'seed']:
@@ -260,7 +264,7 @@ def generate_coeff(num, key_, is_zero):
     return list_, binary_list
 
 
-def types(dict_):
+def types(dict_, categorical):
     """This function determines if a specified covariate is a binary or a non-binary variable.
     Additionally it """
     all_ = []
@@ -276,13 +280,17 @@ def types(dict_):
                         index = dict_[section]['order'].index(i)
                         dict_[section]['types'][index] = ['binary', frac]
             else:
-                num = np.random.choice([3, 4, 5, 6, 7], size=1)
-                cat = list(range(1, int(num) + 1))
-                prob = prob_weights(num)
-                for section in ['TREATED', 'UNTREATED', 'CHOICE']:
-                    if i in dict_[section]['order']:
-                        index = dict_[section]['order'].index(i)
-                        dict_[section]['types'][index] = ['categorical', cat, prob]
+                if categorical:
+
+                    num = np.random.choice([3, 4, 5, 6, 7], size=1)
+                    cat = list(range(1, int(num) + 1))
+                    prob = prob_weights(num)
+                    for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+                        if i in dict_[section]['order']:
+                            index = dict_[section]['order'].index(i)
+                            dict_[section]['types'][index] = ['categorical', cat, prob]
+                else:
+                    pass
         else:
             pass
 

@@ -31,7 +31,7 @@ if True:
     for seed in seeds:
         np.random.seed(seed)
         constr = dict()
-        constr['DETERMINISTIC'] = False
+        constr['DETERMINISTIC'], constr['CATEGORICAL'] = False, False
         dict_ = generate_random_dict(constr)
         df = simulate('test.grmpy.ini')
         stat = np.sum(df.sum())
