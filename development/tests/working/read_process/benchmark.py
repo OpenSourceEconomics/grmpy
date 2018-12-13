@@ -12,7 +12,7 @@ from grmpy.test.auxiliary import cleanup
 from grmpy.read.read import read
 
 
-Test1, Test2, Test3 = True, True, True
+Test1, Test2, Test3, Test4 = False, False, False, True
 
 if Test1:
     for _ in range(1000):
@@ -54,4 +54,9 @@ if Test3:
 
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
-    cleanup('regression')
+if Test4:
+    init_dict = read('tutorial.ini')
+    dict_ = attr_dict_to_init_dict(init_dict)
+    print(dict_)
+    print_dict_new(dict_)
+

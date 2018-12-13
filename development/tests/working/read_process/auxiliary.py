@@ -44,13 +44,13 @@ def simulate_new(init_file):
     return df
 
 
-def attr_dict_to_init_dict(attr, old=False):
+def attr_dict_to_init_dict(attr):
     """This function converts a already imported attr dict into an initalization dict."""
     init = {}
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
-        init[key] = {'params': list(attr[key]['all']),
+        init[key] = {'params': attr[key]['all'].tolist(),
                      'order': [attr['varnames'][j - 1] for j in attr[key]['order']]}
-    init['DIST'] = {'params': list(attr['DIST']['all'])}
+    init['DIST'] = {'params': attr['DIST']['all'].tolist()}
     for key in ['ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL', 'SIMULATION']:
         init[key] = attr[key]
     init['VARTYPES'] = {}
