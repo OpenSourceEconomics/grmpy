@@ -77,7 +77,7 @@ def test4():
     """The test checks if the estimation process works if the Powell algorithm is specified as
     the optimizer option.
     """
-    for _ in range(5):
+    for _ in range(10):
         constr = dict()
         constr['DETERMINISTIC'], constr['AGENTS'], constr['start'] = False, 10000, 'init'
         constr['optimizer'] = 'SCIPY-Powell'
