@@ -145,7 +145,8 @@ def generate_random_dict(constr=None):
             b[i, i] = b[i, i] ** 0.5
     else:
         b = np.zeros((3, 3))
-    init_dict['DIST']['params'] = [float(i) for i in list(b[np.triu_indices(3)])]
+    init_dict['DIST']['params'] = np.around([float(i) for i in list(b[np.triu_indices(3)])],
+                                                 4).tolist()
 
     print_dict(init_dict)
 
@@ -156,7 +157,7 @@ def generate_coeff(num, is_zero):
 
     # Generate a random paramterization and specify the variable order
     if not is_zero:
-        params = np.random.normal(0., 2., [len(range(num[0] - 1, num[1]))]).tolist()
+        params = np.around(np.random.normal(0., 2., [len(range(num[0] - 1, num[1]))]), 4).tolist()
     else:
         params = np.array([0] * num).tolist()
 
@@ -214,6 +215,7 @@ def print_dict(init_dict, file_name='test'):
              'SCIPY-BFGS', 'SCIPY-POWELL']
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
+
     # Print the initialization file
     with open('{}.grmpy.yml'.format(file_name), 'w') as outfile:
         yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4, width=99,

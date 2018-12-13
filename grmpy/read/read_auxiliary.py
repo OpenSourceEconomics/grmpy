@@ -10,7 +10,6 @@ def init_dict_to_attr_dict(init):
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
         attr[key] = {'all': np.array(init[key]['params']),
                      'order': []}
-    print(attr['TREATED']['all'])
 
     attr['DIST'] = {'all': np.array(init['DIST']['params'])}
     attr['DETERMINISTIC'] = (attr['DIST']['all'] == 0).all()
@@ -18,13 +17,22 @@ def init_dict_to_attr_dict(init):
     for key in ['ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL', 'SIMULATION']:
         attr[key] = init[key]
 
-    varnames = []
+    vartypes, varnames = [], []
+
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
         attr[key]['types'] = []
         for name in init[key]['order']:
             if name not in varnames:
                 varnames.append(name)
-            attr[key]['types'] += [init['VARTYPES'][name]]
+            if 'VARTYPES' not in init.keys() or init['VARTYPES'] is None:
+                vartypes += ['nonbinary']
+            else:
+                if name in init['VARTYPES']:
+                    attr[key]['types'] += [init['VARTYPES'][name]]
+                    vartypes += [init['VARTYPES'][name]]
+                else:
+                    attr[key]['types'] += ['nonbinary']
+                    vartypes += ['nonbinary']
 
     attr['varnames'] = varnames
 
@@ -36,19 +44,17 @@ def init_dict_to_attr_dict(init):
     attr['AUX'] = {'init_values'}
 
     init_values = []
-    for key in ['TREATED', 'UNTREATED', 'CHOICE']:
-        init_values += init[key]['params']
-    init_values += init['DIST']['params']
+    for key in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
+        init_values += list(init[key]['params'])
 
     # Generate the AUX section that include some additional auxiliary information
-    attr['AUX'] = {'init_values': init_values,
+    attr['AUX'] = {'init_values': np.array(init_values),
                    'num_covars_choice': len(attr['CHOICE']['all']),
                    'num_covars_treated': len(attr['TREATED']['all']),
                    'num_covars_untreated': len(attr['UNTREATED']['all']),
                    'num_paras': len(init_values) + 1}
 
     attr['AUX']['types'] = []
-    for name in attr['varnames']:
-        attr['AUX']['types'] += [init['VARTYPES'][name]]
+    attr['AUX']['types'] += vartypes
 
     return attr

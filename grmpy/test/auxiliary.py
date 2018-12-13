@@ -3,6 +3,8 @@ import shlex
 import glob
 import os
 
+import numpy as np
+
 
 def cleanup(options=None):
     """The function deletes package related output files."""
@@ -52,12 +54,14 @@ def dict_transformation(dict_):
                 vartypes[variable] = dict_[section]['types'][
                     dict_[section]['order'].index(variable)]
     for section in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
-        dict_[section]['params'] = dict_[section].pop('all')
+        dict_[section]['params'] = np.around(dict_[section].pop('all'), 4).tolist()
         dict_[section].pop('types', None)
 
     dict_['varnames'] = varnames
 
-
+    for variable in vartypes:
+        if isinstance(vartypes[variable], list):
+            vartypes[variable][1] = float(np.around(vartypes[variable][1], 4))
     dict_['VARTYPES'] = vartypes
     return dict_
 

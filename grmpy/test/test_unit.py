@@ -46,7 +46,7 @@ def test1():
 
 
 def test2():
-    """The third test  checks whether the relationships hold if the coefficients are zero in
+    """The second test  checks whether the relationships hold if the coefficients are zero in
     different setups.
     """
     for _ in range(10):
@@ -57,12 +57,12 @@ def test2():
 
             if i == 'ALL':
                 for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-                    dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
+                    dict_[key_]['params'] = np.array([0.] * len(dict_[key_]['params']))
             elif i == 'TREATED & UNTREATED':
                 for key_ in ['TREATED', 'UNTREATED']:
-                    dict_[key_]['all'] = np.array([0.] * len(dict_[key_]['all']))
+                    dict_[key_]['params'] = np.array([0.] * len(dict_[key_]['params']))
             else:
-                dict_[i]['all'] = np.array([0.] * len(dict_[i]['all']))
+                dict_[i]['params'] = np.array([0.] * len(dict_[i]['params']))
 
             print_dict(dict_)
 
@@ -124,10 +124,10 @@ def test4():
         gen_dict = generate_random_dict()
         init_file_name = gen_dict['SIMULATION']['source']
         print_dict(gen_dict, init_file_name)
-        imp_dict = read(init_file_name + '.grmpy.ini')
+        imp_dict = read(init_file_name + '.grmpy.yml')
         dicts = [gen_dict, imp_dict]
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
-            np.testing.assert_array_almost_equal(gen_dict[key_]['all'], imp_dict[key_]['all'],
+            np.testing.assert_array_almost_equal(gen_dict[key_]['params'], imp_dict[key_]['all'],
                                                  decimal=4)
             if key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                 for dict_ in dicts:
@@ -136,19 +136,20 @@ def test4():
                         raise AssertionError()
                     if len(dict_[key_]['order']) != len(set(dict_[key_]['order'])):
                         raise AssertionError()
-                    if dict_[key_]['order'][0] != 1:
+                    if dict_[key_]['order'][0] not in ['X1', 1]:
                         raise AssertionError()
 
-                for i in range(len(gen_dict[key_]['types'])):
-
-                    if isinstance(gen_dict[key_]['types'][i], str):
-                        if not gen_dict[key_]['types'][i] == imp_dict[key_]['types'][i]:
+                for variable in gen_dict['VARTYPES']:
+                    for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+                        if variable in gen_dict[section]['order']:
+                            index = gen_dict[section]['order'].index(variable)
+                            type = imp_dict[section]['types'][index]
+                            if gen_dict['VARTYPES'][variable] != type:
+                                raise AssertionError()
+                        if imp_dict[section]['types'][0] != 'nonbinary' or gen_dict['VARTYPES'][
+                            'X1'] \
+                                != 'nonbinary':
                             raise AssertionError()
-                    elif isinstance(gen_dict[key_]['types'][i], list):
-                        if not gen_dict[key_]['types'][i][0] == imp_dict[key_]['types'][i][0]:
-                            raise AssertionError()
-                        np.testing.assert_array_almost_equal(
-                            gen_dict[key_]['types'][i][1], imp_dict[key_]['types'][i][1], 4)
 
         for key_ in ['source', 'agents', 'seed']:
             if not gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]:
@@ -205,26 +206,6 @@ def test6():
 
 
 def test7():
-    """This test ensures that setting different variables in the TREATED and UNTREATED section to
-    binary in the initialization file leads to the same type lists for both sections. Further it is
-    verified that it is not possible to set an intercept variable to a binary one.
-    """
-    fname = os.path.dirname(grmpy.__file__) + '/test/resources/test_binary.grmpy.ini'
-    dict_ = read(fname)
-
-    for i in set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']):
-        if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
-            index_treated = dict_['TREATED']['order'].index(i)
-            index_untreated = dict_['UNTREATED']['order'].index(i)
-            if not dict_['TREATED']['types'][index_treated]\
-                    == dict_['UNTREATED']['types'][index_untreated]:
-                raise AssertionError()
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        if isinstance(dict_[key_]['types'][0], list):
-            raise AssertionError()
-
-
-def test8():
     """We want to able to smoothly switch between generating and printing random initialization
     files.
     """
@@ -236,7 +217,7 @@ def test8():
         np.testing.assert_equal(dict_1, dict_2)
 
 
-def test9():
+def test8():
     """This test ensures that the random process handles the constraints dict appropriately if there
     the input dictionary is not complete.
     """
@@ -251,7 +232,7 @@ def test9():
         np.testing.assert_equal(constr['MAXITER'], dict_['ESTIMATION']['maxiter'])
 
 
-def test10():
+def test9():
     """This test checks if the start_values function returns the init file values if the start
     option is set to init.
     """
@@ -269,7 +250,7 @@ def test10():
         np.testing.assert_array_equal(true, x0)
 
 
-def test11():
+def test10():
     """This test checks if the refactor auxiliary function returns an unchanged init file if the
     maximum number of iterations is set to zero.
     """
@@ -288,14 +269,14 @@ def test11():
         np.testing.assert_equal(start, rslt['AUX']['x_internal'])
 
 
-def test12():
+def test11():
     """This test ensures that the tutorial configuration works as intended."""
-    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.ini'
+    fname = TEST_RESOURCES_DIR + '/tutorial.grmpy.yml'
     simulate(fname)
     fit(fname)
 
 
-def test13():
+def test12():
     """This test checks if our data import process is able to handle .txt, .dta and .pkl files."""
 
     pkl = TEST_RESOURCES_DIR + '/data.grmpy.pkl'
