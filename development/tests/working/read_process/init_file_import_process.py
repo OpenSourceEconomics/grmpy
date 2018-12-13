@@ -4,7 +4,7 @@ import yaml
 import numpy as np
 
 
-def read_new(file):
+def read(file):
     """This function processes the initialization file so that it can be used for simulation as well
      as estimation purposes.
      """

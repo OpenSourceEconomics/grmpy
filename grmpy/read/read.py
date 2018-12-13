@@ -1,36 +1,23 @@
 """The module contains the main function of the init file import process."""
-import shlex
+import yaml
 
+from grmpy.read.read_auxiliary import init_dict_to_attr_dict
 from grmpy.check.check import check_presence_init
-from grmpy.read.read_auxiliary import auxiliary
-from grmpy.read.read_auxiliary import process
 
 
-def read(file_):
-    """The function reads the initialization file and returns a dictionary with parameters for the
-    simulation.
-    """
-    check_presence_init(file_)
+def read(file):
+    """This function processes the initialization file so that it can be used for simulation as well
+     as estimation purposes.
+     """
+    # Check if there is a init file with the specified filename
+    check_presence_init(file)
 
-    dict_ = {'varnames': []}
-    for line in open(file_).readlines():
+    # Load the initialization file
+    with open(file) as y:
+        init_dict = yaml.load(y)
 
-        list_ = shlex.split(line)
+    # Process the initialization file
+    attr_dict = init_dict_to_attr_dict(init_dict)
 
-        is_empty = (list_ == [])
 
-        if not is_empty:
-            is_keyword = list_[0].isupper()
-        else:
-            continue
-
-        if is_keyword:
-            keyword = list_[0]
-            dict_[keyword] = {}
-            continue
-
-        process(list_, dict_, keyword)
-
-    dict_ = auxiliary(dict_)
-
-    return dict_
+    return attr_dict

@@ -32,8 +32,8 @@ def test1():
             constr['DETERMINISTIC'] = False
         for _ in range(10):
             generate_random_dict(constr)
-            df = simulate('test.grmpy.ini')
-            dict_ = read('test.grmpy.ini')
+            df = simulate('test.grmpy.yml')
+            dict_ = read('test.grmpy.yml')
             x_treated = df[[dict_['varnames'][i - 1] for i in dict_['TREATED']['order']]]
             y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
             x_untreated = df[[dict_['varnames'][i - 1] for i in dict_['UNTREATED']['order']]]
@@ -66,8 +66,8 @@ def test2():
 
             print_dict(dict_)
 
-            dict_ = read('test.grmpy.ini')
-            df = simulate('test.grmpy.ini')
+            dict_ = read('test.grmpy.yml')
+            df = simulate('test.grmpy.yml')
             x_treated = df[[dict_['varnames'][i - 1] for i in dict_['TREATED']['order']]]
             x_untreated = df[[dict_['varnames'][i - 1] for i in dict_['UNTREATED']['order']]]
 
@@ -110,8 +110,8 @@ def test3():
     constr['AGENTS'], constr['DETERMINISTIC'] = 1, False
     for _ in range(10):
         generate_random_dict(constr)
-        dict_ = read('test.grmpy.ini')
-        df = simulate('test.grmpy.ini')
+        dict_ = read('test.grmpy.yml')
+        df = simulate('test.grmpy.yml')
         start = start_values(dict_, df, 'auto')
         np.testing.assert_equal(dict_['AUX']['init_values'][:(-6)], start[:(-4)])
 
@@ -162,7 +162,7 @@ def test5():
     """
     for _ in range(10):
         generate_random_dict()
-        init_dict = read('test.grmpy.ini')
+        init_dict = read('test.grmpy.yml')
 
         # We impose that the covariance between the random components of the potential
         # outcomes and the random component determining choice is identical.
@@ -175,7 +175,7 @@ def test5():
         # Construct auxiliary information
         cov = construct_covariance_matrix(init_dict)
 
-        df = simulate('test.grmpy.ini')
+        df = simulate('test.grmpy.yml')
         help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
         x = df[[init_dict['varnames'][i - 1] for i in help_]]
 
@@ -230,9 +230,9 @@ def test8():
     """
     for _ in range(10):
         generate_random_dict()
-        dict_1 = read('test.grmpy.ini')
+        dict_1 = read('test.grmpy.yml')
         print_dict(dict_1)
-        dict_2 = read('test.grmpy.ini')
+        dict_2 = read('test.grmpy.yml')
         np.testing.assert_equal(dict_1, dict_2)
 
 
@@ -259,11 +259,11 @@ def test10():
         constr = dict()
         constr['DETERMINISTIC'] = False
         generate_random_dict(constr)
-        dict_ = read('test.grmpy.ini')
+        dict_ = read('test.grmpy.yml')
         true = []
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
             true += list(dict_[key_]['all'])
-        df = simulate('test.grmpy.ini')
+        df = simulate('test.grmpy.yml')
         x0 = start_values(dict_, df, 'init')[:-4]
 
         np.testing.assert_array_equal(true, x0)
@@ -279,11 +279,11 @@ def test11():
         constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
         constr['MAXITER'], constr['START'] = 0, 'init'
         generate_random_dict(constr)
-        init_dict = read('test.grmpy.ini')
-        df = simulate('test.grmpy.ini')
+        init_dict = read('test.grmpy.yml')
+        df = simulate('test.grmpy.yml')
         start = start_values(init_dict, df, 'init')
         start = backward_transformation(start)
-        rslt = fit('test.grmpy.ini')
+        rslt = fit('test.grmpy.yml')
 
         np.testing.assert_equal(start, rslt['AUX']['x_internal'])
 

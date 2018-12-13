@@ -1,13 +1,18 @@
 """The module provides a random dictionary generating process for test purposes."""
+from itertools import combinations
+import collections
 import uuid
 
 from scipy.stats import wishart
+import oyaml as yaml
 import numpy as np
 
 from grmpy.check.check import UserError
 
 
 def generate_random_dict(constr=None):
+    """The module provides a random dictionary generating process for test purposes."""
+
     """The function generates a random initialization dictionary."""
 
     if constr is not None:
@@ -30,7 +35,7 @@ def generate_random_dict(constr=None):
     if 'OPTIMIZER' in constr.keys():
         optimizer = constr['OPTIMIZER']
     else:
-        optimizer = np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'], p=[0.5, 0.5])
+        optimizer = str(np.random.choice(a=['SCIPY-BFGS', 'SCIPY-POWELL'], p=[0.5, 0.5]))
 
     if 'SAME_SIZE' in constr.keys():
         same_size = constr['SAME_SIZE']
@@ -61,358 +66,155 @@ def generate_random_dict(constr=None):
     if 'START' in constr.keys():
         start = constr['START']
     else:
-        start = np.random.choice(a=['init', 'auto'])
+        start = str(np.random.choice(a=['init', 'auto']))
     if 'SEED' in constr.keys():
         seed = constr['SEED']
     else:
-        seed = np.random.randint(1, 10000)
-    if 'CATEGORICAL' in constr.keys():
-        categorical = constr['CATEGORICAL']
-    else:
-        categorical = np.random.choice([True, False])
+        seed = int(np.random.randint(1, 10000))
 
-    source = my_random_string(8)
+    source = str(uuid.uuid4()).upper().replace('-', '')[0:8]
 
-    dict_ = {}
+    # Specify the number of variables/parameters for every section
     treated_num = np.random.randint(1, 10)
+    choice_num = np.random.randint(1, 10)
+
+    # Determine if there are different variables that affect the outcome states
     if state_diff:
-        untreated_num = np.random.randint(1, 10)
+        untreated_num = treated_num + np.random.randint(1, 10)
+        choice_num = untreated_num + choice_num
+        num = [[1, treated_num], [treated_num, untreated_num], [untreated_num, choice_num]]
+
     else:
-        pass
-    cost_num = np.random.randint(1, 10)
+        untreated_num = treated_num
+        choice_num = treated_num + choice_num
+        num = [[1, treated_num], [1, treated_num], [treated_num, choice_num]]
+
+    init_dict = {}
+
     # Coefficients
-    for key_ in ['UNTREATED', 'TREATED', 'CHOICE']:
+    for counter, section in enumerate(['TREATED', 'UNTREATED', 'CHOICE']):
+        init_dict[section] = {}
+        init_dict[section]['params'], init_dict[section]['order'] = \
+            generate_coeff(num[counter], is_zero)
 
-        dict_[key_] = {}
+    # Specify if there are variables that affect a combination of sections
+    init_dict = comb_overlap(init_dict, state_diff, overlap)
 
-        if key_ in ['UNTREATED', 'TREATED']:
-            if state_diff:
-                if key_ == 'TREATED':
-                    x = treated_num
-                else:
-                    x = untreated_num
-                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(x, key_, is_zero)
+    # Specify if some variables are binary
+    init_dict['VARTYPES'] = {}
+    for variable in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order'] +
+                                init_dict['CHOICE']['order']):
+        init_dict['VARTYPES'][variable] = 'nonbinary'
 
-            else:
-                dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(treated_num, key_,
-                                                                          is_zero)
-        else:
-            dict_[key_]['all'], dict_[key_]['types'] = generate_coeff(cost_num, key_, is_zero)
+    init_dict = types(init_dict)
 
-    if not state_diff:
-        dict_ = overlap_treat_cost(dict_, treated_num, cost_num, overlap)
-    else:
-        dict_ = overlap_treat_untreat(dict_, treated_num, untreated_num)
-        dict_ = overlap_treat_untreat_cost(dict_, cost_num, overlap)
-    dict_ = types(dict_, categorical)
     # Simulation parameters
-    dict_['SIMULATION'] = {}
-    for key_ in ['agents', 'source', 'seed']:
-        if key_ == 'seed':
-            dict_['SIMULATION'][key_] = seed
-        elif key_ == 'agents':
-            dict_['SIMULATION'][key_] = agents
-        else:
-            dict_['SIMULATION'][key_] = source
-    # Estimation parameters
-    dict_['ESTIMATION'] = {}
-    if same_size:
-        dict_['ESTIMATION']['agents'] = agents
-    else:
-        dict_['ESTIMATION']['agents'] = np.random.randint(1, 1000)
-    dict_['ESTIMATION']['file'] = source + '.grmpy.txt'
-    dict_['ESTIMATION']['optimizer'] = optimizer
-    dict_['ESTIMATION']['start'] = start
-    dict_['ESTIMATION']['maxiter'] = maxiter
-    dict_['ESTIMATION']['dependent'] = 'Y'
-    dict_['ESTIMATION']['indicator'] = 'D'
-    dict_['ESTIMATION']['output_file'] = 'est.grmpy.info'
-    dict_['ESTIMATION']['comparison'] = '1'
+    init_dict['SIMULATION'] = {}
+    init_dict['SIMULATION']['seed'] = seed
+    init_dict['SIMULATION']['agents'] = agents
+    init_dict['SIMULATION']['source'] = source
 
-    for key_ in ['SCIPY-BFGS', 'SCIPY-POWELL']:
-        dict_[key_] = {}
-        if key_ == 'SCIPY-BFGS':
-            dict_[key_]['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
-            dict_[key_]['eps'] = np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
-        else:
-            dict_[key_]['xtol'] = np.random.uniform(0.00009, 0.00011)
-            dict_[key_]['ftol'] = np.random.uniform(0.00009, 0.00011)
+    # Estimation parameters
+    init_dict['ESTIMATION'] = {}
+    if same_size:
+        init_dict['ESTIMATION']['agents'] = agents
+    else:
+        init_dict['ESTIMATION']['agents'] = np.random.randint(1, 1000)
+    init_dict['ESTIMATION']['file'] = source + '.grmpy.txt'
+    init_dict['ESTIMATION']['optimizer'] = optimizer
+    init_dict['ESTIMATION']['start'] = start
+    init_dict['ESTIMATION']['maxiter'] = maxiter
+    init_dict['ESTIMATION']['dependent'] = 'Y'
+    init_dict['ESTIMATION']['indicator'] = 'D'
+    init_dict['ESTIMATION']['output_file'] = 'est.grmpy.info'
+    init_dict['ESTIMATION']['comparison'] = '1'
+
+    init_dict['SCIPY-BFGS'], init_dict['SCIPY-POWELL'] = {}, {}
+    init_dict['SCIPY-BFGS']['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)
+    init_dict['SCIPY-BFGS']['eps'] = \
+        np.random.uniform(1.4901161193847655e-08, 1.4901161193847657e-08)
+    init_dict['SCIPY-POWELL']['xtol'] = np.random.uniform(0.00009, 0.00011)
+    init_dict['SCIPY-POWELL']['ftol'] = np.random.uniform(0.00009, 0.00011)
 
     # Variance and covariance parameters
-    dict_['DIST'] = {}
+    init_dict['DIST'] = {}
     if not is_deterministic:
         scale_matrix = np.identity(3) * 0.1
         b = wishart.rvs(df=10, scale=scale_matrix, size=1)
+        for i in [0, 1, 2]:
+            b[i, i] = b[i, i] ** 0.5
     else:
         b = np.zeros((3, 3))
-    dict_['DIST']['all'] = []
-    dict_['DIST']['all'].append(b[0, 0] ** 0.5)
-    dict_['DIST']['all'].append(b[0, 1])
-    dict_['DIST']['all'].append(b[0, 2])
-    dict_['DIST']['all'].append(b[1, 1] ** 0.5)
-    dict_['DIST']['all'].append(b[1, 2])
-    dict_['DIST']['all'].append(b[2, 2] ** 0.5)
-    print_dict(dict_)
-    return dict_
+    init_dict['DIST']['params'] = [float(i) for i in list(b[np.triu_indices(3)])]
 
+    print_dict(init_dict)
 
-def print_dict(dict_, file_name='test'):
-    """The function creates an init file from a given dictionary."""
-    labels = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'DIST', 'SCIPY-BFGS',
-              'SCIPY-POWELL']
-    write_nonbinary = np.random.random_sample() < 0.5
+    return init_dict
 
-    with open(file_name + '.grmpy.ini', 'w') as file_:
-
-        for label in labels:
-            file_.write('   {}'.format(label) + '\n\n')
-
-            if label in ['SIMULATION', 'ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL']:
-                if label == 'SIMULATION':
-                    structure = ['seed', 'agents', 'source']
-                elif label == 'ESTIMATION':
-                    structure = ['file', 'start', 'agents', 'optimizer', 'maxiter', 'dependent',
-                                 'indicator', 'output_file', 'comparison']
-                elif label == 'SCIPY-BFGS':
-                    structure = ['gtol', 'eps']
-                else:
-                    structure = ['xtol', 'ftol']
-                for key_ in structure:
-                    if key_ in ['source', 'file', 'norm', 'optimizer', 'start']:
-                        str_ = '        {0:<25} {1:>20}\n'
-                        file_.write(str_.format(key_, dict_[label][key_]))
-                    elif key_ in ['gtol', 'xtol', 'ftol', 'norm', 'eps']:
-                        str_ = '        {0:<13} {1:>32}\n'
-                        file_.write(str_.format(key_, dict_[label][key_]))
-                    else:
-                        if key_ in ['indicator', 'dependent']:
-                            if key_ not in dict_['ESTIMATION'].keys():
-                                continue
-                            else:
-                                str_ = '        {0:<10} {1:>35}\n'
-                                file_.write(str_.format(key_, dict_[label][key_]))
-                        else:
-                            str_ = '        {0:<10} {1:>35}\n'
-                            file_.write(str_.format(key_, dict_[label][key_]))
-
-            elif label in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
-                for i, _ in enumerate(dict_[label]['all']):
-                    if 'order' in dict_[label].keys():
-                        if 'types' in dict_[label].keys():
-                            if isinstance(dict_[label]['types'][i], list):
-                                if dict_[label]['types'][i][0] == 'binary':
-                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>14} {4:>5.4f}\n'
-                                    file_.write(
-                                        str_.format(
-                                            'coeff', dict_[label]['order'][i],
-                                            dict_[label]['all'][i], dict_[label]['types'][i][0],
-                                            dict_[label]['types'][i][1])
-                                    )
-                                elif dict_[label]['types'][i][0] == 'categorical':
-                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>19} '
-                                    for j in [1, 2]:
-                                        str_ += ' ('
-                                        for counter, k in enumerate(dict_[label]['types'][i][j]):
-                                            if counter < len(dict_[label]['types'][i][j]) - 1:
-                                                str_ += '{:>1}'.format(str(k)) + ','
-                                            else:
-                                                str_ += '{}'.format(str(k)) + ')'
-                                    str_ += '\n'
-                                    file_.write(
-                                        str_.format(
-                                            'coeff', dict_[label]['order'][i],
-                                            dict_[label]['all'][i], dict_[label]['types'][i][0])
-                                    )
-
-                            else:
-                                if write_nonbinary:
-                                    str_ = '        {0:<10} {1:>14} {2:>20.4f} {3:>17}\n'
-                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
-                                                            dict_[label]['all'][i],
-                                                            dict_[label]['types'][i]))
-                                else:
-                                    str_ = '        {0:<10} {1:>14} {2:>20.4f}\n'
-                                    file_.write(str_.format('coeff', dict_[label]['order'][i],
-                                                            dict_[label]['all'][i]))
-
-                    else:
-                        str_ = '        {0:<10} {1:>35.4f}\n'
-                        file_.write(str_.format('coeff', dict_[label]['all'][i]))
-
-            file_.write('\n')
-
-
-def my_random_string(string_length=10):
-    """Returns a random string of length string_length."""
-    random = str(uuid.uuid4()).upper().replace('-', '')
-    return random[0:string_length]
-
-
-def generate_coeff(num, key_, is_zero):
+def generate_coeff(num, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
-    keys = ['UNTREATED', 'CHOICE', 'TREATED']
+
+    # Generate a random paramterization and specify the variable order
     if not is_zero:
-        list_ = np.random.normal(0., 2., [num]).tolist()
+        params = np.random.normal(0., 2., [len(range(num[0] - 1, num[1]))]).tolist()
     else:
-        list_ = np.array([0] * num).tolist()
+        params = np.array([0] * num).tolist()
 
-    if key_ in keys:
-        binary_list = ['nonbinary'] * num
-    else:
-        binary_list = []
+    order = ['X1'] + ['X{}'.format(i + 1) for i in range(num[0], num[1])]
 
-    return list_, binary_list
+    return params, order
 
+def types(init_dict):
+    """This function determines if there are any binary variables. If so the funtion specifies the
+    rate for which the variable is equal to one.
+    """
 
-def types(dict_, categorical):
-    """This function determines if a specified covariate is a binary or a non-binary variable.
-    Additionally it """
-    all_ = []
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        all_ += dict_[key_]['order']
-    all_ = [k for k in all_ if k != 1]
-    for i in list(set(all_)):
-        if np.random.random_sample() < 0.2:
-            if np.random.random_sample() < 0.5:
-                frac = np.random.uniform(0, 0.8)
-                for section in ['TREATED', 'UNTREATED', 'CHOICE']:
-                    if i in dict_[section]['order']:
-                        index = dict_[section]['order'].index(i)
-                        dict_[section]['types'][index] = ['binary', frac]
-            else:
-                if categorical:
-
-                    num = np.random.choice([3, 4, 5, 6, 7], size=1)
-                    cat = list(range(1, int(num) + 1))
-                    prob = prob_weights(num)
-                    for section in ['TREATED', 'UNTREATED', 'CHOICE']:
-                        if i in dict_[section]['order']:
-                            index = dict_[section]['order'].index(i)
-                            dict_[section]['types'][index] = ['categorical', cat, prob]
-                else:
-                    pass
+    variables = [i for i in init_dict['VARTYPES'].keys() if i != 'X1']
+    for var in variables:
+        if np.random.random_sample() < 0.1:
+            frac = np.random.uniform(0, 0.8)
+            init_dict['VARTYPES'][var] = ['binary', frac]
         else:
             pass
 
-    return dict_
+    return init_dict
 
+def comb_overlap(init_dict, state_diff, overlap):
+    """This function evaluates which variables affect more than one section."""
 
-def overlap_treat_cost(dict_, treated_num, cost_num, overlap):
-    """This function determines the variables that affect the output when selecting into treatment
-    and the costs.
-    """
-    if overlap:
-        treated_ord = list(range(1, treated_num + 1))
-        x = list(range(2, treated_num + 1))
-        cost_ord = []
-        y = 1
-        for i in list(range(cost_num)):
-            if i == 0:
-                cost_ord += [1]
-            else:
-                if np.random.random_sample() < 0.2:
-                    if len(x) == 0:
-                        cost_ord += [treated_ord[treated_num - 1] + y]
-                        y += 1
-                    else:
-                        a = np.random.choice(x)
-                        cost_ord += [int(a)]
-                        x = [j for j in x if j != a]
-                else:
-                    cost_ord += [treated_ord[treated_num - 1] + y]
-                    y += 1
+    # List all possible overlaps between the different sections and chose a random combination
+    if state_diff and overlap:
+        cases = [list(i) for i in combinations(list(init_dict.keys()), 2)] + [list(
+            init_dict.keys())]
+        case = np.random.choice(cases)
+        case = [i for i in case if len(init_dict[i]['order']) > 1]
+    elif not state_diff and overlap:
+        case = list(init_dict.keys())
+        case = [i for i in case if len(init_dict[i]['order']) > 1]
     else:
-        treated_ord = list(range(1, treated_num + 1))
-        cost_ord = list(range(treated_num + 1, treated_num + cost_num))
-        cost_ord = [1] + cost_ord
+        case = []
 
-    dict_['TREATED']['order'] = treated_ord
-    dict_['UNTREATED']['order'] = treated_ord
-    dict_['CHOICE']['order'] = cost_ord
+    # Select a random number of variables that effect the chosen combination of sections
+    if len(case) != 0:
+        aux_dict = {j: len(init_dict[j]['order']) for j in case}
+        min_key = min(aux_dict, key=aux_dict.get)
+        num_overlap = np.random.choice(range(1, aux_dict[min_key]))
+        for section in case:
+            init_dict[section]['order'][1: 1 + num_overlap] = \
+                init_dict[min_key]['order'][1: num_overlap + 1]
 
-    return dict_
+    return init_dict
 
+def print_dict(init_dict, file_name='test'):
+    """This function prints the initialization dict as a yaml file."""
 
-def overlap_treat_untreat(dict_, treated_num, untreated_num):
-    """This function determines the variables that affect the output independent of the decision
-    of an individual.
-    """
-    treated_ord = list(range(1, treated_num + 1))
-    x = list(range(2, treated_num + 1))
-    untreated_ord = []
-    y = 1
-    for i in list(range(untreated_num)):
-        if i == 0:
-            untreated_ord += [1]
-        else:
-            if np.random.random_sample() < 0.3:
-                if len(x) == 0:
-                    untreated_ord += [treated_ord[treated_num - 1] + y]
-                    y += 1
-                else:
-                    a = np.random.choice(x)
-                    untreated_ord += [int(a)]
-                    x = [j for j in x if j != a]
-            else:
-                untreated_ord += [treated_ord[treated_num - 1] + y]
-                y += 1
-    dict_['TREATED']['order'] = treated_ord
-    dict_['UNTREATED']['order'] = untreated_ord
-
-    return dict_
-
-
-def overlap_treat_untreat_cost(dict_, cost_num, overlap):
-    """This function determines the variables that affect the output of both treatment states as
-    well as the costs.
-    """
-    num_var = len(set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']))
-    if overlap:
-        treated_ord = list(range(1, num_var + 1))
-        x = list(range(2, num_var + 1))
-        cost_ord = []
-        y = 1
-        for i in list(range(cost_num)):
-            if i == 0:
-                cost_ord += [1]
-            else:
-                if np.random.random_sample() < .2:
-                    if len(x) == 0:
-                        cost_ord += [treated_ord[num_var - 1] + y]
-                        y += 1
-                    else:
-                        a = np.random.choice(x)
-                        cost_ord += [int(a)]
-                        x = [j for j in x if j != a]
-                else:
-                    cost_ord += [treated_ord[num_var - 1] + y]
-                    y += 1
-    else:
-        cost_ord = list(range(num_var + 1, num_var + cost_num))
-        cost_ord = [1] + cost_ord
-
-    dict_['CHOICE']['order'] = cost_ord
-
-    return dict_
-
-
-def prob_weights(n):
-    """This function creates the probabilities for categorical variables given the number of
-    different categories"""
-    x = 0.95
-    weights = []
-    for i in range(int(n)):
-        if i == 0:
-            prob = np.random.choice(np.arange(0.1, 0.5, 0.05))
-        else:
-            if i == n - 1:
-                prob = 1 - sum(weights)
-            else:
-                if x / 2 == 0.05:
-                    prob = 0.05
-                else:
-                    prob = np.random.choice(np.arange(0.05, x / 2, 0.05))
-
-        x = round(x - prob, 4)
-        weights += [prob]
-    return list(np.around(weights, 2))
+    # Transfer the init dict in an ordered one to ensure that the init file is aligned appropriately
+    ordered_dict = collections.OrderedDict()
+    order = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'DIST', 'VARTYPES',
+             'SCIPY-BFGS', 'SCIPY-POWELL']
+    for key_ in order:
+        ordered_dict[key_] = init_dict[key_]
+    # Print the initialization file
+    with open('{}.grmpy.yml'.format(file_name), 'w') as outfile:
+        yaml.dump(ordered_dict, outfile, explicit_start=True, indent=4, width=99,
+                  default_flow_style=False)

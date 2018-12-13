@@ -25,6 +25,43 @@ def cleanup(options=None):
                 os.remove(f)
 
 
+def attr_dict_to_init_dict(attr, old=False):
+    """This function converts a already imported attr dict into an initalization dict."""
+    init = {}
+    for key in ['TREATED', 'UNTREATED', 'CHOICE']:
+        init[key] = {'params': list(attr[key]['all']),
+                     'order': [attr['varnames'][j - 1] for j in attr[key]['order']]}
+    init['DIST'] = {'params': list(attr['DIST']['all'])}
+    for key in ['ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL', 'SIMULATION']:
+        init[key] = attr[key]
+    init['VARTYPES'] = {}
+    for name in attr['varnames']:
+        index = attr['varnames'].index(name)
+
+        init['VARTYPES'][name] = attr['AUX']['types'][index]
+
+    return init
+
+def dict_transformation(dict_):
+    varnames = []
+    vartypes = {}
+    for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+        for variable in dict_[section]['order']:
+            if dict_[section]['order'] not in varnames:
+                varnames += [variable]
+                vartypes[variable] = dict_[section]['types'][
+                    dict_[section]['order'].index(variable)]
+    for section in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
+        dict_[section]['params'] = dict_[section].pop('all')
+        dict_[section].pop('types', None)
+
+    dict_['varnames'] = varnames
+
+
+    dict_['VARTYPES'] = vartypes
+    return dict_
+
+
 def read_desc(fname):
     """The function reads the descriptives output file and returns a dictionary that contains the
     relevant parameters for test6 in test_integration.py.
