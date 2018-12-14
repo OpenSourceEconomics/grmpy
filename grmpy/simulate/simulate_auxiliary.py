@@ -15,8 +15,6 @@ def simulate_covariates(init_dict):
     # Construct auxiliary information
 
     num_covars = len(init_dict['AUX']['types'])
-    print(init_dict['AUX']['types'])
-    print('AUX_covars:{}'.format(num_covars))
     types = init_dict['AUX']['types']
 
     # As our baseline we simulate covariates from a standard normal distribution.

@@ -132,7 +132,6 @@ def test4():
                                                  decimal=4)
             if key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
                 for dict_ in dicts:
-
                     if not dict_[key_]['order'] == dict_[key_]['order']:
                         raise AssertionError()
                     if len(dict_[key_]['order']) != len(set(dict_[key_]['order'])):
@@ -140,7 +139,7 @@ def test4():
                     if dict_[key_]['order'][0] not in ['X1', 1]:
                         raise AssertionError()
 
-                for variable in gen_dict['VARTYPES']:
+                for variable in gen_dict['VARTYPES'].keys():
                     for section in ['TREATED', 'UNTREATED', 'CHOICE']:
                         if variable in gen_dict[section]['order']:
                             index = gen_dict[section]['order'].index(variable)

@@ -9,7 +9,7 @@ def init_dict_to_attr_dict(init):
     attr = {}
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
         attr[key] = {'all': np.array(init[key]['params']),
-                     'order': []}
+                     'order': [], 'types': [] }
 
     attr['DIST'] = {'all': np.array(init['DIST']['params'])}
     attr['DETERMINISTIC'] = (attr['DIST']['all'] == 0).all()
@@ -20,24 +20,16 @@ def init_dict_to_attr_dict(init):
     vartypes, varnames = [], []
 
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
-        attr[key]['types'] = []
         for name in init[key]['order']:
             if name not in varnames:
                 varnames.append(name)
-                if 'VARTYPES' not in init.keys() or init['VARTYPES'] is None:
-                    vartypes += ['nonbinary']
-                else:
-                    if name in init['VARTYPES']:
-                        attr[key]['types'] += [init['VARTYPES'][name]]
-                        vartypes += [init['VARTYPES'][name]]
-                    else:
-                        attr[key]['types'] += ['nonbinary']
-                        vartypes += ['nonbinary']
+                vartypes.append(init['VARTYPES'][name])
 
     attr['varnames'] = varnames
 
     for key in ['TREATED', 'UNTREATED', 'CHOICE']:
         for name in init[key]['order']:
+            attr[key]['types'] += [init['VARTYPES'][name]]
             index = attr['varnames'].index(name)
             attr[key]['order'] += [index + 1]
 

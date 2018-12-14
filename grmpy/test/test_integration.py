@@ -31,7 +31,7 @@ def test1():
     for _ in range(10):
         dict_ = generate_random_dict()
         print_dict(dict_)
-        simulate('test.yml')
+        simulate('test.grmpy.yml')
 
 
 def test2():
@@ -47,8 +47,8 @@ def test2():
         stat, dict_, criteria = test
         print(dict_['TREATED'])
         print_dict(dict_transformation(dict_))
-        df = simulate('test.yml')
-        init_dict = read('test.yml')
+        df = simulate('test.grmpy.yml')
+        init_dict = read('test.grmpy.yml')
         print(init_dict['TREATED'])
         start = start_values(init_dict, df, 'init')
         criteria_ = calculate_criteria(init_dict, df, start)
@@ -65,9 +65,9 @@ def test3():
         constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 1000, 'init'
         constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
         generate_random_dict(constr)
-        df1 = simulate('test.yml')
-        rslt = fit('test.yml')
-        init_dict = read('test.yml')
+        df1 = simulate('test.grmpy.yml')
+        rslt = fit('test.grmpy.yml')
+        init_dict = read('test.grmpy.yml')
         df2 = simulate_estimation(init_dict, rslt)
         start = start_values(init_dict, df1, 'init')
 
@@ -87,8 +87,8 @@ def test4():
         constr['optimizer'] = 'SCIPY-Powell'
         generate_random_dict(constr)
 
-        simulate('test.yml')
-        fit('test.yml')
+        simulate('test.grmpy.yml')
+        fit('test.grmpy.yml')
 
 
 def test5():
@@ -97,8 +97,8 @@ def test5():
         constr = dict()
         constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
         generate_random_dict(constr)
-        simulate('test.yml')
-        fit('test.yml')
+        simulate('test.grmpy.yml')
+        fit('test.grmpy.yml')
 
 
 def test6():
@@ -113,8 +113,8 @@ def test6():
         dict_ = generate_random_dict(constr)
         dict_['DIST']['params'][1], dict_['DIST']['params'][5] = 0.0, 1.0
         print_dict(dict_)
-        simulate('test.yml')
-        fit('test.yml')
+        simulate('test.grmpy.yml')
+        fit('test.grmpy.yml')
         dict_ = read_desc('comparison.grmpy.txt')
         for key_ in ['All', 'Treated', 'Untreated']:
             np.testing.assert_equal(len(set(dict_[key_]['Number'])), 1)
@@ -140,12 +140,12 @@ def test7():
         constr = dict()
         constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
         generate_random_dict(constr)
-        dict_ = read('test.yml')
+        dict_ = read('test.grmpy.yml')
         pytest.raises(UserError, check_init_file, dict_)
-        pytest.raises(UserError, fit, 'test.yml')
+        pytest.raises(UserError, fit, 'test.grmpy.yml')
 
         generate_random_dict(constr)
-        dict_ = read('test.yml')
+        dict_ = read('test.grmpy.yml')
         if len(dict_['CHOICE']['order']) == 1:
             dict_['CHOICE']['all'] = list(dict_['CHOICE']['all'])
             dict_['CHOICE']['all'] += [1.000]
@@ -155,14 +155,14 @@ def test7():
         dict_['CHOICE']['order'][1] = 1
         print_dict(dict_)
         pytest.raises(UserError, check_initialization_dict, dict_)
-        pytest.raises(UserError, simulate, 'test.yml')
-        pytest.raises(UserError, fit, 'test.yml')
+        pytest.raises(UserError, simulate, 'test.grmpy.yml')
+        pytest.raises(UserError, fit, 'test.grmpy.yml')
 
         constr['AGENTS'] = 0
         generate_random_dict(constr)
-        dict_ = read('test.yml')
+        dict_ = read('test.grmpy.yml')
         pytest.raises(UserError, check_initialization_dict, dict_)
-        pytest.raises(UserError, simulate, 'test.yml')
+        pytest.raises(UserError, simulate, 'test.grmpy.yml')
 
         tests = []
         tests += [['TREATED', 'UNTREATED'], ['TREATED', 'CHOICE'], ['UNTREATED', 'CHOICE']]
@@ -171,7 +171,7 @@ def test7():
         for combi in tests:
             constr['STATE_DIFF'], constr['OVERLAP'] = True, True
             generate_random_dict(constr)
-            dict_ = read('test.yml')
+            dict_ = read('test.grmpy.yml')
             for j in combi:
 
                 if len(dict_[j]['order']) == 1:
@@ -188,7 +188,7 @@ def test7():
 
             print_dict(dict_)
 
-            pytest.raises(UserError, read, 'test.yml')
+            pytest.raises(UserError, read, 'test.grmpy.yml')
 
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
@@ -222,9 +222,8 @@ def test8():
     constr = dict()
     constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
     generate_random_dict(constr)
-    df = simulate('test.yml')
-    a = []
-    dict_ = read('test.yml')
+    df = simulate('test.grmpy.yml')
+    dict_ = read('test.grmpy.yml')
     dict_['ESTIMATION']['file'] = 'data.grmpy.ini'
     print_dict(attr_dict_to_init_dict(dict_, old=False), 'false_data')
     pytest.raises(UserError, fit, 'tast.grmpy.yml')
@@ -244,8 +243,8 @@ def test9():
         constr['DETERMINISTIC'], constr['AGENT'], constr['STATE_DIFF'] = False, 1000, True
         constr['OVERLAP'] = True
         generate_random_dict(constr)
-        read('test.yml')
-        simulate('test.yml')
-        fit('test.yml')
+        read('test.grmpy.yml')
+        simulate('test.grmpy.yml')
+        fit('test.grmpy.yml')
 
     cleanup()
