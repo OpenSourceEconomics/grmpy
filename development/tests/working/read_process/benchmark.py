@@ -17,14 +17,14 @@ Test1, Test2, Test3 = True, True, True
 if Test1:
     for _ in range(1000):
         dict_start = first_try()
-        new_dict = read_new('test.yml')
+        new_dict = read_new('tutorial.grmpy.yml')
         dict_end = attr_dict_to_init_dict(new_dict)
 
         np.testing.assert_equal(dict_start, dict_end)
 
 if Test2:
     old_init = read('tutorial.grmpy.ini')
-    new_dict = read_new('test.yml')
+    new_dict = read_new('tutorial.grmpy.yml')
 
     for entry in old_init.keys():
 
@@ -50,7 +50,7 @@ if Test3:
         init_dict = attr_dict_to_init_dict(init_dict)
         print_dict_new(init_dict)
 
-        df = simulate_new('test.yml')
+        df = simulate_new('tutorial.grmpy.yml')
 
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 

@@ -49,8 +49,10 @@ def dict_transformation(dict_):
     vartypes = {}
     for section in ['TREATED', 'UNTREATED', 'CHOICE']:
         for variable in dict_[section]['order']:
-            if dict_[section]['order'] not in varnames:
-                varnames += [variable]
+            if  variable not in varnames:
+                print(variable)
+                print(dict_[section]['order'])
+                print(dict_[section]['order'].index(variable))
                 vartypes[variable] = dict_[section]['types'][
                     dict_[section]['order'].index(variable)]
     for section in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:

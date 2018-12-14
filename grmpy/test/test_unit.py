@@ -9,6 +9,7 @@ from grmpy.estimate.estimate_auxiliary import backward_transformation
 from grmpy.estimate.estimate_auxiliary import start_value_adjustment
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.test.auxiliary import attr_dict_to_init_dict
 from grmpy.test.random_init import generate_random_dict
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
@@ -29,7 +30,7 @@ def test1():
         if case == 'deterministic':
             constr['DETERMINISTIC'] = True
         else:
-            constr['DETERMINISTIC'] = False
+            constr['DETERMINISTIC'] = True
         for _ in range(10):
             generate_random_dict(constr)
             df = simulate('test.grmpy.yml')
@@ -212,7 +213,8 @@ def test7():
     for _ in range(10):
         generate_random_dict()
         dict_1 = read('test.grmpy.yml')
-        print_dict(dict_1)
+
+        print_dict(attr_dict_to_init_dict(dict_1))
         dict_2 = read('test.grmpy.yml')
         np.testing.assert_equal(dict_1, dict_2)
 

@@ -15,13 +15,14 @@ def simulate_covariates(init_dict):
     # Construct auxiliary information
 
     num_covars = len(init_dict['AUX']['types'])
+    print(init_dict['AUX']['types'])
+    print('AUX_covars:{}'.format(num_covars))
     types = init_dict['AUX']['types']
 
     # As our baseline we simulate covariates from a standard normal distribution.
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
     X = np.random.multivariate_normal(means, covs, num_agents)
-
     # We now perform some selective replacements.
     X[:, 0] = 1.0
     for i in list(range(num_covars)):
@@ -95,7 +96,7 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     column = [dep, indicator]
 
     for i in list(range(X.shape[1])):
-        str_ = 'X' + str(i)
+        str_ = int(i)
         column.append(str_)
     column += [dep + '1', dep + '0', 'U1', 'U0', 'V']
 
@@ -103,9 +104,12 @@ def write_output(init_dict, Y, D, X, Y_1, Y_0, U, V):
     df = pd.DataFrame(data=data, columns=column)
     df[indicator] = df[indicator].apply(np.int64)
     df2 = pd.DataFrame()
+    print(init_dict['varnames'])
+    print('here:{}'.format(df.columns.values))
+
     for i in df.columns.values:
-        if "X" in i:
-            df2[init_dict['varnames'][int(i[1:5])]] = df[i]
+        if isinstance(i, int):
+            df2[init_dict['varnames'][int(i)]] = df[i]
         else:
             df2[i] = df[i]
     df2.to_pickle(source + '.grmpy.pkl')

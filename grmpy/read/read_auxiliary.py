@@ -24,15 +24,15 @@ def init_dict_to_attr_dict(init):
         for name in init[key]['order']:
             if name not in varnames:
                 varnames.append(name)
-            if 'VARTYPES' not in init.keys() or init['VARTYPES'] is None:
-                vartypes += ['nonbinary']
-            else:
-                if name in init['VARTYPES']:
-                    attr[key]['types'] += [init['VARTYPES'][name]]
-                    vartypes += [init['VARTYPES'][name]]
-                else:
-                    attr[key]['types'] += ['nonbinary']
+                if 'VARTYPES' not in init.keys() or init['VARTYPES'] is None:
                     vartypes += ['nonbinary']
+                else:
+                    if name in init['VARTYPES']:
+                        attr[key]['types'] += [init['VARTYPES'][name]]
+                        vartypes += [init['VARTYPES'][name]]
+                    else:
+                        attr[key]['types'] += ['nonbinary']
+                        vartypes += ['nonbinary']
 
     attr['varnames'] = varnames
 
