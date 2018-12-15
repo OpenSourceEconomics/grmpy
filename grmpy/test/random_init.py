@@ -103,7 +103,7 @@ def generate_random_dict(constr=None):
     # Specify if some variables are binary
     init_dict['VARTYPES'] = {}
     for variable in set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order'] +
-                                init_dict['CHOICE']['order']):
+                        init_dict['CHOICE']['order']):
         init_dict['VARTYPES'][variable] = 'nonbinary'
 
     init_dict = types(init_dict)
@@ -146,11 +146,12 @@ def generate_random_dict(constr=None):
     else:
         b = np.zeros((3, 3))
     init_dict['DIST']['params'] = np.around([float(i) for i in list(b[np.triu_indices(3)])],
-                                                 4).tolist()
+                                            4).tolist()
 
     print_dict(init_dict)
 
     return init_dict
+
 
 def generate_coeff(num, is_zero):
     """The function generates random coefficients for creating the random init dictionary."""
@@ -164,6 +165,7 @@ def generate_coeff(num, is_zero):
     order = ['X1'] + ['X{}'.format(i + 1) for i in range(num[0], num[1])]
 
     return params, order
+
 
 def types(init_dict):
     """This function determines if there are any binary variables. If so the funtion specifies the
@@ -179,6 +181,7 @@ def types(init_dict):
             pass
 
     return init_dict
+
 
 def comb_overlap(init_dict, state_diff, overlap):
     """This function evaluates which variables affect more than one section."""
@@ -205,6 +208,7 @@ def comb_overlap(init_dict, state_diff, overlap):
                 init_dict[min_key]['order'][1: num_overlap + 1]
 
     return init_dict
+
 
 def print_dict(init_dict, file_name='test'):
     """This function prints the initialization dict as a yaml file."""

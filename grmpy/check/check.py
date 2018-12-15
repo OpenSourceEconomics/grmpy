@@ -61,10 +61,10 @@ def check_init_file(dict_):
     """This function checks if the specified initialization file meets the requirements for the
     estimation process.
     """
-    if all(dist_elements == 0 for dist_elements in dict_['DIST']['all']):
+    if all(dist_elements == 0 for dist_elements in dict_['DIST']['params']):
         msg = 'The distributional characteristics have to be undeterministic.'
         raise UserError(msg)
-    elif dict_['DIST']['all'][5] == 0:
+    elif dict_['DIST']['params'][5] == 0:
         msg = 'The standard deviation of the collected unobservables have to be larger than zero.'
         raise UserError(msg)
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:

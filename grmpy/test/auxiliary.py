@@ -44,15 +44,13 @@ def attr_dict_to_init_dict(attr, old=False):
 
     return init
 
+
 def dict_transformation(dict_):
     varnames = []
     vartypes = {}
     for section in ['TREATED', 'UNTREATED', 'CHOICE']:
         for variable in dict_[section]['order']:
-            if  variable not in varnames:
-                print(variable)
-                print(dict_[section]['order'])
-                print(dict_[section]['order'].index(variable))
+            if variable not in varnames:
                 vartypes[variable] = dict_[section]['types'][
                     dict_[section]['order'].index(variable)]
     for section in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:

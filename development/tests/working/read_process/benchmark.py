@@ -41,7 +41,7 @@ if Test2:
                           ' dictionary. \n'.format(subentry, entry))
 
 if Test3:
-    tests = json.load(open('regression_vault.grmpy.json', 'r'))
+    tests = json.load(open('old_regression_vault.grmpy.json', 'r'))
     for test in tests:
         stat, dict_, criteria = test
         print_dict(dict_)

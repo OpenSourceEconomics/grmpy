@@ -19,5 +19,4 @@ def read(file):
     # Process the initialization file
     attr_dict = init_dict_to_attr_dict(init_dict)
 
-
     return attr_dict

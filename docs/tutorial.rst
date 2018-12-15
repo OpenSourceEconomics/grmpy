@@ -20,92 +20,96 @@ We collect all unobservables determining treatment choice in :math:`V = U_C - (U
 Model Specification
 -------------------
 
-You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/develop/docs/tutorial/tutorial.grmpy.ini>`_). This file contains several blocks:
+You can specify the details of the model in an initialization file (`example <https://github.com/OpenSourceEconomics/grmpy/blob/develop/docs/tutorial/tutorial.grmpy.yml>`_). This file contains several blocks:
 
 **SIMULATION**
 
 The *SIMULATION* block contains some basic information about the simulation request.
 
-=======     ======      ==================
+=======     ======      ==============================================
 Key         Value       Interpretation
-=======     ======      ==================
+=======     ======      ==============================================
 agents      int         number of individuals
 seed        int         seed for the specific simulation
 source      str         specified name for the simulation output files
-=======     ======      ==================
+=======     ======      ==============================================
 
 **ESTIMATION**
 
 The *ESTIMATION* block determines the basic information for the estimation process.
 
-===========     ======      ==================
-Key             Value        Interpretation
-===========     ======      ==================
+===========     ======      ===============================================
+Key             Value       Interpretation
+===========     ======      ===============================================
 agents          int         number of individuals (for the comparison file)
 file            str         name of the estimation specific init file
 optimizer       str         optimizer used for the estimation process
 start           str         flag for the start values
 maxiter	        int         maximum numbers of iterations
-dependent	str         indicates the dependent variable
+dependent       str         indicates the dependent variable
 indicator       str         label of the treatment indicator variable
-output_file	str         name for the estimation output file
+output_file     str         name for the estimation output file
 comparison	int         flag for enabling the comparison file creation
-===========     ======      ==================
+===========     ======      ===============================================
 
 
 
 **TREATED**
 
-The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. In particular, the string in the column **Column** specifies the label of the variable in the relevant dataset.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. Note that the length of the list which determines the paramters has to be equal to the number of variables that are included in the order list.
 
-=======   ======  ======     ===================================
-Key       Column  Value      Interpretation
-=======   ======  ======     ===================================
-coeff     str     float      intercept coefficient
-coeff     str     float      coefficient of the first covariate
-coeff     str     float      coefficient of the second covariate
-=======   ======  ======     ===================================
+=======   =========  ======     ===================================
+Key       Container  Values     Interpretation
+=======   =========  ======     ===================================
+params    list       float      Paramters
+order     list       str        Variable labels
+=======   =========  ======     ===================================
 
 
 **UNTREATED**
 
-The *UNTREATED* block specifies the number and order of the covariates determining the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`.
+The *UNTREATED* block specifies the covariates that a the potential outcome in the untreated state and the values for the coefficients :math:`\beta_0`.
 
-=======   ======  ======     ===================================
-Key       Column  Value      Interpretation
-=======   ======  ======     ===================================
-coeff     str     float      intercept coefficient
-coeff     str     float      coefficient of the first covariate
-coeff     str     float      coefficient of the second covariate
-=======   ======  ======     ===================================
-
+=======   =========  ======     ===================================
+Key       Container  Values     Interpretation
+=======   =========  ======     ===================================
+params    list       float      Paramters
+order     list       str        Variable labels
+=======   =========  ======     ===================================
 
 **CHOICE**
 
 The *CHOICE* block specifies the number and order of the covariates determining the selection process and the values for the coefficients :math:`\gamma`.
 
-=======   ======  ======     ===================================
-Key       Column  Value      Interpretation
-=======   ======  ======     ===================================
-coeff     str     float      intercept coefficient
-coeff     str     float      coefficient of the first covariate
-coeff     str     float      coefficient of the second covariate
-=======   ======  ======     ===================================
+=======   =========  ======     ===================================
+Key       Container  Values     Interpretation
+=======   =========  ======     ===================================
+params    list       float      Paramters
+order     list       str        Variable labels
+=======   =========  ======     ===================================
 
 **DIST**
 
 The *DIST* block specifies the distribution of the unobservables.
 
-======= ======      ==========================
-Key     Value       Interpretation
-======= ======      ==========================
-coeff    float      :math:`\sigma_{U_1}`
-coeff    float      :math:`\sigma_{U_1,U_0}`
-coeff    float      :math:`\sigma_{U_1,V}`
-coeff    float      :math:`\sigma_{U_0}`
-coeff    float      :math:`\sigma_{U_0,V}`
-coeff    float      :math:`\sigma_{V}`
-======= ======      ==========================
+=======   =========  ======     =========================================
+Key       Container  Values     Interpretation
+=======   =========  ======     =========================================
+params    list       float      Upper triangular of the covariance matrix
+=======   =========  ======     =========================================
+
+**VARTYPES**
+
+The *VARTYPES* section enables users to specify optional characteristics to specific variables in their simulated data. Currently there is only the option to determine binary variables. For this purpose the user have to specify a key which reflects the corresponding variable label and assign a list to this label which contains the type (*binary*) as a string as well as a float (<0.9) that determines the probability for which the variable is one.
+
+================   =========  ================     =========================================
+Key                Container  Values               Interpretation
+================   =========  ================     =========================================
+*Variable label*   list       string and float     Type of variable + additional information
+================   =========  ================     =========================================
+
+
+
 
 **SCIPY-BFGS**
 
@@ -143,7 +147,7 @@ First we will take a look on the simulation feature. For simulating a sample fro
 
     import grmpy
 
-    grmpy.simulate('tutorial.grmpy.ini')
+    grmpy.simulate('tutorial.grmpy.yml')
 
 
 This creates a number of output files that contain information about the resulting simulated sample.
@@ -159,7 +163,7 @@ The other feature of the package is the estimation of the parameters of interest
 
 ::
 
-    grmpy.fit('tutorial.grmpy.ini')
+    grmpy.fit('tutorial.grmpy.yml')
 
 As in the simulation process this creates a number of output file that contains information about the estimation results.
 

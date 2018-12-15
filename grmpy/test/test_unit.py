@@ -1,6 +1,4 @@
 """The module provides unit tests for different aspects of the simulation process."""
-import os
-
 import pandas as pd
 import numpy as np
 
@@ -9,7 +7,6 @@ from grmpy.estimate.estimate_auxiliary import backward_transformation
 from grmpy.estimate.estimate_auxiliary import start_value_adjustment
 from grmpy.simulate.simulate_auxiliary import mte_information
 from grmpy.estimate.estimate_auxiliary import start_values
-from grmpy.test.auxiliary import attr_dict_to_init_dict
 from grmpy.test.random_init import generate_random_dict
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
@@ -18,7 +15,6 @@ from grmpy.check.auxiliary import read_data
 from grmpy.test.auxiliary import cleanup
 from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
-import grmpy
 
 
 def test1():
@@ -35,10 +31,11 @@ def test1():
             generate_random_dict(constr)
             df = simulate('test.grmpy.yml')
             dict_ = read('test.grmpy.yml')
-            x_treated = df[[dict_['varnames'][i - 1] for i in dict_['TREATED']['order']]]
-            y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
-            x_untreated = df[[dict_['varnames'][i - 1] for i in dict_['UNTREATED']['order']]]
-            y_untreated = pd.DataFrame.sum(dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
+            x_treated = df[dict_['TREATED']['order']]
+            y_treated = pd.DataFrame.sum(dict_['TREATED']['params'] * x_treated, axis=1) + df.U1
+            x_untreated = df[dict_['UNTREATED']['order']]
+            y_untreated = \
+                pd.DataFrame.sum(dict_['UNTREATED']['params'] * x_untreated, axis=1) + df.U0
 
             np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
             np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
@@ -51,49 +48,49 @@ def test2():
     different setups.
     """
     for _ in range(10):
-        for i in ['ALL', 'TREATED', 'UNTREATED', 'CHOICE', 'TREATED & UNTREATED']:
+        for case in ['ALL', 'TREATED', 'UNTREATED', 'CHOICE', 'TREATED & UNTREATED']:
             constr = dict()
             constr['DETERMINISTIC'] = False
             dict_ = generate_random_dict(constr)
 
-            if i == 'ALL':
-                for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-                    dict_[key_]['params'] = np.array([0.] * len(dict_[key_]['params']))
-            elif i == 'TREATED & UNTREATED':
-                for key_ in ['TREATED', 'UNTREATED']:
-                    dict_[key_]['params'] = np.array([0.] * len(dict_[key_]['params']))
+            if case == 'ALL':
+                for section in ['TREATED', 'UNTREATED', 'CHOICE']:
+                    dict_[section]['params'] = np.array([0.] * len(dict_[section]['params']))
+            elif case == 'TREATED & UNTREATED':
+                for section in ['TREATED', 'UNTREATED']:
+                    dict_[section]['params'] = np.array([0.] * len(dict_[section]['params']))
             else:
-                dict_[i]['params'] = np.array([0.] * len(dict_[i]['params']))
+                dict_[case]['params'] = np.array([0.] * len(dict_[case]['params']))
 
             print_dict(dict_)
 
             dict_ = read('test.grmpy.yml')
             df = simulate('test.grmpy.yml')
-            x_treated = df[[dict_['varnames'][i - 1] for i in dict_['TREATED']['order']]]
-            x_untreated = df[[dict_['varnames'][i - 1] for i in dict_['UNTREATED']['order']]]
+            x_treated = df[dict_['TREATED']['order']]
+            x_untreated = df[dict_['UNTREATED']['order']]
 
-            if i == 'ALL':
+            if case == 'ALL':
                 np.testing.assert_array_equal(df.Y1, df.U1)
                 np.testing.assert_array_equal(df.Y0, df.U0)
-            elif i == 'TREATED & UNTREATED':
+            elif case == 'TREATED & UNTREATED':
                 np.testing.assert_array_equal(df.Y1, df.U1)
                 np.testing.assert_array_equal(df.Y0, df.U0)
                 np.testing.assert_array_equal(df.Y[df.D == 1], df.U1[df.D == 1])
                 np.testing.assert_array_equal(df.Y[df.D == 0], df.U0[df.D == 0])
-            elif i == 'TREATED':
+            elif case == 'TREATED':
                 y_untreated = pd.DataFrame.sum(
-                    dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
+                    dict_['UNTREATED']['params'] * x_untreated, axis=1) + df.U0
                 np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
                 np.testing.assert_array_equal(df.Y1, df.U1)
 
-            elif i == 'UNTREATED':
-                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
+            elif case == 'UNTREATED':
+                y_treated = pd.DataFrame.sum(dict_['TREATED']['params'] * x_treated, axis=1) + df.U1
                 np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                 np.testing.assert_array_equal(df.Y0, df.U0)
             else:
-                y_treated = pd.DataFrame.sum(dict_['TREATED']['all'] * x_treated, axis=1) + df.U1
+                y_treated = pd.DataFrame.sum(dict_['TREATED']['params'] * x_treated, axis=1) + df.U1
                 y_untreated = pd.DataFrame.sum(
-                    dict_['UNTREATED']['all'] * x_untreated, axis=1) + df.U0
+                    dict_['UNTREATED']['params'] * x_untreated, axis=1) + df.U0
                 np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
                 np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
 
@@ -127,32 +124,35 @@ def test4():
         print_dict(gen_dict, init_file_name)
         imp_dict = read(init_file_name + '.grmpy.yml')
         dicts = [gen_dict, imp_dict]
-        for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
-            np.testing.assert_array_almost_equal(gen_dict[key_]['params'], imp_dict[key_]['all'],
-                                                 decimal=4)
-            if key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
+        for section in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
+            np.testing.assert_array_almost_equal(gen_dict[section]['params'],
+                                                 imp_dict[section]['params'], decimal=4)
+            if section in ['TREATED', 'UNTREATED', 'CHOICE']:
                 for dict_ in dicts:
-                    if not dict_[key_]['order'] == dict_[key_]['order']:
+                    if not dict_[section]['order'] == dict_[section]['order']:
                         raise AssertionError()
-                    if len(dict_[key_]['order']) != len(set(dict_[key_]['order'])):
+                    if len(dict_[section]['order']) != len(set(dict_[section]['order'])):
                         raise AssertionError()
-                    if dict_[key_]['order'][0] not in ['X1', 1]:
+                    if dict_[section]['order'][0] != 'X1':
                         raise AssertionError()
 
-                for variable in gen_dict['VARTYPES'].keys():
-                    for section in ['TREATED', 'UNTREATED', 'CHOICE']:
-                        if variable in gen_dict[section]['order']:
-                            index = gen_dict[section]['order'].index(variable)
-                            type = imp_dict[section]['types'][index]
-                            if gen_dict['VARTYPES'][variable] != type:
-                                raise AssertionError()
-                        if imp_dict[section]['types'][0] != 'nonbinary' or gen_dict['VARTYPES'][
-                            'X1'] \
-                                != 'nonbinary':
-                            raise AssertionError()
+        for variable in gen_dict['VARTYPES'].keys():
+            if variable not in imp_dict['VARTYPES'].keys():
+                    raise AssertionError()
 
-        for key_ in ['source', 'agents', 'seed']:
-            if not gen_dict['SIMULATION'][key_] == imp_dict['SIMULATION'][key_]:
+            if gen_dict['VARTYPES'][variable] != imp_dict['VARTYPES'][variable]:
+                raise AssertionError
+
+        if gen_dict['VARTYPES']['X1'] != 'nonbinary':
+            raise AssertionError
+
+        for subkey in ['source', 'agents', 'seed']:
+            if not gen_dict['SIMULATION'][subkey] == imp_dict['SIMULATION'][subkey]:
+                raise AssertionError()
+
+        for subkey in ['agents', 'file', 'optimizer', 'start', 'maxiter', 'dependent', 'indicator',
+                       'comparison', 'output_file']:
+            if not gen_dict['ESTIMATION'][subkey] == imp_dict['ESTIMATION'][subkey]:
                 raise AssertionError()
 
 
@@ -167,18 +167,18 @@ def test5():
 
         # We impose that the covariance between the random components of the potential
         # outcomes and the random component determining choice is identical.
-        init_dict['DIST']['all'][2] = init_dict['DIST']['all'][4]
+        init_dict['DIST']['params'][2] = init_dict['DIST']['params'][4]
 
         # Distribute information
-        coeffs_untreated = init_dict['UNTREATED']['all']
-        coeffs_treated = init_dict['TREATED']['all']
+        coeffs_untreated = init_dict['UNTREATED']['params']
+        coeffs_treated = init_dict['TREATED']['params']
 
         # Construct auxiliary information
         cov = construct_covariance_matrix(init_dict)
 
         df = simulate('test.grmpy.yml')
-        help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-        x = df[[init_dict['varnames'][i - 1] for i in help_]]
+
+        x = df[list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))]
 
         q = [0.01] + list(np.arange(0.05, 1, 0.05)) + [0.99]
         mte = mte_information(coeffs_treated, coeffs_untreated, cov, q, x, init_dict)
@@ -198,7 +198,7 @@ def test6():
         cov = np.random.uniform(0, 1, 2)
         var = np.random.uniform(1, 2, 3)
         aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
-        dict_ = {'DIST': {'all': aux}}
+        dict_ = {'DIST': {'params': aux}}
         before = [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
         x0 = start_value_adjustment([], dict_, 'init')
         after = backward_transformation(x0)
@@ -212,8 +212,7 @@ def test7():
     for _ in range(10):
         generate_random_dict()
         dict_1 = read('test.grmpy.yml')
-
-        print_dict(attr_dict_to_init_dict(dict_1))
+        print_dict(dict_1)
         dict_2 = read('test.grmpy.yml')
         np.testing.assert_equal(dict_1, dict_2)
 
@@ -244,7 +243,7 @@ def test9():
         dict_ = read('test.grmpy.yml')
         true = []
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-            true += list(dict_[key_]['all'])
+            true += list(dict_[key_]['params'])
         df = simulate('test.grmpy.yml')
         x0 = start_values(dict_, df, 'init')[:-4]
 
@@ -265,6 +264,7 @@ def test10():
         df = simulate('test.grmpy.yml')
         start = start_values(init_dict, df, 'init')
         start = backward_transformation(start)
+
         rslt = fit('test.grmpy.yml')
 
         np.testing.assert_equal(start, rslt['AUX']['x_internal'])

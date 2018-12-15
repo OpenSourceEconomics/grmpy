@@ -37,14 +37,14 @@ def start_values(init_dict, data_frame, option):
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[[init_dict['varnames'][j - 1] for j in order]][
+                X = data_frame[order][
                     i == data_frame[indicator]]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale), 0.0]
             # Estimate gamma via Probit
-            Z = data_frame[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
+            Z = data_frame[init_dict['CHOICE']['order']]
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
             gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
@@ -76,9 +76,9 @@ def start_value_adjustment(x, init_dict, option):
     # if option = init the estimation process takes its distributional arguments from the
     # inititialization dict
     if option == 'init':
-        rho1 = init_dict['DIST']['all'][2] / init_dict['DIST']['all'][0]
-        rho0 = init_dict['DIST']['all'][4] / init_dict['DIST']['all'][3]
-        dist = [init_dict['DIST']['all'][0], rho1, init_dict['DIST']['all'][3], rho0]
+        rho1 = init_dict['DIST']['params'][2] / init_dict['DIST']['params'][0]
+        rho0 = init_dict['DIST']['params'][4] / init_dict['DIST']['params'][3]
+        dist = [init_dict['DIST']['params'][0], rho1, init_dict['DIST']['params'][3], rho0]
         x = np.concatenate((x, dist))
 
     # transform the distributional characteristics s.t. r = log((1-rho)/(1+rho))/2
@@ -127,8 +127,8 @@ def log_likelihood(x0, init_dict, data_frame, dict_=None):
             key_ = 'UNTREATED'
         # Prepare data
         data = data_frame[data_frame[indicator] == i]
-        Z = data[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
-        X = data[[init_dict['varnames'][j - 1] for j in init_dict[key_]['order']]]
+        Z = data[init_dict['CHOICE']['order']]
+        X = data[init_dict[key_]['order']]
 
         choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
         part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
@@ -265,15 +265,15 @@ def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
     rslt['ESTIMATION'] = init_dict['ESTIMATION']
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'AUX']:
         if key_ == 'AUX':
-            rslt['varnames'] = init_dict['varnames']
+            rslt['AUX']['labels'] = init_dict['AUX']['labels']
         else:
             rslt[key_] = {}
             rslt[key_]['order'] = init_dict[key_]['order']
-        rslt[key_]['types'] = init_dict[key_]['types']
+    rslt['VARTYPES'] = init_dict['VARTYPES']
 
-    rslt['TREATED']['all'] = np.array(x[:num_treated])
-    rslt['UNTREATED']['all'] = np.array(x[num_treated:num_untreated])
-    rslt['CHOICE']['all'] = np.array(x[num_untreated:-4])
+    rslt['TREATED']['params'] = np.array(x[:num_treated])
+    rslt['UNTREATED']['params'] = np.array(x[num_treated:num_untreated])
+    rslt['CHOICE']['params'] = np.array(x[num_untreated:-4])
     rslt = calculate_se(rslt, init_dict, data_frame)
     return rslt
 
