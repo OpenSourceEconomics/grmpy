@@ -217,8 +217,14 @@ def print_dict(init_dict, file_name='test'):
     ordered_dict = collections.OrderedDict()
     order = ['SIMULATION', 'ESTIMATION', 'TREATED', 'UNTREATED', 'CHOICE', 'DIST', 'VARTYPES',
              'SCIPY-BFGS', 'SCIPY-POWELL']
+
     for key_ in order:
         ordered_dict[key_] = init_dict[key_]
+    for section in ['TREATED', 'CHOICE', 'UNTREATED', 'DIST']:
+        if isinstance(ordered_dict[section]['params'], list):
+            pass
+        else:
+            ordered_dict[section]['params'] = ordered_dict[section]['params'].tolist()
 
     # Print the initialization file
     with open('{}.grmpy.yml'.format(file_name), 'w') as outfile:
