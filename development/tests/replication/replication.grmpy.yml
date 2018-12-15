@@ -1,21 +1,21 @@
 ---
 SIMULATION:
     seed: 5062
-    agents: 1747
+    agents: 991
     source: 8EF73AA0
 ESTIMATION:
-    file: aer-simulation-mock.pkl
+    file: aer-replication-mock.pkl
     start: auto
     agents: 1000
     optimizer: SCIPY-BFGS
-    maxiter: 20000
+    maxiter: 80000
     dependent: wage
     indicator: state
-    output_file: est.grmpy.ini
     comparison: 0
+    output_file: est.grmpy.info
 TREATED:
     params:
-    - 168.075
+    - 1.0
     - 0.0794
     - -0.0035
     - 0.8319
@@ -31,6 +31,13 @@ TREATED:
     - -0.0431
     - 0.1459
     - -0.0135
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
     order:
     - const
     - exp
@@ -48,9 +55,16 @@ TREATED:
     - lavlocwage17sq
     - avurate
     - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
 UNTREATED:
     params:
-    - 110.0
+    - 1.0
     - 0.054
     - 0.0004
     - 0.5766
@@ -66,6 +80,13 @@ UNTREATED:
     - -0.6056
     - 0.0717
     - -0.0059
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
     order:
     - const
     - exp
@@ -83,9 +104,16 @@ UNTREATED:
     - lavlocwage17sq
     - avurate
     - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
 CHOICE:
     params:
-    - 307.0
+    - 1.0
     - 3.6671
     - 0.2008
     - -1.8348
@@ -97,6 +125,13 @@ CHOICE:
     - 2.5985
     - 0.2693
     - -0.0205
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
+    - 1.0
     - 0.4107
     - 0.1846
     - -0.3072
@@ -126,6 +161,13 @@ CHOICE:
     - lavlocwage17sq
     - avurate
     - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
     - lwage5_17numsibs
     - lwage5_17mhgc
     - lwage5_17cafqt
@@ -146,7 +188,7 @@ DIST:
     params:
     - 0.1
     - 0.0
-    - 0.044000000000000004
+    - 0.0
     - 0.1
     - 0.0
     - 1.0
@@ -167,6 +209,13 @@ VARTYPES:
     lavlocwage17sq: nonbinary
     avurate: nonbinary
     avuratesq: nonbinary
+    d57: nonbinary
+    d58: nonbinary
+    d59: nonbinary
+    d60: nonbinary
+    d61: nonbinary
+    d62: nonbinary
+    d63: nonbinary
     lwage5_17numsibs: nonbinary
     lwage5_17mhgc: nonbinary
     lwage5_17cafqt: nonbinary

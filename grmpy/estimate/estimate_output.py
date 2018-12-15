@@ -307,9 +307,8 @@ def calculate_mte(rslt, init_dict, data_frame, quant=None):
     cov[2, 0] = rslt['AUX']['x_internal'][-3] * rslt['AUX']['x_internal'][-4]
     cov[2, 1] = rslt['AUX']['x_internal'][-1] * rslt['AUX']['x_internal'][-2]
     cov[2, 2] = 1.0
-    x = data_frame[list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))]
 
-    value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, rslt)
+    value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt)
     if quant is None:
         return value, args
     else:

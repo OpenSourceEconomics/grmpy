@@ -166,7 +166,7 @@ def print_info(init_dict, data_frame):
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
 
-        x = data_frame[list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))]
+        x = data_frame
         value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
         str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
         file_.write(str_)
@@ -185,26 +185,34 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
     """The function calculates the marginal treatment effect for pre specified quantiles of the
     collected unobservable variables.
     """
+
+    labels = [k for k in dict_['TREATED']['order']]
+    labels += [j for j in dict_['UNTREATED']['order'] if j not in labels]
+
     # Construct auxiliary information
     if dict_['TREATED']['order'] != dict_['UNTREATED']['order']:
+
         para_diff = []
-        for i in set(dict_['TREATED']['order'] + dict_['UNTREATED']['order']):
-            if i in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
-                index_treated = dict_['TREATED']['order'].index(i)
-                index_untreated = dict_['UNTREATED']['order'].index(i)
-                diff = dict_['TREATED']['params'][index_treated] \
-                    - dict_['UNTREATED']['params'][index_untreated]
-            elif i in dict_['TREATED']['order'] and i not in dict_['UNTREATED']['order']:
-                index = dict_['TREATED']['order'].index(i)
+        for var in labels:
+            if var in dict_['TREATED']['order'] and var in dict_['UNTREATED']['order']:
+                index_treated = dict_['TREATED']['order'].index(var)
+                index_untreated = dict_['UNTREATED']['order'].index(var)
+                diff = \
+                    dict_['TREATED']['params'][index_treated] - \
+                    dict_['UNTREATED']['params'][index_untreated]
+            elif var in dict_['TREATED']['order'] and var not in dict_['UNTREATED']['order']:
+                index = dict_['TREATED']['order'].index(var)
                 diff = dict_['TREATED']['params'][index]
 
-            elif i not in dict_['TREATED']['order'] and i in dict_['UNTREATED']['order']:
-                index = dict_['UNTREATED']['order'].index(i)
+            elif var not in dict_['TREATED']['order'] and var in dict_['UNTREATED']['order']:
+                index = dict_['UNTREATED']['order'].index(var)
                 diff = - dict_['UNTREATED']['params'][index]
             para_diff += [diff]
     else:
 
         para_diff = coeffs_treated - coeffs_untreated
+
+    x = x[labels]
     MTE = []
     for i in quantiles:
         if cov[2, 2] == 0.00:

@@ -100,6 +100,6 @@ def read_desc(fname):
             dict_[key_]['Number'] = [int(i) for i in dict_[key_]['Number']]
             for subkey \
                     in ['Observed Sample', 'Simulated Sample (finish)', 'Simulated Sample (start)']:
-                dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey]]
+                dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey] if j != '---']
 
     return dict_

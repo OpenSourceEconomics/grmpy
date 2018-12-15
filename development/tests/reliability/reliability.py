@@ -152,6 +152,6 @@ if __name__ == '__main__':
 
     ATE = get_effect_grmpy('reliability.grmpy.yml')
 
-    x = monte_carlo('reliability.grmpy.yml', 2)
+    x = monte_carlo('reliability.grmpy.yml', 10)
 
     create_plots(x, ATE)
