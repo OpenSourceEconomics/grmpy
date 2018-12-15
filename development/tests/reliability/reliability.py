@@ -17,28 +17,27 @@ from grmpy.read.read import read
 def create_data():
     """This function creates the a data set based on the results from Caineiro 2011."""
     # Read in initialization file and the data set
-    init_dict = read('reliability.grmpy.ini')
+    init_dict = read('reliability.grmpy.yml')
     df = pd.read_pickle('aer-simulation-mock.pkl')
 
     # Distribute information
     indicator, dep = init_dict['ESTIMATION']['indicator'], init_dict['ESTIMATION']['dependent']
-    label_out = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
-    label_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
+    label_out = init_dict['TREATED']['order']
+    label_choice = init_dict['CHOICE']['order']
     seed = init_dict['SIMULATION']['seed']
 
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
     # Simulate unobservables
-    U, V = simulate_unobservables(init_dict)
+    U = simulate_unobservables(init_dict)
 
-    df['U1'], df['U0'], df['V'] = U[:, 0], U[:, 1], V
-
+    df['U1'], df['U0'], df['V'] = U['U1'], U['U0'], U['V']
     # Simulate choice and output
-    df[dep + '1'] = np.dot(df[label_out], init_dict['TREATED']['all']) + df['U1']
-    df[dep + '0'] = np.dot(df[label_out], init_dict['UNTREATED']['all']) + df['U0']
+    df[dep + '1'] = np.dot(df[label_out], init_dict['TREATED']['params']) + df['U1']
+    df[dep + '0'] = np.dot(df[label_out], init_dict['UNTREATED']['params']) + df['U0']
     df[indicator] = np.array(
-        np.dot(df[label_choice], init_dict['CHOICE']['all']) - df['V'] > 0).astype(int)
+        np.dot(df[label_choice], init_dict['CHOICE']['params']) - df['V'] > 0).astype(int)
     df[dep] = df[indicator] * df[dep + '1'] + (1 - df[indicator]) * df[dep + '0']
 
     # Save the data
@@ -52,26 +51,23 @@ def update_correlation_structure(model_dict, rho):
     among the unobservables."""
 
     # We first extract the baseline information from the model dictionary.
-    sd_v = model_dict['DIST']['all'][-1]
-    sd_u = model_dict['DIST']['all'][0]
+    sd_v = model_dict['DIST']['params'][-1]
+    sd_u = model_dict['DIST']['params'][0]
 
     # Now we construct the implied covariance, which is relevant for the initialization file.
     cov = rho * sd_v * sd_u
-    model_dict['DIST']['all'][2] = cov
+    model_dict['DIST']['params'][2] = cov
 
     # We print out the specification to an initialization file with the name mc_init.grmpy.ini.
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        x = [model_dict['varnames'][j - 1] for j in model_dict[key_]['order']]
-        model_dict[key_]['order'] = x
     print_dict(model_dict, 'reliability')
 
 
 def get_effect_grmpy(file):
     """This function simply returns the ATE of the data set."""
-    dict_ = read('reliability.grmpy.ini')
+    dict_ = read('reliability.grmpy.yml')
     df = pd.read_pickle('aer-simulation-mock.pkl')
-    beta_diff = dict_['TREATED']['all'] - dict_['UNTREATED']['all']
-    covars = [dict_['varnames'][j - 1] for j in dict_['TREATED']['order']]
+    beta_diff = dict_['TREATED']['params'] - dict_['UNTREATED']['params']
+    covars = dict_['TREATED']['order']
     ATE = np.dot(np.mean(df[covars]), beta_diff)
 
     return ATE
@@ -92,8 +88,8 @@ def monte_carlo(file, grid_points):
 
         # Readjust the initialization file values to add correlation
         model_spec = read(file)
-        sim_spec = read('reliability.grmpy.ini')
-        X = [sim_spec['varnames'][j - 1] for j in sim_spec['TREATED']['order']]
+        sim_spec = read('reliability.grmpy.yml')
+        X = sim_spec['TREATED']['order']
         update_correlation_structure(model_spec, rho)
 
         # Simulate a Data set and specify exogeneous and endogeneous variables
@@ -105,8 +101,8 @@ def monte_carlo(file, grid_points):
         effects['true'] += [ATE]
 
         # Estimate  via grmpy
-        rslt = fit('reliability.grmpy.ini')
-        beta_diff = rslt['TREATED']['all'] - rslt['UNTREATED']['all']
+        rslt = fit('reliability.grmpy.yml')
+        beta_diff = rslt['TREATED']['params'] - rslt['UNTREATED']['params']
         stat = np.dot(np.mean(exog), beta_diff)
 
         effects['grmpy'] += [stat]
@@ -154,8 +150,8 @@ def create_plots(effects, true):
 
 if __name__ == '__main__':
 
-    ATE = get_effect_grmpy('reliability.grmpy.ini')
+    ATE = get_effect_grmpy('reliability.grmpy.yml')
 
-    x = monte_carlo('reliability.grmpy.ini', 20)
+    x = monte_carlo('reliability.grmpy.yml', 10)
 
     create_plots(x, ATE)

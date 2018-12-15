@@ -36,8 +36,8 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax1.set_ylabel(r"$B^{MTE}$")
     ax1.set_xlabel("$u_D$")
     l1, = ax1.plot(quantiles, mte, color='blue')
-    l2, = ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
-    l3, = ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
+    ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
+    ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
 
     ax1.set_ylim([-0.4, 0.5])
 
@@ -47,8 +47,8 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax2.set_xlabel("$u_D$")
 
     l4, = ax2.plot(quantiles, mte_original, color='orange')
-    l5, =  ax2.plot(quantiles, mte_original_d, color='orange', linestyle=':')
-    l6, = ax2.plot(quantiles, mte_original_u, color='orange', linestyle=':')
+    ax2.plot(quantiles, mte_original_d, color='orange', linestyle=':')
+    ax2.plot(quantiles, mte_original_u, color='orange', linestyle=':')
     ax2.set_ylim([-0.4, 0.5])
 
     plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'], prop={'size': 18})
@@ -73,7 +73,7 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
 
     # Process data
-    covariates = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
+    covariates = init_dict['TREATED']['order']
     x = np.mean(data_frame[covariates]).tolist()
     x_neg = [-i for i in x]
     x += x_neg
@@ -98,10 +98,9 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
 
 if __name__ == '__main__':
 
-    init_dict = read('replication.grmpy.ini')
+    init_dict = read('replication.grmpy.yml')
     # Estimate the coefficients
-    rslt = fit('replication.grmpy.ini')
-
+    rslt = fit('replication.grmpy.yml')
     # Calculate and plot the marginal treatment effect
     data = pd.read_pickle('aer-replication-mock.pkl')
     mte = plot_est_mte(rslt, init_dict, data)

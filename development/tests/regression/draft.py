@@ -24,7 +24,7 @@ NUM_TESTS = 100
 np.random.seed(1234235)
 seeds = np.random.randint(0, 1000, size=NUM_TESTS)
 directory = os.path.dirname(__file__)
-file_dir = os.path.join(directory, 'regression_vault.grmpy.json')
+file_dir = os.path.join(directory, 'old_regression_vault.grmpy.json')
 
 if True:
     tests = []
@@ -47,8 +47,8 @@ if True:
     for test in tests:
         stat, dict_, criteria = test
         print_dict(dict_)
-        init_dict = read('test.grmpy.ini')
-        df = simulate('test.grmpy.ini')
+        init_dict = read('test.grmpy.yml')
+        df = simulate('test.grmpy.yml')
         start = start_values(init_dict, df, 'init')
         criteria_ = calculate_criteria(init_dict, df, start)
         np.testing.assert_array_almost_equal(criteria, criteria_)

@@ -38,14 +38,14 @@ def create_vault(num_tests=100, seed=123):
         tests += [(stat, dict_)]
         cleanup()
 
-    json.dump(tests, open('regression_vault.grmpy.json', 'w'))
+    json.dump(tests, open('old_regression_vault.grmpy.json', 'w'))
 
 
 def check_vault():
     """This function checks the complete regression vault that is distributed as part of the
     package.
     """
-    fname = os.path.dirname(grmpy.__file__) + '/test/resources/regression_vault.grmpy.json'
+    fname = os.path.dirname(grmpy.__file__) + '/test/resources/old_regression_vault.grmpy.json'
     tests = json.load(open(fname))
 
     for test in tests:
