@@ -55,7 +55,7 @@ if Test3:
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
 
 if Test4:
-    init_dict = read('reliability.grmpy.ini')
+    init_dict = read('replication.grmpy.ini')
     dict_ = attr_dict_to_init_dict(init_dict)
     print(dict_)
     print_dict_new(dict_)
