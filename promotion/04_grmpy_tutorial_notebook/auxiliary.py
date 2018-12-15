@@ -85,17 +85,14 @@ def update_tutorial(file, rho=None):
 
     init_dict['SIMULATION']['source'] = 'data_eh'
 
-    sd1 = init_dict['DIST']['all'][0]
-    sd0 = init_dict['DIST']['all'][3]
-    sdv = init_dict['DIST']['all'][-1]
+    sd1 = init_dict['DIST']['params'][0]
+    sd0 = init_dict['DIST']['params'][3]
+    sdv = init_dict['DIST']['params'][-1]
 
-    init_dict['DIST']['all'][2] = sd1 * sdv * rho[0]
+    init_dict['DIST']['params'][2] = sd1 * sdv * rho[0]
 
-    init_dict['DIST']['all'][-2] = sd0 * sdv * rho[1]
+    init_dict['DIST']['params'][-2] = sd0 * sdv * rho[1]
 
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        x = [init_dict['varnames'][j - 1] for j in init_dict[key_]['order']]
-        init_dict[key_]['order'] = x
     print_dict(init_dict, 'files/tutorial_eh')
 
 
@@ -107,23 +104,23 @@ def create_data(file):
 
     # Distribute information
     indicator, dep = init_dict['ESTIMATION']['indicator'], init_dict['ESTIMATION']['dependent']
-    label_out = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
-    label_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
+    label_out = init_dict['TREATED']['order']
+    label_choice = init_dict['CHOICE']['order']
     seed = init_dict['SIMULATION']['seed']
 
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
 
     # Simulate unobservables
-    U, V = simulate_unobservables(init_dict)
+    U = simulate_unobservables(init_dict)
 
-    df['U1'], df['U0'], df['V'] = U[:, 0], U[:, 1], V
+    df['U1'], df['U0'], df['V'] = U['U1'], U['U0'], U['V']
 
     # Simulate choice and output
-    df[dep + '1'] = np.dot(df[label_out], init_dict['TREATED']['all']) + df['U1']
-    df[dep + '0'] = np.dot(df[label_out], init_dict['UNTREATED']['all']) + df['U0']
+    df[dep + '1'] = np.dot(df[label_out], init_dict['TREATED']['params']) + df['U1']
+    df[dep + '0'] = np.dot(df[label_out], init_dict['UNTREATED']['params']) + df['U0']
     df[indicator] = np.array(
-        np.dot(df[label_choice], init_dict['CHOICE']['all']) - df['V'] > 0).astype(int)
+        np.dot(df[label_choice], init_dict['CHOICE']['params']) - df['V'] > 0).astype(int)
     df[dep] = df[indicator] * df[dep + '1'] + (1 - df[indicator]) * df[dep + '0']
 
     # Save the data
@@ -137,18 +134,15 @@ def update_correlation_structure(model_dict, rho):
     among the unobservables."""
 
     # We first extract the baseline information from the model dictionary.
-    sd_v = model_dict['DIST']['all'][-1]
-    sd_u1 = model_dict['DIST']['all'][0]
+    sd_v = model_dict['DIST']['params'][-1]
+    sd_u1 = model_dict['DIST']['params'][0]
 
     # Now we construct the implied covariance, which is relevant for the initialization file.
     cov1v = rho * sd_v * sd_u1
 
-    model_dict['DIST']['all'][2] = cov1v
+    model_dict['DIST']['params'][2] = cov1v
 
     # We print out the specification to an initialization file with the name mc_init.grmpy.ini.
-    for key_ in ['TREATED', 'UNTREATED', 'CHOICE']:
-        x = [model_dict['varnames'][j - 1] for j in model_dict[key_]['order']]
-        model_dict[key_]['order'] = x
     print_dict(model_dict, 'files/mc')
 
 
@@ -156,8 +150,8 @@ def get_effect_grmpy(file):
     """This function simply returns the ATE of the data set."""
     dict_ = read(file)
     df = pd.read_pickle(dict_['SIMULATION']['source'] + '.grmpy.pkl')
-    beta_diff = dict_['TREATED']['all'] - dict_['UNTREATED']['all']
-    covars = [dict_['varnames'][j - 1] for j in dict_['TREATED']['order']]
+    beta_diff = dict_['TREATED']['params'] - dict_['UNTREATED']['params']
+    covars = dict_['TREATED']['order']
     ATE = np.dot(np.mean(df[covars]), beta_diff)
 
     return ATE
@@ -180,13 +174,13 @@ def monte_carlo(file, grid_points):
         effects['rho'] += [rho]
         # Readjust the initialization file values to add correlation
         model_spec = read(file)
-        X = [model_spec['varnames'][j - 1] for j in model_spec['TREATED']['order']]
+        X = model_spec['TREATED']['order']
         update_correlation_structure(model_spec, rho)
         sim_spec = read(file)
         # Simulate a Data set and specify exogeneous and endogeneous variables
         df_mc = create_data(file)
         endog, exog, exog_ols = df_mc['wage'], df_mc[X], df_mc[['state'] + X]
-        instr = [sim_spec['varnames'][j - 1] for j in sim_spec['CHOICE']['order']]
+        instr = sim_spec['CHOICE']['order']
         instr = [i for i in instr if i != 'const']
         # Calculate true average treatment effect
         ATE = np.mean(df_mc['wage1'] - df_mc['wage0'])
@@ -194,7 +188,7 @@ def monte_carlo(file, grid_points):
 
         # Estimate  via grmpy
         rslt = fit(file)
-        beta_diff = rslt['TREATED']['all'] - rslt['UNTREATED']['all']
+        beta_diff = rslt['TREATED']['params'] - rslt['UNTREATED']['params']
         stat = np.dot(np.mean(exog), beta_diff)
 
         effects['grmpy'] += [stat]
@@ -352,7 +346,7 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
 
     # Process data
-    covariates = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
+    covariates = init_dict['TREATED']['order']
     x = np.mean(data_frame[covariates]).tolist()
     x_neg = [-i for i in x]
     x += x_neg

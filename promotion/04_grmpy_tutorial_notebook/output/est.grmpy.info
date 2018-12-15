@@ -11,7 +11,7 @@
              Message:                                 Optimization terminated successfully.
 
              Warning:                                 The optimization algorithm has failed to provide the parametrization that leads to the minimal criterion function value. 
-                                                      The estimation output is automatically adjusted.
+                                                      The estimation output is automatically adjusted and provides the parameterization with the smallest criterion function value that was reached during the optimization.
 
 
  

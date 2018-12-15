@@ -69,7 +69,7 @@ def simulate_outcomes(init_dict, X, U):
     df[indicator] = np.array((C > 0).astype(float))
 
     # Observed outcomes
-    df[dep] = df[indicator] * df['Y1'] + (1 - df[indicator]) * df['Y0']
+    df[dep] = df[indicator] * df[dep + '1'] + (1 - df[indicator]) * df[dep + '0']
 
     return df
 
