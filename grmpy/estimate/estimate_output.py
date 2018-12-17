@@ -13,7 +13,6 @@ from grmpy.simulate.simulate_auxiliary import write_output
 def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
-    auxiliary = process_se_log(rslt, init_dict)
 
     if 'output_file' in init_dict['ESTIMATION'].keys():
         file_name = init_dict['ESTIMATION']['output_file']
@@ -77,20 +76,19 @@ def print_logfile(init_dict, rslt):
 
             else:
 
-                write_identifier_section(init_dict, rslt, auxiliary, file_)
+                write_identifier_section(init_dict, rslt, file_)
 
 
-def write_identifier_section(init_dict, rslt, auxiliary, file_):
+def write_identifier_section(init_dict, rslt, file_):
     """This function prints the information about the estimation results in the output file."""
 
     fmt_ = '\n  {:<10}' + '{:>10}' + ' {:>18}' + '{:>16}' + '\n\n'
 
     file_.write(fmt_.format(*['', '', 'Start', 'Finish']))
 
-    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 3 + '{:>20}'
+    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 2 + '{:>18}' + '{:>9}' + '{:>19}'+ '{:>24}'
 
-    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', '95% Conf. Int.'
-                              ]) + '\n')
+    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', 't',  'P>|t|', '95% Conf. Int.']) + '\n')
 
     num_treated = len(init_dict['TREATED']['order'])
     num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
@@ -102,7 +100,7 @@ def write_identifier_section(init_dict, rslt, auxiliary, file_):
     identifier_distribution = ['sigma1', 'rho1', 'sigma0', 'rho0']
     identifier = \
         identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
-    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' + '{:>14}' + '{:>10.4f}' * 2
+    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' * 4 + '{:>15.4f}' + '{:>10.4f}'
     for i in range(len(rslt['AUX']['x_internal'])):
         if i == 0:
             file_.write('\n  {:<10} \n'.format('TREATED'))
@@ -112,10 +110,9 @@ def write_identifier_section(init_dict, rslt, auxiliary, file_):
             file_.write('\n  {:<10} \n'.format('CHOICE'))
         elif i == num_choice:
             file_.write('\n  {:<10} \n'.format('DIST'))
-
         file_.write('{0}\n'.format(
             fmt.format('', identifier[i], init_dict['AUX']['starting_values'][i],
-                       rslt['AUX']['x_internal'][i], auxiliary[i],
+                       rslt['AUX']['x_internal'][i], rslt['AUX']['standard_errors'][i], rslt['AUX']['t_values'][i], rslt['AUX']['p_values'][i],
                        rslt['AUX']['confidence_intervals'][i][0],
                        rslt['AUX']['confidence_intervals'][i][1])))
 
@@ -313,11 +310,3 @@ def calculate_mte(rslt, init_dict, data_frame, quant=None):
         return value, args
     else:
         return value
-
-
-def process_se_log(rslt, init_dict):
-    """This function processes the standard error values for the log file."""
-    se = ['------' if math.isnan(i) else str(i) for i in np.round(rslt['AUX']['standard_errors'], 4)
-          ]
-    list_ = ['({})'.format(i) if len(i) == 6 else '({}0)'.format(i) for i in se]
-    return list_
