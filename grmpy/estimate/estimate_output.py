@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import math
-
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
@@ -86,9 +84,10 @@ def write_identifier_section(init_dict, rslt, file_):
 
     file_.write(fmt_.format(*['', '', 'Start', 'Finish']))
 
-    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 2 + '{:>18}' + '{:>9}' + '{:>19}'+ '{:>24}'
+    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 2 + '{:>18}' + '{:>9}' + '{:>19}' + '{:>24}'
 
-    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', 't',  'P>|t|', '95% Conf. Int.']) + '\n')
+    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', 't', 'P>|t|',
+                              '95% Conf. Int.']) + '\n')
 
     num_treated = len(init_dict['TREATED']['order'])
     num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
@@ -112,7 +111,8 @@ def write_identifier_section(init_dict, rslt, file_):
             file_.write('\n  {:<10} \n'.format('DIST'))
         file_.write('{0}\n'.format(
             fmt.format('', identifier[i], init_dict['AUX']['starting_values'][i],
-                       rslt['AUX']['x_internal'][i], rslt['AUX']['standard_errors'][i], rslt['AUX']['t_values'][i], rslt['AUX']['p_values'][i],
+                       rslt['AUX']['x_internal'][i], rslt['AUX']['standard_errors'][i],
+                       rslt['AUX']['t_values'][i], rslt['AUX']['p_values'][i],
                        rslt['AUX']['confidence_intervals'][i][0],
                        rslt['AUX']['confidence_intervals'][i][1])))
 

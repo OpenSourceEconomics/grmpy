@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 from development.tests.working.init_generator.init_file_generator import print_dict_new
-from development.tests.working.read_process.init_file_import_process import read_new
+from development.tests.working.read_process.init_file_import_process import read
 from development.tests.working.read_process.auxiliary import attr_dict_to_init_dict
 from development.tests.working.init_generator.init_file_generator import first_try
 from development.tests.working.read_process.auxiliary import simulate_new
@@ -59,5 +59,5 @@ if Test4:
     init_dict = read('replication.grmpy.ini')
     dict_ = attr_dict_to_init_dict(init_dict)
     print(dict_)
-    print_dict_new(dict_)
+    print_dict(dict_)
 

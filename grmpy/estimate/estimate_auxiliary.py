@@ -308,16 +308,17 @@ def calculate_se(rslt, init_dict, data_frame):
             rslt['AUX']['confidence_intervals'] = [[np.nan, np.nan]] * len(x0)
 
         # Check if standard errors are defined, if not add warning message
-        rslt['AUX']['p_values'], rslt['AUX']['t_values'] = \
-            calculate_p_values(rslt['AUX']['standard_errors'], x0, data_frame)
 
         if False in np.isfinite(rslt['AUX']['standard_errors']):
             rslt['warning'] += ['The estimation process was not able to provide standard errors for'
                                 ' the estimation results, because the approximation \n            '
                                 '                                          of the hessian matrix '
                                 'leads to a singular Matrix']
+    rslt['AUX']['p_values'], rslt['AUX']['t_values'] = \
+        calculate_p_values(rslt['AUX']['standard_errors'], x0, data_frame)
 
     return rslt
+
 
 def calculate_p_values(se, x0, dataframe):
     """This function calculates the p values, given the estimation results and the standard errors.
@@ -327,8 +328,8 @@ def calculate_p_values(se, x0, dataframe):
     df = dataframe.shape[0] - len(x0)
     for counter, value in enumerate(x0):
         if isinstance(value, float):
-            p_values += [1 - t.cdf(np.abs(value/se[counter]), df=df)]
-            t_values += [value/se[counter]]
+            t_values += [value / se[counter]]
+            p_values += [2 * (1 - t.cdf(np.abs(value / se[counter]), df=df))]
         else:
             p_values += [np.nan]
             t_values += [np.nan]
