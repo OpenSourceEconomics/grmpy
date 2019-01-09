@@ -176,7 +176,6 @@ def test7():
     pytest.raises(UserError, fit, fname_noparams)
 
 
-
 def test8():
     """The test checks if an UserError occurs if wrong inputs are specified for a different
     functions/methods.
