@@ -159,10 +159,6 @@ def test7():
         pytest.raises(UserError, check_initialization_dict, dict_)
         pytest.raises(UserError, simulate, 'test.grmpy.yml')
 
-        tests = []
-        tests += [['TREATED', 'UNTREATED'], ['TREATED', 'CHOICE'], ['UNTREATED', 'CHOICE']]
-        tests += [['TREATED', 'UNTREATED', 'CHOICE']]
-
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
