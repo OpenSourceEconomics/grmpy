@@ -127,6 +127,7 @@ def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
     estimation process with initialization file values as start values for an deterministic setting.
     """
+    fname_noparams = TEST_RESOURCES_DIR + '/test_noparams.grmpy.yml'
     fname_vzero = TEST_RESOURCES_DIR + '/test_vzero.grmpy.yml'
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.yml'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.yml'
@@ -173,6 +174,11 @@ def test7():
     dict_ = read(fname_vzero)
     pytest.raises(UserError, check_init_file, dict_)
     pytest.raises(UserError, fit, fname_vzero)
+
+    dict_ = read(fname_noparams)
+    pytest.raises(UserError, check_init_file, dict_)
+    pytest.raises(UserError, fit, fname_noparams)
+
 
 
 def test8():
