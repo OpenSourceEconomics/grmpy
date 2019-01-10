@@ -12,8 +12,10 @@ from grmpy.estimate.estimate_auxiliary import start_values
 from grmpy.check.check import check_initialization_dict
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import dict_transformation
+from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.custom_exceptions import UserError
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
+from grmpy.check.check import check_start_values
 from grmpy.check.check import check_init_file
 from grmpy.test.random_init import print_dict
 from grmpy.simulate.simulate import simulate
@@ -127,7 +129,10 @@ def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
     estimation process with initialization file values as start values for an deterministic setting.
     """
+    fname_falsespec1 = TEST_RESOURCES_DIR + '/test_falsespec1.grmpy.yml'
+    fname_falsespec2 = TEST_RESOURCES_DIR + '/test_falsespec2.grmpy.yml'
     fname_noparams = TEST_RESOURCES_DIR + '/test_noparams.grmpy.yml'
+    fname_binary = TEST_RESOURCES_DIR + '/test_binary.grmpy.yml'
     fname_vzero = TEST_RESOURCES_DIR + '/test_vzero.grmpy.yml'
     fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.yml'
     fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.yml'
@@ -159,6 +164,12 @@ def test7():
         pytest.raises(UserError, check_initialization_dict, dict_)
         pytest.raises(UserError, simulate, 'test.grmpy.yml')
 
+        length = np.random.randint(2, 100)
+        array = np.random.rand(length, 1)
+        subsitute = np.random.randint(0, len(array) - 1)
+        array[subsitute] = np.inf
+        pytest.raises(UserError, check_start_values, array)
+
     dict_ = read(fname_possd)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
@@ -173,6 +184,20 @@ def test7():
 
     dict_ = read(fname_noparams)
     pytest.raises(UserError, check_init_file, dict_)
+    pytest.raises(UserError, fit, fname_noparams)
+
+    dict_ = read(fname_falsespec1)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, fit, fname_noparams)
+
+    dict_ = read(fname_falsespec2)
+    pytest.raises(UserError, check_initialization_dict, dict_)
+    pytest.raises(UserError, fit, fname_noparams)
+
+    dict_ = read(fname_binary)
+    status, msg = check_special_conf(dict_)
+    np.testing.assert_equal(status, True)
+    pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
 

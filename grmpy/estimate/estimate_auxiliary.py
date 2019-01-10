@@ -215,6 +215,7 @@ def check_rslt_parameters(init_dict, data_frame, dict_, x0):
 
     elif dict_['crit'][str(x)] <= crit:
         check, flag = True, 'adjustment'
+
     else:
         check, flag = False, None
     return check, flag

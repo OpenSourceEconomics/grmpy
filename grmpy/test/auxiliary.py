@@ -27,24 +27,6 @@ def cleanup(options=None):
                 os.remove(f)
 
 
-def attr_dict_to_init_dict(attr, old=False):
-    """This function converts a already imported attr dict into an initalization dict."""
-    init = {}
-    for key in ['TREATED', 'UNTREATED', 'CHOICE']:
-        init[key] = {'params': list(attr[key]['all']),
-                     'order': [attr['varnames'][j - 1] for j in attr[key]['order']]}
-    init['DIST'] = {'params': list(attr['DIST']['all'])}
-    for key in ['ESTIMATION', 'SCIPY-BFGS', 'SCIPY-POWELL', 'SIMULATION']:
-        init[key] = attr[key]
-    init['VARTYPES'] = {}
-    for name in attr['varnames']:
-        index = attr['varnames'].index(name)
-
-        init['VARTYPES'][name] = attr['AUX']['types'][index]
-
-    return init
-
-
 def dict_transformation(dict_):
     varnames = []
     vartypes = {}

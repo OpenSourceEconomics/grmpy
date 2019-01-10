@@ -12,17 +12,17 @@ The generalized Roy model (:cite:`HecVyr05`, :cite:`Roy1951`) provides a coheren
     :nowrap:
 
     \begin{align*}
-    & \textbf{Potential Outcomes} & &  \\
-    & & Y_1 & = \mu_1(X) + U_1 \\
-    & & Y_0 & = \mu_0(X) + U_0 \\
+    & \textbf{Potential Outcomes} & & &  \\
+    & & Y_1 & = &\mu_1(X) + U_1 \\
+    & & Y_0 & = &\mu_0(X) + U_0 \\
     & & & \\
-    & \textbf{Choice} & &  \\
-    & & D^{*} & = \mu_D(Z) - V \\
-    & & D & = I[D^{*}  > 0 ] \\
-    & & B & = E[Y_1 - Y_0 \mid \mathcal{I}] \\
-    & & & \\
-    & \textbf{Observed Outcome} & &  \\
-    & & Y & = D Y_1 + (1 - D) Y_0
+    & \textbf{Choice} & & & \\
+    & & D^{*} & = & \mu_D(Z) - V \\
+    & & D & = &I[D^{*}  > 0 ] \\
+    & & B & = &E[Y_1 - Y_0 \mid \mathcal{I}] \\
+    & & & &\\
+    & \textbf{Observed Outcome} & & & \\
+    & & Y & = &D Y_1 + (1 - D) Y_0
     \end{align*}
 
 :math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`D^{*}` denotes the latent tendency for treatment participation. It includes any subjective benefits, e.g. job amenities, and costs, e.g. tuition costs. Agents take up treatment :math:`D` if their latent tendency :math:`D^{*}` is positive. :math:`\mathcal{I}` denotes the agent’s information set at the time of the participation decision. The observed outcome :math:`Y` is determined in a switching-regime fashion (:cite:`Quandt1958`, :cite:`Quandt1972`). If agents take up treatment, then the observed outcome :math:`Y` corresponds to the outcome in the presence of treatment :math:`Y_1`. Otherwise, :math:`Y_0` is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and :math:`(U_1, U_0) \sim N (0, \Sigma)`, then the generalized Roy model corresponds to the original

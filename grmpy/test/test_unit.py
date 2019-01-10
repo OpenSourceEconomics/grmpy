@@ -5,8 +5,14 @@ import numpy as np
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 from grmpy.estimate.estimate_auxiliary import backward_transformation
 from grmpy.estimate.estimate_auxiliary import start_value_adjustment
+from grmpy.estimate.estimate_auxiliary import check_rslt_parameters
+from grmpy.estimate.estimate_auxiliary import calculate_p_values
+from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.estimate.estimate_auxiliary import process_output
+from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.estimate.estimate_auxiliary import calculate_se
 from grmpy.test.random_init import generate_random_dict
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.test.random_init import print_dict
@@ -293,5 +299,52 @@ def test12():
         columns = list(df)
         np.testing.assert_array_almost_equal(sum, real_sum, decimal=5)
         np.testing.assert_equal(columns, real_column_values)
+
+
+def test13():
+    """This test checks if functions that affect the estimation output adjustment work as
+    intended.
+    """
+    for _ in range(5):
+        generate_random_dict({'DETERMINISTIC': False})
+        df = simulate('test.grmpy.yml')
+        init_dict = read('test.grmpy.yml')
+        start = start_values(init_dict, dict, 'init')
+        init_dict['AUX']['criteria'] = calculate_criteria(init_dict, df, start)
+        init_dict['AUX']['starting_values'] = backward_transformation(start)
+
+        aux_dict1 = {'crit': {'1': 10}}
+
+        x0, se = [np.nan] * len(start), [np.nan] * len(start)
+        index = np.random.randint(0, len(x0) - 1)
+        x0[index], se[index] = np.nan, np.nan
+
+        p_values, t_values = calculate_p_values(se, x0, df)
+
+        np.testing.assert_array_equal([p_values[index], t_values[index]], [np.nan, np.nan])
+
+        x_processed, crit_processed, msg = process_output(init_dict, aux_dict1, x0, 'notfinite')
+
+        np.testing.assert_equal([x_processed, crit_processed],
+                                [init_dict['AUX']['starting_values'], init_dict['AUX']['criteria']])
+
+        check1, flag1 = check_rslt_parameters(init_dict, df, aux_dict1, start)
+        check2, flag2 = check_rslt_parameters(init_dict, df, aux_dict1, x0)
+
+        np.testing.assert_equal([check1, flag1], [False, None])
+        np.testing.assert_equal([check2, flag2], [True, 'notfinite'])
+
+        opt_rslt = {'fun': 1.0, 'success': 1, 'status': 1, 'message': 'msg', 'nfev': 10000}
+        rslt = adjust_output(opt_rslt, init_dict, start, df, dict_=aux_dict1)
+        print(rslt['warning'])
+        np.testing.assert_equal(rslt['crit'], opt_rslt['fun'])
+        np.testing.assert_equal(rslt['warning'][0], '---')
+
+        x_linalign = [0.0000000000000001] * len(x0)
+        rslt = {'AUX': {'x_internal': x_linalign}, 'warning': []}
+        rslt = calculate_se(rslt, init_dict, df)
+        np.testing.assert_equal(rslt['AUX']['standard_errors'], [np.nan] * len(x0))
+        np.testing.assert_equal(rslt['AUX']['hess_inv'], '---')
+        np.testing.assert_equal(rslt['AUX']['confidence_intervals'], [[np.nan, np.nan]] * len(x0))
 
     cleanup()

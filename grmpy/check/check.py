@@ -82,5 +82,6 @@ def check_init_file(dict_):
 
 def check_start_values(x0):
     if False in np.isfinite(x0):
-        msg = '---'
+        msg = 'The automatic start value generating process did not lead to finite start values ' \
+              'for the estimation process.'
         raise UserError(msg)

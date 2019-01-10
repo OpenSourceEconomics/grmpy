@@ -130,8 +130,6 @@ def print_info(init_dict, data_frame):
                     data = data_frame[dep]
                 elif label == 'Effects':
                     data = data_frame[dep + '1'] - data_frame[dep + '0']
-                else:
-                    raise AssertionError
 
                 if group == 'Treated':
                     data = data[data_frame[indicator] == 1]

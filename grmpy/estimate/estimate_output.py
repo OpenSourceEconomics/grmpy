@@ -190,24 +190,6 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 
-def write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict):
-    """The function converts the simulated variables to a panda data frame."""
-    indicator = init_dict['ESTIMATION']['indicator']
-    dep = init_dict['ESTIMATION']['dependent']
-    # Stack arrays
-    data = np.column_stack((Y, D, X, Y_1, Y_0))
-
-    # Construct list of column labels
-    column = [dep, indicator] + labels
-
-    column += [dep + '1', dep + '0']
-
-    # Generate data frame
-    df = pd.DataFrame(data=data, columns=column)
-    df[indicator] = df[indicator].apply(np.int64)
-    return df
-
-
 def simulate_estimation(init_dict, rslt, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
 
