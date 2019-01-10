@@ -28,10 +28,11 @@ def plot_treatment_effect():
 
         for effect in [ATE, TT, TUT]:
             ay.plot([effect[0], effect[0]], [0, 5], label=effect[1])
-    plt.legend()
-    plt.subplots_adjust(top=0.95, bottom=0.05, left=0.05, right=0.95, hspace=0.15, wspace=0.1)
+    plt.legend(prop={'size': 15})
 
-    plt.savefig(OUTPUT_DIR + '/fig-treatment-effects-with-and-without-eh.png')
+    plt.subplots_adjust(top=0.95, bottom=0.15, left=0.05, right=0.95, hspace=0.15, wspace=0.1)
+
+    plt.savefig(OUTPUT_DIR + '/fig-treatment-effects-with-and-without-eh.png', dpi=300)
 
 
 if __name__ == '__main__':

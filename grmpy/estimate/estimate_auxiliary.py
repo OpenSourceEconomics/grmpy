@@ -2,7 +2,7 @@
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 from statsmodels.tools.numdiff import approx_hess_cs
 from numpy.linalg import LinAlgError
-from scipy.stats import norm
+from scipy.stats import norm, t
 import statsmodels.api as sm
 import pandas as pd
 import numpy as np
@@ -37,14 +37,14 @@ def start_values(init_dict, data_frame, option):
                     order = init_dict['TREATED']['order']
                 else:
                     order = init_dict['UNTREATED']['order']
-                X = data_frame[[init_dict['varnames'][j - 1] for j in order]][
+                X = data_frame[order][
                     i == data_frame[indicator]]
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
                 sd_ += [np.sqrt(ols_results.scale), 0.0]
             # Estimate gamma via Probit
-            Z = data_frame[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
+            Z = data_frame[init_dict['CHOICE']['order']]
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
             gamma = probitRslt.params
             # Adjust estimated cost-benefit shifter and intercept coefficients
@@ -76,9 +76,9 @@ def start_value_adjustment(x, init_dict, option):
     # if option = init the estimation process takes its distributional arguments from the
     # inititialization dict
     if option == 'init':
-        rho1 = init_dict['DIST']['all'][2] / init_dict['DIST']['all'][0]
-        rho0 = init_dict['DIST']['all'][4] / init_dict['DIST']['all'][3]
-        dist = [init_dict['DIST']['all'][0], rho1, init_dict['DIST']['all'][3], rho0]
+        rho1 = init_dict['DIST']['params'][2] / init_dict['DIST']['params'][0]
+        rho0 = init_dict['DIST']['params'][4] / init_dict['DIST']['params'][3]
+        dist = [init_dict['DIST']['params'][0], rho1, init_dict['DIST']['params'][3], rho0]
         x = np.concatenate((x, dist))
 
     # transform the distributional characteristics s.t. r = log((1-rho)/(1+rho))/2
@@ -127,8 +127,8 @@ def log_likelihood(x0, init_dict, data_frame, dict_=None):
             key_ = 'UNTREATED'
         # Prepare data
         data = data_frame[data_frame[indicator] == i]
-        Z = data[[init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]]
-        X = data[[init_dict['varnames'][j - 1] for j in init_dict[key_]['order']]]
+        Z = data[init_dict['CHOICE']['order']]
+        X = data[init_dict[key_]['order']]
 
         choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
         part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
@@ -194,7 +194,8 @@ def process_output(init_dict, dict_, x0, flag):
             warning = 'The optimization algorithm has failed to provide the parametrization that ' \
                       'leads to the minimal criterion function value. \n                         ' \
                       '                             The estimation output is automatically ' \
-                      'adjusted.'
+                      'adjusted and provides the parameterization with the smallest criterion ' \
+                      'function value that was reached during the optimization.'
     if flag == 'notfinite':
         x0 = init_dict['AUX']['starting_values']
         crit = init_dict['AUX']['criteria']
@@ -214,6 +215,7 @@ def check_rslt_parameters(init_dict, data_frame, dict_, x0):
 
     elif dict_['crit'][str(x)] <= crit:
         check, flag = True, 'adjustment'
+
     else:
         check, flag = False, None
     return check, flag
@@ -264,15 +266,15 @@ def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
     rslt['ESTIMATION'] = init_dict['ESTIMATION']
     for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'AUX']:
         if key_ == 'AUX':
-            rslt['varnames'] = init_dict['varnames']
+            rslt['AUX']['labels'] = init_dict['AUX']['labels']
         else:
             rslt[key_] = {}
             rslt[key_]['order'] = init_dict[key_]['order']
-        rslt[key_]['types'] = init_dict[key_]['types']
+    rslt['VARTYPES'] = init_dict['VARTYPES']
 
-    rslt['TREATED']['all'] = np.array(x[:num_treated])
-    rslt['UNTREATED']['all'] = np.array(x[num_treated:num_untreated])
-    rslt['CHOICE']['all'] = np.array(x[num_untreated:-4])
+    rslt['TREATED']['params'] = np.array(x[:num_treated])
+    rslt['UNTREATED']['params'] = np.array(x[num_treated:num_untreated])
+    rslt['CHOICE']['params'] = np.array(x[num_untreated:-4])
     rslt = calculate_se(rslt, init_dict, data_frame)
     return rslt
 
@@ -307,10 +309,29 @@ def calculate_se(rslt, init_dict, data_frame):
             rslt['AUX']['confidence_intervals'] = [[np.nan, np.nan]] * len(x0)
 
         # Check if standard errors are defined, if not add warning message
+
         if False in np.isfinite(rslt['AUX']['standard_errors']):
             rslt['warning'] += ['The estimation process was not able to provide standard errors for'
                                 ' the estimation results, because the approximation \n            '
                                 '                                          of the hessian matrix '
                                 'leads to a singular Matrix']
+    rslt['AUX']['p_values'], rslt['AUX']['t_values'] = \
+        calculate_p_values(rslt['AUX']['standard_errors'], x0, data_frame)
 
     return rslt
+
+
+def calculate_p_values(se, x0, dataframe):
+    """This function calculates the p values, given the estimation results and the standard errors.
+    """
+    p_values = []
+    t_values = []
+    df = dataframe.shape[0] - len(x0)
+    for counter, value in enumerate(x0):
+        if isinstance(value, float):
+            t_values += [value / se[counter]]
+            p_values += [2 * (1 - t.cdf(np.abs(value / se[counter]), df=df))]
+        else:
+            p_values += [np.nan]
+            t_values += [np.nan]
+    return p_values, t_values

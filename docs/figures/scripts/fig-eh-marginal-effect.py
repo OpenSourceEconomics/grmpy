@@ -31,7 +31,7 @@ def plot_marginal_treatment_effect(pres, abs_):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR + '/fig-eh-marginal-effect.png')
+    plt.savefig(OUTPUT_DIR + '/fig-eh-marginal-effect.png', dpi=300)
 
 
 if __name__ == '__main__':

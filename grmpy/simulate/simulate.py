@@ -26,16 +26,16 @@ def simulate(init_file):
     np.random.seed(seed)
 
     # Simulate unobservables of the model
-    U, V = simulate_unobservables(init_dict)
+    U = simulate_unobservables(init_dict)
 
     # Simulate observables of the model
     X = simulate_covariates(init_dict)
 
     # Simulate endogeneous variables of the model
-    Y, D, Y_1, Y_0 = simulate_outcomes(init_dict, X, U, V)
+    df = simulate_outcomes(init_dict, X, U)
 
     # Write output file
-    df = write_output(init_dict, Y, D, X, Y_1, Y_0, U, V)
+    df = write_output(init_dict, df)
 
     # Calculate Criteria function value
     if not init_dict['DETERMINISTIC']:

@@ -1,0 +1,118 @@
+\documentclass[a4paper,12pt,bold]{scrartcl}
+
+\renewcommand{\baselinestretch}{1.3}\normalsize
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\thin}{\thinspace}
+\newcommand{\thick}{\thickspace}
+\newcommand{\N}{\mathcal{N}}	%Normal Distribution
+\newcommand{\U}{\mathrm{U}}	%Uniform Distribution
+\newcommand{\D}{\mathrm{D}}	%Dirichlet Distribution
+\newcommand{\W}{\mathrm{W}}	%Wishart Distribution
+\newcommand{\E}{\mathrm{E}}		%Expectation
+\newcommand{\Iden}{\mathbb{I}}	%Identity Matrix
+\newcommand{\Ind}{\mathrm{I}}	%Indicator Function
+
+\newcommand{\bs}{\boldsymbol}
+\newcommand{\var}{\mathrm{var}\thin}
+\newcommand{\plim}{\mathrm{plim}\thin}
+\newcommand{\cov}{\mathrm{cov}\thin}
+\newcommand\indep{\protect\mathpalette{\protect\independenT}{\perp}}
+\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern5mu{#1#2}}}
+\usepackage{bbm}
+%\usepackage{endfloat}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\parindent0pt
+\usepackage{algpseudocode,tabularx,ragged2e}
+\newcolumntype{C}{>{\centering\arraybackslash}X} % centered "X" column
+\newcolumntype{L}{>{\arraybackslash}X} % centered "X" column
+
+\usepackage{algorithmicx}
+\usepackage{graphicx}
+
+\usepackage{algorithm}
+\graphicspath{{../codes/}}
+
+
+\usepackage{apacite}
+
+
+\usepackage{booktabs}
+\usepackage{epigraph}
+\usepackage[sans]{dsfont}
+\usepackage[round,longnamesfirst]{natbib}
+\usepackage{bm}																									%matrix symbol
+\usepackage{setspace}																						%Fu�noten (allgm.
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}%Zeilenabst�nde)
+\usepackage{threeparttable}
+\usepackage{lscape}																							%Querformat
+\usepackage[latin1]{inputenc}																		%Umlaute
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancybox}																						%Boxen und Rahmen
+\usepackage{appendix}
+\usepackage{listings}
+\usepackage{xr}
+
+\usepackage{enumerate}
+\usepackage[labelfont=bf]{caption}
+																		%EURO Symbol
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{subfig,float}																				%Mehrseitige Tabellen
+\usepackage{color,colortbl}																			%Farbige Tabellen
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2.5cm]{geometry} %Seitenr�nder
+%\usepackage[normal]{caption2}[2002/08/03]												%Titel ohne float - Umgebung
+\definecolor{lightgrey}{gray}{0.95}	%Farben mischen
+\definecolor{grey}{gray}{0.85}
+\definecolor{darkgrey}{gray}{0.80}
+
+\newcommand{\mc}{\multicolumn}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf}
+
+\usepackage{url}  % Used for linebreaks in verbatim statements
+
+
+\usepackage{bibentry}
+\nobibliography*
+
+\newtheorem{Definition}{Definition}
+\newtheorem{Remark}{Remark}
+\newtheorem{Lemma}{Lemma}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Excercise}{Excercise}
+\newtheorem{Result}{Result}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Prediction}{Prediction}
+\newtheorem{Solution}{Solution}
+\newtheorem{Problem}{Problem}
+
+\setlength{\skip\footins}{1.0cm}
+\deffootnote[1em]{1.1em}{0em}{\textsuperscript{\thefootnotemark}}
+\renewcommand{\arraystretch}{1.05}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\makeatletter
+\newenvironment{manquotation}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+   \def\chapquote@author{#2}%
+   \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax%
+   \itshape}
+  {\par\normalfont\hfill--\ \chapquote@author\hspace*{\@tempdima}\par\bigskip}
+\makeatother
+
+\newenvironment{boenumerate}
+{\begin{enumerate}\renewcommand\labelenumi{\textbf{(\theenumi)}}}
+{\end{enumerate}}

@@ -65,7 +65,7 @@ def plot_local_average_treatment(mte):
     ax.set_ylim([1.5, 4.5])
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR + '/fig-local-average-treatment.png')
+    plt.savefig(OUTPUT_DIR + '/fig-local-average-treatment.png', dpi=300)
 
 
 if __name__ == '__main__':

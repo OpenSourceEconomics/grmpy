@@ -20,7 +20,7 @@ from grmpy.check.auxiliary import read_data
 from grmpy.read.read import read
 
 
-def estimate(init_file):
+def fit(init_file):
     """The function estimates the coefficients of the simulated data set."""
     check_presence_init(init_file)
 

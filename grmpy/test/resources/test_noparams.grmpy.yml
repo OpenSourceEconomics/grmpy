@@ -1,0 +1,66 @@
+---
+SIMULATION:
+    seed: 6214
+    agents: 10000
+    source: DE623210
+ESTIMATION:
+    agents: 602
+    file: DE623210.grmpy.txt
+    optimizer: SCIPY-BFGS
+    start: init
+    maxiter: 1185
+    dependent: Y
+    indicator: D
+    output_file: est.grmpy.info
+    comparison: '1'
+TREATED:
+    order:
+    - X1
+    - X2
+UNTREATED:
+    params:
+    - 9.1728
+    - 0.3759
+    - 9.041
+    order:
+    - X1
+    - X3
+    - X4
+CHOICE:
+    params:
+    - 3.3517
+    - 1.1453
+    - -1.3058
+    order:
+    - X1
+    - X11
+    - X12
+DIST:
+    params:
+    - 1.0000
+    - 0.0000
+    - 0.0000
+    - 1.0000
+    - 0.0000
+    - 1.0000
+VARTYPES:
+    X6: nonbinary
+    X5: nonbinary
+    X1: nonbinary
+    X8:
+    - binary
+    - 0.19947881916814075
+    X11: nonbinary
+    X3: nonbinary
+    X9: nonbinary
+    X10: nonbinary
+    X12: nonbinary
+    X2: nonbinary
+    X7: nonbinary
+    X4: nonbinary
+SCIPY-BFGS:
+    gtol: 1.0971553268467511e-05
+    eps: 1.4901161193847655e-08
+SCIPY-POWELL:
+    xtol: 0.00010157302940848187
+    ftol: 9.288449047088954e-05

@@ -1,18 +1,16 @@
 import pandas as pd
 import numpy as np
-import math
-
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.simulate.simulate_auxiliary import write_output
 
 
 def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
-    auxiliary = process_se_log(rslt, init_dict)
 
     if 'output_file' in init_dict['ESTIMATION'].keys():
         file_name = init_dict['ESTIMATION']['output_file']
@@ -76,32 +74,32 @@ def print_logfile(init_dict, rslt):
 
             else:
 
-                write_identifier_section(init_dict, rslt, auxiliary, file_)
+                write_identifier_section(init_dict, rslt, file_)
 
 
-def write_identifier_section(init_dict, rslt, auxiliary, file_):
+def write_identifier_section(init_dict, rslt, file_):
     """This function prints the information about the estimation results in the output file."""
 
     fmt_ = '\n  {:<10}' + '{:>10}' + ' {:>18}' + '{:>16}' + '\n\n'
 
     file_.write(fmt_.format(*['', '', 'Start', 'Finish']))
 
-    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 3 + '{:>20}'
+    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 2 + '{:>18}' + '{:>9}' + '{:>19}' + '{:>24}'
 
-    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', '95% Conf. Int.'
-                              ]) + '\n')
+    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', 't', 'P>|t|',
+                              '95% Conf. Int.']) + '\n')
 
     num_treated = len(init_dict['TREATED']['order'])
     num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
     num_choice = num_untreated + len(init_dict['CHOICE']['order'])
 
-    identifier_treated = [init_dict['varnames'][j - 1] for j in init_dict['TREATED']['order']]
-    identifier_untreated = [init_dict['varnames'][j - 1] for j in init_dict['UNTREATED']['order']]
-    identifier_choice = [init_dict['varnames'][j - 1] for j in init_dict['CHOICE']['order']]
+    identifier_treated = init_dict['TREATED']['order']
+    identifier_untreated = init_dict['UNTREATED']['order']
+    identifier_choice = init_dict['CHOICE']['order']
     identifier_distribution = ['sigma1', 'rho1', 'sigma0', 'rho0']
     identifier = \
         identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
-    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' + '{:>14}' + '{:>10.4f}' * 2
+    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' * 4 + '{:>15.4f}' + '{:>10.4f}'
     for i in range(len(rslt['AUX']['x_internal'])):
         if i == 0:
             file_.write('\n  {:<10} \n'.format('TREATED'))
@@ -111,10 +109,10 @@ def write_identifier_section(init_dict, rslt, auxiliary, file_):
             file_.write('\n  {:<10} \n'.format('CHOICE'))
         elif i == num_choice:
             file_.write('\n  {:<10} \n'.format('DIST'))
-
         file_.write('{0}\n'.format(
             fmt.format('', identifier[i], init_dict['AUX']['starting_values'][i],
-                       rslt['AUX']['x_internal'][i], auxiliary[i],
+                       rslt['AUX']['x_internal'][i], rslt['AUX']['standard_errors'][i],
+                       rslt['AUX']['t_values'][i], rslt['AUX']['p_values'][i],
                        rslt['AUX']['confidence_intervals'][i][0],
                        rslt['AUX']['confidence_intervals'][i][1])))
 
@@ -192,30 +190,11 @@ def write_comparison(init_dict, df1, rslt):
                 file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
 
 
-def write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict):
-    """The function converts the simulated variables to a panda data frame."""
-    indicator = init_dict['ESTIMATION']['indicator']
-    dep = init_dict['ESTIMATION']['dependent']
-    # Stack arrays
-    data = np.column_stack((Y, D, X, Y_1, Y_0))
-
-    # Construct list of column labels
-    column = [dep, indicator] + labels
-
-    column += [dep + '1', dep + '0']
-
-    # Generate data frame
-    df = pd.DataFrame(data=data, columns=column)
-    df[indicator] = df[indicator].apply(np.int64)
-    return df
-
-
 def simulate_estimation(init_dict, rslt, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
 
     # Distribute information
     seed = init_dict['SIMULATION']['seed']
-    labels = init_dict['varnames']
     # Determine parametrization and read in /simulate observables
     if start:
         start_dict = process_results(init_dict, None)
@@ -230,13 +209,13 @@ def simulate_estimation(init_dict, rslt, start=False):
         # Set seed value
         np.random.seed(seed)
         # Simulate unobservables
-        U, V = simulate_unobservables(dict_)
+        U = simulate_unobservables(dict_)
         X = simulate_covariates(rslt_dict)
 
         # Simulate endogeneous variables
-        Y, D, Y_1, Y_0 = simulate_outcomes(dict_, X, U, V)
+        df = simulate_outcomes(dict_, X, U)
 
-        df = write_output_estimation(labels, Y, D, X, Y_1, Y_0, init_dict)
+        df = write_output(init_dict, df)
         data_frames += [df]
 
     if start:
@@ -250,23 +229,28 @@ def process_results(init_dict, rslt):
     if rslt is None:
         num_treated = init_dict['AUX']['num_covars_treated']
         num_untreated = num_treated + init_dict['AUX']['num_covars_untreated']
+
         dict_ = dict()
         for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
             dict_[key_] = {}
             if key_ != 'DIST':
                 dict_[key_]['order'] = init_dict[key_]['order']
-                dict_[key_]['types'] = init_dict[key_]['types']
-        dict_['varnames'] = init_dict['varnames']
-        dict_['TREATED']['all'] = init_dict['AUX']['starting_values'][:num_treated]
-        dict_['UNTREATED']['all'] = init_dict['AUX']['starting_values'][num_treated:num_untreated]
-        dict_['CHOICE']['all'] = init_dict['AUX']['starting_values'][num_untreated:-4]
-        dict_['DIST']['all'] = transform_rslt_DIST(init_dict['AUX']['starting_values'])
+        dict_['TREATED']['params'] = init_dict['AUX']['starting_values'][:num_treated]
+        dict_['UNTREATED']['params'] = \
+            init_dict['AUX']['starting_values'][num_treated:num_untreated]
+        dict_['CHOICE']['params'] = init_dict['AUX']['starting_values'][num_untreated:-4]
+        dict_['DIST']['params'] = transform_rslt_DIST(init_dict['AUX']['starting_values'])
     else:
         dict_ = dict(rslt)
         dict_['DIST'] = {}
-        dict_['DIST']['all'] = transform_rslt_DIST(rslt['AUX']['x_internal'])
+        dict_['DIST']['params'] = transform_rslt_DIST(rslt['AUX']['x_internal'])
     dict_['SIMULATION'] = {}
+    dict_['ESTIMATION'] = init_dict['ESTIMATION']
     dict_['SIMULATION'] = dict(init_dict['SIMULATION'])
+    if 'AUX' not in dict_.keys():
+        dict_['AUX'] = {}
+    dict_['AUX']['labels'], dict_['AUX']['num_covars'] = \
+        init_dict['AUX']['labels'], init_dict['AUX']['num_covars']
     return dict_
 
 
@@ -288,11 +272,11 @@ def transform_rslt_DIST(rslt):
 
 
 def calculate_mte(rslt, init_dict, data_frame, quant=None):
-    coeffs_treated = rslt['TREATED']['all']
-    coeffs_untreated = rslt['UNTREATED']['all']
+    coeffs_treated = rslt['TREATED']['params']
+    coeffs_untreated = rslt['UNTREATED']['params']
 
     if quant is None:
-        quantiles = [1] + np.arange(2.5, 100, 2.5).tolist() + [99]
+        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
         args = [str(i) + '%' for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
     else:
@@ -302,19 +286,9 @@ def calculate_mte(rslt, init_dict, data_frame, quant=None):
     cov[2, 0] = rslt['AUX']['x_internal'][-3] * rslt['AUX']['x_internal'][-4]
     cov[2, 1] = rslt['AUX']['x_internal'][-1] * rslt['AUX']['x_internal'][-2]
     cov[2, 2] = 1.0
-    help_ = list(set(init_dict['TREATED']['order'] + init_dict['UNTREATED']['order']))
-    x = data_frame[[init_dict['varnames'][i - 1] for i in help_]]
 
-    value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, rslt)
+    value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt)
     if quant is None:
         return value, args
     else:
         return value
-
-
-def process_se_log(rslt, init_dict):
-    """This function processes the standard error values for the log file."""
-    se = ['------' if math.isnan(i) else str(i) for i in np.round(rslt['AUX']['standard_errors'], 4)
-          ]
-    list_ = ['({})'.format(i) if len(i) == 6 else '({}0)'.format(i) for i in se]
-    return list_

@@ -6,11 +6,14 @@ import os
 from statsmodels.tools.sm_exceptions import ConvergenceWarning
 import numpy as np
 
-IS_PRODUCTION = True
+# Set Debug mode dependend on the environment in which the test battery is running
+IS_PRODUCTION = False
+
+if os.getenv('GRMPY_DEV') == 'TRUE':
+    IS_PRODUCTION = True
 
 # We want to turn off selected warnings.
-
-if IS_PRODUCTION is True:
+if IS_PRODUCTION is False:
     warnings.simplefilter(action='ignore', category=FutureWarning)
     warnings.simplefilter(action='ignore', category=ConvergenceWarning)
     warnings.simplefilter(action='ignore', category=RuntimeWarning)

@@ -30,7 +30,7 @@ def collect_tests():
 
 
 def run_property_test(module, test, dirname=None):
-    """This function runs a single robustness test."""
+    """This function runs a single replication test."""
     mod = importlib.import_module('grmpy.test.' + module.replace('.py', ''))
     test_fun = getattr(mod, test)
 
@@ -144,8 +144,8 @@ def process_command_line_arguments(which):
     """This function processes the command line arguments for the test battery."""
     is_request, is_hours, is_seed, is_test, is_update = False, False, False, False, False
 
-    if which == 'robustness':
-        msg = 'Test robustness of package'
+    if which == 'replication':
+        msg = 'Test replication of package'
         is_request, is_hours, is_seed = True, True, True
     elif which == 'regression':
         msg = 'Test package for regressions'

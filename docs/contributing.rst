@@ -8,19 +8,19 @@ To get acquainted with the code base, you can check out our `issue tracker <http
 Roadmap
 -------
 
-We aim for improvements to the ``grmpy`` package in three domains: Objects of Interest, Estimation Methods, and Numerical Methods.
+We aim for improvements to the ``grmpy`` package in four domains: Objects of Interest, Estimation Methods, and Numerical Methods.
 
 Objects of Interest
 ^^^^^^^^^^^^^^^^^^^
 
-* adding marginal surplus and marginal cost parameters as presented by Eisenhauer et al. (:cite:`Eisenhauer2015`)
+* adding marginal surplus and marginal cost parameters as presented by :cite:`Eisenhauer2015`
 
 Estimation Methods
 ^^^^^^^^^^^^^^^^^^
 
-* implementing polynomial and local-instrumental variable estimation as outlined by Heckman et al. (:cite:`HeUrVy06`)
+* implement polynomial and local-instrumental variable estimation as outlined by :cite:`HeUrVy06`
 
-* implementing capability to control for unobservables by adding a factor structure assumption as in Eisenhauer manuscript
+* implementing capability to control for unobservables by adding a factor structure assumption as in :cite:`Eisenhauer2013`
 
 .. todo::
 

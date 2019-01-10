@@ -1,7 +1,7 @@
 Installation
 ============
 
-The ``grmpy`` package can be conveniently installed from the `Python Package Index <https://pypi.python.org/pypi>`_ (PyPI) or directly from its source files. We currently support Python 2.7 and Python 3.6 on Linux systems.
+The ``grmpy`` package can be conveniently installed from the `Python Package Index <https://pypi.python.org/pypi>`_ (PyPI) or directly from its source files. We currently support Python 3.6< on Linux systems.
 
 Python Package Index
 --------------------
