@@ -4,11 +4,30 @@ from statsmodels.tools.numdiff import approx_hess_cs
 from numpy.linalg import LinAlgError
 from scipy.stats import norm, t
 import statsmodels.api as sm
-import pandas as pd
 import numpy as np
 
 from grmpy.check.check import check_start_values
 from grmpy.check.check import UserError
+
+
+def process_data(data, dict_):
+    """This function process the data for the optimization process"""
+    indicator = dict_['ESTIMATION']['indicator']
+    outcome = dict_['ESTIMATION']['dependent']
+    D = data[indicator].values
+
+    data1 = data[data[indicator] == 1]
+    data2 = data[data[indicator] == 0]
+
+    X1 = data1[dict_['TREATED']['order']].values
+    X0 = data2[dict_['UNTREATED']['order']].values
+    Z1 = data1[dict_['CHOICE']['order']].values
+    Z0 = data2[dict_['CHOICE']['order']].values
+
+    Y1 = data1[outcome].values
+    Y0 = data2[outcome].values
+
+    return D, X1, X0, Z1, Z0, Y1, Y0
 
 
 def start_values(init_dict, data_frame, option):
@@ -105,45 +124,26 @@ def backward_transformation(x0, dict_=None):
     return x
 
 
-def log_likelihood(x0, init_dict, data_frame, dict_=None):
+def log_likelihood(x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
     # Distribute parameter
     num_treated = init_dict['AUX']['num_covars_treated']
     num_untreated = num_treated + init_dict['AUX']['num_covars_untreated']
 
     beta1, beta0, gamma = x0[:num_treated], x0[num_treated:num_untreated], x0[num_untreated:-4]
-    sd1, sd0, rho1v, rho0v, sdv = x0[-4], x0[-2], x0[-3], x0[-1], 1.0
-    # Set labels for indicator and the dependent variable
-    indicator = init_dict['ESTIMATION']['indicator']
-    dep = init_dict['ESTIMATION']['dependent']
+    sd1, sd0, rho1v, rho0v = x0[-4], x0[-2], x0[-3], x0[-1]
     # Provide parameterization for D=1 and D=0 and provide auxiliary list likl
-    likl = []
-    for i in [0.0, 1.0]:
-        if i == 1.0:
-            beta, gamma, rho, sd, sdv = beta1, gamma, rho1v, sd1, sdv
-            key_ = 'TREATED'
-        else:
-            beta, gamma, rho, sd, sdv = beta0, gamma, rho0v, sd0, sdv
-            key_ = 'UNTREATED'
-        # Prepare data
-        data = data_frame[data_frame[indicator] == i]
-        Z = data[init_dict['CHOICE']['order']]
-        X = data[init_dict[key_]['order']]
 
-        choice_ = pd.DataFrame.sum(gamma * Z, axis=1)
-        part1 = (data[dep] - pd.DataFrame.sum(beta * X, axis=1)) / sd
-        part2 = (choice_ - rho * sdv * part1) / (np.sqrt((1 - (rho ** 2)) * (sdv ** 2)))
-        dist_1, dist_2 = norm.pdf(part1), norm.cdf(part2)
+    part11 = (Y1 - np.dot(beta1, X1.T)) / sd1
+    part21 = (np.dot(gamma, Z1.T) - rho1v * part11) / (np.sqrt((1 - rho1v ** 2)))
 
-        if i == 1.0:
-            contrib = (1.0 / sd) * dist_1 * dist_2
+    part10 = (Y0 - np.dot(beta0, X0.T)) / sd0
+    part20 = (np.dot(gamma, Z0.T) - rho0v * part10) / (np.sqrt((1 - rho0v ** 2)))
 
-        else:
-            contrib = (1.0 / sd) * dist_1 * (1.0 - dist_2)
+    treated = (1 / sd1) * norm.pdf(part11) * norm.cdf(part21)
+    untreated = (1 / sd0) * norm.pdf(part10) * (1 - norm.cdf(part20))
 
-        likl.append(contrib)
-    likl = np.append(likl[0], likl[1])
-    likl = - np.mean(np.log(np.clip(likl, 1e-20, np.inf)))
+    likl = - np.mean(np.log(np.clip(np.append(treated, untreated), 1e-20, np.inf)))
 
     if dict_ is None:
         pass
@@ -153,10 +153,10 @@ def log_likelihood(x0, init_dict, data_frame, dict_=None):
     return likl
 
 
-def calculate_criteria(init_dict, data_frame, x0):
+def calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, x0):
     """The function calculates the criteria function value."""
     x = backward_transformation(x0)
-    criteria = log_likelihood(x, init_dict, data_frame)
+    criteria = log_likelihood(x, init_dict, X1, X0, Z1, Z0, Y1, Y0)
     return criteria
 
 
@@ -171,12 +171,12 @@ def optimizer_options(init_dict_):
     return opt_dict, method
 
 
-def minimizing_interface(x0, init_dict, data_frame, dict_):
+def minimizing_interface(x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_):
     """The function provides the minimization interface for the estimation process."""
     # Collect arguments
     x0 = backward_transformation(x0, dict_)
     # Calculate likelihood for pre-specified arguments
-    likl = log_likelihood(x0, init_dict, data_frame, dict_)
+    likl = log_likelihood(x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_)
 
     return likl
 
@@ -204,11 +204,11 @@ def process_output(init_dict, dict_, x0, flag):
     return x0, crit, warning
 
 
-def check_rslt_parameters(init_dict, data_frame, dict_, x0):
+def check_rslt_parameters(init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_, x0):
     """This function checks if the algorithms has provided a parameterization with a lower criterium
      function value.
      """
-    crit = calculate_criteria(init_dict, data_frame, x0)
+    crit = calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, x0)
     x = min(dict_['crit'], key=dict_['crit'].get)
     if False in np.isfinite(x0).tolist():
         check, flag = True, 'notfinite'
@@ -229,7 +229,7 @@ def bfgs_dict():
     return rslt_dict
 
 
-def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
+def adjust_output(opt_rslt, init_dict, x0, X1, X0, Z1, Z0, Y1, Y0, dict_=None):
     """The function adds different information of the minimization process to the estimation
     output.
     """
@@ -246,7 +246,7 @@ def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
 
     else:
         # Check if the algorithm has returned the values with the lowest criterium function value
-        check, flag = check_rslt_parameters(init_dict, data_frame, dict_, x0)
+        check, flag = check_rslt_parameters(init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_, x0)
         # Adjust values if necessary
         if check:
             x, crit, warning = process_output(init_dict, dict_, x0, flag)
@@ -275,14 +275,14 @@ def adjust_output(opt_rslt, init_dict, x0, data_frame, dict_=None):
     rslt['TREATED']['params'] = np.array(x[:num_treated])
     rslt['UNTREATED']['params'] = np.array(x[num_treated:num_untreated])
     rslt['CHOICE']['params'] = np.array(x[num_untreated:-4])
-    rslt = calculate_se(rslt, init_dict, data_frame)
+    rslt = calculate_se(rslt, init_dict, X1, X0, Z1, Z0, Y1, Y0)
     return rslt
 
 
-def calculate_se(rslt, init_dict, data_frame):
+def calculate_se(rslt, init_dict, X1, X0, Z1, Z0, Y1, Y0):
     """This function calculates the standard errors for given parameterization via an approximation
     of the hessian matrix."""
-
+    num_ind = Y1.shape[0] + Y0.shape[0]
     x0 = rslt['AUX']['x_internal']
 
     if init_dict['ESTIMATION']['maxiter'] == 0:
@@ -291,10 +291,10 @@ def calculate_se(rslt, init_dict, data_frame):
         rslt['AUX']['confidence_intervals'] = [[np.nan, np.nan]] * len(x0)
     else:
         # Calculate the hessian matrix, check if it is p
-        hess = approx_hess_cs(x0, log_likelihood, args=(init_dict, data_frame))
+        hess = approx_hess_cs(x0, log_likelihood, args=(init_dict, X1, X0, Z1, Z0, Y1, Y0))
         try:
             hess_inv = np.linalg.inv(hess)
-            se = np.sqrt(np.diag(hess_inv) / data_frame.shape[0])
+            se = np.sqrt(np.diag(hess_inv) / num_ind)
             rslt['AUX']['standard_errors'] = se
             rslt['AUX']['hess_inv'] = hess_inv
             rslt['AUX']['confidence_intervals'] = []
@@ -316,17 +316,18 @@ def calculate_se(rslt, init_dict, data_frame):
                                 '                                          of the hessian matrix '
                                 'leads to a singular Matrix']
     rslt['AUX']['p_values'], rslt['AUX']['t_values'] = \
-        calculate_p_values(rslt['AUX']['standard_errors'], x0, data_frame)
+        calculate_p_values(rslt['AUX']['standard_errors'], x0, num_ind)
 
     return rslt
 
 
-def calculate_p_values(se, x0, dataframe):
+def calculate_p_values(se, x0, num_ind):
     """This function calculates the p values, given the estimation results and the standard errors.
     """
     p_values = []
     t_values = []
-    df = dataframe.shape[0] - len(x0)
+    df = num_ind - len(x0)
+    print(df)
     for counter, value in enumerate(x0):
         if isinstance(value, float):
             t_values += [value / se[counter]]

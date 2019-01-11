@@ -9,6 +9,7 @@ import pytest
 from grmpy.estimate.estimate_auxiliary import calculate_criteria
 from grmpy.estimate.estimate_output import simulate_estimation
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.estimate.estimate_auxiliary import process_data
 from grmpy.check.check import check_initialization_dict
 from grmpy.test.random_init import generate_random_dict
 from grmpy.test.auxiliary import dict_transformation
@@ -50,7 +51,9 @@ def test2():
         df = simulate('test.grmpy.yml')
         init_dict = read('test.grmpy.yml')
         start = start_values(init_dict, df, 'init')
-        criteria_ = calculate_criteria(init_dict, df, start)
+        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+
+        criteria_ = calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
         np.testing.assert_array_almost_equal(criteria, criteria_)
 
@@ -72,7 +75,8 @@ def test3():
 
         criteria = []
         for data in [df1, df2]:
-            criteria += [calculate_criteria(init_dict, data, start)]
+            _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, init_dict)
+            criteria += [calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)]
         np.testing.assert_allclose(criteria[1], criteria[0], rtol=0.1)
 
 

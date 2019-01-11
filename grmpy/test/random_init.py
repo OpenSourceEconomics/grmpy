@@ -127,7 +127,7 @@ def generate_random_dict(constr=None):
     init_dict['ESTIMATION']['dependent'] = 'Y'
     init_dict['ESTIMATION']['indicator'] = 'D'
     init_dict['ESTIMATION']['output_file'] = 'est.grmpy.info'
-    init_dict['ESTIMATION']['comparison'] = '1'
+    init_dict['ESTIMATION']['comparison'] = '0'
 
     init_dict['SCIPY-BFGS'], init_dict['SCIPY-POWELL'] = {}, {}
     init_dict['SCIPY-BFGS']['gtol'] = np.random.uniform(1.5e-05, 0.8e-05)

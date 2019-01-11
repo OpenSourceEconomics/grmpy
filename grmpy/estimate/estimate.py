@@ -11,6 +11,7 @@ from grmpy.check.check import check_presence_estimation_dataset
 from grmpy.estimate.estimate_output import write_comparison
 from grmpy.estimate.estimate_auxiliary import adjust_output
 from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.estimate.estimate_auxiliary import process_data
 from grmpy.estimate.estimate_output import print_logfile
 from grmpy.estimate.estimate_auxiliary import bfgs_dict
 from grmpy.check.check import check_initialization_dict
@@ -33,7 +34,8 @@ def fit(init_file):
     check_init_file(dict_)
 
     # Distribute initialization information.
-    data_file = dict_['ESTIMATION']['file']
+    data = read_data(dict_['ESTIMATION']['file'])
+    D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     if dict_['ESTIMATION']['maxiter'] == 0:
         option = 'init'
@@ -41,20 +43,20 @@ def fit(init_file):
         option = dict_['ESTIMATION']['start']
 
     # Read data frame
-    data = read_data(data_file)
 
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
-    dict_['AUX']['criteria'] = calculate_criteria(dict_, data, x0)
+    dict_['AUX']['criteria'] = calculate_criteria(dict_, X1, X0, Z1, Z0, Y1, Y0, x0)
     dict_['AUX']['starting_values'] = backward_transformation(x0)
     rslt_dict = bfgs_dict()
     if opts['maxiter'] == 0:
-        rslt = adjust_output(None, dict_, x0, data, rslt_dict)
+        rslt = adjust_output(None, dict_, x0, X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
     else:
         opt_rslt = minimize(
-            minimizing_interface, x0, args=(dict_, data, rslt_dict), method=method, options=opts)
-        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], data, rslt_dict)
+            minimizing_interface, x0, args=(dict_, X1, X0, Z1, Z0, Y1, Y0, rslt_dict),
+            method=method, options=opts)
+        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)
 
