@@ -3,15 +3,21 @@ Contact and Credits
 
 If you have any questions or comments, please do not hesitate to `contact us <https://join.slack.com/t/oseconomics/shared_invite/enQtNDM0OTM2NTMwNzU0LWM0ZjM4ZTZkYjYyNTEyN2I4ODQ3MjFjMjM5NmZmZmRlZWJmOGYxMTEyOGQxYmM4YTU1ZTZkOWQyNWU4YjlmOTg>`_ directly.
 
+BDFL
+^^^^
+
+`Philipp Eisenhauer <https://github.com/peisenha>`_
+
+
 Development Lead
 ^^^^^^^^^^^^^^^^
 
-`Philipp Eisenhauer <https://github.com/peisenha>`_
+`Sebastian Becker <https://github.com/sebecker>`_
 
 Contributors
 ^^^^^^^^^^^^
 
-`Sebastian Becker <https://github.com/sebecker>`_, `Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/bekauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
+`Sebastian Gsell <https://github.com/segsell>`_, `Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/bekauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
 
 Acknowledgments
 ^^^^^^^^^^^^^^^
