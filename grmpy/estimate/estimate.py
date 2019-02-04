@@ -26,7 +26,7 @@ def fit(init_file):
     check_presence_init(init_file)
 
     dict_ = read(init_file)
-    np.random.seed(dict_['SIMULATION']['seed'])
+    np.random.seed(dict_["SIMULATION"]["seed"])
 
     # We perform some basic consistency checks regarding the user's request.
     check_presence_estimation_dataset(dict_)
@@ -34,34 +34,41 @@ def fit(init_file):
     check_init_file(dict_)
 
     # Distribute initialization information.
-    data = read_data(dict_['ESTIMATION']['file'])
+    data = read_data(dict_["ESTIMATION"]["file"])
+    num_treated = dict_["AUX"]["num_covars_treated"]
+    num_untreated = num_treated + dict_["AUX"]["num_covars_untreated"]
+
     D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
-    if dict_['ESTIMATION']['maxiter'] == 0:
-        option = 'init'
+    if dict_["ESTIMATION"]["maxiter"] == 0:
+        option = "init"
     else:
-        option = dict_['ESTIMATION']['start']
+        option = dict_["ESTIMATION"]["start"]
 
     # Read data frame
 
     # define starting values
     x0 = start_values(dict_, data, option)
     opts, method = optimizer_options(dict_)
-    dict_['AUX']['criteria'] = calculate_criteria(dict_, X1, X0, Z1, Z0, Y1, Y0, x0)
-    dict_['AUX']['starting_values'] = backward_transformation(x0)
+    dict_["AUX"]["criteria"] = calculate_criteria(dict_, X1, X0, Z1, Z0, Y1, Y0, x0)
+    dict_["AUX"]["starting_values"] = backward_transformation(x0)
     rslt_dict = bfgs_dict()
-    if opts['maxiter'] == 0:
+    if opts["maxiter"] == 0:
         rslt = adjust_output(None, dict_, x0, X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
     else:
         opt_rslt = minimize(
-            minimizing_interface, x0, args=(dict_, X1, X0, Z1, Z0, Y1, Y0, rslt_dict),
-            method=method, options=opts)
-        rslt = adjust_output(opt_rslt, dict_, opt_rslt['x'], X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
+            minimizing_interface,
+            x0,
+            args=(dict_, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, rslt_dict),
+            method=method,
+            options=opts,
+        )
+        rslt = adjust_output(opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
     # Print Output files
     print_logfile(dict_, rslt)
 
-    if 'comparison' in dict_['ESTIMATION'].keys():
-        if dict_['ESTIMATION']['comparison'] == 0:
+    if "comparison" in dict_["ESTIMATION"].keys():
+        if dict_["ESTIMATION"]["comparison"] == 0:
             pass
         else:
             write_comparison(dict_, data, rslt)

@@ -21,7 +21,7 @@ def simulate(init_file):
     check_initialization_dict(init_dict)
 
     # Distribute information
-    seed = init_dict['SIMULATION']['seed']
+    seed = init_dict["SIMULATION"]["seed"]
 
     # Set random seed to ensure recomputabiltiy
     np.random.seed(seed)
@@ -39,11 +39,12 @@ def simulate(init_file):
     df = write_output(init_dict, df)
 
     # Calculate Criteria function value
-    if not init_dict['DETERMINISTIC']:
-        x0 = start_values(init_dict, df, 'init')
+    if not init_dict["DETERMINISTIC"]:
+        x0 = start_values(init_dict, df, "init")
         _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
-        init_dict['AUX']['criteria_value'] = calculate_criteria(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, x0)
+        init_dict["AUX"]["criteria_value"] = calculate_criteria(
+            init_dict, X1, X0, Z1, Z0, Y1, Y0, x0
+        )
 
     # Print Log file
     print_info(init_dict, df)

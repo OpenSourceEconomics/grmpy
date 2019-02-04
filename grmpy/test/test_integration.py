@@ -33,14 +33,14 @@ def test1():
     for _ in range(10):
         dict_ = generate_random_dict()
         print_dict(dict_)
-        simulate('test.grmpy.yml')
+        simulate("test.grmpy.yml")
 
 
 def test2():
     """This test runs a random selection of five regression tests from the our old regression test
     battery.
     """
-    fname = TEST_RESOURCES_DIR + '/old_regression_vault.grmpy.json'
+    fname = TEST_RESOURCES_DIR + "/old_regression_vault.grmpy.json"
     tests = json.load(open(fname))
     random_choice = np.random.choice(range(len(tests)), 5)
     tests = [tests[i] for i in random_choice]
@@ -48,9 +48,9 @@ def test2():
     for test in tests:
         stat, dict_, criteria = test
         print_dict(dict_transformation(dict_))
-        df = simulate('test.grmpy.yml')
-        init_dict = read('test.grmpy.yml')
-        start = start_values(init_dict, df, 'init')
+        df = simulate("test.grmpy.yml")
+        init_dict = read("test.grmpy.yml")
+        start = start_values(init_dict, df, "init")
         _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
 
         criteria_ = calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)
@@ -64,14 +64,14 @@ def test3():
     """
     for _ in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['AGENTS'], constr['START'] = False, 1000, 'init'
-        constr['OPTIMIZER'], constr['SAME_SIZE'] = 'SCIPY-BFGS', True
+        constr["DETERMINISTIC"], constr["AGENTS"], constr["START"] = False, 1000, "init"
+        constr["OPTIMIZER"], constr["SAME_SIZE"] = "SCIPY-BFGS", True
         generate_random_dict(constr)
-        df1 = simulate('test.grmpy.yml')
-        rslt = fit('test.grmpy.yml')
-        init_dict = read('test.grmpy.yml')
+        df1 = simulate("test.grmpy.yml")
+        rslt = fit("test.grmpy.yml")
+        init_dict = read("test.grmpy.yml")
         df2 = simulate_estimation(init_dict, rslt)
-        start = start_values(init_dict, df1, 'init')
+        start = start_values(init_dict, df1, "init")
 
         criteria = []
         for data in [df1, df2]:
@@ -86,22 +86,22 @@ def test4():
     """
     for _ in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['AGENTS'], constr['start'] = False, 10000, 'init'
-        constr['optimizer'] = 'SCIPY-Powell'
+        constr["DETERMINISTIC"], constr["AGENTS"], constr["start"] = (False, 10000, "init")
+        constr["optimizer"] = "SCIPY-Powell"
         generate_random_dict(constr)
 
-        simulate('test.grmpy.yml')
-        fit('test.grmpy.yml')
+        simulate("test.grmpy.yml")
+        fit("test.grmpy.yml")
 
 
 def test5():
     """The test checks if the estimation process works properly when maxiter is set to zero."""
     for _ in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['MAXITER'] = False, 0
+        constr["DETERMINISTIC"], constr["MAXITER"] = False, 0
         generate_random_dict(constr)
-        simulate('test.grmpy.yml')
-        fit('test.grmpy.yml')
+        simulate("test.grmpy.yml")
+        fit("test.grmpy.yml")
 
 
 def test6():
@@ -111,62 +111,66 @@ def test6():
     """
     for _ in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['MAXITER'], constr['AGENTS'] = False, 0, 10000
-        constr['START'], constr['SAME_SIZE'] = 'init', True
+        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 10000
+        constr["START"], constr["SAME_SIZE"] = "init", True
         dict_ = generate_random_dict(constr)
-        dict_['DIST']['params'][1], dict_['DIST']['params'][5] = 0.0, 1.0
+        dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0
         print_dict(dict_)
-        simulate('test.grmpy.yml')
-        fit('test.grmpy.yml')
-        dict_ = read_desc('comparison.grmpy.txt')
-        for section in ['All', 'Treated', 'Untreated']:
-            np.testing.assert_equal(len(set(dict_[section]['Number'])), 1)
+        simulate("test.grmpy.yml")
+        fit("test.grmpy.yml")
+        dict_ = read_desc("comparison.grmpy.txt")
+        for section in ["All", "Treated", "Untreated"]:
+            np.testing.assert_equal(len(set(dict_[section]["Number"])), 1)
             np.testing.assert_almost_equal(
-                dict_[section]['Observed Sample'],
-                dict_[section]['Simulated Sample (finish)'], 0.001)
+                dict_[section]["Observed Sample"],
+                dict_[section]["Simulated Sample (finish)"],
+                0.001,
+            )
             np.testing.assert_array_almost_equal(
-                dict_[section]['Simulated Sample (finish)'],
-                dict_[section]['Simulated Sample (start)'], 0.001)
+                dict_[section]["Simulated Sample (finish)"],
+                dict_[section]["Simulated Sample (start)"],
+                0.001,
+            )
 
 
 def test7():
     """This test ensures that the estimation process returns an UserError if one tries to execute an
     estimation process with initialization file values as start values for an deterministic setting.
     """
-    fname_falsespec1 = TEST_RESOURCES_DIR + '/test_falsespec1.grmpy.yml'
-    fname_falsespec2 = TEST_RESOURCES_DIR + '/test_falsespec2.grmpy.yml'
-    fname_noparams = TEST_RESOURCES_DIR + '/test_noparams.grmpy.yml'
-    fname_binary = TEST_RESOURCES_DIR + '/test_binary.grmpy.yml'
-    fname_vzero = TEST_RESOURCES_DIR + '/test_vzero.grmpy.yml'
-    fname_possd = TEST_RESOURCES_DIR + '/test_npsd.grmpy.yml'
-    fname_zero = TEST_RESOURCES_DIR + '/test_zero.grmpy.yml'
+    fname_falsespec1 = TEST_RESOURCES_DIR + "/test_falsespec1.grmpy.yml"
+    fname_falsespec2 = TEST_RESOURCES_DIR + "/test_falsespec2.grmpy.yml"
+    fname_noparams = TEST_RESOURCES_DIR + "/test_noparams.grmpy.yml"
+    fname_binary = TEST_RESOURCES_DIR + "/test_binary.grmpy.yml"
+    fname_vzero = TEST_RESOURCES_DIR + "/test_vzero.grmpy.yml"
+    fname_possd = TEST_RESOURCES_DIR + "/test_npsd.grmpy.yml"
+    fname_zero = TEST_RESOURCES_DIR + "/test_zero.grmpy.yml"
 
     for _ in range(5):
         constr = dict()
-        constr['AGENTS'], constr['DETERMINISTIC'] = 1000, True
+        constr["AGENTS"], constr["DETERMINISTIC"] = 1000, True
         generate_random_dict(constr)
-        dict_ = read('test.grmpy.yml')
+        dict_ = read("test.grmpy.yml")
         pytest.raises(UserError, check_init_file, dict_)
-        pytest.raises(UserError, fit, 'test.grmpy.yml')
+        pytest.raises(UserError, fit, "test.grmpy.yml")
 
         generate_random_dict(constr)
-        dict_ = read('test.grmpy.yml')
-        if len(dict_['CHOICE']['order']) == 1:
-            dict_['CHOICE']['params'] = list(dict_['CHOICE']['params'])
-            dict_['CHOICE']['params'] += [1.000]
-            dict_['CHOICE']['order'] += [2]
+        dict_ = read("test.grmpy.yml")
+        if len(dict_["CHOICE"]["order"]) == 1:
+            dict_["CHOICE"]["params"] = list(dict_["CHOICE"]["params"])
+            dict_["CHOICE"]["params"] += [1.000]
+            dict_["CHOICE"]["order"] += [2]
 
-        dict_['CHOICE']['order'][1] = 'X1'
+        dict_["CHOICE"]["order"][1] = "X1"
         print_dict(dict_)
         pytest.raises(UserError, check_initialization_dict, dict_)
-        pytest.raises(UserError, simulate, 'test.grmpy.yml')
-        pytest.raises(UserError, fit, 'test.grmpy.yml')
+        pytest.raises(UserError, simulate, "test.grmpy.yml")
+        pytest.raises(UserError, fit, "test.grmpy.yml")
 
-        constr['AGENTS'] = 0
+        constr["AGENTS"] = 0
         generate_random_dict(constr)
-        dict_ = read('test.grmpy.yml')
+        dict_ = read("test.grmpy.yml")
         pytest.raises(UserError, check_initialization_dict, dict_)
-        pytest.raises(UserError, simulate, 'test.grmpy.yml')
+        pytest.raises(UserError, simulate, "test.grmpy.yml")
 
         length = np.random.randint(2, 100)
         array = np.random.rand(length, 1)
@@ -210,18 +214,18 @@ def test8():
     functions/methods.
     """
     constr = dict()
-    constr['DETERMINISTIC'], constr['AGENTS'] = False, 1000
+    constr["DETERMINISTIC"], constr["AGENTS"] = False, 1000
     generate_random_dict(constr)
-    df = simulate('test.grmpy.yml')
-    dict_ = read('test.grmpy.yml')
+    df = simulate("test.grmpy.yml")
+    dict_ = read("test.grmpy.yml")
     a = list()
-    dict_['ESTIMATION']['file'] = 'data.grmpy.yml'
-    print_dict(dict_, 'false_data')
-    pytest.raises(UserError, fit, 'tast.grmpy.yml')
-    pytest.raises(UserError, fit, 'false_data.grmpy.yml')
-    pytest.raises(UserError, simulate, 'tast.grmpy.yml')
-    pytest.raises(UserError, read, 'tast.grmpy.yml')
-    pytest.raises(UserError, start_values, a, df, 'init')
+    dict_["ESTIMATION"]["file"] = "data.grmpy.yml"
+    print_dict(dict_, "false_data")
+    pytest.raises(UserError, fit, "tast.grmpy.yml")
+    pytest.raises(UserError, fit, "false_data.grmpy.yml")
+    pytest.raises(UserError, simulate, "tast.grmpy.yml")
+    pytest.raises(UserError, read, "tast.grmpy.yml")
+    pytest.raises(UserError, start_values, a, df, "init")
     pytest.raises(UserError, generate_random_dict, a)
 
 
@@ -231,11 +235,11 @@ def test9():
     variates for each treatment state and the occurence of cost-benefit shifters."""
     for i in range(5):
         constr = dict()
-        constr['DETERMINISTIC'], constr['AGENT'], constr['STATE_DIFF'] = False, 1000, True
-        constr['OVERLAP'] = True
+        constr["DETERMINISTIC"], constr["AGENT"], constr["STATE_DIFF"] = (False, 1000, True)
+        constr["OVERLAP"] = True
         generate_random_dict(constr)
-        read('test.grmpy.yml')
-        simulate('test.grmpy.yml')
-        fit('test.grmpy.yml')
+        read("test.grmpy.yml")
+        simulate("test.grmpy.yml")
+        fit("test.grmpy.yml")
 
     cleanup()

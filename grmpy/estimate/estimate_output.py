@@ -12,65 +12,76 @@ def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
 
-    if 'output_file' in init_dict['ESTIMATION'].keys():
-        file_name = init_dict['ESTIMATION']['output_file']
+    if "output_file" in init_dict["ESTIMATION"].keys():
+        file_name = init_dict["ESTIMATION"]["output_file"]
     else:
-        file_name = 'est.grmpy.info'
+        file_name = "est.grmpy.info"
 
-    with open(file_name, 'w') as file_:
+    with open(file_name, "w") as file_:
 
-        for label in ['Optimization Information', 'Criterion Function', 'Economic Parameters']:
-            header = '\n \n  {:<10}\n\n'.format(label)
+        for label in ["Optimization Information", "Criterion Function", "Economic Parameters"]:
+            header = "\n \n  {:<10}\n\n".format(label)
             file_.write(header)
-            if label == 'Optimization Information':
-                for section in ['Optimizer', 'Start values', 'Success', 'Status',
-                                'Number of Evaluations',
-                                'Criterion', 'Message', 'Warning']:
-                    fmt = '  {:<10}' + ' {:<20}'
-                    if section == 'Number of Evaluations':
-                        if len(str(rslt['nfev'])) == 4:
-                            fmt += '  {:>21}\n'
+            if label == "Optimization Information":
+                for section in [
+                    "Optimizer",
+                    "Start values",
+                    "Success",
+                    "Status",
+                    "Number of Evaluations",
+                    "Criterion",
+                    "Message",
+                    "Warning",
+                ]:
+                    fmt = "  {:<10}" + " {:<20}"
+                    if section == "Number of Evaluations":
+                        if len(str(rslt["nfev"])) == 4:
+                            fmt += "  {:>21}\n"
                         else:
-                            fmt += '  {:>20}\n'
-                        file_.write(fmt.format('', section + ':', rslt['nfev']))
-                    elif section == 'Start values':
-                        fmt += '  {:>23}\n'
-                        file_.write(fmt.format('', section + ':',
-                                               init_dict['ESTIMATION']['start']))
-                    elif section == 'Optimizer':
-                        if init_dict['ESTIMATION']['optimizer'] == 'SCIPY-POWELL':
-                            fmt += '  {:>31}\n'
+                            fmt += "  {:>20}\n"
+                        file_.write(fmt.format("", section + ":", rslt["nfev"]))
+                    elif section == "Start values":
+                        fmt += "  {:>23}\n"
+                        file_.write(fmt.format("", section + ":", init_dict["ESTIMATION"]["start"]))
+                    elif section == "Optimizer":
+                        if init_dict["ESTIMATION"]["optimizer"] == "SCIPY-POWELL":
+                            fmt += "  {:>31}\n"
                         else:
-                            fmt += '  {:>29}\n'
-                        file_.write(fmt.format('', section + ':',
-                                               init_dict['ESTIMATION']['optimizer']))
-                    elif section == 'Criterion':
-                        fmt += '       {:>20.4f}\n'
-                        file_.write(fmt.format('', section + ':', rslt['crit']))
-                    elif section in ['Warning']:
+                            fmt += "  {:>29}\n"
+                        file_.write(
+                            fmt.format("", section + ":", init_dict["ESTIMATION"]["optimizer"])
+                        )
+                    elif section == "Criterion":
+                        fmt += "       {:>20.4f}\n"
+                        file_.write(fmt.format("", section + ":", rslt["crit"]))
+                    elif section in ["Warning"]:
 
-                        fmt += '                     {:>20}\n'
+                        fmt += "                     {:>20}\n"
                         for counter, _ in enumerate(rslt[section.lower()]):
                             if counter == 0:
-                                file_.write(fmt.format('', section + ':',
-                                                       rslt[section.lower()][counter] + '\n'))
+                                file_.write(
+                                    fmt.format(
+                                        "", section + ":", rslt[section.lower()][counter] + "\n"
+                                    )
+                                )
                             else:
-                                file_.write(fmt.format('', '', rslt[section.lower()][counter] +
-                                                       '\n'))
-                        if section == 'Warning':
-                            if 'warning' in init_dict['ESTIMATION'].keys():
-                                file_.write(fmt.format('', '', init_dict['ESTIMATION']['warning']))
-                    elif section in ['Message']:
-                        fmt += '                     {:>20}\n'
-                        file_.write(fmt.format('', section + ':', rslt[section.lower()]) + '\n')
+                                file_.write(
+                                    fmt.format("", "", rslt[section.lower()][counter] + "\n")
+                                )
+                        if section == "Warning":
+                            if "warning" in init_dict["ESTIMATION"].keys():
+                                file_.write(fmt.format("", "", init_dict["ESTIMATION"]["warning"]))
+                    elif section in ["Message"]:
+                        fmt += "                     {:>20}\n"
+                        file_.write(fmt.format("", section + ":", rslt[section.lower()]) + "\n")
 
                     else:
-                        fmt += '  {:>20}\n'
-                        file_.write(fmt.format('', section + ':', rslt[section.lower()]))
-            elif label == 'Criterion Function':
-                fmt = '  {:<10}' * 2 + ' {:>20}' * 2 + '\n\n'
-                file_.write(fmt.format('', '', 'Start', 'Finish'))
-                file_.write('\n' + fmt.format('', '', init_dict['AUX']['criteria'], rslt['crit']))
+                        fmt += "  {:>20}\n"
+                        file_.write(fmt.format("", section + ":", rslt[section.lower()]))
+            elif label == "Criterion Function":
+                fmt = "  {:<10}" * 2 + " {:>20}" * 2 + "\n\n"
+                file_.write(fmt.format("", "", "Start", "Finish"))
+                file_.write("\n" + fmt.format("", "", init_dict["AUX"]["criteria"], rslt["crit"]))
 
             else:
 
@@ -80,121 +91,138 @@ def print_logfile(init_dict, rslt):
 def write_identifier_section(init_dict, rslt, file_):
     """This function prints the information about the estimation results in the output file."""
 
-    fmt_ = '\n  {:<10}' + '{:>10}' + ' {:>18}' + '{:>16}' + '\n\n'
+    fmt_ = "\n  {:<10}" + "{:>10}" + " {:>18}" + "{:>16}" + "\n\n"
 
-    file_.write(fmt_.format(*['', '', 'Start', 'Finish']))
+    file_.write(fmt_.format(*["", "", "Start", "Finish"]))
 
-    fmt_ = ' {:<10}' + '    {:>10}' + '{:>15}' * 2 + '{:>18}' + '{:>9}' + '{:>19}' + '{:>24}'
+    fmt_ = " {:<10}" + "    {:>10}" + "{:>15}" * 2 + "{:>18}" + "{:>9}" + "{:>19}" + "{:>24}"
 
-    file_.write(fmt_.format(*['Section', 'Identifier', 'Coef', 'Coef', 'Std err', 't', 'P>|t|',
-                              '95% Conf. Int.']) + '\n')
+    file_.write(
+        fmt_.format(
+            *["Section", "Identifier", "Coef", "Coef", "Std err", "t", "P>|t|", "95% Conf. Int."]
+        )
+        + "\n"
+    )
 
-    num_treated = len(init_dict['TREATED']['order'])
-    num_untreated = num_treated + len(init_dict['UNTREATED']['order'])
-    num_choice = num_untreated + len(init_dict['CHOICE']['order'])
+    num_treated = len(init_dict["TREATED"]["order"])
+    num_untreated = num_treated + len(init_dict["UNTREATED"]["order"])
+    num_choice = num_untreated + len(init_dict["CHOICE"]["order"])
 
-    identifier_treated = init_dict['TREATED']['order']
-    identifier_untreated = init_dict['UNTREATED']['order']
-    identifier_choice = init_dict['CHOICE']['order']
-    identifier_distribution = ['sigma1', 'rho1', 'sigma0', 'rho0']
-    identifier = \
+    identifier_treated = init_dict["TREATED"]["order"]
+    identifier_untreated = init_dict["UNTREATED"]["order"]
+    identifier_choice = init_dict["CHOICE"]["order"]
+    identifier_distribution = ["sigma1", "rho1", "sigma0", "rho0"]
+    identifier = (
         identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
-    fmt = '  {:>10}' + '   {:<15}' + ' {:>11.4f}' + '{:>15.4f}' * 4 + '{:>15.4f}' + '{:>10.4f}'
-    for i in range(len(rslt['AUX']['x_internal'])):
+    )
+    fmt = "  {:>10}" + "   {:<15}" + " {:>11.4f}" + "{:>15.4f}" * 4 + "{:>15.4f}" + "{:>10.4f}"
+    for i in range(len(rslt["AUX"]["x_internal"])):
         if i == 0:
-            file_.write('\n  {:<10} \n'.format('TREATED'))
+            file_.write("\n  {:<10} \n".format("TREATED"))
         elif i == num_treated:
-            file_.write('\n  {:<10} \n'.format('UNTREATED'))
+            file_.write("\n  {:<10} \n".format("UNTREATED"))
         elif i == num_untreated:
-            file_.write('\n  {:<10} \n'.format('CHOICE'))
+            file_.write("\n  {:<10} \n".format("CHOICE"))
         elif i == num_choice:
-            file_.write('\n  {:<10} \n'.format('DIST'))
-        file_.write('{0}\n'.format(
-            fmt.format('', identifier[i], init_dict['AUX']['starting_values'][i],
-                       rslt['AUX']['x_internal'][i], rslt['AUX']['standard_errors'][i],
-                       rslt['AUX']['t_values'][i], rslt['AUX']['p_values'][i],
-                       rslt['AUX']['confidence_intervals'][i][0],
-                       rslt['AUX']['confidence_intervals'][i][1])))
+            file_.write("\n  {:<10} \n".format("DIST"))
+        file_.write(
+            "{0}\n".format(
+                fmt.format(
+                    "",
+                    identifier[i],
+                    init_dict["AUX"]["starting_values"][i],
+                    rslt["AUX"]["x_internal"][i],
+                    rslt["AUX"]["standard_errors"][i],
+                    rslt["AUX"]["t_values"][i],
+                    rslt["AUX"]["p_values"][i],
+                    rslt["AUX"]["confidence_intervals"][i][0],
+                    rslt["AUX"]["confidence_intervals"][i][1],
+                )
+            )
+        )
 
 
 def write_comparison(init_dict, df1, rslt):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
-    indicator = init_dict['ESTIMATION']['indicator']
-    dep = init_dict['ESTIMATION']['dependent']
+    indicator = init_dict["ESTIMATION"]["indicator"]
+    dep = init_dict["ESTIMATION"]["dependent"]
     df3, df2 = simulate_estimation(init_dict, rslt, True)
-    with open('comparison.grmpy.txt', 'w') as file_:
+    with open("comparison.grmpy.txt", "w") as file_:
         # First we note some basic information ab out the dataset.
-        header = '\n\n Number of Observations \n\n'
+        header = "\n\n Number of Observations \n\n"
         file_.write(header)
         info_ = []
         for i, label in enumerate([df1, df2, df3]):
-            info_ += [[label.shape[0], (label[indicator] == 1).sum(),
-                       (label[indicator] == 0).sum()]]
+            info_ += [
+                [label.shape[0], (label[indicator] == 1).sum(), (label[indicator] == 0).sum()]
+            ]
 
-        fmt = '    {:<25}' + ' {:>20}' * 3 + '\n\n\n'
-        file_.write(fmt.format(*['Sample', 'Observed', 'Simulated (finish)',
-                                 'Simulated (start)']))
+        fmt = "    {:<25}" + " {:>20}" * 3 + "\n\n\n"
+        file_.write(fmt.format(*["Sample", "Observed", "Simulated (finish)", "Simulated (start)"]))
 
-        for i, label in enumerate(['All', 'Treated', 'Untreated']):
-            str_ = '    {:<25}' + ' {:>20}' * 3 + '\n'
+        for i, label in enumerate(["All", "Treated", "Untreated"]):
+            str_ = "    {:<25}" + " {:>20}" * 3 + "\n"
             file_.write(str_.format(label, info_[0][i], info_[1][i], info_[2][i]))
 
-        header = '\n\n Distribution of Outcomes\n\n'
+        header = "\n\n Distribution of Outcomes\n\n"
         file_.write(header)
-        for group in ['All', 'Treated', 'Untreated']:
-            header = '\n\n ' '  {:<10}'.format(group) + '\n\n'
+        for group in ["All", "Treated", "Untreated"]:
+            header = "\n\n " "  {:<10}".format(group) + "\n\n"
             file_.write(header)
-            fmt = '    {:<25}' + ' {:>20}' * 5 + '\n\n'
-            args = ['', 'Mean', 'Std-Dev.', '25%', '50%', '75%']
+            fmt = "    {:<25}" + " {:>20}" * 5 + "\n\n"
+            args = ["", "Mean", "Std-Dev.", "25%", "50%", "75%"]
             file_.write(fmt.format(*args))
 
-            for sample in ['Observed Sample', 'Simulated Sample (finish)',
-                           'Simulated Sample (start)']:
+            for sample in [
+                "Observed Sample",
+                "Simulated Sample (finish)",
+                "Simulated Sample (start)",
+            ]:
 
-                if sample == 'Observed Sample':
+                if sample == "Observed Sample":
                     data_frame = df1
-                elif sample == 'Simulated Sample (finish)':
+                elif sample == "Simulated Sample (finish)":
                     data_frame = df2
                 else:
                     data_frame = df3
 
                 data = data_frame[dep]
 
-                if group == 'Treated':
+                if group == "Treated":
                     data = data[data_frame[indicator] == 1]
-                elif group == 'Untreated':
+                elif group == "Untreated":
                     data = data[data_frame[indicator] == 0]
                 else:
                     pass
-                fmt = '    {:<25}' + ' {:>20.4f}' * 5 + '\n'
+                fmt = "    {:<25}" + " {:>20.4f}" * 5 + "\n"
                 info = list(data.describe().tolist()[i] for i in [1, 2, 4, 5, 6])
                 if pd.isnull(info).all():
-                    fmt = '    {:<10}' + ' {:>20}' * 5 + '\n'
-                    info = ['---'] * 5
+                    fmt = "    {:<10}" + " {:>20}" * 5 + "\n"
+                    info = ["---"] * 5
                 elif pd.isnull(info[1]):
-                    info[1] = '---'
-                    fmt = '    {:<25}' ' {:>20.4f}' ' {:>20}' + ' {:>20.4f}' * 3 + '\n'
+                    info[1] = "---"
+                    fmt = "    {:<25}" " {:>20.4f}" " {:>20}" + " {:>20.4f}" * 3 + "\n"
 
                 file_.write(fmt.format(*[sample] + info))
 
-        header = '\n\n {} \n\n'.format('MTE Information')
+        header = "\n\n {} \n\n".format("MTE Information")
         file_.write(header)
         value, args = calculate_mte(rslt, init_dict, df1)
-        str_ = '  {0:>10} {1:>20}\n\n'.format('Quantile', 'Value')
+        str_ = "  {0:>10} {1:>20}\n\n".format("Quantile", "Value")
         file_.write(str_)
         len_ = len(value)
         for i in range(len_):
             if isinstance(value[i], float):
-                file_.write('  {0:>10} {1:>20.4f}\n'.format(str(args[i]), value[i]))
+                file_.write("  {0:>10} {1:>20.4f}\n".format(str(args[i]), value[i]))
 
 
 def simulate_estimation(init_dict, rslt, start=False):
     """The function simulates a new sample based on the estimated coefficients."""
 
     # Distribute information
-    seed = init_dict['SIMULATION']['seed']
+    seed = init_dict["SIMULATION"]["seed"]
     # Determine parametrization and read in /simulate observables
     if start:
         start_dict = process_results(init_dict, None)
@@ -227,30 +255,33 @@ def simulate_estimation(init_dict, rslt, start=False):
 def process_results(init_dict, rslt):
     """The function processes the results dictionary for the following simulation."""
     if rslt is None:
-        num_treated = init_dict['AUX']['num_covars_treated']
-        num_untreated = num_treated + init_dict['AUX']['num_covars_untreated']
+        num_treated = init_dict["AUX"]["num_covars_treated"]
+        num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
 
         dict_ = dict()
-        for key_ in ['TREATED', 'UNTREATED', 'CHOICE', 'DIST']:
+        for key_ in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
             dict_[key_] = {}
-            if key_ != 'DIST':
-                dict_[key_]['order'] = init_dict[key_]['order']
-        dict_['TREATED']['params'] = init_dict['AUX']['starting_values'][:num_treated]
-        dict_['UNTREATED']['params'] = \
-            init_dict['AUX']['starting_values'][num_treated:num_untreated]
-        dict_['CHOICE']['params'] = init_dict['AUX']['starting_values'][num_untreated:-4]
-        dict_['DIST']['params'] = transform_rslt_DIST(init_dict['AUX']['starting_values'])
+            if key_ != "DIST":
+                dict_[key_]["order"] = init_dict[key_]["order"]
+        dict_["TREATED"]["params"] = init_dict["AUX"]["starting_values"][:num_treated]
+        dict_["UNTREATED"]["params"] = init_dict["AUX"]["starting_values"][
+            num_treated:num_untreated
+        ]
+        dict_["CHOICE"]["params"] = init_dict["AUX"]["starting_values"][num_untreated:-4]
+        dict_["DIST"]["params"] = transform_rslt_DIST(init_dict["AUX"]["starting_values"])
     else:
         dict_ = dict(rslt)
-        dict_['DIST'] = {}
-        dict_['DIST']['params'] = transform_rslt_DIST(rslt['AUX']['x_internal'])
-    dict_['SIMULATION'] = {}
-    dict_['ESTIMATION'] = init_dict['ESTIMATION']
-    dict_['SIMULATION'] = dict(init_dict['SIMULATION'])
-    if 'AUX' not in dict_.keys():
-        dict_['AUX'] = {}
-    dict_['AUX']['labels'], dict_['AUX']['num_covars'] = \
-        init_dict['AUX']['labels'], init_dict['AUX']['num_covars']
+        dict_["DIST"] = {}
+        dict_["DIST"]["params"] = transform_rslt_DIST(rslt["AUX"]["x_internal"])
+    dict_["SIMULATION"] = {}
+    dict_["ESTIMATION"] = init_dict["ESTIMATION"]
+    dict_["SIMULATION"] = dict(init_dict["SIMULATION"])
+    if "AUX" not in dict_.keys():
+        dict_["AUX"] = {}
+    dict_["AUX"]["labels"], dict_["AUX"]["num_covars"] = (
+        init_dict["AUX"]["labels"],
+        init_dict["AUX"]["num_covars"],
+    )
     return dict_
 
 
@@ -272,19 +303,19 @@ def transform_rslt_DIST(rslt):
 
 
 def calculate_mte(rslt, init_dict, data_frame, quant=None):
-    coeffs_treated = rslt['TREATED']['params']
-    coeffs_untreated = rslt['UNTREATED']['params']
+    coeffs_treated = rslt["TREATED"]["params"]
+    coeffs_untreated = rslt["UNTREATED"]["params"]
 
     if quant is None:
         quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-        args = [str(i) + '%' for i in quantiles]
+        args = [str(i) + "%" for i in quantiles]
         quantiles = [i * 0.01 for i in quantiles]
     else:
         quantiles = quant
 
     cov = np.zeros((3, 3))
-    cov[2, 0] = rslt['AUX']['x_internal'][-3] * rslt['AUX']['x_internal'][-4]
-    cov[2, 1] = rslt['AUX']['x_internal'][-1] * rslt['AUX']['x_internal'][-2]
+    cov[2, 0] = rslt["AUX"]["x_internal"][-3] * rslt["AUX"]["x_internal"][-4]
+    cov[2, 1] = rslt["AUX"]["x_internal"][-1] * rslt["AUX"]["x_internal"][-2]
     cov[2, 2] = 1.0
 
     value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt)
