@@ -12,17 +12,17 @@ The generalized Roy model (:cite:`HecVyr05`, :cite:`Roy1951`) provides a coheren
     :nowrap:
 
     \begin{align*}
-    & \textbf{Potential Outcomes} & & &  \\
-    & & Y_1 & = &\mu_1(X) + U_1 \\
-    & & Y_0 & = &\mu_0(X) + U_0 \\
+    & \textbf{Potential Outcomes} & &  \\
+    & & Y_1 & = \mu_1(X) + U_1 \\
+    & & Y_0 & = \mu_0(X) + U_0 \\
+    & &  \\
+    & \textbf{Choice} & &  \\
+    & & D^{*} & =  \mu_D(Z) - V \\
+    & & D & = I[D^{*}  > 0 ] \\
+    & & B & = E[Y_1 - Y_0 \mid \mathcal{I}] \\
     & & & \\
-    & \textbf{Choice} & & & \\
-    & & D^{*} & = & \mu_D(Z) - V \\
-    & & D & = &I[D^{*}  > 0 ] \\
-    & & B & = &E[Y_1 - Y_0 \mid \mathcal{I}] \\
-    & & & &\\
-    & \textbf{Observed Outcome} & & & \\
-    & & Y & = &D Y_1 + (1 - D) Y_0
+    & \textbf{Observed Outcome}  & & \\
+    & & Y & = D Y_1 + (1 - D) Y_0
     \end{align*}
 
 :math:`(Y_1, Y_0)` are objective outcomes associated with each potential treatment state :math:`D` and realized after the treatment decision. :math:`Y_1` refers to the outcome in the treated state and :math:`Y_0` in the untreated state. :math:`D^{*}` denotes the latent tendency for treatment participation. It includes any subjective benefits, e.g. job amenities, and costs, e.g. tuition costs. Agents take up treatment :math:`D` if their latent tendency :math:`D^{*}` is positive. :math:`\mathcal{I}` denotes the agent’s information set at the time of the participation decision. The observed outcome :math:`Y` is determined in a switching-regime fashion (:cite:`Quandt1958`, :cite:`Quandt1972`). If agents take up treatment, then the observed outcome :math:`Y` corresponds to the outcome in the presence of treatment :math:`Y_1`. Otherwise, :math:`Y_0` is observed. The unobserved potential outcome is referred to as the counterfactual outcome. If costs are identically zero for all agents, there are no observed regressors, and :math:`(U_1, U_0) \sim N (0, \Sigma)`, then the generalized Roy model corresponds to the original
@@ -45,9 +45,9 @@ The individual benefit of treatment is defined as
   .. math::
        B  = Y_1 - Y_0 = (\mu_1(X) - \mu_0(X)) + (U_1 - U_0).
 
-From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 - U_0)`. However, :math:`(U_1 - U_0)` might be (at least partly) included in the agent’s information set :math:`\mathcal{I}` and thus known to the agent at the time of the treatment decision. Therefore we are able to distinguish between observable and unobservable heterogeneity. Observable heterogeneity is reflected by by the difference :math:`\mu_1(X) - \mu_0(X)`. t denotes the differences between individuals that are based on differences of observable individual specific characteristics captured by $X$. Since we are able to take observable heterogeneity into account by conditioning on $X$ this kind of heterogeneity is a negligible problem for the evaluation of policy interventions. Therefore all following concepts condition on X.
+From the perspective of the econometrician, differences in benefits are the result of variation in observable X and unobservable characteristics :math:`(U_1 - U_0)`. However, :math:`(U_1 - U_0)` might be (at least partly) included in the agent’s information set :math:`\mathcal{I}` and thus known to the agent at the time of the treatment decision. Therefore we are able to distinguish between observable and unobservable heterogeneity. Observable heterogeneity is reflected by by the difference :math:`\mu_1(X) - \mu_0(X)`. t denotes the differences between individuals that are based on differences of observable individual specific characteristics captured by :math:`X`. Since we are able to take observable heterogeneity into account by conditioning on :math:`X` this kind of heterogeneity is a negligible problem for the evaluation of policy interventions. Therefore all following concepts condition on X.
 
-Consequently the second type of heterogeneity is represented by the differences between individuals captured by $U_1 - U_0$. This differences are unobservable from the perspective of an econometrician. It should be noted that the term *unobservable* does not implicate that U 1 and U 0 are not completely or at least partly included in an individual’s information set. As a result, unobservable treatment effect heterogeneity can be distinguished into private information and uncertainty. Private information is only known to the agent but not the econometrician; uncertainty refers to variability that is unpredictable by both.
+Consequently the second type of heterogeneity is represented by the differences between individuals captured by :math:`U_1 - U_0`. This differences are unobservable from the perspective of an econometrician. It should be noted that the term *unobservable* does not implicate that U 1 and U 0 are not completely or at least partly included in an individual’s information set. As a result, unobservable treatment effect heterogeneity can be distinguished into private information and uncertainty. Private information is only known to the agent but not the econometrician; uncertainty refers to variability that is unpredictable by both.
 
 The information available to the econometrician and the agent determines the set of valid estimation approaches for the evaluation of a policy. The concept of essential heterogeneity emphasizes this point (:cite:`HeUrVy06`). If agents select their treatment status based on benefits unobserved by the econometrician (selection on unobservables), then there is no unique effect of a treatment or a policy even after conditioning on observable characteristics. In terms of the Roy model this is characterized by the following condition
 

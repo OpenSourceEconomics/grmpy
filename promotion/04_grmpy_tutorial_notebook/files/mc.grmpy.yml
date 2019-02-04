@@ -1,0 +1,78 @@
+---
+SIMULATION:
+    seed: 51353
+    agents: 10000
+    source: mc
+ESTIMATION:
+    file: mc.grmpy.txt
+    start: auto
+    agents: 165
+    optimizer: SCIPY-BFGS
+    maxiter: 6383
+    dependent: wage
+    indicator: state
+    output_file: mc_rslt.grmpy.info
+    comparison: 0
+TREATED:
+    params:
+    - 0.99
+    - 0.555
+    - -0.555
+    - 0.755
+    - 0.155
+    order:
+    - const
+    - X2
+    - X3
+    - X4
+    - X5
+UNTREATED:
+    params:
+    - 0.5
+    - 0.255
+    - -0.255
+    - 0.1768
+    - 0.0987
+    order:
+    - const
+    - X2
+    - X3
+    - X4
+    - X5
+CHOICE:
+    params:
+    - 0.228
+    - -0.39
+    - 0.59
+    - -0.09
+    - -0.33
+    order:
+    - const
+    - X6
+    - X7
+    - X8
+    - X9
+DIST:
+    params:
+    - 0.1
+    - 0.0
+    - 0.099
+    - 0.1
+    - 0.0
+    - 1.0
+VARTYPES:
+    const: nonbinary
+    X2: nonbinary
+    X3: nonbinary
+    X4: nonbinary
+    X5: nonbinary
+    X6: nonbinary
+    X7: nonbinary
+    X8: nonbinary
+    X9: nonbinary
+SCIPY-BFGS:
+    gtol: 1.0e-05
+    eps: 1.4901161193847655e-08
+SCIPY-POWELL:
+    xtol: 9.147777614048603e-05
+    ftol: 9.749582129043358e-05

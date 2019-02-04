@@ -327,7 +327,6 @@ def calculate_p_values(se, x0, num_ind):
     p_values = []
     t_values = []
     df = num_ind - len(x0)
-    print(df)
     for counter, value in enumerate(x0):
         if isinstance(value, float):
             t_values += [value / se[counter]]
