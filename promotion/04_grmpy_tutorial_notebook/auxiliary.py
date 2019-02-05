@@ -315,7 +315,7 @@ def plot_est_mte(rslt, file):
 
     plt.show()
 
-    ax = plt.figure().add_subplot(111)
+    ax = plt.figure(figsize=(14, 8)).add_subplot(111)
 
     ax.set_ylabel(r"$B^{MTE}$", fontsize=20)
     ax.set_xlabel("$u_D$", fontsize=20)
