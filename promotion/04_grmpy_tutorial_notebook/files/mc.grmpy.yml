@@ -1,6 +1,6 @@
 ---
 SIMULATION:
-    seed: 51353
+    seed: 5133
     agents: 10000
     source: mc
 ESTIMATION:
@@ -41,11 +41,11 @@ UNTREATED:
     - X5
 CHOICE:
     params:
-    - 0.228
+    - 0.28
     - -0.39
     - 0.59
-    - -0.09
-    - -0.33
+    - -0.89
+    - -0.73
     order:
     - const
     - X6
@@ -54,10 +54,10 @@ CHOICE:
     - X9
 DIST:
     params:
-    - 0.1
+    - 0.2
     - 0.0
-    - 0.099
-    - 0.1
+    - 0.198
+    - 0.2
     - 0.0
     - 1.0
 VARTYPES:

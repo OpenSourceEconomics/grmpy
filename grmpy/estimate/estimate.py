@@ -38,7 +38,7 @@ def fit(init_file):
     num_treated = dict_["AUX"]["num_covars_treated"]
     num_untreated = num_treated + dict_["AUX"]["num_covars_untreated"]
 
-    D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
+    _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     if dict_["ESTIMATION"]["maxiter"] == 0:
         option = "init"

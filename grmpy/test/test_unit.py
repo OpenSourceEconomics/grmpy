@@ -338,7 +338,7 @@ def test13():
         print(p_values[index])
         np.testing.assert_array_equal([p_values[index], t_values[index]], [np.nan, np.nan])
 
-        x_processed, crit_processed, msg = process_output(init_dict, aux_dict1, x0, "notfinite")
+        x_processed, crit_processed, _ = process_output(init_dict, aux_dict1, x0, "notfinite")
 
         np.testing.assert_equal(
             [x_processed, crit_processed],

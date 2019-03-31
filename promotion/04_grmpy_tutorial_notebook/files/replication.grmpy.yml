@@ -194,44 +194,6 @@ DIST:
     - 1.0
 VARTYPES:
     const: nonbinary
-    exp: nonbinary
-    expsq: nonbinary
-    lwage5: nonbinary
-    lurate: nonbinary
-    cafqt: nonbinary
-    cafqtsq: nonbinary
-    mhgc: nonbinary
-    mhgcsq: nonbinary
-    numsibs: nonbinary
-    numsibssq: nonbinary
-    urban14: nonbinary
-    lavlocwage17: nonbinary
-    lavlocwage17sq: nonbinary
-    avurate: nonbinary
-    avuratesq: nonbinary
-    d57: nonbinary
-    d58: nonbinary
-    d59: nonbinary
-    d60: nonbinary
-    d61: nonbinary
-    d62: nonbinary
-    d63: nonbinary
-    lwage5_17numsibs: nonbinary
-    lwage5_17mhgc: nonbinary
-    lwage5_17cafqt: nonbinary
-    lwage5_17: nonbinary
-    lurate_17: nonbinary
-    lurate_17numsibs: nonbinary
-    lurate_17mhgc: nonbinary
-    lurate_17cafqt: nonbinary
-    tuit4c: nonbinary
-    tuit4cnumsibs: nonbinary
-    tuit4cmhgc: nonbinary
-    tuit4ccafqt: nonbinary
-    pub4: nonbinary
-    pub4numsibs: nonbinary
-    pub4mhgc: nonbinary
-    pub4cafqt: nonbinary
 SCIPY-BFGS:
     gtol: 1.0e-05
     eps: 1.4901161193847656e-08
