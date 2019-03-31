@@ -10,10 +10,12 @@ dependencies:
   - scipy
   - matplotlib
   - flake8
+  - seaborn
   - pip:
     - sphinxcontrib.bibtex
     - sphinx_rtd_theme
     - linearmodels
     - oyaml
+    - grmpy
 
 
