@@ -10,4 +10,4 @@ class UserError(Exception):
         self.msg = msg
 
     def __str__(self):
-        return '\n\n         {}\n\n'.format(self.msg)
+        return "\n\n         {}\n\n".format(self.msg)

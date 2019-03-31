@@ -1,0 +1,19 @@
+[tool.black]
+line-length = 100
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.gitignore
+  | \.in
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | development
+  | build
+  | dist
+  | docs
+  | grmpy-egg-info
+
+
+)/
