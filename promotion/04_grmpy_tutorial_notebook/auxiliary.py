@@ -12,7 +12,6 @@ import json
 
 from linearmodels.iv import IV2SLS
 import matplotlib.patches as mpatches
-from matplotlib import rcParams
 import matplotlib.ticker as ticker
 
 
