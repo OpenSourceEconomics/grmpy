@@ -2,6 +2,6 @@
 __pxcache__/
 *.pyc
 .idea/
-docs/_build
+docs/build
 promotion/
 

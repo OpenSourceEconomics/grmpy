@@ -74,7 +74,7 @@ treated :math:`B^{TT}` or untreated :math:`B^{TUT}`.
 
 All average effect parameter possibly hide considerable treatment effect heterogeneity. The relationship between these parameters depends on the assignment mechanism that matches agents to treatment. If agents select their treatment status based on their own benefits, like in the presence of essential heterogeneity, then agents that take up treatment benefit more than those that do not and thus :math:`B^{TT}` > :math:`B^{ATE}`. If agents select their treatment status at random, which is equivalent with the absence of essential heterogeneity, then all parameters are equal. Figure 1 illustrates an example for both cases. Both graphs show the distribution of benefits which is characterized by the difference of potential outcomes :math:`Y_1 - Y_0`. Additionally the figures shows the conventional effects for both setups whereupon the selection process on the left side is affected by essential heterogeneity whereas the right side displays the effects in the absence of essential heterogeneity.
 
-.. figure:: ../docs/figures/fig-treatment-effects-with-and-without-eh.png
+.. figure:: ../docs/source/figures/fig-treatment-effects-with-and-without-eh.png
    :align: center
 
    **Fig. 1:** Conventional treatment effects with and without essential heterogeneity
@@ -109,7 +109,7 @@ Local Average Treatment Effect
 
 The Local Average Treatment Effect :math:`B^{LATE}` was introduced by :cite:`Imbens94`. They show that instrumental variable approaches (IV) identify :math:`B^{LATE}`, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
 
-.. figure:: ../docs/figures/fig-local-average-treatment.png
+.. figure:: ../docs/source/source/figures/fig-local-average-treatment.png
    :align: center
 
    **Fig. 2:** :math:`B^{LATE}` at different values of :math:`u_S`
@@ -137,14 +137,14 @@ Parameter :math:`j, \Delta j (x)`, can be written as
 
 where the weights :math:`\omega^{j} (u_S)` are specific to parameter :math:`j`, integrate to one, and can be constructed from data. For instance figure 3 shows weights for the :math:`B^{ATE}`, :math:`B^{TT}` and the :math:`B^{TUT}` as well as the corresponding :math:`B^{MTE}`. Contrary, figure 2 emphasizes that the concept of :math:`B^{LATE}` is closely related to the idea of :math:`B^{MTE}`. It illustrates that :math:`B^{LATE}` evaluates :math:`B^{MTE}` along a particular interval of the distribution of the unobservable Variable :math:`V`. The specific range depends on the chosen instrument.
 
-.. figure:: ../docs/figures/fig-weights-marginal-effect.png
+.. figure:: ../docs/source/figures/fig-weights-marginal-effect.png
    :align: center
 
    **Fig. 3:** Weights for the marginal treatment effect for different parameters.
 
 All parameters are identical only in the absence of essential heterogeneity. Then, the :math:`B^{MTE}(x, u_S)` is constant across the whole distribution of :math:`V` as agents do not select their treatment status based on their unobservable benefits. This can be seen in figure 4 which illustrates :math:`B^{MTE}` in the absence of essential heterogeneity, represented by the dotted orange line as well as an example for the :math:`B^{MTE}` in the presence of essential heterogeneity portrayed by the blue graph.
 
-.. figure:: ../docs/figures/fig-eh-marginal-effect.png
+.. figure:: ../docs/source/figures/fig-eh-marginal-effect.png
    :align: center
 
    **Fig 4:** :math:`B^{MTE}` in the presence and absence of essential heterogeneity.
@@ -160,13 +160,13 @@ constructed just as the median and all other quantiles. In addition, the portion
 
 The zero of an average effect might be the result of part of the population having a positive effect, which is just offset by a negative effect on the rest of the population. This kind of treatment effect heterogeneity is informative as it provides the starting point for an adaptive research strategy that tries to understand the driving force behind these differences (:cite:`HSMV96`, :cite:`HSMV97`).
 
-.. figure:: ../docs/figures/fig-distribution-joint-potential.png
+.. figure:: ../docs/source/figures/fig-distribution-joint-potential.png
    :align: center
 
    **Fig 5:** Distribution of potential Outcomes
 
 
-.. figure:: ../docs/figures/fig-distribution-joint-surplus.png
+.. figure:: ../docs/source/figures/fig-distribution-joint-surplus.png
   :align: center
 
   **Fig. 6:** Distribution of benefits and surplus

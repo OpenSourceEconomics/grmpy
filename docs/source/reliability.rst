@@ -19,13 +19,13 @@ For illustrating the reliability we estimate :math:`B^{ATE}` during each step wi
 The first estimation uses a simple OLS approach.
 
 
-.. figure:: ../docs/figures/fig-ols-average-effect-estimation.png
+.. figure:: ../docs/source/figures/fig-ols-average-effect-estimation.png
     :align: center
 
 
 As can be seen from the figure, the OLS estimator underestimates the effect significantly. The stronger the correlation between the unobservable variables the more or less stronger the downwards bias.
 
-.. figure:: ../docs/figures/fig-grmpy-average-effect-estimation.png
+.. figure:: ../docs/source/figures/fig-grmpy-average-effect-estimation.png
     :align: center
 
 
@@ -36,5 +36,5 @@ Replication
 
 The second check of reliability compares the results of our estimation process with already existing results from the literature. For this purpose we replicate the results for the marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`). Additionally we provide a `jupyter notebook <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/04_grmpy_tutorial_notebook.ipynb>`_ that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/files/replication.grmpy.yml>`__ for easy reconstruction of our test setup. The init file corresponds to the specifications of the authors. As shown in the figure below the results are really close to the original results. The deviation seems to be negligible because of the usage of a mock dataset.
 
-.. figure:: ../docs/figures/fig-marginal-benefit-parametric-replication.png
+.. figure:: ../docs/source/figures/fig-marginal-benefit-parametric-replication.png
     :align: center

@@ -3,8 +3,8 @@ import os
 
 import pytest
 
-from grmpy.simulate.simulate import simulate
 from grmpy.estimate.estimate import estimate
+from grmpy.simulate.simulate import simulate
 
 
 def test():

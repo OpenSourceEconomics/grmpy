@@ -1,19 +1,20 @@
-""" This script creates a figure to illustrate how the usual treatment effects can be constructed by
- using differen weights on the marginal treatment effect.
+""" This script creates a figure to illustrate how the usual treatment effects can be
+constructed by using differen weights on the marginal treatment effect.
 """
-import matplotlib.pyplot as plt
-from scipy.integrate import quad
-from scipy.stats import norm
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from scipy.integrate import quad
 
-from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
-from grmpy.simulate.simulate_auxiliary import mte_information
-from fig_config import RESOURCE_DIR
-from fig_config import OUTPUT_DIR
+from fig_config import OUTPUT_DIR, RESOURCE_DIR
 from grmpy.read.read import read
+from grmpy.simulate.simulate_auxiliary import (
+    mte_information,
+    simulate_covariates,
+    construct_covariance_matrix
+)
 
-filename = '/tutorial.grmpy.ini'
+filename = "/tutorial.grmpy.ini"
 
 init_dict = read(RESOURCE_DIR + filename)
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
@@ -26,8 +27,8 @@ def weights_treatment_parameters(init_dict, GRID):
     """
     GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
 
-    coeffs_untreated = init_dict['UNTREATED']['all']
-    coeffs_treated = init_dict['TREATED']['all']
+    coeffs_untreated = init_dict["UNTREATED"]["all"]
+    coeffs_treated = init_dict["TREATED"]["all"]
     cov = construct_covariance_matrix(init_dict)
 
     x = simulate_covariates(init_dict)
@@ -67,24 +68,26 @@ def weights_treatment_parameters(init_dict, GRID):
 def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax = plt.figure().add_subplot(111)
 
-    ax.set_xlabel('$u_S$')
-    ax.set_ylabel('$\omega(u_S)$')
+    ax.set_xlabel("$u_S$")
+    ax.set_ylabel("$\omega(u_S)$")
     ax.set_ylim(0, 4.5)
     ax.set_xlim(0.0, 1.0)
-    ax.plot(GRID, ate, label='$\omega^{ATE}$', linestyle=':')
-    ax.plot(GRID, tt, label='$\omega^{TT}$', linestyle='--')
-    ax.plot(GRID, tut, label='$\omega^{TUT}$', linestyle='-.')
-    ax.plot(GRID, mte, label='MTE')
+    ax.plot(GRID, ate, label="$\omega^{ATE}$", linestyle=":")
+    ax.plot(GRID, tt, label="$\omega^{TT}$", linestyle="--")
+    ax.plot(GRID, tut, label="$\omega^{TUT}$", linestyle="-.")
+    ax.plot(GRID, mte, label="MTE")
     plt.legend()
 
     ax2 = ax.twinx()
-    ax2.set_ylabel('MTE')
+    ax2.set_ylabel("MTE")
     ax2.set_ylim(0, 0.35)
 
     plt.tight_layout()
-    plt.savefig(OUTPUT_DIR + '/fig-weights-marginal-effect.png', dpi=300)
+    plt.savefig(OUTPUT_DIR + "/fig-weights-marginal-effect.png", dpi=300)
 
 
-if __name__ == '__main__':
-    ate_weights, tt_weights, tut_weights, mte = weights_treatment_parameters(init_dict, GRID)
+if __name__ == "__main__":
+    ate_weights, tt_weights, tut_weights, mte = weights_treatment_parameters(
+        init_dict, GRID
+    )
     plot_weights_marginal_effect(ate_weights, tt_weights, tut_weights, mte)
