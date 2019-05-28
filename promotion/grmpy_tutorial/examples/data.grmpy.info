@@ -1,0 +1,85 @@
+
+
+ Number of Observations 
+
+                            Count
+
+  All                       10000
+  Treated                    6391
+  Untreated                  3609
+
+
+ Distribution of Outcomes
+
+                             Mean             Std-Dev.                  25%                  50%                  75%
+
+  All                      0.8196               0.5328               0.4401               0.7467               1.1652
+  Treated                  1.0018               0.5580               0.6305               1.0059               1.3721
+  Untreated                0.4968               0.2689               0.3218               0.5001               0.6782
+
+
+ Distribution of Effects
+
+                             Mean             Std-Dev.                  25%                  50%                  75%
+
+  All                      0.4998               0.3340               0.2739               0.4974               0.7208
+  Treated                  0.5007               0.3354               0.2731               0.5016               0.7233
+  Untreated                0.4982               0.3315               0.2761               0.4905               0.7177
+
+
+ Criterion Function 
+
+  Value           -0.270418786930      
+
+
+
+ Marginal Treatment Effect 
+
+    Quantile                Value
+
+          1%               0.5006
+          5%               0.5006
+         10%               0.5006
+         15%               0.5006
+         20%               0.5006
+         25%               0.5006
+         30%               0.5006
+         35%               0.5006
+         40%               0.5006
+         45%               0.5006
+         50%               0.5006
+         55%               0.5006
+         60%               0.5006
+         65%               0.5006
+         70%               0.5006
+         75%               0.5006
+         80%               0.5006
+         85%               0.5006
+         90%               0.5006
+         95%               0.5006
+         99%               0.5006
+
+
+ Parameterization 
+
+ Section       Identifier           Coef
+
+  TREATED    
+               const                1.0000
+               X2                   0.5550
+
+  UNTREATED  
+               const                0.5000
+               X2                   0.2500
+
+  CHOICE     
+               const                0.3780
+               X3                  -0.3900
+
+  DIST       
+               sigma1               0.1000
+               sigma10              0.0000
+               sigma1v              0.0000
+               sigma0               0.1000
+               sigma0v              0.0000
+               sigmaV               1.0000
