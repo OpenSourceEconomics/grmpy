@@ -6,8 +6,8 @@ from grmpy.check.check import check_presence_init
 
 
 def read(file):
-    """This function processes the initialization file so that it can be used for simulation as well
-     as estimation purposes.
+    """This function processes the initialization file so that it can be used for
+    simulation as well as estimation purposes.
      """
     # Check if there is a init file with the specified filename
     check_presence_init(file)

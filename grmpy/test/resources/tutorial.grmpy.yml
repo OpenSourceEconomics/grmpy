@@ -13,6 +13,7 @@ ESTIMATION:
     indicator: D
     comparison: 0
     output_file: est.grmpy.info
+    print_output: 0
 TREATED:
     params:
     - 1.2303

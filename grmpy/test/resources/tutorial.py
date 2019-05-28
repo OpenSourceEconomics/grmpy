@@ -1,4 +1,6 @@
-"""This module contains a tutorial illustrating the basic capabilities of the grmpy package."""
+"""This module contains a tutorial illustrating the basic capabilities of the grmpy
+package.
+"""
 import os
 
 from grmpy.simulate.simulate import simulate

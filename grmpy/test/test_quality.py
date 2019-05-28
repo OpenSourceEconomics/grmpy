@@ -6,8 +6,8 @@ import os
 
 
 def test1():
-    """This test runs flake8 to ensure the code quality. However, this is only relevant during
-    development."""
+    """This test runs flake8 to ensure the code quality. However, this is only relevant
+    during development."""
     try:
         import flake8  # noqa: F401
     except ImportError:

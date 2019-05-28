@@ -50,32 +50,37 @@ def dict_transformation(dict_):
 
 
 def read_desc(fname):
-    """The function reads the descriptives output file and returns a dictionary that contains the
-    relevant parameters for test6 in test_integration.py.
+    """The function reads the descriptives output file and returns a dictionary that
+    contains the relevant parameters for test6 in test_integration.py.
     """
     dict_ = {}
     with open(fname, "r") as handle:
         for i, line in enumerate(handle):
             list_ = shlex.split(line)
             if 7 <= i < 10:
-                if list_[0] in ["All", "Treated", "Untreated"]:
+                print(list_[0])
+                if list_[0] in ["ALL", "TREATED", "UNTREATED"]:
                     dict_[list_[0]] = {}
                     dict_[list_[0]]["Number"] = list_[1:]
             elif 20 <= i < 23:
                 if list_[0] == "Observed":
-                    dict_["All"][list_[0] + " " + list_[1]] = list_[2:]
+                    dict_["ALL"][list_[0] + " " + list_[1]] = list_[2:]
                 else:
-                    dict_["All"][list_[0] + " " + list_[1] + " " + list_[2]] = list_[3:]
+                    dict_["ALL"][list_[0] + " " + list_[1] + " " + list_[2]] = list_[3:]
             elif 29 <= i < 32:
                 if list_[0] == "Observed":
-                    dict_["Treated"][list_[0] + " " + list_[1]] = list_[2:]
+                    dict_["TREATED"][list_[0] + " " + list_[1]] = list_[2:]
                 else:
-                    dict_["Treated"][list_[0] + " " + list_[1] + " " + list_[2]] = list_[3:]
+                    dict_["TREATED"][
+                        list_[0] + " " + list_[1] + " " + list_[2]
+                    ] = list_[3:]
             elif 38 <= i < 41:
                 if list_[0] == "Observed":
-                    dict_["Untreated"][list_[0] + " " + list_[1]] = list_[2:]
+                    dict_["UNTREATED"][list_[0] + " " + list_[1]] = list_[2:]
                 else:
-                    dict_["Untreated"][list_[0] + " " + list_[1] + " " + list_[2]] = list_[3:]
+                    dict_["UNTREATED"][
+                        list_[0] + " " + list_[1] + " " + list_[2]
+                    ] = list_[3:]
 
         # Process the string in int and float values
         for key_ in dict_.keys():
@@ -86,6 +91,8 @@ def read_desc(fname):
                 "Simulated Sample (finish)",
                 "Simulated Sample (start)",
             ]:
-                dict_[key_][subkey] = [float(j) for j in dict_[key_][subkey] if j != "---"]
+                dict_[key_][subkey] = [
+                    float(j) for j in dict_[key_][subkey] if j != "---"
+                ]
 
     return dict_

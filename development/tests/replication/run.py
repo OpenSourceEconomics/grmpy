@@ -17,14 +17,14 @@ def plot_est_mte(rslt, init_dict, data_frame):
     unobservable V. ased on the calculation results."""
 
     # Define the Quantiles and read in the original results
-    quantiles = [0.0001] + np.arange(0.01, 1., 0.01).tolist() + [0.9999]
-    mte_ = json.load(open('mte_original.json', 'r'))
+    quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
+    mte_ = json.load(open("mte_original.json", "r"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]
 
     # Calculate the MTE and confidence intervals
-    mte = calculate_mte(rslt, init_dict, data_frame, quantiles)
+    mte = calculate_mte(rslt, data_frame, quantiles)
     mte = [i / 4 for i in mte]
     mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
 
@@ -35,9 +35,9 @@ def plot_est_mte(rslt, init_dict, data_frame):
 
     ax1.set_ylabel(r"$B^{MTE}$")
     ax1.set_xlabel("$u_D$")
-    l1, = ax1.plot(quantiles, mte, color='blue')
-    ax1.plot(quantiles, mte_up, color='blue', linestyle=':')
-    ax1.plot(quantiles, mte_d, color='blue', linestyle=':')
+    l1, = ax1.plot(quantiles, mte, color="blue")
+    ax1.plot(quantiles, mte_up, color="blue", linestyle=":")
+    ax1.plot(quantiles, mte_d, color="blue", linestyle=":")
 
     ax1.set_ylim([-0.4, 0.5])
 
@@ -46,16 +46,16 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax2.set_ylabel(r"$B^{MTE}$")
     ax2.set_xlabel("$u_D$")
 
-    l4, = ax2.plot(quantiles, mte_original, color='orange')
-    ax2.plot(quantiles, mte_original_d, color='orange', linestyle=':')
-    ax2.plot(quantiles, mte_original_u, color='orange', linestyle=':')
+    l4, = ax2.plot(quantiles, mte_original, color="orange")
+    ax2.plot(quantiles, mte_original_d, color="orange", linestyle=":")
+    ax2.plot(quantiles, mte_original_u, color="orange", linestyle=":")
     ax2.set_ylim([-0.4, 0.5])
 
-    plt.legend([l1, l4], ['grmpy $B^{MTE}$', 'original $B^{MTE}$'], prop={'size': 18})
+    plt.legend([l1, l4], ["grmpy $B^{MTE}$", "original $B^{MTE}$"], prop={"size": 18})
 
     plt.tight_layout()
 
-    plt.savefig('fig-marginal-benefit-parametric-replication.png', dpi=300)
+    plt.savefig("fig-marginal-benefit-parametric-replication.png", dpi=300)
 
     return mte
 
@@ -64,8 +64,8 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     """This function calculates the confidence interval of the marginal treatment effect."""
 
     # Import parameters and inverse hessian matrix
-    hess_inv = rslt['AUX']['hess_inv'] / data_frame.shape[0]
-    params = rslt['AUX']['x_internal']
+    hess_inv = rslt["AUX"]["hess_inv"] / data_frame.shape[0]
+    params = rslt["AUX"]["x_internal"]
 
     # Distribute parameters
     dist_cov = hess_inv[-4:, -4:]
@@ -73,7 +73,7 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
 
     # Process data
-    covariates = init_dict['TREATED']['order']
+    covariates = init_dict["TREATED"]["order"]
     x = np.mean(data_frame[covariates]).tolist()
     x_neg = [-i for i in x]
     x += x_neg
@@ -96,11 +96,11 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     return mte_up, mte_d
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    init_dict = read('replication.grmpy.yml')
+    init_dict = read("replication.grmpy.yml")
     # Estimate the coefficients
-    rslt = fit('replication.grmpy.yml')
+    rslt = fit("replication.grmpy.yml")
     # Calculate and plot the marginal treatment effect
-    data = pd.read_pickle('aer-replication-mock.pkl')
+    data = pd.read_pickle("aer-replication-mock.pkl")
     mte = plot_est_mte(rslt, init_dict, data)
