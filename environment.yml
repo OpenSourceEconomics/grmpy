@@ -17,5 +17,6 @@ dependencies:
     - linearmodels
     - oyaml
     - grmpy
+    - isort
 
 

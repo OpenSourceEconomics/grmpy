@@ -1,11 +1,11 @@
 """The module provides a random dictionary generating process for test purposes."""
-from itertools import combinations
-import collections
 import uuid
+import collections
+from itertools import combinations
 
-from scipy.stats import wishart
-import oyaml as yaml
 import numpy as np
+import oyaml as yaml
+from scipy.stats import wishart
 
 from grmpy.check.check import UserError
 
