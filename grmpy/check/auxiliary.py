@@ -1,6 +1,6 @@
 """This module provides several auxiliary functions for the check module."""
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
 
@@ -19,7 +19,7 @@ def read_data(data_file):
     if data_file[-4:] == ".pkl":
         data = pd.read_pickle(data_file)
     elif data_file[-4:] == ".txt":
-        data = pd.read_table(data_file, delim_whitespace=True, header=0)
+        data = pd.read_csv(data_file, delim_whitespace=True, header=0)
     elif data_file[-4:] == ".dta":
         data = pd.read_stata(data_file)
         data = data.drop(["index"], axis=1)

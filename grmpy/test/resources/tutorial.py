@@ -3,9 +3,9 @@ package.
 """
 import os
 
+from grmpy.estimate.estimate import fit
 from grmpy.simulate.simulate import simulate
-from grmpy.estimate.estimate import estimate
 
-f = os.path.dirname(__file__) + "/tutorial.grmpy.ini"
+f = os.path.dirname(__file__) + "/tutorial.grmpy.yml"
 simulate(f)
-rslt = estimate(f)
+rslt = fit(f)
