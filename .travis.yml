@@ -16,7 +16,7 @@ before_script:
 
 script:
     - py.test
-    - bash /utils/run_sphinx_build.sh
+    - bash utils/run_sphinx_build.sh
     - travis_wait python utils/travis_runner.py
     - python -c "import grmpy; grmpy.test()"
 
