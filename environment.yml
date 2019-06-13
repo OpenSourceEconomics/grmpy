@@ -21,6 +21,6 @@ dependencies:
     - isort
     - nbsphinx
     - sphinx_rtd_theme
-    - codecov
+    - pytest-cov
 
 
