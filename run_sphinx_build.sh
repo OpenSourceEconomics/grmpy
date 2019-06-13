@@ -1,3 +1,3 @@
 #!/bin/sh
-cd doc
+cd docs
 make html
