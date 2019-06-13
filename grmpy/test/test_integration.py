@@ -6,24 +6,25 @@ import json
 import numpy as np
 import pytest
 
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
-from grmpy.estimate.estimate_output import simulate_estimation
-from grmpy.estimate.estimate_auxiliary import start_values
-from grmpy.estimate.estimate_auxiliary import process_data
-from grmpy.check.check import check_initialization_dict
-from grmpy.test.random_init import generate_random_dict
-from grmpy.test.auxiliary import dict_transformation
 from grmpy.check.auxiliary import check_special_conf
+from grmpy.check.check import (
+    check_init_file,
+    check_initialization_dict,
+    check_start_values,
+)
 from grmpy.check.custom_exceptions import UserError
-from grmpy.grmpy_config import TEST_RESOURCES_DIR
-from grmpy.check.check import check_start_values
-from grmpy.check.check import check_init_file
-from grmpy.test.random_init import print_dict
-from grmpy.simulate.simulate import simulate
-from grmpy.test.auxiliary import read_desc
-from grmpy.test.auxiliary import cleanup
 from grmpy.estimate.estimate import fit
+from grmpy.estimate.estimate_auxiliary import (
+    calculate_criteria,
+    process_data,
+    start_values,
+)
+from grmpy.estimate.estimate_output import simulate_estimation
+from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.read.read import read
+from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup, dict_transformation, read_desc
+from grmpy.test.random_init import generate_random_dict, print_dict
 
 
 def test1():
@@ -70,7 +71,6 @@ def test3():
         generate_random_dict(constr)
         df1 = simulate("test.grmpy.yml")
         rslt = fit("test.grmpy.yml")
-        print(rslt["DIST"])
         init_dict = read("test.grmpy.yml")
         _, df2 = simulate_estimation(rslt)
         start = start_values(init_dict, df1, "init")
@@ -119,7 +119,7 @@ def test6():
     """
     for _ in range(5):
         constr = dict()
-        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 10000
+        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 15000
         constr["START"], constr["SAME_SIZE"] = "init", True
         dict_ = generate_random_dict(constr)
         dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0

@@ -1,11 +1,14 @@
+"""This module contains methods for producing the estimation output files."""
 import copy
 
 import numpy as np
 
-from grmpy.simulate.simulate_auxiliary import simulate_unobservables
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
-from grmpy.simulate.simulate_auxiliary import simulate_outcomes
-from grmpy.simulate.simulate_auxiliary import mte_information
+from grmpy.simulate.simulate_auxiliary import (
+    mte_information,
+    simulate_covariates,
+    simulate_outcomes,
+    simulate_unobservables,
+)
 
 
 def print_logfile(init_dict, rslt):
@@ -261,7 +264,6 @@ def simulate_estimation(rslt):
 def process_results(rslt):
     """The function processes the results dictionary for the following simulation."""
     start, finish = copy.deepcopy(rslt), copy.deepcopy(rslt)
-    print(start["DIST"])
     maxiter = rslt["ESTIMATION"]["maxiter"]
     if maxiter != 0:
         for section in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:

@@ -1,7 +1,7 @@
 """The module provides basic auxiliary functions for the test modules."""
-import shlex
 import glob
 import os
+import shlex
 
 import numpy as np
 
@@ -58,7 +58,6 @@ def read_desc(fname):
         for i, line in enumerate(handle):
             list_ = shlex.split(line)
             if 7 <= i < 10:
-                print(list_[0])
                 if list_[0] in ["ALL", "TREATED", "UNTREATED"]:
                     dict_[list_[0]] = {}
                     dict_[list_[0]]["Number"] = list_[1:]
