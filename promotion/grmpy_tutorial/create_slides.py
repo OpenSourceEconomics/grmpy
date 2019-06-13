@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 """This module compiles the lecture notes."""
-import subprocess
 import argparse
-import shutil
 import glob
 import os
+import shutil
+import subprocess
 
 
 def compile_single(is_update):
     """Compile a single lecture."""
     for task in ["pdflatex", "bibtex", "pdflatex", "pdflatex"]:
-        subprocess.check_call(task + " main", shell=True)
+        cmd = [task, "main"]
+        subprocess.check_call(cmd)
 
     if is_update:
         shutil.copy(

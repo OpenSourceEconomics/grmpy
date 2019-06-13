@@ -243,7 +243,7 @@ def test9():
     read in process and the simulation process works if the constraints function allows
     for different number of covariates for each treatment state and the occurence of
     cost-benefit shifters."""
-    for i in range(5):
+    for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENT"], constr["STATE_DIFF"] = (
             False,

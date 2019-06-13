@@ -1,27 +1,30 @@
 """The module provides unit tests for different aspects of the simulation process."""
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from grmpy.simulate.simulate_auxiliary import construct_covariance_matrix
-from grmpy.estimate.estimate_auxiliary import backward_transformation
-from grmpy.estimate.estimate_auxiliary import start_value_adjustment
-from grmpy.estimate.estimate_auxiliary import check_rslt_parameters
-from grmpy.estimate.estimate_auxiliary import calculate_p_values
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
-from grmpy.simulate.simulate_auxiliary import mte_information
-from grmpy.estimate.estimate_auxiliary import process_output
-from grmpy.estimate.estimate_auxiliary import adjust_output
-from grmpy.estimate.estimate_auxiliary import start_values
-from grmpy.estimate.estimate_auxiliary import calculate_se
-from grmpy.estimate.estimate_auxiliary import process_data
-from grmpy.test.random_init import generate_random_dict
-from grmpy.grmpy_config import TEST_RESOURCES_DIR
-from grmpy.test.random_init import print_dict
-from grmpy.simulate.simulate import simulate
 from grmpy.check.auxiliary import read_data
-from grmpy.test.auxiliary import cleanup
 from grmpy.estimate.estimate import fit
+from grmpy.estimate.estimate_auxiliary import (
+    adjust_output,
+    backward_transformation,
+    calculate_criteria,
+    calculate_p_values,
+    calculate_se,
+    check_rslt_parameters,
+    process_data,
+    process_output,
+    start_value_adjustment,
+    start_values,
+)
+from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.read.read import read
+from grmpy.simulate.simulate import simulate
+from grmpy.simulate.simulate_auxiliary import (
+    construct_covariance_matrix,
+    mte_information,
+)
+from grmpy.test.auxiliary import cleanup
+from grmpy.test.random_init import generate_random_dict, print_dict
 
 
 def test1():
@@ -412,7 +415,7 @@ def test13():
         x_linalign = [0.0000000000000001] * len(x0)
         num_treated = init_dict["AUX"]["num_covars_treated"]
         num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
-        se, hess_inv, conf_interval, p_values, t_values, warning = calculate_se(
+        se, hess_inv, conf_interval, p_values, t_values, _ = calculate_se(
             x_linalign, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
         )
         np.testing.assert_equal(se, [np.nan] * len(x0))
