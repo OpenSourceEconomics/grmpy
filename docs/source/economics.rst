@@ -109,7 +109,7 @@ Local Average Treatment Effect
 
 The Local Average Treatment Effect :math:`B^{LATE}` was introduced by :cite:`Imbens94`. They show that instrumental variable approaches (IV) identify :math:`B^{LATE}`, which measures the mean gross return to treatment for individuals induced into treatment by a change in an instrument.
 
-.. figure:: ../docs/source/source/figures/fig-local-average-treatment.png
+.. figure:: ../docs/source/figures/fig-local-average-treatment.png
    :align: center
 
    **Fig. 2:** :math:`B^{LATE}` at different values of :math:`u_S`
