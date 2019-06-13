@@ -22,5 +22,6 @@ dependencies:
     - nbsphinx
     - sphinx_rtd_theme
     - pytest-cov
+    - jupyter
 
 
