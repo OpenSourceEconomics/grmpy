@@ -61,7 +61,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "grmpy"
-copyright = "2018, grmpy-dev team"
+copyright_ = "2018, grmpy-dev team"
 author = "grmpy-dev team"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -174,7 +174,7 @@ texinfo_documents = [
 epub_title = project
 epub_author = author
 epub_publisher = author
-epub_copyright = copyright
+epub_copyright = copyright_
 
 # The unique identifier of the text. This can be a ISBN number
 # or the project homepage.
