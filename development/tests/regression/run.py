@@ -31,8 +31,10 @@ def process_arguments(parser):
         num_tests = None
 
     # Test validity of input arguments
-    assert request in ["check", "create"]
-    assert num_tests in [i for i in np.arange(1001)]
+    if request not in ["check", "create"]:
+        raise AssertionError()
+    if num_tests not in [i for i in np.arange(1001)]:
+        raise AssertionError(9)
     return request, num_tests
 
 
