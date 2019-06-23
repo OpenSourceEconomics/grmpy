@@ -12,7 +12,11 @@ import os
 
 import numpy as np
 
-from grmpy.estimate.estimate_auxiliary import calculate_criteria, start_values
+from grmpy.estimate.estimate_auxiliary import (
+    calculate_criteria,
+    process_data,
+    start_values,
+)
 from grmpy.read.read import read
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup
@@ -32,11 +36,12 @@ if True:
         constr = dict()
         constr["DETERMINISTIC"], constr["CATEGORICAL"] = False, False
         dict_ = generate_random_dict(constr)
-        df = simulate("test.grmpy.ini")
+        df = simulate("test.grmpy.yml")
         stat = np.sum(df.sum())
-        init_dict = read("test.grmpy.ini")
+        init_dict = read("test.grmpy.yml")
         start = start_values(init_dict, df, "init")
-        criteria = calculate_criteria(init_dict, df, start)
+        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        criteria = calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)
         tests += [(stat, dict_, criteria)]
     json.dump(tests, open(file_dir, "w"))
 
