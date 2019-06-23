@@ -1,6 +1,6 @@
 """The module provides a random dictionary generating process for test purposes."""
-import uuid
 import collections
+import uuid
 from itertools import combinations
 
 import numpy as np
@@ -12,8 +12,6 @@ from grmpy.check.check import UserError
 
 def generate_random_dict(constr=None):
     """The module provides a random dictionary generating process for test purposes."""
-
-    """The function generates a random initialization dictionary."""
 
     if constr is not None:
         if not isinstance(constr, dict):

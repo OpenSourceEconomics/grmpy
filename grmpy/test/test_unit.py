@@ -348,9 +348,9 @@ def test12():
 
     for data in [pkl, dta, txt]:
         df = read_data(data)
-        sum = np.sum(df.sum())
+        sum_ = np.sum(df.sum())
         columns = list(df)
-        np.testing.assert_array_almost_equal(sum, real_sum, decimal=5)
+        np.testing.assert_array_almost_equal(sum_, real_sum, decimal=5)
         np.testing.assert_equal(columns, real_column_values)
 
 

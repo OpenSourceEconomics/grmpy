@@ -9,12 +9,5 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | \.venv
-  | development
-  | promotion
-  | build
-  | dist
-  | docs
-  | grmpy-egg-info
-
 
 )/

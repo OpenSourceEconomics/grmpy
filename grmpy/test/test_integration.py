@@ -212,7 +212,7 @@ def test7():
     pytest.raises(UserError, fit, fname_noparams)
 
     dict_ = read(fname_binary)
-    status, msg = check_special_conf(dict_)
+    status, _ = check_special_conf(dict_)
     np.testing.assert_equal(status, True)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
