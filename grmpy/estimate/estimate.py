@@ -1,5 +1,6 @@
-"""The module provides an estimation process given the simulated data set and the initialization
-file."""
+"""The module provides an estimation process given the simulated data set and the
+initialization file.
+"""
 from scipy.optimize import minimize
 import numpy as np
 
@@ -63,7 +64,9 @@ def fit(init_file):
             method=method,
             options=opts,
         )
-        rslt = adjust_output(opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
+        rslt = adjust_output(
+            opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict
+        )
     # Print Output files
     print_logfile(dict_, rslt)
 
@@ -71,8 +74,8 @@ def fit(init_file):
         if dict_["ESTIMATION"]["comparison"] == 0:
             pass
         else:
-            write_comparison(dict_, data, rslt)
+            write_comparison(data, rslt)
     else:
-        write_comparison(dict_, data, rslt)
+        write_comparison(data, rslt)
 
     return rslt

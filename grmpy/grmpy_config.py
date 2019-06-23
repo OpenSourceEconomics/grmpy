@@ -1,10 +1,10 @@
 """This module provides some configuration for the package."""
-import warnings
-import sys
 import os
+import sys
+import warnings
 
-from statsmodels.tools.sm_exceptions import ConvergenceWarning
 import numpy as np
+from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 # Set Debug mode dependend on the environment in which the test battery is running
 IS_PRODUCTION = False

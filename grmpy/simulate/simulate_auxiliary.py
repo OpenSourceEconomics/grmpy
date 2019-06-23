@@ -1,6 +1,6 @@
-""" This module provides auxiliary functions for the simulate.py module. It includes simulation
-processes of the unobservable and endogenous variables of the model as well as functions regarding
-the info file output.
+""" This module provides auxiliary functions for the simulate.py module. It includes
+simulation processes of the unobservable and endogenous variables of the model as well
+as functions regarding the info file output.
 """
 from scipy.stats import norm
 import pandas as pd
@@ -20,7 +20,9 @@ def simulate_covariates(init_dict):
     # As our baseline we simulate covariates from a standard normal distribution.
     means = np.tile(0.0, num_covars)
     covs = np.identity(num_covars)
-    X = pd.DataFrame(np.random.multivariate_normal(means, covs, num_agents), columns=labels)
+    X = pd.DataFrame(
+        np.random.multivariate_normal(means, covs, num_agents), columns=labels
+    )
 
     # We now perform some selective replacements.
     # Set intercept
@@ -29,7 +31,9 @@ def simulate_covariates(init_dict):
     # Include binary variables
     for variable in init_dict["VARTYPES"]:
         if isinstance(init_dict["VARTYPES"][variable], list):
-            X[variable] = np.random.binomial(1, init_dict["VARTYPES"][variable][1], size=num_agents)
+            X[variable] = np.random.binomial(
+                1, init_dict["VARTYPES"][variable][1], size=num_agents
+            )
     return X
 
 
@@ -39,15 +43,16 @@ def simulate_unobservables(init_dict):
     cov = construct_covariance_matrix(init_dict)
 
     U = pd.DataFrame(
-        np.random.multivariate_normal(np.zeros(3), cov, num_agents), columns=["U1", "U0", "V"]
+        np.random.multivariate_normal(np.zeros(3), cov, num_agents),
+        columns=["U1", "U0", "V"],
     )
 
     return U
 
 
 def simulate_outcomes(init_dict, X, U):
-    """The function simulates the potential outcomes Y0 and Y1, the resulting treatment dummy D and
-    the realized outcome Y.
+    """The function simulates the potential outcomes Y0 and Y1, the resulting treatment
+    dummy D and the realized outcome Y.
     """
     dep = init_dict["ESTIMATION"]["dependent"]
     indicator = init_dict["ESTIMATION"]["indicator"]
@@ -79,8 +84,8 @@ def simulate_outcomes(init_dict, X, U):
 
 
 def write_output(init_dict, df):
-    """The function converts the simulated variables to a panda data frame and saves the data in a
-    txt and a pickle file.
+    """The function converts the simulated variables to a panda data frame and saves the
+    data in a txt and a pickle file.
     """
     # Distribute information
     source = init_dict["SIMULATION"]["source"]
@@ -97,7 +102,10 @@ def print_info(init_dict, data_frame):
     coeffs_untreated = init_dict["UNTREATED"]["params"]
     coeffs_treated = init_dict["TREATED"]["params"]
     source = init_dict["SIMULATION"]["source"]
-    dep, indicator = (init_dict["ESTIMATION"]["dependent"], init_dict["ESTIMATION"]["indicator"])
+    dep, indicator = (
+        init_dict["ESTIMATION"]["dependent"],
+        init_dict["ESTIMATION"]["indicator"],
+    )
 
     # Construct auxiliary information
     cov = construct_covariance_matrix(init_dict)
@@ -173,7 +181,9 @@ def print_info(init_dict, data_frame):
         quantiles = [i * 0.01 for i in quantiles]
 
         x = data_frame
-        value = mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict)
+        value = mte_information(
+            coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict
+        )
         str_ = "  {0:>10} {1:>20}\n\n".format("Quantile", "Value")
         file_.write(str_)
         len_ = len(value)
@@ -188,8 +198,8 @@ def print_info(init_dict, data_frame):
 
 
 def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
-    """The function calculates the marginal treatment effect for pre specified quantiles of the
-    collected unobservable variables.
+    """The function calculates the marginal treatment effect for pre specified quantiles
+    of the collected unobservable variables.
     """
 
     labels = [k for k in dict_["TREATED"]["order"]]
@@ -207,33 +217,42 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
                     dict_["TREATED"]["params"][index_treated]
                     - dict_["UNTREATED"]["params"][index_untreated]
                 )
-            elif var in dict_["TREATED"]["order"] and var not in dict_["UNTREATED"]["order"]:
+            elif (
+                var in dict_["TREATED"]["order"]
+                and var not in dict_["UNTREATED"]["order"]
+            ):
                 index = dict_["TREATED"]["order"].index(var)
                 diff = dict_["TREATED"]["params"][index]
 
-            elif var not in dict_["TREATED"]["order"] and var in dict_["UNTREATED"]["order"]:
+            elif (
+                var not in dict_["TREATED"]["order"]
+                and var in dict_["UNTREATED"]["order"]
+            ):
                 index = dict_["UNTREATED"]["order"].index(var)
                 diff = -dict_["UNTREATED"]["params"][index]
             para_diff += [diff]
     else:
 
         para_diff = coeffs_treated - coeffs_untreated
-
     x = x[labels]
     MTE = []
     for i in quantiles:
         if cov[2, 2] == 0.00:
             MTE += ["---"]
         else:
-            MTE += [np.mean(np.dot(x, para_diff)) + (cov[2, 0] - cov[2, 1]) * norm.ppf(i)]
+            MTE += [
+                np.mean(np.dot(x, para_diff)) + (cov[2, 0] - cov[2, 1]) * norm.ppf(i)
+            ]
 
     return MTE
 
 
 def write_identifier_section_simulate(init_dict, file_):
-    file_.write("\n\n {} \n\n".format("Parameterization"))
+    """This function prints the information about the estimation results in the output
+     file.
+     """
 
-    """This function prints the information about the estimation results in the output file."""
+    file_.write("\n\n {} \n\n".format("Parameterization"))
 
     fmt_ = " {:<10}" + "    {:>10}" + "{:>15}"
 
@@ -246,9 +265,19 @@ def write_identifier_section_simulate(init_dict, file_):
     identifier_treated = init_dict["TREATED"]["order"]
     identifier_untreated = init_dict["UNTREATED"]["order"]
     identifier_choice = init_dict["CHOICE"]["order"]
-    identifier_distribution = ["sigma1", "sigma10", "sigma1v", "sigma0", "sigma0v", "sigmaV"]
+    identifier_distribution = [
+        "sigma1",
+        "sigma10",
+        "sigma1v",
+        "sigma0",
+        "sigma0v",
+        "sigmaV",
+    ]
     identifier = (
-        identifier_treated + identifier_untreated + identifier_choice + identifier_distribution
+        identifier_treated
+        + identifier_untreated
+        + identifier_choice
+        + identifier_distribution
     )
     coeffs = init_dict["AUX"]["init_values"].copy()
     fmt = "  {:>10}" + "   {:<15}" + " {:>11.4f}"
@@ -266,7 +295,9 @@ def write_identifier_section_simulate(init_dict, file_):
 
 
 def construct_covariance_matrix(init_dict):
-    """This function constructs the covariance matrix based on the user's initialization file."""
+    """This function constructs the covariance matrix based on the user's initialization
+     file.
+     """
     cov = np.zeros((3, 3))
     cov[np.triu_indices(3)] = init_dict["DIST"]["params"]
     cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]

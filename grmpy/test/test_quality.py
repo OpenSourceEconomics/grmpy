@@ -1,18 +1,14 @@
 """This module contains test that check the code quality of the package."""
-from grmpy.grmpy_config import PACKAGE_DIR
-from subprocess import CalledProcessError
-import subprocess
 import os
+import subprocess
+from subprocess import CalledProcessError
+
+from grmpy.grmpy_config import PACKAGE_DIR
 
 
 def test1():
-    """This test runs flake8 to ensure the code quality. However, this is only relevant during
-    development."""
-    try:
-        import flake8  # noqa: F401
-    except ImportError:
-        return None
-
+    """This test runs flake8 to ensure the code quality. However, this is only relevant
+    during development."""
     cwd = os.getcwd()
     os.chdir(PACKAGE_DIR)
     try:

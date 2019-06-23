@@ -3,8 +3,8 @@ import numpy as np
 
 
 def init_dict_to_attr_dict(init_dict):
-    """This function processes the imported initialization file so that it fulfills the requirements
-     for the following simulation and estimation process.
+    """This function processes the imported initialization file so that it fulfills the
+    requirements for the following simulation and estimation process.
     """
 
     init_dict["AUX"] = {"init_values"}

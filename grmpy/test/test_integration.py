@@ -1,34 +1,35 @@
-"""The module includes an integration and a regression test for the simulation and the estiomation
- process.
+"""The module includes an integration and a regression test for the simulation and the
+estiomation process.
  """
 import json
 
 import numpy as np
 import pytest
 
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
-from grmpy.estimate.estimate_output import simulate_estimation
-from grmpy.estimate.estimate_auxiliary import start_values
-from grmpy.estimate.estimate_auxiliary import process_data
-from grmpy.check.check import check_initialization_dict
-from grmpy.test.random_init import generate_random_dict
-from grmpy.test.auxiliary import dict_transformation
 from grmpy.check.auxiliary import check_special_conf
+from grmpy.check.check import (
+    check_init_file,
+    check_initialization_dict,
+    check_start_values,
+)
 from grmpy.check.custom_exceptions import UserError
-from grmpy.grmpy_config import TEST_RESOURCES_DIR
-from grmpy.check.check import check_start_values
-from grmpy.check.check import check_init_file
-from grmpy.test.random_init import print_dict
-from grmpy.simulate.simulate import simulate
-from grmpy.test.auxiliary import read_desc
-from grmpy.test.auxiliary import cleanup
 from grmpy.estimate.estimate import fit
+from grmpy.estimate.estimate_auxiliary import (
+    calculate_criteria,
+    process_data,
+    start_values,
+)
+from grmpy.estimate.estimate_output import simulate_estimation
+from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.read.read import read
+from grmpy.simulate.simulate import simulate
+from grmpy.test.auxiliary import cleanup, dict_transformation, read_desc
+from grmpy.test.random_init import generate_random_dict, print_dict
 
 
 def test1():
-    """The test runs a loop to check the consistency of the random init file generating process
-    and the following simulation.
+    """The test runs a loop to check the consistency of the random init file generating
+    process and the following simulation.
     """
     for _ in range(10):
         dict_ = generate_random_dict()
@@ -37,8 +38,8 @@ def test1():
 
 
 def test2():
-    """This test runs a random selection of five regression tests from the our old regression test
-    battery.
+    """This test runs a random selection of five regression tests from the our old
+    regression test battery.
     """
     fname = TEST_RESOURCES_DIR + "/old_regression_vault.grmpy.json"
     tests = json.load(open(fname))
@@ -59,8 +60,9 @@ def test2():
 
 
 def test3():
-    """The test checks if the criteria function value of the simulated and the 'estimated'
-    sample is equal if both samples include an identical number of individuals.
+    """The test checks if the criteria function value of the simulated and the
+    'estimated' sample is equal if both samples include an identical number of
+    individuals.
     """
     for _ in range(5):
         constr = dict()
@@ -70,7 +72,7 @@ def test3():
         df1 = simulate("test.grmpy.yml")
         rslt = fit("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
-        df2 = simulate_estimation(init_dict, rslt)
+        _, df2 = simulate_estimation(rslt)
         start = start_values(init_dict, df1, "init")
 
         criteria = []
@@ -81,12 +83,16 @@ def test3():
 
 
 def test4():
-    """The test checks if the estimation process works if the Powell algorithm is specified as
-    the optimizer option.
+    """The test checks if the estimation process works if the Powell algorithm is
+    specified as the optimizer option.
     """
     for _ in range(5):
         constr = dict()
-        constr["DETERMINISTIC"], constr["AGENTS"], constr["start"] = (False, 10000, "init")
+        constr["DETERMINISTIC"], constr["AGENTS"], constr["start"] = (
+            False,
+            10000,
+            "init",
+        )
         constr["optimizer"] = "SCIPY-Powell"
         generate_random_dict(constr)
 
@@ -95,7 +101,9 @@ def test4():
 
 
 def test5():
-    """The test checks if the estimation process works properly when maxiter is set to zero."""
+    """The test checks if the estimation process works properly when maxiter is set to
+    zero.
+    """
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["MAXITER"] = False, 0
@@ -105,21 +113,21 @@ def test5():
 
 
 def test6():
-    """Additionally to test5 this test checks if the comparison file provides the expected
-    output when maxiter is set to zero and the estimation process uses the initialization file
-    values as start values.
+    """Additionally to test5 this test checks if the comparison file provides the
+    expected output when maxiter is set to zero and the estimation process uses the
+    initialization file values as start values.
     """
     for _ in range(5):
         constr = dict()
-        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 10000
+        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 15000
         constr["START"], constr["SAME_SIZE"] = "init", True
         dict_ = generate_random_dict(constr)
         dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0
         print_dict(dict_)
         simulate("test.grmpy.yml")
         fit("test.grmpy.yml")
-        dict_ = read_desc("comparison.grmpy.txt")
-        for section in ["All", "Treated", "Untreated"]:
+        dict_ = read_desc("comparison.grmpy.info")
+        for section in ["ALL", "TREATED", "UNTREATED"]:
             np.testing.assert_equal(len(set(dict_[section]["Number"])), 1)
             np.testing.assert_almost_equal(
                 dict_[section]["Observed Sample"],
@@ -134,8 +142,9 @@ def test6():
 
 
 def test7():
-    """This test ensures that the estimation process returns an UserError if one tries to execute an
-    estimation process with initialization file values as start values for an deterministic setting.
+    """This test ensures that the estimation process returns an UserError if one tries
+    to execute an estimation process with initialization file values as start values for
+    an deterministic setting.
     """
     fname_falsespec1 = TEST_RESOURCES_DIR + "/test_falsespec1.grmpy.yml"
     fname_falsespec2 = TEST_RESOURCES_DIR + "/test_falsespec2.grmpy.yml"
@@ -203,15 +212,15 @@ def test7():
     pytest.raises(UserError, fit, fname_noparams)
 
     dict_ = read(fname_binary)
-    status, msg = check_special_conf(dict_)
+    status, _ = check_special_conf(dict_)
     np.testing.assert_equal(status, True)
     pytest.raises(UserError, check_initialization_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
 
 def test8():
-    """The test checks if an UserError occurs if wrong inputs are specified for a different
-    functions/methods.
+    """The test checks if an UserError occurs if wrong inputs are specified for a
+    different functions/methods.
     """
     constr = dict()
     constr["DETERMINISTIC"], constr["AGENTS"] = False, 1000
@@ -230,12 +239,17 @@ def test8():
 
 
 def test9():
-    """This test ensures that the random initialization file generating process, the read in process
-    and the simulation process works if the constraints function allows for different number of co-
-    variates for each treatment state and the occurence of cost-benefit shifters."""
-    for i in range(5):
+    """This test ensures that the random initialization file generating process, the
+    read in process and the simulation process works if the constraints function allows
+    for different number of covariates for each treatment state and the occurence of
+    cost-benefit shifters."""
+    for _ in range(5):
         constr = dict()
-        constr["DETERMINISTIC"], constr["AGENT"], constr["STATE_DIFF"] = (False, 1000, True)
+        constr["DETERMINISTIC"], constr["AGENT"], constr["STATE_DIFF"] = (
+            False,
+            1000,
+            True,
+        )
         constr["OVERLAP"] = True
         generate_random_dict(constr)
         read("test.grmpy.yml")

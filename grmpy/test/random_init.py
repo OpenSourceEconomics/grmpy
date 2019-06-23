@@ -1,19 +1,17 @@
 """The module provides a random dictionary generating process for test purposes."""
-from itertools import combinations
 import collections
 import uuid
+from itertools import combinations
 
-from scipy.stats import wishart
-import oyaml as yaml
 import numpy as np
+import oyaml as yaml
+from scipy.stats import wishart
 
 from grmpy.check.check import UserError
 
 
 def generate_random_dict(constr=None):
     """The module provides a random dictionary generating process for test purposes."""
-
-    """The function generates a random initialization dictionary."""
 
     if constr is not None:
         if not isinstance(constr, dict):
@@ -35,7 +33,9 @@ def generate_random_dict(constr=None):
     if "OPTIMIZER" in constr.keys():
         optimizer = constr["OPTIMIZER"]
     else:
-        optimizer = str(np.random.choice(a=["SCIPY-BFGS", "SCIPY-POWELL"], p=[0.5, 0.5]))
+        optimizer = str(
+            np.random.choice(a=["SCIPY-BFGS", "SCIPY-POWELL"], p=[0.5, 0.5])
+        )
 
     if "SAME_SIZE" in constr.keys():
         same_size = constr["SAME_SIZE"]
@@ -82,7 +82,11 @@ def generate_random_dict(constr=None):
     if state_diff:
         untreated_num = treated_num + np.random.randint(1, 10)
         choice_num = untreated_num + choice_num
-        num = [[1, treated_num], [treated_num, untreated_num], [untreated_num, choice_num]]
+        num = [
+            [1, treated_num],
+            [treated_num, untreated_num],
+            [untreated_num, choice_num],
+        ]
 
     else:
         untreated_num = treated_num
@@ -132,6 +136,7 @@ def generate_random_dict(constr=None):
     init_dict["ESTIMATION"]["indicator"] = "D"
     init_dict["ESTIMATION"]["output_file"] = "est.grmpy.info"
     init_dict["ESTIMATION"]["comparison"] = "0"
+    init_dict["ESTIMATION"]["print_output"] = "0"
 
     init_dict["SCIPY-BFGS"], init_dict["SCIPY-POWELL"] = {}, {}
     init_dict["SCIPY-BFGS"]["gtol"] = np.random.uniform(1.5e-05, 0.8e-05)
@@ -160,11 +165,15 @@ def generate_random_dict(constr=None):
 
 
 def generate_coeff(num, is_zero):
-    """The function generates random coefficients for creating the random init dictionary."""
+    """The function generates random coefficients for creating the random init
+    dictionary.
+    """
 
     # Generate a random paramterization and specify the variable order
     if not is_zero:
-        params = np.around(np.random.normal(0.0, 2.0, [len(range(num[0] - 1, num[1]))]), 4).tolist()
+        params = np.around(
+            np.random.normal(0.0, 2.0, [len(range(num[0] - 1, num[1]))]), 4
+        ).tolist()
     else:
         params = np.array([0] * num).tolist()
 
@@ -174,8 +183,8 @@ def generate_coeff(num, is_zero):
 
 
 def types(init_dict):
-    """This function determines if there are any binary variables. If so the funtion specifies the
-    rate for which the variable is equal to one.
+    """This function determines if there are any binary variables. If so the funtion
+    specifies the rate for which the variable is equal to one.
     """
 
     variables = [i for i in init_dict["VARTYPES"].keys() if i != "X1"]
@@ -192,7 +201,8 @@ def types(init_dict):
 def comb_overlap(init_dict, state_diff, overlap):
     """This function evaluates which variables affect more than one section."""
 
-    # List all possible overlaps between the different sections and chose a random combination
+    # List all possible overlaps between the different sections and chose a random
+    # combination
     if state_diff and overlap:
         cases = [list(i) for i in combinations(list(init_dict.keys()), 2)] + [
             list(init_dict.keys())
@@ -211,9 +221,9 @@ def comb_overlap(init_dict, state_diff, overlap):
         min_key = min(aux_dict, key=aux_dict.get)
         num_overlap = np.random.choice(range(1, aux_dict[min_key]))
         for section in case:
-            init_dict[section]["order"][1:1 + num_overlap] = init_dict[min_key]["order"][
-                1:num_overlap + 1
-            ]
+            init_dict[section]["order"][1 : 1 + num_overlap] = init_dict[min_key][
+                "order"
+            ][1 : num_overlap + 1]
 
     return init_dict
 
@@ -221,7 +231,8 @@ def comb_overlap(init_dict, state_diff, overlap):
 def print_dict(init_dict, file_name="test"):
     """This function prints the initialization dict as a yaml file."""
 
-    # Transfer the init dict in an ordered one to ensure that the init file is aligned appropriately
+    # Transfer the init dict in an ordered one to ensure that the init file is aligned
+    #  appropriately
     ordered_dict = collections.OrderedDict()
     order = [
         "SIMULATION",
@@ -246,5 +257,10 @@ def print_dict(init_dict, file_name="test"):
     # Print the initialization file
     with open("{}.grmpy.yml".format(file_name), "w") as outfile:
         yaml.dump(
-            ordered_dict, outfile, explicit_start=True, indent=4, width=99, default_flow_style=False
+            ordered_dict,
+            outfile,
+            explicit_start=True,
+            indent=4,
+            width=99,
+            default_flow_style=False,
         )

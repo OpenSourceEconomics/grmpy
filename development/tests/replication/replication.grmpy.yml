@@ -13,6 +13,8 @@ ESTIMATION:
     indicator: state
     comparison: 0
     output_file: est.grmpy.info
+    print_output: est.grmpy.info
+
 TREATED:
     params:
     - 1.0
