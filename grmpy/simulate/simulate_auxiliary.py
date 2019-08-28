@@ -3,6 +3,7 @@ simulation processes of the unobservable and endogenous variables of the model a
 as functions regarding the info file output.
 """
 from scipy.stats import norm
+from scipy.stats import gumbel_l
 import pandas as pd
 import numpy as np
 
@@ -41,13 +42,51 @@ def simulate_unobservables(init_dict):
     """The function simulates the unobservable error terms."""
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
-
-    U = pd.DataFrame(
-        np.random.multivariate_normal(np.zeros(3), cov, num_agents),
-        columns=["U1", "U0", "V"],
-    )
+    if init_dict["DIST"]["dist"] == "gumbel"
+        U = multivariate_gumbel_distribution(num_agents, cov)
+    else:
+        U = pd.DataFrame(
+            np.random.multivariate_normal(np.zeros(3),cov,num_agents), \
+            columns=["U1", "U0", "V"],
+            )
 
     return U
+
+
+def multivariate_gumbel_distribution(num_agents, cov):
+    """This function creates error terms distributed according to a multivariate gumbel
+    distribution.
+    """
+
+    # Set beta and mu so that the resulting gumbel distribution has a std according to
+    # the covariance matrix and mean=0
+    beta = []
+    mu = []
+    
+    for var in np.diagonal(cov):
+        beta += [(np.sqrt(6)* np.sqrt(var))/np.pi]
+        mu += [-np.euler_gamma * (np.sqrt(6)* np.sqrt(var))/np.pi]
+
+    # Draw a multivariate normal distribution according to the covariance matrix
+    X = np.random.multivariate_normal(mean=[0, 0, 0], cov=cov, size=num_agents)
+
+    X1, X2, X3 = (X[:, 0] - np.mean(X[:, 0])) / np.sqrt(cov[0, 0]), \
+                 (X[:, 1] - np.mean(X[:, 1])) / np.sqrt(cov[1, 1]), \
+                 (X[:, 2] - np.mean(X[:, 2])) / np.sqrt(cov[2, 2])
+
+    # Convert the normal distribution parameters in a uniform distribution
+    U1, U2, U3 = norm.cdf(X1), norm.cdf(X2), norm.cdf(X3)
+
+    # Assign the according quantile for each value within the uniform distribution
+    G1, G2, G3 = gumbel_l.ppf(U1, scale=beta[0], loc=mu[0]), \
+                 gumbel_l.ppf(U2, scale=beta[1], loc=mu[1]), \
+                 gumbel_l.ppf(U3, scale=beta[2], loc=mu[2])
+
+    G = pd.DataFrame(data=[G1, G2, G3])
+    G = G.T
+    G.columns=["U1", "U0", "V"]
+
+    return G
 
 
 def simulate_outcomes(init_dict, X, U):
