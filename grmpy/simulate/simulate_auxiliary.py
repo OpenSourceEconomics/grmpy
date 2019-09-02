@@ -43,6 +43,7 @@ def simulate_unobservables(init_dict, is_est = None):
     estimation based simulation of unobservables always follows a normal distribution."""
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
+    
     if init_dict["DIST"]["dist"] == "gumbel" and is_est == None:
         U = multivariate_gumbel_distribution(num_agents, cov)
     else:
@@ -50,6 +51,7 @@ def simulate_unobservables(init_dict, is_est = None):
             np.random.multivariate_normal(np.zeros(3),cov,num_agents), \
             columns=["U1", "U0", "V"],
             )
+        print("hi")
 
     return U
 

@@ -8,7 +8,7 @@ def init_dict_to_attr_dict(init_dict):
     """
 
     init_dict["AUX"] = {"init_values"}
-
+    
     init_values = []
     for key in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
         if "params" in init_dict[key].keys():
@@ -44,5 +44,10 @@ def init_dict_to_attr_dict(init_dict):
             "num_covars": num_covars,
             "labels": covar_label,
         }
+    
+    if "dist" in init_dict["DIST"].keys():
+        pass
+    else:
+        init_dict["DIST"]["dist"] = "normal"
 
     return init_dict

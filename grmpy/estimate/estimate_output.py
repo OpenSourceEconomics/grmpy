@@ -250,7 +250,9 @@ def simulate_estimation(rslt):
 
         # Set seed value
         np.random.seed(seed)
-        # Simulate unobservables
+        # Simulate unobservables, estm is a dummy variable so that the simulation uses 
+        # a multivariate normal distribution for the unobservables
+        estm = 0
         U = simulate_unobservables(dict_, estm)
         X = simulate_covariates(dict_)
 
