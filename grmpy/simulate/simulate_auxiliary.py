@@ -38,20 +38,19 @@ def simulate_covariates(init_dict):
     return X
 
 
-def simulate_unobservables(init_dict, is_est = None):
+def simulate_unobservables(init_dict, is_est=None):
     """The function simulates the unobservable error terms. is_est makes sure that the
     estimation based simulation of unobservables always follows a normal distribution."""
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
     
-    if init_dict["DIST"]["dist"] == "gumbel" and is_est == None:
+    if init_dict["DIST"]["dist"] == "gumbel" and is_est is None:
         U = multivariate_gumbel_distribution(num_agents, cov)
     else:
         U = pd.DataFrame(
-            np.random.multivariate_normal(np.zeros(3),cov,num_agents), \
+            np.random.multivariate_normal(np.zeros(3), cov, num_agents),
             columns=["U1", "U0", "V"],
-            )
-        print("hi")
+                        )
 
     return U
 
@@ -65,10 +64,10 @@ def multivariate_gumbel_distribution(num_agents, cov):
     # the covariance matrix and mean=0
     beta = []
     mu = []
-    
+
     for var in np.diagonal(cov):
-        beta += [(np.sqrt(6)* np.sqrt(var))/np.pi]
-        mu += [-np.euler_gamma * (np.sqrt(6)* np.sqrt(var))/np.pi]
+        beta += [(np.sqrt(6) * np.sqrt(var)) / np.pi]
+        mu += [-np.euler_gamma * (np.sqrt(6) * np.sqrt(var)) / np.pi]
 
     # Draw a multivariate normal distribution according to the covariance matrix
     X = np.random.multivariate_normal(mean=[0, 0, 0], cov=cov, size=num_agents)
@@ -81,13 +80,12 @@ def multivariate_gumbel_distribution(num_agents, cov):
     U1, U2, U3 = norm.cdf(X1), norm.cdf(X2), norm.cdf(X3)
 
     # Assign the according quantile for each value within the uniform distribution
-    G1, G2, G3 = gumbel_l.ppf(U1, scale=beta[0], loc=mu[0]), \
-                 gumbel_l.ppf(U2, scale=beta[1], loc=mu[1]), \
+    G1, G2, G3 = gumbel_l.ppf(U1, scale=beta[0], loc=mu[0]), gumbel_l.ppf(U2, scale=beta[1], loc=mu[1]), \
                  gumbel_l.ppf(U3, scale=beta[2], loc=mu[2])
 
     G = pd.DataFrame(data=[G1, G2, G3])
     G = G.T
-    G.columns=["U1", "U0", "V"]
+    G.columns = ["U1", "U0", "V"]
 
     return G
 
