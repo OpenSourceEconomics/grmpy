@@ -38,11 +38,12 @@ def simulate_covariates(init_dict):
     return X
 
 
-def simulate_unobservables(init_dict):
-    """The function simulates the unobservable error terms."""
+def simulate_unobservables(init_dict, is_est = None):
+    """The function simulates the unobservable error terms. is_est makes sure that the
+    estimation based simulation of unobservables always follows a normal distribution."""
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
-    if init_dict["DIST"]["dist"] == "gumbel"
+    if init_dict["DIST"]["dist"] == "gumbel" and is_est == None:
         U = multivariate_gumbel_distribution(num_agents, cov)
     else:
         U = pd.DataFrame(
