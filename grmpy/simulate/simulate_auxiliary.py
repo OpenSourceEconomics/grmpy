@@ -38,7 +38,7 @@ def simulate_covariates(init_dict):
     return X
 
 
-def simulate_unobservables(init_dict, is_est=None):
+def simulate_unobservables(init_dict, is_est=False):
     """The function simulates the unobservable error terms. is_est makes sure that the
     estimation based simulation of unobservables always follows a normal distribution."""
     num_agents = init_dict["SIMULATION"]["agents"]
