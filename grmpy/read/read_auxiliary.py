@@ -48,6 +48,6 @@ def init_dict_to_attr_dict(init_dict):
     if "dist" in init_dict["DIST"].keys():
         pass
     else:
-        init_dict["DIST"]["dist"] = "normal"
+        init_dict["DIST"]["type"] = "normal"
 
     return init_dict

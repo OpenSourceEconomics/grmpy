@@ -252,8 +252,7 @@ def simulate_estimation(rslt):
         np.random.seed(seed)
         # Simulate unobservables, estm is a dummy variable so that the simulation uses
         # a multivariate normal distribution for the unobservables
-        estm = 0
-        U = simulate_unobservables(dict_, estm)
+        U = simulate_unobservables(dict_, "estim")
         X = simulate_covariates(dict_)
 
         # Simulate endogeneous variables

@@ -44,7 +44,7 @@ def simulate_unobservables(init_dict, is_est=None):
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
 
-    if init_dict["DIST"]["dist"] == "gumbel" and is_est is None:
+    if init_dict["DIST"]["type"] == "gumbel" and is_est is None:
         U = multivariate_gumbel_distribution(num_agents, cov)
     else:
         U = pd.DataFrame(
