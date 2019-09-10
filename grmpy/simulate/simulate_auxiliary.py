@@ -118,9 +118,9 @@ def multivariate_logistic_distribution(num_agents, cov):
     # draw a multivariate normal distribution according to the covariance matrix
     X = np.random.multivariate_normal(mean=[0, 0, 0], cov=cov, size=num_agents)
 
-    X1, X2, X3 = (X[:, 0] - np.mean(X[:, 0])) / np.sqrt(cov_normal[0, 0]), \
-                 (X[:, 1] - np.mean(X[:, 1])) / np.sqrt(cov_normal[1, 1]), \
-                 (X[:, 2] - np.mean(X[:, 2])) / np.sqrt(cov_normal[2, 2])
+    X1, X2, X3 = (X[:, 0] - np.mean(X[:, 0])) / np.sqrt(cov[0, 0]), \
+                 (X[:, 1] - np.mean(X[:, 1])) / np.sqrt(cov[1, 1]), \
+                 (X[:, 2] - np.mean(X[:, 2])) / np.sqrt(cov[2, 2])
 
     # Convert the normal distribution parameters in a uniform distribution
 
