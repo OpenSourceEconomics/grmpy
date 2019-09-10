@@ -46,11 +46,11 @@ def simulate_unobservables(init_dict, is_est=False):
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
 
-    if init_dict["DIST"]["type"] == "gumbel_l" and is_est is None:
+    if init_dict["DIST"]["type"] == "gumbel_l" and is_est is False:
         U = multivariate_gumbel_distribution(num_agents, cov, skew="left")
-    elif init_dict["DIST"]["type"] == "gumbel_r" and is_est is None:
+    elif init_dict["DIST"]["type"] == "gumbel_r" and is_est is False:
         U = multivariate_gumbel_distribution(num_agents, cov, skew="right")
-    elif init_dict["DIST"]["type"] == "logistic" and is_est is None:
+    elif init_dict["DIST"]["type"] == "logistic" and is_est is False:
         U = multivariate_logistic_distribution(num_agents, cov)
     else:
         U = pd.DataFrame(
