@@ -112,7 +112,7 @@ def multivariate_logistic_distribution(num_agents, cov):
     s = []
     mu = [0, 0, 0]
 
-    for var in np.diagonal(cov_normal):
+    for var in np.diagonal(cov):
         s += [(np.sqrt(3) * np.sqrt(var)) / np.pi]
 
     # draw a multivariate normal distribution according to the covariance matrix
