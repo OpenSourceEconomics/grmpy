@@ -4,6 +4,8 @@ as functions regarding the info file output.
 """
 from scipy.stats import norm
 from scipy.stats import gumbel_l
+from scipy.stats import gumbel_r
+from scipy.stats import logistic
 import pandas as pd
 import numpy as np
 
@@ -44,8 +46,12 @@ def simulate_unobservables(init_dict, is_est=False):
     num_agents = init_dict["SIMULATION"]["agents"]
     cov = construct_covariance_matrix(init_dict)
 
-    if init_dict["DIST"]["type"] == "gumbel" and is_est is None:
-        U = multivariate_gumbel_distribution(num_agents, cov)
+    if init_dict["DIST"]["type"] == "gumbel_l" and is_est is None:
+        U = multivariate_gumbel_distribution(num_agents, cov, skew="left")
+    elif init_dict["DIST"]["type"] == "gumbel_r" and is_est is None:
+        U = multivariate_gumbel_distribution(num_agents, cov, skew="right")
+    elif init_dict["DIST"]["type"] == "logistic" and is_est is None:
+        U = multivariate_logistic_distribution(num_agents, cov)
     else:
         U = pd.DataFrame(
             np.random.multivariate_normal(np.zeros(3), cov, num_agents),
@@ -55,7 +61,7 @@ def simulate_unobservables(init_dict, is_est=False):
     return U
 
 
-def multivariate_gumbel_distribution(num_agents, cov):
+def multivariate_gumbel_distribution(num_agents, cov, skew):
     """This function creates error terms distributed according to a multivariate gumbel
     distribution.
     """
@@ -80,15 +86,56 @@ def multivariate_gumbel_distribution(num_agents, cov):
     U1, U2, U3 = norm.cdf(X1), norm.cdf(X2), norm.cdf(X3)
 
     # Assign the according quantile for each value within the uniform distribution
-    G1, G2, G3 = gumbel_l.ppf(U1, scale=beta[0], loc=mu[0]), \
-        gumbel_l.ppf(U2, scale=beta[1], loc=mu[1]), \
-        gumbel_l.ppf(U3, scale=beta[2], loc=mu[2])
+    if skew == "left":
+        G1, G2, G3 = gumbel_l.ppf(U1, scale=beta[0], loc=mu[0]), \
+                     gumbel_l.ppf(U2, scale=beta[1], loc=mu[1]), \
+                     gumbel_l.ppf(U3, scale=beta[2], loc=mu[2])
+    else:
+        G1, G2, G3 = gumbel_r.ppf(U1, scale=beta[0], loc=mu[0]), \
+                     gumbel_r.ppf(U2, scale=beta[1], loc=mu[1]), \
+                     gumbel_r.ppf(U3, scale=beta[2], loc=mu[2])
 
     G = pd.DataFrame(data=[G1, G2, G3])
     G = G.T
     G.columns = ["U1", "U0", "V"]
 
     return G
+
+
+def multivariate_logistic_distribution(num_agents, cov):
+    """This function creates error terms distributed according to a multivariate gumbel
+    distribution.
+    """
+
+    # set beta and mu so that the resulting gumbel distribution has a std according to
+    # the covariance matrix and mean=0
+    s = []
+    mu = [0, 0, 0]
+
+    for var in np.diagonal(cov_normal):
+        s += [(np.sqrt(3) * np.sqrt(var)) / np.pi]
+
+    # draw a multivariate normal distribution according to the covariance matrix
+    X = np.random.multivariate_normal(mean=[0, 0, 0], cov=cov, size=num_agents)
+
+    X1, X2, X3 = (X[:, 0] - np.mean(X[:, 0])) / np.sqrt(cov_normal[0, 0]), \
+                 (X[:, 1] - np.mean(X[:, 1])) / np.sqrt(cov_normal[1, 1]), \
+                 (X[:, 2] - np.mean(X[:, 2])) / np.sqrt(cov_normal[2, 2])
+
+    # Convert the normal distribution parameters in a uniform distribution
+
+    U1, U2, U3 = norm.cdf(X1), norm.cdf(X2), norm.cdf(X3)
+
+    # Assign the according quantile for each value within the uniform distribution
+    L1, L2, L3 = logistic.ppf(U1, scale=s[0], loc=mu[0]), \
+        logistic.ppf(U2, scale=s[1], loc=mu[1]), \
+        logistic.ppf(U3, scale=s[2], loc=mu[2])
+
+    L = pd.DataFrame(data=[L1, L2, L3])
+    L = L.T
+    L.columns = ["U1", "U0", "V"]
+
+    return L
 
 
 def simulate_outcomes(init_dict, X, U):
