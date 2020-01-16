@@ -49,7 +49,7 @@ maxiter	        int         maximum numbers of iterations
 dependent       str         indicates the dependent variable
 indicator       str         label of the treatment indicator variable
 output_file     str         name for the estimation output file
-comparison	int         flag for enabling the comparison file creation
+comparison	    int         flag for enabling the comparison file creation
 ===========     ======      ===============================================
 
 
