@@ -33,11 +33,13 @@ The semiparametric approach invokes no assumption on the distribution of the uno
 Under this assumption, the MTE is
 
     \begin{enumerate}[leftmargin=1.5cm,labelsep=0cm,align=left,label={[\arabic*]}]
-    \item additively separable in $X$ and $U_D$, which means that the shape of the MTE is independent of $X$, and
-    \item identified over the common support of $P(Z)$, unconditional on $X$.
+    \item additively separable in :math:`X` and :math:`U_D`, which means that the shape of the MTE is independent of :math:`X`, and
+    \item identified over the common support of :math:`(P(Z)`, unconditional on :math:`X`.
+
+    \end{enumerate}
 
 The assumption of common support is crucial for the application of LIV and needs to be carefully evaluated every time.
-It is defined as the region where the support of $P(Z)$ given $D=1$ and the support of $P(Z)$ given $D=0$ overlap.
+It is defined as the region where the support of :math:`(P(Z)` given :math:`D=1` and the support of :math:`(P(Z)` given :math:`D=0 overlap.
 
 Model Specification
 -------------------
@@ -85,14 +87,14 @@ file            str         name of the estimation specific init file
 logit           bool        If false: probit. Probability model for the decision equation
 nbins           int         Number of histogram bins used to determine common support
 trim_support	bool        Trim the data outside the common support (default is *True*)
-reestimate_p    bool        Reestimate $P(Z)$ after trimming (default is *False*)
+reestimate_p    bool        Reestimate :math:`(P(Z)` after trimming (default is *False*)
 rbandwidth      int         Bandwidth for the double residual regression (default is 0.05)
 derivative      int         Derivative of the locally quadratic regression (default is 1)
 degree          int         Degree of the local polynomial (default is 2)
 bandwidth       float       Bandwidth for the local quadratic regression
 gridsize        int         Number of evaluation points (default is 401)
 truncate        bool        Truncate end observations (default is *True*)
-ps_range        list        Start and end point of the range of $p = u_D$ over which the MTE shall be plotted
+ps_range        list        Start and end point of the range of :math:`p = u_D` over which the MTE shall be plotted
 ===========     ======      =====================================================================================
 
 
