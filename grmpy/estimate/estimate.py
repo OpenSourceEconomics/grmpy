@@ -28,7 +28,7 @@ def fit(init_file, semipar=False):
     # Semiparametric LIV Model
     if semipar is True:
         check_dict_semipar(dict_)
-        quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)  # change to dict_
+        quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)
 
         # Construct the MTE
         # Calculate the MTE component that depends on X

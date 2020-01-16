@@ -75,9 +75,6 @@ def check_dict_semipar(dict_):
                 "same section.".format(key_)
             )
             raise UserError(msg)
-    error, msg = check_special_conf(dict_)
-    if error is True:
-        raise UserError(msg)
 
     if dict_["ESTIMATION"]["file"][-4:] not in [".pkl", ".txt", "dta"]:
         msg = (

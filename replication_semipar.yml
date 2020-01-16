@@ -1,19 +1,8 @@
 ---
-SIMULATION:
-    seed: 5062
-    agents: 991
-    source: 8EF73AA0
 ESTIMATION:
     file: promotion/grmpy_tutorial_notebook/data/aer-replication-mock.pkl
-    start: auto
-    agents: 1000
-    optimizer: SCIPY-BFGS
-    maxiter: 80000
     dependent: wage
     indicator: state
-    output_file: replication.grmp.info
-    comparison: 0
-    print_output: 0
     semipar: True
     show_output: True
     logit: True
@@ -28,10 +17,7 @@ ESTIMATION:
     ps_range: [0.005, 0.995]
     truncate: True 
 TREATED:
-    params:
-    - 1.0
     order:
-    - const
     - exp
     - expsq
     - lwage5
@@ -55,8 +41,6 @@ TREATED:
     - d62
     - d63
 UNTREATED:
-    params:
-    - 1.0
     order:
     - exp
     - expsq
@@ -84,6 +68,7 @@ CHOICE:
     params:
     - 1.0
     order:
+    - const
     - cafqt
     - cafqtsq
     - mhgc
@@ -126,11 +111,3 @@ DIST:
     - 0.1
     - 0.0
     - 1.0
-VARTYPES:
-    const: nonbinary
-SCIPY-BFGS:
-    gtol: 1.0e-05
-    eps: 1.4901161193847656e-08
-SCIPY-POWELL:
-    xtol: 0.0001
-    ftol: 0.0001
