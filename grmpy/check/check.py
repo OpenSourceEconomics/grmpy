@@ -64,20 +64,8 @@ def check_initialization_dict(dict_):
         raise UserError(msg)
 
 
-def check_par(dict_):
-    """This function provides specific checks for the parametric normal estimation"""
-    # Distribute details
-    num_agents_sim = dict_["SIMULATION"]["agents"]
-
-    # This are just two example for a whole host of tests.
-    if num_agents_sim <= 0:
-        msg = "The number of simulated individuals needs to be larger than zero."
-        raise UserError(msg)
-
-    if dict_["DETERMINISTIC"] is False:
-        if not is_pos_def(dict_):
-            msg = "The specified covariance matrix has to be positive semidefinite."
-            raise UserError(msg)
+def check_dict_semipar(dict_):
+    """This function provides some basic checks for the semiparametric estimation"""
     for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
         if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
             msg = (

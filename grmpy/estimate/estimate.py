@@ -6,7 +6,8 @@ import numpy as np
 from grmpy.check.check import check_presence_estimation_dataset
 from grmpy.check.check import check_initialization_dict
 from grmpy.check.check import check_presence_init
-from grmpy.check.check import check_par
+from grmpy.check.check import check_dict_semipar
+from grmpy.check.check import check_init_file
 from grmpy.read.read import read
 
 from grmpy.estimate.estimate_semipar import semipar_fit
@@ -23,10 +24,10 @@ def fit(init_file, semipar=False):
 
     # Perform some consistency checks given the user's request
     check_presence_estimation_dataset(dict_)
-    check_initialization_dict(dict_)
 
     # Semiparametric LIV Model
     if semipar is True:
+        check_dict_semipar(dict_)
         quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)  # change to dict_
 
         # Construct the MTE
@@ -53,7 +54,8 @@ def fit(init_file, semipar=False):
 
     # Parametric Normal Model
     else:
-        check_par(dict_)
+        check_initialization_dict(dict_)
+        check_init_file(dict_)
         rslt = par_fit(dict_)
 
     return rslt
