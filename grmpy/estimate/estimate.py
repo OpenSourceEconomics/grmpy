@@ -25,7 +25,7 @@ def fit(init_file, semipar=False):
 
     # Semiparametric Model
     if semipar is True:
-        quantiles, mte_u, X, b1_b0 = semipar_fit(init_file) # change to dict_
+        quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)  # change to dict_
 
         # Construct MTE
         # Calculate the MTE component that depends on X
@@ -38,8 +38,16 @@ def fit(init_file, semipar=False):
         mte_min = np.min(mte_x) + mte_u
         mte_max = np.max(mte_x) + mte_u
 
-        rslt = {"quantiles": quantiles, "mte": mte, "mte_x": mte_x, "mte_u": mte_u,
-                "mte_min": mte_min, "mte_max": mte_max, "X": X, "b1-b0": b1_b0}
+        rslt = {
+            "quantiles": quantiles,
+            "mte": mte,
+            "mte_x": mte_x,
+            "mte_u": mte_u,
+            "mte_min": mte_min,
+            "mte_max": mte_max,
+            "X": X,
+            "b1-b0": b1_b0,
+        }
 
     # Parametric Normal Model
     else:

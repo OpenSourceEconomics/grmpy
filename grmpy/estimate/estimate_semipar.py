@@ -1,4 +1,6 @@
-""" """
+"""
+This module contains the semiparametric estimation process.
+"""
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
@@ -31,7 +33,6 @@ def semipar_fit(dict_):
 
     logit = dict_["ESTIMATION"]["logit"]
     show_output = dict_["ESTIMATION"]["show_output"]
-
 
     # The Local Instrumental Variables (LIV) estimator
     # 1. Estimate propensity score P(z)
@@ -124,21 +125,26 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
 
     # Make the histogram using a list of lists
     fig = plt.figure(figsize=(10, 6))
-    hist = plt.hist([treated, untreated], bins=nbins,
-                    weights=[np.ones(len(treated)) / len(treated), np.ones(len(untreated)) / len(untreated)],
-                    density=0,
-                    alpha=0.55,
-                    label=["Treated", "Unreated"]
-                    )
+    hist = plt.hist(
+        [treated, untreated],
+        bins=nbins,
+        weights=[
+            np.ones(len(treated)) / len(treated),
+            np.ones(len(untreated)) / len(untreated),
+        ],
+        density=0,
+        alpha=0.55,
+        label=["Treated", "Unreated"],
+    )
 
     if show_output is True:
         # Plot formatting
-        plt.legend(loc='upper right')
+        plt.legend(loc="upper right")
         plt.xticks(np.arange(0, 1.1, step=0.1))
-        plt.grid(axis='y', alpha=0.25)
-        plt.xlabel('$P$')
-        plt.ylabel('$f(P)$')
-        plt.title('Support of $P(\hat{Z})$ for $D=1$ and $D=0$')
+        plt.grid(axis="y", alpha=0.25)
+        plt.xlabel("$P$")
+        plt.ylabel("$f(P)$")
+        plt.title("Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
         # fig
 
     else:
@@ -147,7 +153,6 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
     if nbins is None:
         lower_limit = np.min(treated[:, 1])
         upper_limit = np.max(untreated[:, 1])
-
 
     # Find the true common support
     else:
@@ -178,7 +183,7 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
             else:
                 # If the current bin is non-empty, we have still continuous support and
                 # the sample minimum remains our lower limit
-                if (hist[0][0][low] > 0):
+                if hist[0][0][low] > 0:
                     pass
 
                 # If an empty bin is found, set the lower limit to the next bin above
@@ -213,7 +218,7 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
             else:
                 # If the current bin is non-empty, we have still continuous support and
                 # the sample maximum remains our upper limit
-                if (hist[0][1][up] > 0):
+                if hist[0][1][up] > 0:
                     pass
 
                 # If an empty bin is found, set the upper limit to the next bin below
@@ -311,7 +316,7 @@ def double_residual_reg(ps, X, Xp, Y, rbandwidth, show_output):
     model = sm.OLS(res_Y, res_X_Xp)
     results = model.fit()
     b0 = results.params[: len(list(X))]
-    b1_b0 = results.params[len((list(X))):]
+    b1_b0 = results.params[len((list(X))) :]
 
     if show_output is True:
         print(results.summary())
