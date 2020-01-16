@@ -27,4 +27,3 @@ dependencies:
     - jupyterlab
     - scikit-misc
     - sklearn
-  

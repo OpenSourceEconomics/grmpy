@@ -4,7 +4,7 @@ import pandas as pd
 
 from grmpy.check.auxiliary import read_data
 from grmpy.estimate.estimate import fit
-from grmpy.estimate.estimate_auxiliary import (
+from grmpy.estimate.estimate_par import (
     adjust_output,
     backward_transformation,
     calculate_criteria,
