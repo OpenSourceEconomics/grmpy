@@ -3,12 +3,12 @@ import numpy as np
 
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.simulate.simulate_auxiliary import simulate_covariates
-from grmpy.estimate.estimate_auxiliary import calculate_criteria
+from grmpy.estimate.estimate_par import calculate_criteria
 from grmpy.simulate.simulate_auxiliary import simulate_outcomes
 from grmpy.simulate.simulate_auxiliary import write_output
-from grmpy.estimate.estimate_auxiliary import start_values
+from grmpy.estimate.estimate_par import start_values
 from grmpy.simulate.simulate_auxiliary import print_info
-from grmpy.estimate.estimate_auxiliary import process_data
+from grmpy.estimate.estimate_par import process_data
 from grmpy.check.check import check_initialization_dict
 from grmpy.read.read import read
 

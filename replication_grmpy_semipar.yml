@@ -58,7 +58,6 @@ UNTREATED:
     params:
     - 1.0
     order:
-    - const
     - exp
     - expsq
     - lwage5
@@ -85,7 +84,6 @@ CHOICE:
     params:
     - 1.0
     order:
-    - const
     - cafqt
     - cafqtsq
     - mhgc

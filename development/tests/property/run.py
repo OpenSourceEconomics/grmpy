@@ -10,13 +10,13 @@ import os
 import numpy as np
 
 from grmpy.test.auxiliary import cleanup
-from property_auxiliary import distribute_command_line_arguments
-from property_auxiliary import process_command_line_arguments
-from property_auxiliary import get_random_string
-from property_auxiliary import run_property_test
-from property_auxiliary import print_rslt_ext
-from property_auxiliary import collect_tests
-from property_auxiliary import finish
+from development.tests.property.property_auxiliary import distribute_command_line_arguments
+from development.tests.property.property_auxiliary import process_command_line_arguments
+from development.tests.property.property_auxiliary import get_random_string
+from development.tests.property.property_auxiliary import run_property_test
+from development.tests.property.property_auxiliary import print_rslt_ext
+from development.tests.property.property_auxiliary import collect_tests
+from development.tests.property.property_auxiliary import finish
 
 
 def choose_module(inp_dict):

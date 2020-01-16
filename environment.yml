@@ -20,6 +20,7 @@ dependencies:
     - linearmodels
     - oyaml
     - isort
+    - grmpy
     - nbsphinx
     - sphinx_rtd_theme
     - pytest-cov
