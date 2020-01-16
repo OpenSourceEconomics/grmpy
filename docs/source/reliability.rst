@@ -85,7 +85,7 @@ The deviation seems to be negligible because of the usage of a mock dataset.
 Semiparametric Replication
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. figure:: ../source/figures/replication_carneiro_semipar.png
+.. figure:: ../source/figures/replication_carneiroB.png
     :align: center
 
 The semiparametric MTE also gets very close to the original curve. However, the 90 percent confidence bands
