@@ -59,7 +59,11 @@ seed        int         seed for the specific simulation
 source      str         specified name for the simulation output files
 =======     ======      ==============================================
 
-**PARAMETRIC ESTIMATION**
+**ESTIMATION**
+
+Depending on the model specified, different input parameters are required.
+
+**PARAMETRIC MODEL**
 
 ===========     ======      ===============================================
 Key             Value       Interpretation
@@ -76,19 +80,20 @@ output_file     str         name for the estimation output file
 comparison	int         flag for enabling the comparison file creation
 ===========     ======      ===============================================
 
-**Semiparametric ESTIMATION**
+**SEMIPARAMETRIC MODEL**
 
 =============     ======      =========================================================================================
 Key               Value       Interpretation
 =============     ======      =========================================================================================
-semipar           True        run LIV
+semipar           True        choose the semiparametric model
+show_output       bool        If *True*, intermediate outputs of the LIV estimation are displayed
 dependent         str         indicates the dependent variable
 indicator         str         label of the treatment indicator variable
 file              str         name of the estimation specific init file
 logit             bool        If false: probit. Probability model for the decision equation
 nbins             int         Number of histogram bins used to determine common support
 trim_support	  bool        Trim the data outside the common support (default is *True*)
-reestimate_p      bool        Reestimate :math:`(P(Z)` after trimming (default is *False*)
+reestimate_p      bool        Reestimate :math:`P(Z)` after trimming (default is *False*)
 rbandwidth        int         Bandwidth for the double residual regression (default is 0.05)
 derivative        int         Derivative of the locally quadratic regression (default is 1)
 degree            int         Degree of the local polynomial (default is 2)

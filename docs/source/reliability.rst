@@ -31,10 +31,64 @@ As can be seen from the figure, the OLS estimator underestimates the effect sign
 
 The second figure shows the estimated :math:`B^{ATE}` from the ``grmpy`` estimation process. Conversely to the OLS results the estimate of the average effect is close to the true value even if the unobservables are almost perfectly correlated.
 
-Replication
+
+Sensitivity to Different Distributions of the Unobservables
+-----------------------------------------------------------
+The parametric specification makes the strong assumption that the unobservables follow a joint normal distribution.
+The semiparametric method of local instrumental variables is more flexible, as it does not invoke conditions on the functional form.
+We test how sensitive the two methods to different distributions of the unobservables.
+To that end, we use a toy model of the returns to college, where the shape of the true marginal treatment effect is known.
+
+Normal Distribution
+^^^^^^^^^^^^^^^^^^^
+
+.. figure:: ../source/figures/normal_distribution.png
+    :align: center
+
+Both specifications come very close to the original curve. The parametric model even gets a perfect fit.
+
+*beta* Distribution
+^^^^^^^^^^^^^^^^^^^
+
+The shape of the *beta* distribution can be flexibly adjusted by the tuning parameters :math:`\alpha` and :math:`\beta`,
+which we set to 4 and 8, respectively.
+
+
+.. figure:: ../source/figures/beta_distribution.png
+    :align: center
+
+The parametric model underestimates the returns to college, whereas the semiparametric MTE still fits the original
+curve pretty well. The latter makes no assumption on the functional form of the unobservables and, thus, is more flexible
+in estimating the parameter of interest when the assumption of joint normality is violated.
+Which model is superior depends on the context. In empirical applications, we recommend to examine both.
+
+
+Reliability
 -----------
 
-The second check of reliability compares the results of our estimation process with already existing results from the literature. For this purpose we replicate the results for the marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`). Additionally we provide a `jupyter notebook <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/04_grmpy_tutorial_notebook.ipynb>`_ that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/files/replication.grmpy.yml>`__ for easy reconstruction of our test setup. The init file corresponds to the specifications of the authors. As shown in the figure below the results are really close to the original results. The deviation seems to be negligible because of the usage of a mock dataset.
+In another check of reliability, we compare the results of our estimation process with already existing results from the literature.
+For this purpose we replicate the results for both the parametric and semiparametric marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`).
+Note that we make use of a mock data set, as the original data cannot be fully recreated from the
+`replication material <https://www.aeaweb.org/articles?id=10.1257/aer.101.6.2754/>` they provide.
+Additionally we provide a `jupyter notebook <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/04_grmpy_tutorial_notebook.ipynb>`_ that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/files/replication.grmpy.yml>`__ for easy reconstruction of our test setup. The init file corresponds to the specifications of the authors.
+
+Parametric Replication
+^^^^^^^^^^^^^^^^^^^^^^
+
+As shown in the figure below, the parametric MTE is really close to the original results.
+The deviation seems to be negligible because of the usage of a mock dataset.
 
 .. figure:: ../source/figures/fig-marginal-benefit-parametric-replication.png
     :align: center
+
+
+Semiparametric Replication
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. figure:: ../source/figures/replication_carneiro_semipar.png
+    :align: center
+
+The semiparametric MTE also gets very close to the original curve. However, the 90 percent confidence bands
+(250 bootstrap replications) are wider. As opposed to the parametric model, where the standard error bands are computed
+analytically, confidence bands in the semiparametric setup are obtained via bootstrap,
+which is sensitive to the discrepancies in the mock data set.
