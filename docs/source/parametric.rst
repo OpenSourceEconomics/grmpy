@@ -1,7 +1,7 @@
-Tutorial
-========
+Parametric Normal Model
+=======================
 
-We now illustrate the basic capabilities of the ``grmpy`` package. We start with the assumptions about functional form and the distribution of unobservables and then turn to some simple use cases.
+We now illustrate the basic capabilities of the ``grmpy`` package. We start with the assumptions about functional form and the distribution of unobservables in the parametric normal model. We then turn to some simple use cases.
 
 Assumptions
 ------------
