@@ -1,10 +1,11 @@
-Parametric Normal Model
+Tutorial
 =======================
 
-We now illustrate the basic capabilities of the ``grmpy`` package. We start with the assumptions about functional form and the distribution of unobservables in the parametric normal model. We then turn to some simple use cases.
+We now illustrate the basic capabilities of the ``grmpy`` package.
+We start by outlining some basic functional form assumptions before introducing to alternative models that can be used to
+estimate the marginal treatment effect (MTE).
+We then turn to some simple use cases.
 
-Assumptions
-------------
 
 The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the choice :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
 
@@ -15,7 +16,28 @@ The ``grmpy`` package implements the normal linear-in-parameters version of the 
     D &= I[D^{*} > 0] \\
     D^{*}    &= Z \gamma -V
 
-We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`. The unobservables follow a normal distribution :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.  Individuals decide to select into latent indicator variable :math:`D^{*}` is positive. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
+We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`.
+Individuals decide to select into latent indicator variable :math:`D^{*}` is positive. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
+
+
+Parametric Normal Model
+-----------------------
+
+The parametric model imposes the assumption of joint normality of the unobservables :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.
+
+Semiparametric Model
+--------------------
+The semiparametric approach invokes no assumption on the distribution of the unobservables. It requires a weaker condition
+:math:`(X,Z) \indep \{U_1, U_0, V\}`
+
+Under this assumption, the MTE is
+
+    \begin{enumerate}[leftmargin=1.5cm,labelsep=0cm,align=left,label={[\arabic*]}]
+    \item additively separable in $X$ and $U_D$, which means that the shape of the MTE is independent of $X$, and
+    \item identified over the common support of $P(Z)$, unconditional on $X$.
+
+The assumption of common support is crucial for the application of LIV and needs to be carefully evaluated every time.
+It is defined as the region where the support of $P(Z)$ given $D=1$ and the support of $P(Z)$ given $D=0$ overlap.
 
 Model Specification
 -------------------
@@ -34,13 +56,12 @@ seed        int         seed for the specific simulation
 source      str         specified name for the simulation output files
 =======     ======      ==============================================
 
-**ESTIMATION**
-
-The *ESTIMATION* block determines the basic information for the estimation process.
+**PARAMETRIC ESTIMATION**
 
 ===========     ======      ===============================================
 Key             Value       Interpretation
 ===========     ======      ===============================================
+semipar         False       choose the parametric normal model
 agents          int         number of individuals (for the comparison file)
 file            str         name of the estimation specific init file
 optimizer       str         optimizer used for the estimation process
@@ -49,8 +70,30 @@ maxiter	        int         maximum numbers of iterations
 dependent       str         indicates the dependent variable
 indicator       str         label of the treatment indicator variable
 output_file     str         name for the estimation output file
-comparison	    int         flag for enabling the comparison file creation
+comparison	int         flag for enabling the comparison file creation
 ===========     ======      ===============================================
+
+**Semiparametric ESTIMATION**
+
+===========     ======      ======================================================================================
+Key             Value       Interpretation
+===========     ======      ======================================================================================
+semipar         True        run LIV
+dependent       str         indicates the dependent variable
+indicator       str         label of the treatment indicator variable
+file            str         name of the estimation specific init file
+logit           bool        If false: probit. Probability model for the decision equation
+nbins           int         Number of histogram bins used to determine common support
+trim_support	bool        Trim the data outside the common support (default is *True*)
+reestimate_p    bool        Reestimate $P(Z)$ after trimming (default is *False*)
+rbandwidth      int         Bandwidth for the double residual regression (default is 0.05)
+derivative      int         Derivative of the locally quadratic regression (default is 1)
+degree          int         Degree of the local polynomial (default is 2)
+bandwidth       float       Bandwidth for the local quadratic regression
+gridsize        int         Number of evaluation points (default is 401)
+truncate        bool        Truncate end observations (default is *True*)
+ps_range        list        Start and end point of the range of $p = u_D$ over which the MTE shall be plotted
+===========     ======      =====================================================================================
 
 
 
@@ -87,6 +130,10 @@ Key       Container  Values     Interpretation
 params    list       float      Paramters
 order     list       str        Variable labels
 =======   =========  ======     ===================================
+
+
+Further Specifications for the Parametric Model
+-----------------------------------------------
 
 **DIST**
 
@@ -137,6 +184,9 @@ ftol       float      relative error in fun(*xopt*) that is acceptable for conve
 Examples
 --------
 
+Parametric Normal Model
+-----------------------
+
 In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized Roy model and to estimate some parameters of interest for a provided sample as specified in your initialization file.
 
@@ -159,13 +209,27 @@ This creates a number of output files that contain information about the resulti
 
 **Estimation**
 
-The other feature of the package is the estimation of the parameters of interest. The specification regarding start values and and the optimizer options are determined in the *ESTIMATION* section of the initialization file.
+The other feature of the package is the estimation of the parameters of interest.
+By default, the parametric model is chosen, in which case the parameter *semipar* in the *ESTIMATION* section of the initialization file is set to *False*.
+The start values and optimizer options need to be specified in the *ESTIMATION* section.
 
 ::
 
-    grmpy.fit('tutorial.grmpy.yml')
+    grmpy.fit('tutorial.grmpy.yml', semipar=False)
 
-As in the simulation process this creates a number of output file that contains information about the estimation results.
+As in the simulation process this creates a number of output files that contain information about the estimation results.
 
 * **est.grmpy.info**, basic information of the estimation process
 * **comparison.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process
+
+
+Local Instrumental Variables
+----------------------------
+
+If the user wishes to estimate the parameters of interest using the semiparametric LIV approach, *semipar* must be changed to *True*.
+
+::
+
+    grmpy.fit('tutorial.semipar.yml', semipar=True)
+
+If *show_output* is *True*, ``grmpy`` plots the common support of the propensity score and shows some intermediate outputs of the estimation process.
