@@ -69,7 +69,7 @@ Reliability
 In another check of reliability, we compare the results of our estimation process with already existing results from the literature.
 For this purpose we replicate the results for both the parametric and semiparametric marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`).
 Note that we make use of a mock data set, as the original data cannot be fully recreated from the
-`replication material <https://www.aeaweb.org/articles?id=10.1257/aer.101.6.2754/>` they provide.
+`replication material <https://www.aeaweb.org/articles?id=10.1257/aer.101.6.2754>`_.
 Additionally we provide a `jupyter notebook <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/04_grmpy_tutorial_notebook.ipynb>`_ that runs an estimation based on an `initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/04_grmpy_tutorial_notebook/files/replication.grmpy.yml>`__ for easy reconstruction of our test setup. The init file corresponds to the specifications of the authors.
 
 Parametric Replication
