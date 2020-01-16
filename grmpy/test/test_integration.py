@@ -10,6 +10,7 @@ from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.check import (
     check_init_file,
     check_initialization_dict,
+    check_par,
     check_start_values,
 )
 from grmpy.check.custom_exceptions import UserError
@@ -178,7 +179,7 @@ def test7():
         constr["AGENTS"] = 0
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")
-        pytest.raises(UserError, check_initialization_dict, dict_)
+        pytest.raises(UserError, check_par, dict_)
         pytest.raises(UserError, simulate, "test.grmpy.yml")
 
         length = np.random.randint(2, 100)

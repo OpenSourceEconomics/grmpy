@@ -23,7 +23,6 @@ def check_presence_estimation_dataset(init_dict):
         raise UserError(msg)
 
 
-
 def check_initialization_dict(dict_):
     """This function performs some basic checks regarding the integrity of the user's
     request. There should be no uncontrolled terminations of the package once these
@@ -52,7 +51,7 @@ def check_initialization_dict(dict_):
 
 
 def check_par(dict_):
-    """"""
+    """This function provides specific checks for the parametric normal estimation"""
     # Distribute details
     num_agents_sim = dict_["SIMULATION"]["agents"]
 
@@ -81,8 +80,8 @@ def check_par(dict_):
             msg = "There are two start coefficients {} Section".format(key_)
             raise UserError(msg)
         if (
-                "params" not in dict_[key_].keys()
-                and dict_["ESTIMATION"]["start"] == "init"
+            "params" not in dict_[key_].keys()
+            and dict_["ESTIMATION"]["start"] == "init"
         ):
             msg = (
                 "The missing of a pre-specified paramterization in the {} section does"

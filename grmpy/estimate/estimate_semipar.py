@@ -161,13 +161,14 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
         # as the default for the lower limit of the common support
         lower_limit = np.min(treated)
 
-        # The following algorithm checks for any empty histogram bins (starting from 0 going up to 0.5).
-        # If an empty histogram bin is found, the lower_limit is set to the corresponding P(Z)
-        # value of the next bin above.
-        # This may go up to the extreme case where empty bins are found very close 0.5
-        # and the common support is very small.
-        # Below, the algorithm for the untreated sample will start from above (0.5, 1]
-        # to find the upper_limit.
+        # The following algorithm checks for any empty histogram bins
+        # (starting from 0 going up to 0.5).
+        # If an empty histogram bin is found, the lower_limit is set to
+        # the corresponding P(Z) value of the next bin above.
+        # This may go up to the extreme case where empty bins are found
+        # very close 0.5 and the common support is very small.
+        # Below, the algorithm for the untreated sample will start
+        # from above (0.5, 1] to find the upper_limit.
         # If no empty bin is found in the interval [0, 0.5),
         # np.min(treated) remains the true lower limit
         for low in range(len(hist[0][0])):
@@ -176,13 +177,14 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
             if hist[1][low] > 0.5:
                 break
 
-            # If the algorithm starts below the sample minimum, move on to the next bin
+            # If the algorithm starts below the sample minimum,
+            # move on to the next bin
             elif hist[1][low] < np.min(treated):
                 continue
 
             else:
-                # If the current bin is non-empty, we have still continuous support and
-                # the sample minimum remains our lower limit
+                # If the current bin is non-empty, we have still continuous
+                # support and the sample minimum remains our lower limit
                 if hist[0][0][low] > 0:
                     pass
 
@@ -196,9 +198,10 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
         # as the default for the upper limit of the common support
         upper_limit = np.max(untreated)
 
-        # The following algorithm checks for any empty histogram bins (starting from 1 going down to 0.5).
-        # If an empty histogram bin is found, the upper_limit is set to the corresponding P(Z)
-        # value of the next bin below.
+        # The following algorithm checks for any empty histogram bins
+        # (starting from 1 going down to 0.5).
+        # If an empty histogram bin is found, the upper_limit is set to the
+        # corresponding P(Z) value of the next bin below.
         # We may reach extreme case where empty bins are found very close 0.5
         # and the common support is very small.
         # The algorithm above proceeds analogously for the treated sample
@@ -256,7 +259,6 @@ def construct_Xp(X, ps):
     """
     # To multiply each elememt in X (shape N x k) with the corresponding ps,
     # set up a ps matrix of same size.
-    N = len(X)
     ps = pd.Series(ps)
     P_z = pd.concat([ps] * len(X.columns), axis=1, ignore_index=True)
 
@@ -280,10 +282,10 @@ def generate_residuals(x, y, bandwidth=0.05):
 
     # Determine number of observations and number of columns for the
     # outcome variable.
-    N = len(y)
+    n = len(y)
     col_len = len(y[0])
 
-    res = np.zeros([N, col_len])
+    res = np.zeros([n, col_len])
 
     for i in range(col_len):
         yfit = loess(x, y[:, i], span=bandwidth, degree=1)

@@ -64,9 +64,11 @@ def combine_bincounts_kernelweights(
     gridsize: int
         Number of equally-spaced grid points.
     colx: int
-        Number of columns of output array weigthedx, i.e. the binned approximation to X'W X.
+        Number of columns of output array weigthedx, i.e. the binned
+        approximation to X'W X.
     coly: int
-        Number of columns of output array weigthedy, i.e the binned approximation to X'W y.
+        Number of columns of output array weigthedy, i.e the binned
+        approximation to X'W y.
     lenkernel: int
         Length of 1-D array kernelweights.
     kernelweights: np.ndarry
@@ -135,8 +137,8 @@ def get_curve_estimator(weigthedx, weigthedy, coly, derivative, gridsize):
 
     where W are kernel weights approximated by the Gaussian density function.
     X'W X and X'W y are approximated by weigthedx and weigthedy,
-    which are the result of a direct convolution of bin counts (xcounts) and kernel
-    weights, and bin averages (ycounts) and kernel weights, respectively.
+    which are the result of a direct convolution of bin counts (xcounts) and
+    kernel weights, and bin averages (ycounts) and kernel weights, respectively.
 
     Note that for a v-th derivative the order of the polynomial
     should be p = v + 1.
@@ -148,7 +150,8 @@ def get_curve_estimator(weigthedx, weigthedy, coly, derivative, gridsize):
     weigthedy: np.ndarry
         Dimensions (M, coly). Binned approximation to X'W y.
     coly: int
-        Number of columns of output array weigthedy, i.e the binned approximation to X'W y.
+        Number of columns of output array weigthedy, i.e the binned
+        approximation to X'W y.
     derivative: int
         Order of the derivative to be estimated.
     gridsize: int
