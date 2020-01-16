@@ -14,27 +14,29 @@ from grmpy.estimate.estimate_par import par_fit
 
 
 def fit(init_file, semipar=False):
-    """ """
-    check_presence_init(init_file)
+    """This function estimates the MTE based on a parametric normal model or,
+    alternatively, via the semiparametric method of local instrumental variables (LIV)"""
 
+    # Load the estimation file
+    check_presence_init(init_file)
     dict_ = read(init_file)
 
     # Perform some consistency checks given the user's request
     check_presence_estimation_dataset(dict_)
     check_initialization_dict(dict_)
 
-    # Semiparametric Model
+    # Semiparametric LIV Model
     if semipar is True:
         quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)  # change to dict_
 
-        # Construct MTE
+        # Construct the MTE
         # Calculate the MTE component that depends on X
         mte_x = np.dot(X, b1_b0)
 
         # Put the MTE together
         mte = mte_x.mean(axis=0) + mte_u
 
-        # Accounting for variation in X
+        # Account for variation in X
         mte_min = np.min(mte_x) + mte_u
         mte_max = np.max(mte_x) + mte_u
 
