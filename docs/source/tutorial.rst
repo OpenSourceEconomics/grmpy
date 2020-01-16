@@ -6,6 +6,8 @@ We start by outlining some basic functional form assumptions before introducing 
 estimate the marginal treatment effect (MTE).
 We then turn to some simple use cases.
 
+Assumptions
+-----------
 
 The ``grmpy`` package implements the normal linear-in-parameters version of the generalized Roy model. Both potential outcomes and the choice :math:`(Y_1, Y_0, D)` are a linear function of the individual's observables :math:`(X, Z)` and random components :math:`(U_1, U_0, V)`.
 
@@ -21,22 +23,21 @@ Individuals decide to select into latent indicator variable :math:`D^{*}` is pos
 
 
 Parametric Normal Model
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The parametric model imposes the assumption of joint normality of the unobservables :math:`(U_1, U_0, V) \sim \mathcal{N}(0, \Sigma)` with mean zero and covariance matrix :math:`\Sigma`.
 
 Semiparametric Model
---------------------
+^^^^^^^^^^^^^^^^^^^^
 The semiparametric approach invokes no assumption on the distribution of the unobservables. It requires a weaker condition
 :math:`(X,Z) \indep \{U_1, U_0, V\}`
 
-Under this assumption, the MTE is
+Under this assumption, the MTE is:
 
-    \begin{enumerate}[leftmargin=1.5cm,labelsep=0cm,align=left,label={[\arabic*]}]
-    \item additively separable in :math:`X` and :math:`U_D`, which means that the shape of the MTE is independent of :math:`X`, and
-    \item identified over the common support of :math:`(P(Z)`, unconditional on :math:`X`.
+* item additively separable in :math:`X` and :math:`U_D`, which means that the shape of the MTE is independent of :math:`X`, and
 
-    \end{enumerate}
+* item identified over the common support of :math:`(P(Z)`, unconditional on :math:`X`.
+
 
 The assumption of common support is crucial for the application of LIV and needs to be carefully evaluated every time.
 It is defined as the region where the support of :math:`(P(Z)` given :math:`D=1` and the support of :math:`(P(Z)` given :math:`D=0 overlap.
@@ -77,9 +78,9 @@ comparison	int         flag for enabling the comparison file creation
 
 **Semiparametric ESTIMATION**
 
-===========     ======      ======================================================================================
+===========     ======      ===========================================================================================
 Key             Value       Interpretation
-===========     ======      ======================================================================================
+===========     ======      ===========================================================================================
 semipar         True        run LIV
 dependent       str         indicates the dependent variable
 indicator       str         label of the treatment indicator variable
@@ -95,7 +96,7 @@ bandwidth       float       Bandwidth for the local quadratic regression
 gridsize        int         Number of evaluation points (default is 401)
 truncate        bool        Truncate end observations (default is *True*)
 ps_range        list        Start and end point of the range of :math:`p = u_D` over which the MTE shall be plotted
-===========     ======      =====================================================================================
+===========     ======      ===========================================================================================
 
 
 
@@ -135,7 +136,7 @@ order     list       str        Variable labels
 
 
 Further Specifications for the Parametric Model
------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **DIST**
 
@@ -187,7 +188,7 @@ Examples
 --------
 
 Parametric Normal Model
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 In the following chapter we explore the basic features of the ``grmpy`` package. The resources for the tutorial are also available `online <https://github.com/OpenSourceEconomics/grmpy/tree/master/docs/tutorial>`_.
 So far the package provides the features to simulate a sample from the generalized Roy model and to estimate some parameters of interest for a provided sample as specified in your initialization file.
@@ -226,7 +227,7 @@ As in the simulation process this creates a number of output files that contain 
 
 
 Local Instrumental Variables
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If the user wishes to estimate the parameters of interest using the semiparametric LIV approach, *semipar* must be changed to *True*.
 
