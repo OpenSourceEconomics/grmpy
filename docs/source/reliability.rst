@@ -90,5 +90,5 @@ Semiparametric Replication
 
 The semiparametric MTE also gets very close to the original curve. However, the 90 percent confidence bands
 (250 bootstrap replications) are wider. As opposed to the parametric model, where the standard error bands are computed
-analytically, confidence bands in the semiparametric setup are obtained via bootstrap,
+analytically, confidence bands in the semiparametric setup are obtained via the bootstrap method,
 which is sensitive to the discrepancies in the mock data set.
