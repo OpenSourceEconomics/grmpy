@@ -49,18 +49,18 @@ def plot_common_support(init_file, nbins, fs=24, output=False):
     treated = treated[:, 1].tolist()
     untreated = untreated[:, 1].tolist()
 
+    ltreat = len(treated)
+    luntreat = len(untreated)
+
     # Make the histogram using a list of lists
     fig = plt.figure(figsize=(17.5, 10))
     plt.hist(
         [treated, untreated],
         bins=nbins,
-        weights=[
-            np.ones(len(treated)) / len(treated),
-            np.ones(len(untreated)) / len(untreated),
-        ],
+        weights=[np.ones(ltreat) / ltreat, np.ones(luntreat) / luntreat],
         density=0,
         alpha=0.55,
-        label=["Treated", "Untreated"],
+        label=["Treated", "Unreated"],
     )
 
     # Plot formatting
