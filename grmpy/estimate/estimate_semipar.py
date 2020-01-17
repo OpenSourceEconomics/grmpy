@@ -13,51 +13,155 @@ from grmpy.KernReg.locpoly import locpoly
 
 
 def semipar_fit(dict_):
-    """This functions estimates the MTE via Local Instrumental Variables"""
-    # Read the data
+    """"This functions runs the semiparametric estimation via
+    local instrumental variables"""
+    # Process the information specified in the initialization file
+    nbins, logit, bandwidth, gridsize, a, b = process_user_input(dict_)
+    trim, rbandwidth, reestimate_p = process_default_input(dict_)
+
+    show_output = dict_["ESTIMATION"]["show_output"]
+
+    # Load data
     data = read_data(dict_["ESTIMATION"]["file"])
 
-    # Process data for the semiparametric estimation.
-    indicator = dict_["ESTIMATION"]["indicator"]
-    D = data[indicator].values
-    Z = data[dict_["CHOICE"]["order"]]
+    # Prepare the sample for the estimation process
+    # Compute propensity score, define common support and trim the sample
+    data, ps = process_mte_data(
+        dict_, data, logit, nbins, trim, reestimate_p, show_output
+    )
 
+    # Estimate the observed and unobserved component of the MTE
+    X, b1_b0, mte_u = mte_components(
+        dict_, data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output
+    )
+
+    # Generate the quantiles of the final MTE
+    quantiles = np.linspace(a, b, gridsize)
+
+    return X, b1_b0, mte_u, quantiles
+
+
+def process_user_input(dict_):
+    """This functions processes the input parameters that need to be
+    specified by the user"""
     nbins = dict_["ESTIMATION"]["nbins"]
-    trim = dict_["ESTIMATION"]["trim_support"]
-    reestimate = dict_["ESTIMATION"]["reestimate_p"]
-    rbandwidth = dict_["ESTIMATION"]["rbandwidth"]
+    logit = dict_["ESTIMATION"]["logit"]
     bandwidth = dict_["ESTIMATION"]["bandwidth"]
     gridsize = dict_["ESTIMATION"]["gridsize"]
     a = dict_["ESTIMATION"]["ps_range"][0]
     b = dict_["ESTIMATION"]["ps_range"][1]
 
-    logit = dict_["ESTIMATION"]["logit"]
-    show_output = dict_["ESTIMATION"]["show_output"]
+    return nbins, logit, bandwidth, gridsize, a, b
 
-    # The Local Instrumental Variables (LIV) estimator
-    # 1. Estimate propensity score P(z)
+
+def process_default_input(dict_):
+    """This functions processes the default input parameters"""
+    trim = dict_["ESTIMATION"]["trim_support"]
+    rbandwidth = dict_["ESTIMATION"]["rbandwidth"]
+    reestimate_p = dict_["ESTIMATION"]["reestimate_p"]
+
+    return trim, rbandwidth, reestimate_p
+
+
+def inputs_decision_equation(dict_, data):
+    """This functions processes the inputs for the
+    decision equation"""
+    indicator = dict_["ESTIMATION"]["indicator"]
+    D = data[indicator].values
+    Z = data[dict_["CHOICE"]["order"]]
+
+    return indicator, D, Z
+
+
+def process_mte_data(dict_, data, logit, nbins, trim, reestimate_p, show_output):
+    """This functions prepares the data for the semiparametric estimation stage"""
+    indicator, D, Z = inputs_decision_equation(dict_, data)
+
+    # Estimate propensity score P(z)
     ps = estimate_treatment_propensity(D, Z, logit, show_output)
 
-    # 2a. Find common support
+    # Define common support and trim the data, if trim=True
+    data, ps = trim_support(
+        dict_, data, logit, ps, indicator, nbins, trim, reestimate_p, show_output
+    )
+
+    return data, ps
+
+
+def trim_support(
+    dict_, data, logit, ps, indicator, nbins, trim, reestimate_p, show_output
+):
+    """This function defines common support and trims the data.
+    Optionally p is re-estimated on the trimmed sample"""
+    # Find common support
     common_support = define_common_support(ps, indicator, data, nbins, show_output)
 
-    # 2b. Trim the data
+    # Trim the data
     if trim is True:
         data, ps = trim_data(ps, common_support, data)
 
-    # 2c. Re-estimate baseline propensity score on the trimmed sample
-    if reestimate is True:
-        D = data[indicator].values
-        Z = data[dict_["CHOICE"]["order"]]
+    # Optional. Not recommended
+    # Re-estimate baseline propensity score on the trimmed sample
+    if reestimate_p is True:
+        # Re-estimate the parameters of the decision equation based
+        # on the new trimmed data set
+        indicator, D, Z = inputs_decision_equation(dict_, data)
 
         # Re-estimate propensity score P(z)
         ps = estimate_treatment_propensity(D, Z, logit, show_output)
 
-    # 3. Double Residual Regression
-    # Sort data by ps
     data = data.sort_values(by="ps", ascending=True)
     ps = np.sort(ps)
 
+    return data, ps
+
+
+def define_common_support(
+    ps,
+    indicator,
+    data,
+    nbins,
+    show_output,
+    figsize=(10, 6),
+    fontsize=15,
+    plot_title=False,
+    save_output=False,
+):
+    """
+    This function defines the common support as the region under the histograms
+    where propensities in the treated and untreated subsample overlap.
+
+    Carneiro et al (2011) choose 25 bins for a total sample of 1747
+    observations, so nbins=25 is set as a default.
+    """
+    hist, treated, untreated = plot_common_support(
+        ps, indicator, data, nbins, show_output, figsize, fontsize, plot_title
+    )
+
+    lower_limit, upper_limit = find_limits_support(hist, treated, untreated)
+    common_support = [lower_limit, upper_limit]
+
+    if show_output is True:
+        print(
+            """
+    Common support lies beteen:
+
+        {0} and
+        {1}""".format(
+                lower_limit, upper_limit
+            )
+        )
+
+    if save_output is not False:
+        plt.savefig(save_output, dpi=300)
+
+    return common_support
+
+
+def mte_components(dict_, data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output):
+    """This functions produces the observed on unobserved components
+    of the final MTE"""
+    # Double Residual Regression
     X = data[dict_["TREATED"]["order"]]
     Xp = construct_Xp(X, ps)
     Y = data[[dict_["ESTIMATION"]["dependent"]]]
@@ -69,14 +173,14 @@ def semipar_fit(dict_):
     Xp_arr = np.array(Xp)
     Y_arr = np.array(Y).ravel()
 
-    # 4. Compute the unobserved part of Y
+    # Compute the unobserved part of Y
     Y_tilde = Y_arr - np.dot(X_arr, b0) - np.dot(Xp_arr, b1_b0)
 
-    # 5. Estimate mte_u, the unobserved component of the MTE,
+    # Estimate mte_u, the unobserved component of the MTE,
     # through a locally quadratic regression
-    quantiles, mte_u = locpoly(ps, Y_tilde, 1, 2, bandwidth, gridsize, a, b)
+    mte_u = locpoly(ps, Y_tilde, 1, 2, bandwidth, gridsize, a, b)
 
-    return quantiles, mte_u, X, b1_b0
+    return X, b1_b0, mte_u
 
 
 def estimate_treatment_propensity(D, Z, logit, show_output):
@@ -105,14 +209,9 @@ def estimate_treatment_propensity(D, Z, logit, show_output):
     return ps.values
 
 
-def define_common_support(ps, indicator, data, nbins=25, show_output=True):
-    """
-    This function defines the common support as the region under the histograms
-    where propensities in the treated and untreated subsample overlap.
-
-    Carneiro et al (2011) choose 25 bins for a total sample of 1747
-    observations, so nbins=25 is set as a default.
-    """
+def plot_common_support(
+    ps, indicator, data, nbins, show_output, figsize, fontsize, plot_title
+):
     data["ps"] = ps
 
     treated = data[[indicator, "ps"]][data[indicator] == 1].values
@@ -125,7 +224,7 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
     luntreat = len(untreated)
 
     # Make the histogram using a list of lists
-    fig = plt.figure(figsize=(10, 6))
+    fig = plt.figure(figsize=figsize)
     hist = plt.hist(
         [treated, untreated],
         bins=nbins,
@@ -137,110 +236,86 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
 
     if show_output is True:
         # Plot formatting
-        plt.legend(loc="upper right")
+        plt.tick_params(axis="both", labelsize=14)
+        plt.legend(loc="upper right", prop={"size": 14})
         plt.xticks(np.arange(0, 1.1, step=0.1))
         plt.grid(axis="y", alpha=0.25)
-        plt.xlabel("$P$")
-        plt.ylabel("$f(P)$")
-        plt.title("Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
-        # fig
+        plt.xlabel("$P$", fontsize=fontsize)
+        plt.ylabel("$f(P)$", fontsize=fontsize)
+
+        if plot_title is True:
+            plt.title("Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
 
     else:
         plt.close(fig)
 
-    if nbins is None:
-        lower_limit = np.min(treated[:, 1])
-        upper_limit = np.max(untreated[:, 1])
+    return hist, treated, untreated
 
-    # Find the true common support
-    else:
-        # Treated [0][0]
-        # Set the lowest frequency observed in the treated subsample
-        # as the default for the lower limit of the common support
-        lower_limit = np.min(treated)
 
-        # The following algorithm checks for any empty histogram bins
-        # (starting from 0 going up to 0.5).
-        # If an empty histogram bin is found, the lower_limit is set to
-        # the corresponding P(Z) value of the next bin above.
-        # This may go up to the extreme case where empty bins are found
-        # very close 0.5 and the common support is very small.
-        # Below, the algorithm for the untreated sample will start
-        # from above (0.5, 1] to find the upper_limit.
-        # If no empty bin is found in the interval [0, 0.5),
-        # np.min(treated) remains the true lower limit
-        for low in range(len(hist[0][0])):
+def find_limits_support(hist, treated, untreated):
+    """Find the upper and lower limit of the common support"""
+    # Treated Sample
+    # Set the lowest frequency observed in the treated subsample
+    # as the default for the lower limit of the common support
+    lower_limit = np.min(treated)
 
-            # Only consider values in the interval [0, 0.5)
-            if hist[1][low] > 0.5:
-                break
+    # The following algorithm checks for any empty histogram bins
+    # (starting from 0 going up to 0.5).
+    # If an empty histogram bin is found, the lower_limit is set to
+    # the corresponding P(Z) value of the next bin above.
+    for low in range(len(hist[0][0])):
 
-            # If the algorithm starts below the sample minimum,
-            # move on to the next bin
-            elif hist[1][low] < np.min(treated):
-                continue
+        # Only consider values in the interval [0, 0.5)
+        if hist[1][low] > 0.5:
+            break
 
+        # If the algorithm starts below the sample minimum,
+        # move on to the next bin
+        elif hist[1][low] < np.min(treated):
+            continue
+
+        else:
+            # If the current bin is non-empty, we have still continuous
+            # support and the sample minimum remains our lower limit
+            if hist[0][0][low] > 0:
+                pass
+
+            # If an empty bin is found, set the lower limit to the next bin above
+            # and move on to the next bin until P(Z) = 0.5 is reached
             else:
-                # If the current bin is non-empty, we have still continuous
-                # support and the sample minimum remains our lower limit
-                if hist[0][0][low] > 0:
-                    pass
+                lower_limit = hist[1][low + 1]
 
-                # If an empty bin is found, set the lower limit to the next bin above
-                # and move on to the next bin until P(Z) = 0.5 is reached
-                else:
-                    lower_limit = hist[1][low + 1]
+    # Untreated Sample
+    # Set the highest frequency observed in the untreated subsample
+    # as the default for the upper limit of the common support
+    upper_limit = np.max(untreated)
 
-        # Untreated [0][1]
-        # Set the highest frequency observed in the untreated subsample
-        # as the default for the upper limit of the common support
-        upper_limit = np.max(untreated)
+    # The following algorithm checks for any empty histogram bins
+    # (starting from 1 going down to 0.5).
+    # If an empty histogram bin is found, the upper_limit is set to the
+    # current next bin.
+    for up in reversed(range(len(hist[0][1]))):
 
-        # The following algorithm checks for any empty histogram bins
-        # (starting from 1 going down to 0.5).
-        # If an empty histogram bin is found, the upper_limit is set to the
-        # corresponding P(Z) value of the next bin below.
-        # We may reach extreme case where empty bins are found very close 0.5
-        # and the common support is very small.
-        # The algorithm above proceeds analogously for the treated sample
-        # to find the lower limit in the interval [0, 0.5).
-        # If no empty bin is found in the interval (0.5, 1],
-        # np.max(untreated) remains the true upper limit
-        for up in reversed(range(len(hist[0][1]))):
+        # Only consider values in the interval (0.5, 1]
+        if hist[1][up] < 0.5:
+            break
 
-            # Only consider values in the interval (0.5, 1]
-            if hist[1][up] < 0.5:
-                break
+        # If the algorithm starts above the sample maximum, move on to the next bin
+        elif hist[1][up] > np.max(untreated):
+            continue
 
-            # If the algorithm starts above the sample maximum, move on to the next bin
-            elif hist[1][up] > np.max(untreated):
-                continue
+        else:
+            # If the current bin is non-empty, we have still continuous support and
+            # the sample maximum remains our upper limit
+            if hist[0][1][up] > 0:
+                pass
 
+            # If an empty bin is found, set the upper limit to the next bin below
+            # and move on to the next bin until P(Z) = 0.5 is reached
             else:
-                # If the current bin is non-empty, we have still continuous support and
-                # the sample maximum remains our upper limit
-                if hist[0][1][up] > 0:
-                    pass
+                upper_limit = hist[1][up]
 
-                # If an empty bin is found, set the upper limit to the next bin below
-                # and move on to the next bin until P(Z) = 0.5 is reached
-                else:
-                    upper_limit = hist[1][up]
-
-    common_support = [lower_limit, upper_limit]
-
-    if show_output is True:
-        print(
-            """
-    Common support lies beteen:
-
-        {0} and
-        {1}""".format(
-                lower_limit, upper_limit
-            )
-        )
-
-    return common_support
+    return lower_limit, upper_limit
 
 
 def trim_data(ps, common_support, data):

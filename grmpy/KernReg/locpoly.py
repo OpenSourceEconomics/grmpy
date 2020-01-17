@@ -148,6 +148,6 @@ def locpoly(
     curvest = get_curve_estimator(weightedx, weigthedy, coly, derivative, gridsize)
 
     # Generate grid points for visual representation
-    gridpoints = np.linspace(startgrid, endgrid, gridsize)
+    # gridpoints = np.linspace(startgrid, endgrid, gridsize)
 
-    return gridpoints, curvest
+    return curvest
