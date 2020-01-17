@@ -2,8 +2,6 @@
 This module provides a function for the estimation of a local polynomial
 kernel regression.
 """
-import numpy as np
-
 from grmpy.KernReg.locpoly_linbin import linear_binning
 
 from grmpy.KernReg.locpoly_auxiliary import combine_bincounts_kernelweights
