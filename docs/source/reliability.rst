@@ -37,7 +37,7 @@ Sensitivity to Different Distributions of the Unobservables
 The parametric specification makes the strong assumption that the unobservables follow a joint normal distribution.
 The semiparametric method of local instrumental variables is more flexible, as it does not invoke conditions on the functional form.
 We test how sensitive the two methods to different distributions of the unobservables.
-To that end, we use a toy model of the returns to college, where the shape of the true marginal treatment effect is known.
+To that end, we use a toy model of the returns to college (based on :cite:`Brave2014`), where we know the true shape of the :math:`B^{MTE}`.
 
 Normal Distribution
 ^^^^^^^^^^^^^^^^^^^
@@ -57,7 +57,7 @@ which we set to 4 and 8, respectively.
 .. figure:: ../source/figures/beta_distribution.png
     :align: center
 
-The parametric model underestimates the returns to college, whereas the semiparametric MTE still fits the original
+The parametric model underestimates the returns to college, whereas the semiparametric :math:`B^{MTE}` still fits the original
 curve pretty well. The latter makes no assumption on the functional form of the unobservables and, thus, is more flexible
 in estimating the parameter of interest when the assumption of joint normality is violated.
 Which model is superior depends on the context. In empirical applications, we recommend to examine both.
@@ -79,7 +79,7 @@ for easy reconstruction of our test setup. The init file corresponds to the spec
 Parametric Replication
 ^^^^^^^^^^^^^^^^^^^^^^
 
-As shown in the figure below, the parametric MTE is really close to the original results.
+As shown in the figure below, the parametric :math:`B^{MTE}` is really close to the original results.
 The deviation seems to be negligible because of the usage of a mock dataset.
 
 .. figure:: ../source/figures/fig-marginal-benefit-parametric-replication.png
@@ -92,7 +92,7 @@ Semiparametric Replication
 .. figure:: ../source/figures/replication_carneiroB.png
     :align: center
 
-The semiparametric MTE also gets very close to the original curve. However, the 90 percent confidence bands
+The semiparametric :math:`B^{MTE}`  also gets very close to the original curve. However, the 90 percent confidence bands
 (250 bootstrap replications) are wider. As opposed to the parametric model, where the standard error bands are computed
 analytically, confidence bands in the semiparametric setup are obtained via the bootstrap method,
 which is sensitive to the discrepancies in the mock data set.
