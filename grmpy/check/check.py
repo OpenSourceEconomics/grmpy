@@ -45,30 +45,7 @@ def check_initialization_dict(dict_):
     if error is True:
         raise UserError(msg)
 
-    error, msg = check_dict_basic(dict_)
-    if error is True:
-        raise UserError(msg)
-
-    # for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
-    #     if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
-    #         msg = (
-    #             "There is a problem in the {} section of the initialization file. \n"
-    #             "         "
-    #             "Probably you specified two coefficients for one covariate in the "
-    #             "same section.".format(key_)
-    #         )
-    #         raise UserError(msg)
-
-    #
-    # if dict_["ESTIMATION"]["file"][-4:] not in [".pkl", ".txt", "dta"]:
-    #     msg = (
-    #         "The {} format specified in the Estimation section of the initialization "
-    #         "file is currently not supported by grmpy. \n"
-    #         "         Please use either .txt, .pkl or .dta files.".format(
-    #             dict_["ESTIMATION"]["file"][-4:]
-    #         )
-    #     )
-    #     raise UserError(msg)
+    check_dict_basic(dict_)
 
 
 def check_dict_basic(dict_):
