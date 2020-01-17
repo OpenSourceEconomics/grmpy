@@ -39,9 +39,7 @@ def semipar_fit(dict_):
     ps = estimate_treatment_propensity(D, Z, logit, show_output)
 
     # 2a. Find common support
-    treated, untreated, common_support = define_common_support(
-        ps, indicator, data, nbins, show_output
-    )
+    common_support = define_common_support(ps, indicator, data, nbins, show_output)
 
     # 2b. Trim the data
     if trim is True:
@@ -242,7 +240,7 @@ def define_common_support(ps, indicator, data, nbins=25, show_output=True):
             )
         )
 
-    return treated, untreated, common_support
+    return common_support
 
 
 def trim_data(ps, common_support, data):

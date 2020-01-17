@@ -22,4 +22,4 @@ if __name__ == "__main__":
         notebook
     )
 
-    subprocess.check_call(cmd, shell=True)
+    subprocess.check_call(cmd)
