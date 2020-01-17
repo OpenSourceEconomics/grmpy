@@ -46,7 +46,7 @@ def plot_common_support(init_file, nbins, fs=24, output=False):
 
     # Make the histogram using a list of lists
     fig = plt.figure(figsize=(17.5, 10))
-    hist = plt.hist(
+    plt.hist(
         [treated, untreated],
         bins=nbins,
         weights=[
@@ -67,7 +67,7 @@ def plot_common_support(init_file, nbins, fs=24, output=False):
     plt.ylabel("$f(P)$", fontsize=fs)
     # plt.title('Support of $P(\hat{Z})$ for $D=1$ and $D=0$', fontsize=fs)
 
-    if not output is False:
+    if output is not False:
         plt.savefig(output, dpi=300)
 
     fig.show()
