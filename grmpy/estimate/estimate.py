@@ -6,7 +6,7 @@ import numpy as np
 from grmpy.check.check import check_presence_estimation_dataset
 from grmpy.check.check import check_initialization_dict
 from grmpy.check.check import check_presence_init
-from grmpy.check.check import check_dict_semipar
+from grmpy.check.check import check_dict_basic
 from grmpy.check.check import check_init_file
 from grmpy.read.read import read
 
@@ -27,8 +27,8 @@ def fit(init_file, semipar=False):
 
     # Semiparametric LIV Model
     if semipar is True:
-        check_dict_semipar(dict_)
-        quantiles, mte_u, X, b1_b0 = semipar_fit(dict_)
+        check_dict_basic(dict_)
+        X, b1_b0, mte_u, quantiles = semipar_fit(dict_)
 
         # Construct the MTE
         # Calculate the MTE component that depends on X
