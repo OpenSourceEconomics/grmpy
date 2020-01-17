@@ -40,31 +40,38 @@ def check_initialization_dict(dict_):
         if not is_pos_def(dict_):
             msg = "The specified covariance matrix has to be positive semidefinite."
             raise UserError(msg)
-    for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
-        if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
-            msg = (
-                "There is a problem in the {} section of the initialization file. \n"
-                "         "
-                "Probably you specified two coefficients for one covariate in the "
-                "same section.".format(key_)
-            )
-            raise UserError(msg)
+
     error, msg = check_special_conf(dict_)
     if error is True:
         raise UserError(msg)
 
-    if dict_["ESTIMATION"]["file"][-4:] not in [".pkl", ".txt", "dta"]:
-        msg = (
-            "The {} format specified in the Estimation section of the initialization "
-            "file is currently not supported by grmpy. \n"
-            "         Please use either .txt, .pkl or .dta files.".format(
-                dict_["ESTIMATION"]["file"][-4:]
-            )
-        )
+    error, msg = check_dict_basic(dict_)
+    if error is True:
         raise UserError(msg)
 
+    # for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
+    #     if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
+    #         msg = (
+    #             "There is a problem in the {} section of the initialization file. \n"
+    #             "         "
+    #             "Probably you specified two coefficients for one covariate in the "
+    #             "same section.".format(key_)
+    #         )
+    #         raise UserError(msg)
 
-def check_dict_semipar(dict_):
+    #
+    # if dict_["ESTIMATION"]["file"][-4:] not in [".pkl", ".txt", "dta"]:
+    #     msg = (
+    #         "The {} format specified in the Estimation section of the initialization "
+    #         "file is currently not supported by grmpy. \n"
+    #         "         Please use either .txt, .pkl or .dta files.".format(
+    #             dict_["ESTIMATION"]["file"][-4:]
+    #         )
+    #     )
+    #     raise UserError(msg)
+
+
+def check_dict_basic(dict_):
     """This function provides some basic checks for the semiparametric estimation"""
     for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
         if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
