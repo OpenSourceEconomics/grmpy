@@ -15,11 +15,13 @@ if __name__ == "__main__":
     subprocess.check_call(cmd)
     os.chdir("../..")
 
-# if __name__ == "__main__":
-#     notebook = "tutorial.semipar.ipynb"
-#     cmd = " jupyter nbconvert --execute {}  \
-#         --ExecutePreprocessor.timeout=-1".format(
-#         notebook
-#     )
-#
-#     subprocess.check_call(cmd)
+
+if __name__ == "__main__":
+    cmd = [
+        "jupyter",
+        "nbconvert",
+        "--execute",
+        "tutorial.semipar.ipynb",
+        "--ExecutePreprocessor.timeout=-1",
+    ]
+    subprocess.check_call(cmd)
