@@ -91,11 +91,11 @@ dependent         str         indicates the dependent variable
 indicator         str         label of the treatment indicator variable
 file              str         name of the estimation specific init file
 logit             bool        If false: probit. Probability model for the decision equation
-nbins             int         Number of histogram bins used to determine common support
+nbins             int         Number of histogram bins used to determine common support (default is 25)
 trim_support	  bool        Trim the data outside the common support (default is *True*)
 bandwidth         float       Bandwidth for the locally quadratic regression
-gridsize          int         Number of evaluation points for the locally quadratic regression (default is 401)
-reestimate_p      bool        Reestimate :math:`P(Z)` after trimming (default is *False*), not recommended
+gridsize          int         Number of evaluation points for the locally quadratic regression (default is 400)
+reestimate_p      bool        Re-estimate :math:`P(Z)` after trimming (default is *False*), not recommended
 rbandwidth        int         Bandwidth for the double residual regression (default is 0.05)
 derivative        int         Derivative of the locally quadratic regression (default is 1)
 degree            int         Degree of the local polynomial (default is 2)
@@ -103,6 +103,7 @@ ps_range          list        Start and end point of the range of :math:`p = u_D
 =============     ======      =========================================================================================
 
 In most empirical applications, bandwidth choices between 0.2 and 0.4 are appropriate for the locally quadratic regression.
+:cite:`Fan1994` find that a gridsize of 400 is a good default for graphical analysis.
 
 
 **TREATED**
@@ -112,7 +113,7 @@ The *TREATED* block specifies the number and order of the covariates determining
 =======   =========  ======     ===================================
 Key       Container  Values     Interpretation
 =======   =========  ======     ===================================
-params    list       float      Paramters
+params    list       float      Parameters
 order     list       str        Variable labels
 =======   =========  ======     ===================================
 
@@ -124,7 +125,7 @@ The *UNTREATED* block specifies the covariates that a the potential outcome in t
 =======   =========  ======     ===================================
 Key       Container  Values     Interpretation
 =======   =========  ======     ===================================
-params    list       float      Paramters
+params    list       float      Parameters
 order     list       str        Variable labels
 =======   =========  ======     ===================================
 
@@ -135,7 +136,7 @@ The *CHOICE* block specifies the number and order of the covariates determining 
 =======   =========  ======     ===================================
 Key       Container  Values     Interpretation
 =======   =========  ======     ===================================
-params    list       float      Paramters
+params    list       float      Parameters
 order     list       str        Variable labels
 =======   =========  ======     ===================================
 
