@@ -93,16 +93,16 @@ file              str         name of the estimation specific init file
 logit             bool        If false: probit. Probability model for the decision equation
 nbins             int         Number of histogram bins used to determine common support
 trim_support	  bool        Trim the data outside the common support (default is *True*)
-reestimate_p      bool        Reestimate :math:`P(Z)` after trimming (default is *False*)
+bandwidth         float       Bandwidth for the locally quadratic regression
+gridsize          int         Number of evaluation points for the locally quadratic regression (default is 401)
+reestimate_p      bool        Reestimate :math:`P(Z)` after trimming (default is *False*), not recommended
 rbandwidth        int         Bandwidth for the double residual regression (default is 0.05)
 derivative        int         Derivative of the locally quadratic regression (default is 1)
 degree            int         Degree of the local polynomial (default is 2)
-bandwidth         float       Bandwidth for the local quadratic regression
-gridsize          int         Number of evaluation points (default is 401)
-truncate          bool        Truncate end observations (default is *True*)
 ps_range          list        Start and end point of the range of :math:`p = u_D` over which the MTE shall be plotted
 =============     ======      =========================================================================================
 
+In most empirical applications, bandwidth choices between 0.2 and 0.4 are appropriate for the locally quadratic regression.
 
 
 **TREATED**
