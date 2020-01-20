@@ -8,10 +8,11 @@ dependencies:
   - pytest
   - pytest-xdist
   - scipy
-  - sphinxcontrib.bibtex
   - sphinx_rtd_theme
-  - linearmodels
-  - json
   - matplotlib
   - seaborn
-
+  - numba
+  - json
+  - pip
+  - scikit-misc
+  - sklearn
