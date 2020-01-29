@@ -30,17 +30,17 @@ The parametric model imposes the assumption of joint normality of the unobservab
 Semiparametric Model
 ^^^^^^^^^^^^^^^^^^^^
 The semiparametric approach invokes no assumption on the distribution of the unobservables. It requires a weaker condition
-:math:`(X,Z) \indep \{U_1, U_0, V\}`
+:math:`(X,Z) \indep {U_1, U_0, V}`
 
 Under this assumption, the MTE is:
 
-* item additively separable in :math:`X` and :math:`U_D`, which means that the shape of the MTE is independent of :math:`X`, and
+* additively separable in :math:`X` and :math:`U_D`, which means that the shape of the MTE is independent of :math:`X`, and
 
-* item identified over the common support of :math:`(P(Z)`, unconditional on :math:`X`.
+* identified over the common support of :math:`P(Z)`, unconditional on :math:`X`.
 
 
 The assumption of common support is crucial for the application of LIV and needs to be carefully evaluated every time.
-It is defined as the region where the support of :math:`(P(Z)` given :math:`D=1` and the support of :math:`(P(Z)` given :math:`D=0 overlap.
+It is defined as the region where the support of :math:`P(Z)` given :math:`D=1` and the support of :math:`P(Z)` given :math:`D=0 overlap.
 
 Model Specification
 -------------------
@@ -61,7 +61,7 @@ source      str         specified name for the simulation output files
 
 **ESTIMATION**
 
-Depending on the model specified, different input parameters are required.
+Depending on the model, different input parameters are required.
 
 **PARAMETRIC MODEL**
 
@@ -107,13 +107,13 @@ In most empirical applications, bandwidth choices between 0.2 and 0.4 are approp
 For data sets with less than 400 observations, we recommend a gridsize equivalent to the maximum number of observations that
 remain after trimming the common support.
 If the data set of size N is large enough, a gridsize of 400 should be considered as the minimal number of evaluation points.
-Since *grmpy*'s algorithm is fast enough, gridsize can be easily increased to *N* evaluation points.
+Since *grmpy*'s algorithm is fast enough, gridsize can be easily increased to N evaluation points.
 
 The "rbandwidth", which is 0.05 by default, specifies the bandwidth for the LOWESS (Locally Weighted Scatterplot Smoothing) regression of
 :math:`X`, :math:`X \ \times \ p`, and :math:`Y` on :math:`\widehat{P}(Z)`. If the sample size is small (N < 400),
 the user may need to increase "rbandwidth" to 0.1. Otherwise *grmpy* will throw an error.
 
-Note that the MTE identified by LIV consists of wo components: :math:`\overline{x}(\beta_1 - \beta_0)` (which does not depend on :math:`P(Z) = p)` and :math:`k(p)`
+Note that the MTE identified by LIV consists of wo components: :math:`\overline{x}(\beta_1 - \beta_0)` (which does not depend on :math:`P(Z) = p`) and :math:`k(p)`
 (which does depend on :math:`p`). The latter is estimated nonparametrically. The key "p_range" in the initialization file specifies the interval
 over which :math:`k(p)` is estimated. After the data outside the overlapping support are trimmed, the locally quadratic kernel estimator
 uses the remaining data to predict :math:`k(p)` over the entire "p_range" specified by the user. If "p_range" is larger than the common support, *grmpy*
