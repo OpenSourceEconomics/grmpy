@@ -72,7 +72,7 @@ Note that we make use of a mock data set, as the original data cannot be fully r
 `replication material <https://www.aeaweb.org/articles?id=10.1257/aer.101.6.2754>`_.
 
 We provide two jupyter notebooks for easy reconstruction of the
-`parametric <https://github.com/OpenSourceEconomics/grmpy/master/promotion/grmpy_tutorial_notebook/grmpy_tutorial_notebook.ipynb>`_
+`parametric <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/grmpy_tutorial_notebook.ipynb>`_
 as well as the
 `semiparametric <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/tutorial_semipar_notebook.ipynb>`_
 setup.
