@@ -104,11 +104,30 @@ ps_range          list        Start and end point of the range of :math:`p = u_D
 
 In most empirical applications, bandwidth choices between 0.2 and 0.4 are appropriate for the locally quadratic regression.
 :cite:`Fan1994` find that a gridsize of 400 is a good default for graphical analysis.
+For data sets with less than 400 observations, we recommend a gridsize equivalent to the maximum number of observations that
+remain after trimming the common support.
+If the data set of size *N* is large enough, a gridsize of 400 should be considered as the minimal number of evaluation points.
+Since *grmpy*'s algorithm is fast enough, gridsize can be easily increased to *N* evaluation points.
+
+The "rbandwidth", which is 0.05 by default, specifies the bandwidth for the LOWESS (Locally Weighted Scatterplot Smoothing) regression of
+:math:`X`, :math:`X \ \times \ p`, and :math:`Y` on :math:`\widehat{P}(Z)`. If the sample size is small (N < 400),
+the user may need to increase "rbandwidth" to 0.1. Otherwise *grmpy* will throw an error.
+
+Note that the MTE identified by LIV consists of wo components: $\overline{x}(\beta_1 - \beta_0)$ (which does not depend on :math:`P(Z) = p) and :math:`k(p)`
+(which does depend on :math:`p`). The latter is estimated nonparametrically. The section "p_range" in the initialization file specifies the interval
+over which :math:`k(p)` is estimated. After the data outside the overlapping support are trimmed, the locally quadratic kernel estimator
+uses the remaining data to predict $k(p)$ over the entire "p_range" specified by the user. If "p_range" is larger than the common support, *grmpy*
+extrapolates the values for the MTE outside this region. Technically speaking, interpretations of the MTE are only valid within the common support.
+In our empirical applications, we set "p_range" to :math:`[0.005,0.995]`.
+
+The other parameters in this section are set by default and, normally, do not need to be changed.
 
 
 **TREATED**
 
-The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state and the values for the coefficients :math:`\beta_1`. Note that the length of the list which determines the paramters has to be equal to the number of variables that are included in the order list.
+The *TREATED* block specifies the number and order of the covariates determining the potential outcome in the treated state
+and the values for the coefficients :math:`\beta_1`. Note that the length of the list which determines the parameters has to be equal
+to the number of variables that are included in the order list.
 
 =======   =========  ======     ===================================
 Key       Container  Values     Interpretation

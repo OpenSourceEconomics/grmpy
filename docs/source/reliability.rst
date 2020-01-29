@@ -67,20 +67,24 @@ Reliability
 -----------
 
 In another check of reliability, we compare the results of our estimation process with already existing results from the literature.
-For this purpose we replicate the results for both the parametric and semiparametric marginal treatment effect from Carneiro 2011 (:cite:`Carneiro2011`).
+For this purpose we replicate the results for both the parametric and semiparametric MTE from Carneiro 2011 (:cite:`Carneiro2011`).
 Note that we make use of a mock data set, as the original data cannot be fully recreated from the
 `replication material <https://www.aeaweb.org/articles?id=10.1257/aer.101.6.2754>`_.
-Additionally we provide a
-`jupyter notebook <https://github.com/OpenSourceEconomics/grmpy/blob/develop_segsell/tutorial.semipar.ipynb>`_
-that runs an estimation based on an
-`initialization file <https://github.com/OpenSourceEconomics/grmpy/blob/develop_segsell/replication_semipar.yml>`__
-for easy reconstruction of our test setup. The init file corresponds to the specifications of the authors.
+
+We provide two jupyter notebooks for easy reconstruction of the
+`parametric <https://github.com/OpenSourceEconomics/grmpy/master/promotion/grmpy_tutorial_notebook/grmpy_tutorial_notebook.ipynb>`_
+as well as the
+`semiparametric <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/tutorial_semipar_notebook.ipynb>`_
+setup.
+The corresponding initialization files can be found
+`here <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/replication.grmpy.yml>`_ and
+`here <https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial_semipar.yml>`__.
 
 Parametric Replication
 ^^^^^^^^^^^^^^^^^^^^^^
 
 As shown in the figure below, the parametric :math:`B^{MTE}` is really close to the original results.
-The deviation seems to be negligible because of the usage of a mock dataset.
+The deviation seems to be negligible because of the use of a mock dataset.
 
 .. figure:: ../source/figures/fig-marginal-benefit-parametric-replication.png
     :align: center
