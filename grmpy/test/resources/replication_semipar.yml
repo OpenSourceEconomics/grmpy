@@ -1,6 +1,6 @@
 ---
 ESTIMATION:
-    file: promotion/grmpy_tutorial_notebook/data/aer-replication-mock.pkl
+    file: aer-replication-mock.pkl
     dependent: wage
     indicator: state
     semipar: True
