@@ -14,11 +14,7 @@ from grmpy.check.check import (
 )
 from grmpy.check.custom_exceptions import UserError
 from grmpy.estimate.estimate import fit
-from grmpy.estimate.estimate_auxiliary import (
-    calculate_criteria,
-    process_data,
-    start_values,
-)
+from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
 from grmpy.estimate.estimate_output import simulate_estimation
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.read.read import read

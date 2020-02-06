@@ -14,3 +14,14 @@ if __name__ == "__main__":
     ]
     subprocess.check_call(cmd)
     os.chdir("../..")
+
+
+if __name__ == "__main__":
+    cmd = [
+        "jupyter",
+        "nbconvert",
+        "--execute",
+        "tutorial.semipar.ipynb",
+        "--ExecutePreprocessor.timeout=-1",
+    ]
+    subprocess.check_call(cmd)

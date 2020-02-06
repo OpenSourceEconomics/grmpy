@@ -40,6 +40,16 @@ def check_initialization_dict(dict_):
         if not is_pos_def(dict_):
             msg = "The specified covariance matrix has to be positive semidefinite."
             raise UserError(msg)
+
+    error, msg = check_special_conf(dict_)
+    if error is True:
+        raise UserError(msg)
+
+    check_dict_basic(dict_)
+
+
+def check_dict_basic(dict_):
+    """This function provides some basic checks for the semiparametric estimation"""
     for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
         if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
             msg = (
@@ -49,9 +59,6 @@ def check_initialization_dict(dict_):
                 "same section.".format(key_)
             )
             raise UserError(msg)
-    error, msg = check_special_conf(dict_)
-    if error is True:
-        raise UserError(msg)
 
     if dict_["ESTIMATION"]["file"][-4:] not in [".pkl", ".txt", "dta"]:
         msg = (

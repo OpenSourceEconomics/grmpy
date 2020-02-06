@@ -3,8 +3,12 @@ scipy==0.19
 pandas==0.20
 flake8==3.5.0
 pytest==3.2.1
-statsmodels==0.8
+statsmodels==0.10
 linearmodels==4.9
 oyaml==0.7
-pre-commit >= 1.14.3
-isort >= 4.3.20
+pre-commit >=1.14.3
+isort >=4.3.20
+scikit-misc==0.1.1
+scikit-learn==0.22.1
+numba==0.47.0
+matplotlib>=3.1.1

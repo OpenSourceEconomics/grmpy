@@ -4,11 +4,65 @@ import copy
 import numpy as np
 import statsmodels.api as sm
 from scipy.stats import t, norm
+from scipy.optimize import minimize
 from numpy.linalg import LinAlgError
 from statsmodels.tools.numdiff import approx_hess_cs
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 
+from grmpy.estimate.estimate_output import write_comparison
+from grmpy.estimate.estimate_output import print_logfile
+
 from grmpy.check.check import UserError, check_start_values
+from grmpy.check.auxiliary import read_data
+
+
+def par_fit(dict_):
+    """The function estimates the coefficients of the simulated data set."""
+    np.random.seed(dict_["SIMULATION"]["seed"])
+
+    # Distribute initialization information.
+    data = read_data(dict_["ESTIMATION"]["file"])
+    num_treated = dict_["AUX"]["num_covars_treated"]
+    num_untreated = num_treated + dict_["AUX"]["num_covars_untreated"]
+
+    _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
+
+    if dict_["ESTIMATION"]["maxiter"] == 0:
+        option = "init"
+    else:
+        option = dict_["ESTIMATION"]["start"]
+
+    # define starting values
+    x0 = start_values(dict_, data, option)
+    opts, method = optimizer_options(dict_)
+    dict_["AUX"]["criteria"] = calculate_criteria(dict_, X1, X0, Z1, Z0, Y1, Y0, x0)
+    dict_["AUX"]["starting_values"] = backward_transformation(x0)
+    rslt_dict = bfgs_dict()
+    if opts["maxiter"] == 0:
+        rslt = adjust_output(None, dict_, x0, X1, X0, Z1, Z0, Y1, Y0, rslt_dict)
+    else:
+        opt_rslt = minimize(
+            minimizing_interface,
+            x0,
+            args=(dict_, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, rslt_dict),
+            method=method,
+            options=opts,
+        )
+        rslt = adjust_output(
+            opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict
+        )
+    # Print Output files
+    print_logfile(dict_, rslt)
+
+    if "comparison" in dict_["ESTIMATION"].keys():
+        if dict_["ESTIMATION"]["comparison"] == 0:
+            pass
+        else:
+            write_comparison(data, rslt)
+    else:
+        write_comparison(data, rslt)
+
+    return rslt
 
 
 def process_data(data, dict_):

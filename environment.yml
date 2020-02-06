@@ -8,20 +8,22 @@ dependencies:
   - pytest
   - pytest-xdist
   - scipy
+  - numba
   - matplotlib
   - flake8
   - seaborn
   - pandoc
+  - pip
   - pip:
     - sphinxcontrib.bibtex
     - sphinx_rtd_theme
     - linearmodels
     - oyaml
-    - grmpy
     - isort
+    - grmpy
     - nbsphinx
     - sphinx_rtd_theme
     - pytest-cov
     - jupyterlab
-
-
+    - scikit-misc
+    - sklearn

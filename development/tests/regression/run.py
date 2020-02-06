@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 import grmpy
-from grmpy.estimate.estimate_auxiliary import (
+from grmpy.estimate.estimate_par import (
     calculate_criteria,
     process_data,
     start_values,

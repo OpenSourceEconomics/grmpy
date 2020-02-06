@@ -1,0 +1,112 @@
+---
+ESTIMATION:
+    file: data/aer-replication-mock.pkl
+    dependent: wage
+    indicator: state
+    semipar: True
+    show_output: True
+    logit: True
+    nbins: 30
+    bandwidth: 0.322
+    gridsize: 500
+    trim_support: True
+    reestimate_p: False
+    rbandwidth: 0.05
+    derivative: 1
+    degree: 2
+    ps_range: [0.005, 0.995]
+TREATED:
+    order:
+    - exp
+    - expsq
+    - lwage5
+    - lurate
+    - cafqt
+    - cafqtsq
+    - mhgc
+    - mhgcsq
+    - numsibs
+    - numsibssq
+    - urban14
+    - lavlocwage17
+    - lavlocwage17sq
+    - avurate
+    - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
+UNTREATED:
+    order:
+    - exp
+    - expsq
+    - lwage5
+    - lurate
+    - cafqt
+    - cafqtsq
+    - mhgc
+    - mhgcsq
+    - numsibs
+    - numsibssq
+    - urban14
+    - lavlocwage17
+    - lavlocwage17sq
+    - avurate
+    - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
+CHOICE:
+    params:
+    - 1.0
+    order:
+    - const
+    - cafqt
+    - cafqtsq
+    - mhgc
+    - mhgcsq
+    - numsibs
+    - numsibssq
+    - urban14
+    - lavlocwage17
+    - lavlocwage17sq
+    - avurate
+    - avuratesq
+    - d57
+    - d58
+    - d59
+    - d60
+    - d61
+    - d62
+    - d63
+    - lwage5_17numsibs
+    - lwage5_17mhgc
+    - lwage5_17cafqt
+    - lwage5_17
+    - lurate_17
+    - lurate_17numsibs
+    - lurate_17mhgc
+    - lurate_17cafqt
+    - tuit4c
+    - tuit4cnumsibs
+    - tuit4cmhgc
+    - tuit4ccafqt
+    - pub4
+    - pub4numsibs
+    - pub4mhgc
+    - pub4cafqt
+DIST:
+    params:
+    - 0.1
+    - 0.0
+    - 0.0
+    - 0.1
+    - 0.0
+    - 1.0

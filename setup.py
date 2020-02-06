@@ -13,7 +13,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "grmpy"
-DESCRIPTION = "grmpy is a package for simulation and analysis of the  generalized Roy model."
+DESCRIPTION = "grmpy is a package for the simulation and analysis of the generalized Roy model."
 URL = "http://grmpy.readthedocs.io"
 EMAIL = "eisenhauer@policy-lab.org"
 AUTHOR = "Philipp Eisenhauer"
@@ -29,6 +29,8 @@ REQUIRED = [
     "oyaml",
     "matplotlib",
     "seaborn",
+    "scikit-misc",
+    "numba"
 ]
 
 # The rest you shouldn't have to touch too much :)
