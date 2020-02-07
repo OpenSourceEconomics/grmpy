@@ -1,0 +1,55 @@
+---
+SIMULATION:
+    agents: 10000
+    seed: 2356
+    source: data
+ESTIMATION:
+    file: data.grmpy.txt
+    output_file: output/est.grmpy.info
+    optimizer: SCIPY-BFGS
+    start: auto
+    maxiter: 6383
+    agents: 165
+    dependent: Y
+    indicator: D
+    comparison: 1
+    print_output: 0
+TREATED:
+    params:
+    - 1.0
+    - 0.555
+    order:
+    - const
+    - X2
+UNTREATED:
+    params:
+    - 0.5
+    - 0.25
+    order:
+    - const
+    - X2
+CHOICE:
+    params:
+    - 0.378
+    - -0.39
+    order:
+    - const
+    - X3
+DIST:
+    params:
+    - 0.1
+    - 0.0
+    - 0.0
+    - 0.1
+    - 0.0
+    - 1.0
+VARTYPES:
+    const: nonbinary
+    X2: nonbinary
+    X3: nonbinary
+SCIPY-BFGS:
+    gtol: 1.0e-05
+    eps: 1.4901161193847655e-08
+SCIPY-POWELL:
+    xtol: 9.147777614048603e-05
+    ftol: 9.749582129043358e-05
