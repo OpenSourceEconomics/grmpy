@@ -21,7 +21,7 @@ if __name__ == "__main__":
         "jupyter",
         "nbconvert",
         "--execute",
-        "tutorial.semipar.ipynb",
+        "tutorial_semipar_notebook.ipynb",
         "--ExecutePreprocessor.timeout=-1",
     ]
     subprocess.check_call(cmd)
