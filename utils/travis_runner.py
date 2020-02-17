@@ -17,6 +17,7 @@ if __name__ == "__main__":
 
 
 if __name__ == "__main__":
+    os.chdir("promotion/grmpy_tutorial_notebook")
     cmd = [
         "jupyter",
         "nbconvert",
