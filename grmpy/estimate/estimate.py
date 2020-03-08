@@ -1,13 +1,11 @@
 """The module provides an estimation process given the simulated data set and the
 initialization file.
 """
-import numpy as np
-
 from grmpy.check.check import check_presence_estimation_dataset
-from grmpy.check.check import check_initialization_dict
+from grmpy.check.check import check_par_init_dict
 from grmpy.check.check import check_presence_init
-from grmpy.check.check import check_dict_basic
-from grmpy.check.check import check_init_file
+from grmpy.check.check import check_basic_init_basic
+from grmpy.check.check import check_par_init_file
 from grmpy.read.read import read
 
 from grmpy.estimate.estimate_semipar import semipar_fit
@@ -20,42 +18,20 @@ def fit(init_file, semipar=False):
 
     # Load the estimation file
     check_presence_init(init_file)
-    dict_ = read(init_file)
+    dict_ = read(init_file, semipar)
 
     # Perform some consistency checks given the user's request
     check_presence_estimation_dataset(dict_)
 
     # Semiparametric LIV Model
     if semipar is True:
-        check_dict_basic(dict_)
-        X, b1_b0, mte_u, quantiles = semipar_fit(dict_)
-
-        # Construct the MTE
-        # Calculate the MTE component that depends on X
-        mte_x = np.dot(X, b1_b0)
-
-        # Put the MTE together
-        mte = mte_x.mean(axis=0) + mte_u
-
-        # Account for variation in X
-        mte_min = np.min(mte_x) + mte_u
-        mte_max = np.max(mte_x) + mte_u
-
-        rslt = {
-            "quantiles": quantiles,
-            "mte": mte,
-            "mte_x": mte_x,
-            "mte_u": mte_u,
-            "mte_min": mte_min,
-            "mte_max": mte_max,
-            "X": X,
-            "b1-b0": b1_b0,
-        }
+        check_basic_init_basic(dict_)
+        rslt = semipar_fit(dict_)
 
     # Parametric Normal Model
     else:
-        check_initialization_dict(dict_)
-        check_init_file(dict_)
+        check_par_init_dict(dict_)
+        check_par_init_file(dict_)
         rslt = par_fit(dict_)
 
     return rslt

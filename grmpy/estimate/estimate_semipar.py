@@ -6,14 +6,16 @@ import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
-from skmisc.loess import loess
-
 from grmpy.check.auxiliary import read_data
 from grmpy.KernReg.locpoly import locpoly
 
+from skmisc.loess import loess
+
+lowess = sm.nonparametric.lowess
+
 
 def semipar_fit(dict_):
-    """"This functions runs the semiparametric estimation via
+    """"This function runs the semiparametric estimation via
     local instrumental variables"""
     # Process the information specified in the initialization file
     nbins, logit, bandwidth, gridsize, a, b = process_user_input(dict_)
@@ -38,7 +40,29 @@ def semipar_fit(dict_):
     # Generate the quantiles of the final MTE
     quantiles = np.linspace(a, b, gridsize)
 
-    return X, b1_b0, mte_u, quantiles
+    # Construct the MTE
+    # Calculate the MTE component that depends on X
+    mte_x = np.dot(X, b1_b0)
+
+    # Put the MTE together
+    mte = mte_x.mean(axis=0) + mte_u
+
+    # Account for variation in X
+    mte_min = np.min(mte_x) + mte_u
+    mte_max = np.max(mte_x) + mte_u
+
+    rslt = {
+        "quantiles": quantiles,
+        "mte": mte,
+        "mte_x": mte_x,
+        "mte_u": mte_u,
+        "mte_min": mte_min,
+        "mte_max": mte_max,
+        "X": X,
+        "b1-b0": b1_b0,
+    }
+
+    return rslt
 
 
 def process_user_input(dict_):
@@ -56,14 +80,34 @@ def process_user_input(dict_):
 
 def process_default_input(dict_):
     """This functions processes the default input parameters"""
-    trim = dict_["ESTIMATION"]["trim_support"]
-    rbandwidth = dict_["ESTIMATION"]["rbandwidth"]
-    reestimate_p = dict_["ESTIMATION"]["reestimate_p"]
+    try:
+        dict_["ESTIMATION"]["trim_support"]
+    # Set default to True
+    except KeyError:
+        trim = True
+    else:
+        trim = dict_["ESTIMATION"]["trim_support"]
+
+    try:
+        dict_["ESTIMATION"]["reestimate_p"]
+    # Set default to False
+    except KeyError:
+        reestimate_p = False
+    else:
+        reestimate_p = dict_["ESTIMATION"]["reestimate_p"]
+
+    try:
+        dict_["ESTIMATION"]["rbandwidth"]
+    # Set default to 0.05
+    except KeyError:
+        rbandwidth = 0.05
+    else:
+        rbandwidth = dict_["ESTIMATION"]["rbandwidth"]
 
     return trim, rbandwidth, reestimate_p
 
 
-def inputs_decision_equation(dict_, data):
+def process_choice_data(dict_, data):
     """This functions processes the inputs for the
     decision equation"""
     indicator = dict_["ESTIMATION"]["indicator"]
@@ -75,7 +119,7 @@ def inputs_decision_equation(dict_, data):
 
 def process_mte_data(dict_, data, logit, nbins, trim, reestimate_p, show_output):
     """This functions prepares the data for the semiparametric estimation stage"""
-    indicator, D, Z = inputs_decision_equation(dict_, data)
+    indicator, D, Z = process_choice_data(dict_, data)
 
     # Estimate propensity score P(z)
     ps = estimate_treatment_propensity(D, Z, logit, show_output)
@@ -105,7 +149,7 @@ def trim_support(
     if reestimate_p is True:
         # Re-estimate the parameters of the decision equation based
         # on the new trimmed data set
-        indicator, D, Z = inputs_decision_equation(dict_, data)
+        indicator, D, Z = process_choice_data(dict_, data)
 
         # Re-estimate propensity score P(z)
         ps = estimate_treatment_propensity(D, Z, logit, show_output)
@@ -343,6 +387,63 @@ def construct_Xp(X, ps):
     return Xp
 
 
+# def generate_residuals(x, y, bandwidth=0.05):
+#     """
+#     This function runs a series of loess regressions for different
+#     response variables (y) on a single explanatory variable (x)
+#     and computes the corresponding residuals.
+#     """
+#     # Turn input data into np.ndarrays.
+#     y = np.array(y)
+#     x = np.array(x)
+#
+#     # Determine number of observations and number of columns for the
+#     # outcome variable.
+#     n = len(y)
+#     col_len = len(y[0])
+#
+#     res = np.zeros([n, col_len])
+#
+#     # for i in range(col_len):
+#     #     yfit = lowess(y[:, i], x, frac=bandwidth, it=3, delta=0.0, is_sorted=False, missing='drop', return_sorted=False)
+#     #     res[:, i] = y[:, i] - yfit
+#
+#     for i in range(col_len):
+#         yfit = locpoly(x, y[:, i], derivative=0, degree=1, bandwidth=bandwidth, gridsize=n)
+#         res[:, i] = y[:, i] - yfit
+#
+#     return res
+
+
+# def generate_residuals(x, y, bandwidth=0.05):
+#     """
+#     This function runs a series of local linear regressions for
+#     different response variables (y) on a single explanatory
+#     variable (x) and computes the corresponding residuals.
+#     """
+#     # Turn input data into np.ndarrays.
+#     y = np.array(y)
+#     x = np.array(x)
+#
+#     # Determine number of observations and number of columns for the
+#     # outcome variable.
+#     n = len(y)
+#     col_len = len(y[0])
+#
+#     res = np.zeros([n, col_len])
+#
+#     for i in range(col_len):
+#         evalDF = loess(
+#             x, y[:, i], alpha=bandwidth, poly_degree=1, robustify=False
+#         )
+#
+#         #yfit = evalDF[evalDF['est'] == evalDF['est'].max()]['g'].values
+#         yfit = np.asarray(evalDF['g'])
+#         res[:, i] = y[:, i] - yfit
+#
+#     return res
+
+
 def generate_residuals(x, y, bandwidth=0.05):
     """
     This function runs a series of loess regressions for different
@@ -372,8 +473,8 @@ def double_residual_reg(ps, X, Xp, Y, rbandwidth, show_output):
     """
     This function performs a Double Residual Regression of X, Xp, and Y on ps.
 
-    The LOESS (Locally Estimated Scatterplot Smoothing) method is implemented
-    to perform the local linear fit and generate the residuals.
+    A local linear kernel regression (polynomial of degree 1)
+    is implemented to generate the residuals.
     """
     # 1) Fit a separate local linear regression of X, Xp, and Y on ps,
     # which yields residuals e_X, e_Xp, and e_Y.

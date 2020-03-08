@@ -9,7 +9,7 @@ from grmpy.simulate.simulate_auxiliary import write_output
 from grmpy.estimate.estimate_par import start_values
 from grmpy.simulate.simulate_auxiliary import print_info
 from grmpy.estimate.estimate_par import process_data
-from grmpy.check.check import check_initialization_dict
+from grmpy.check.check import check_par_init_dict
 from grmpy.read.read import read
 
 
@@ -18,7 +18,7 @@ def simulate(init_file):
     init_dict = read(init_file)
 
     # We perform some basic consistency checks regarding the user's request.
-    check_initialization_dict(init_dict)
+    check_par_init_dict(init_dict)
 
     # Distribute information
     seed = init_dict["SIMULATION"]["seed"]

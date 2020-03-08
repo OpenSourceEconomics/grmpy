@@ -1,11 +1,11 @@
 """The module contains the main function of the init file import process."""
 import yaml
 
-from grmpy.read.read_auxiliary import init_dict_to_attr_dict
+from grmpy.read.read_auxiliary import create_attr_dict
 from grmpy.check.check import check_presence_init
 
 
-def read(file):
+def read(file, semipar=False):
     """This function processes the initialization file so that it can be used for
     simulation as well as estimation purposes.
      """
@@ -17,6 +17,6 @@ def read(file):
         init_dict = yaml.load(y)
 
     # Process the initialization file
-    attr_dict = init_dict_to_attr_dict(init_dict)
+    attr_dict = create_attr_dict(init_dict, semipar)
 
     return attr_dict

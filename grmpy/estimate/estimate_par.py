@@ -22,10 +22,11 @@ def par_fit(dict_):
 
     # Distribute initialization information.
     data = read_data(dict_["ESTIMATION"]["file"])
-    num_treated = dict_["AUX"]["num_covars_treated"]
-    num_untreated = num_treated + dict_["AUX"]["num_covars_untreated"]
 
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
+
+    num_treated = dict_["AUX"]["num_covars_treated"]
+    num_untreated = num_treated + dict_["AUX"]["num_covars_untreated"]
 
     if dict_["ESTIMATION"]["maxiter"] == 0:
         option = "init"
@@ -142,6 +143,7 @@ def start_values(init_dict, data_frame, option):
 
     x0 = start_value_adjustment(x0, init_dict, option)
     x0 = np.array(x0)
+
     return x0
 
 
@@ -170,6 +172,7 @@ def start_value_adjustment(x, init_dict, option):
         np.log(x[-2]),
         np.log((1 + x[-1]) / (1 - x[-1])) / 2,
     ]
+
     return x
 
 

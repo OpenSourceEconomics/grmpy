@@ -23,7 +23,7 @@ def check_presence_estimation_dataset(init_dict):
         raise UserError(msg)
 
 
-def check_initialization_dict(dict_):
+def check_par_init_dict(dict_):
     """This function performs some basic checks regarding the integrity of the user's
     request. There should be no uncontrolled terminations of the package once these
     checks are passed.
@@ -45,10 +45,10 @@ def check_initialization_dict(dict_):
     if error is True:
         raise UserError(msg)
 
-    check_dict_basic(dict_)
+    check_basic_init_basic(dict_)
 
 
-def check_dict_basic(dict_):
+def check_basic_init_basic(dict_):
     """This function provides some basic checks for the semiparametric estimation"""
     for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
         if len(dict_[key_]["order"]) > len(set(dict_[key_]["order"])):
@@ -71,7 +71,7 @@ def check_dict_basic(dict_):
         raise UserError(msg)
 
 
-def check_init_file(dict_):
+def check_par_init_file(dict_):
     """This function checks if the specified initialization file meets the requirements
     for the estimation process.
     """

@@ -2,21 +2,53 @@
 import numpy as np
 
 
-def init_dict_to_attr_dict(init_dict):
+def create_attr_dict(init_dict, semipar=False):
     """This function processes the imported initialization file so that it fulfills the
-    requirements for the following simulation and estimation process.
+    requirements for the subsequent simulation and estimation process.
     """
-
     init_dict["AUX"] = {"init_values"}
-
     init_values = []
-    for key in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
-        if "params" in init_dict[key].keys():
-            init_dict[key]["params"] = np.array(init_dict[key]["params"])
-            init_values += list(init_dict[key]["params"])
-        else:
-            init_values += [0.0] * len(init_dict[key]["order"])
 
+    if semipar is True:
+
+        # Include constant if not provided by the user
+        if "const" not in init_dict["CHOICE"]["order"]:
+            init_dict["CHOICE"]["order"].insert(0, "const")
+            init_dict["CHOICE"]["params"] = np.array([1.0])
+        else:
+            pass
+
+        for key in ["TREATED", "UNTREATED", "CHOICE"]:
+            if "params" in init_dict[key].keys():
+                init_dict[key]["params"] = np.array(init_dict[key]["params"])
+                init_values += list(init_dict[key]["params"])
+            else:
+                init_values += [0.0] * len(init_dict[key]["order"])
+
+    # semipar is False
+    else:
+
+        # Include constant if not provided by the user
+        for key in ["TREATED", "UNTREATED", "CHOICE"]:
+            if "const" not in init_dict[key]["order"]:
+                init_dict[key]["order"].insert(0, "const")
+                init_dict[key]["params"] = np.array([1.0])
+            else:
+                pass
+
+        for key in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
+            if "params" in init_dict[key].keys():
+                init_dict[key]["params"] = np.array(init_dict[key]["params"])
+                init_values += list(init_dict[key]["params"])
+            else:
+                init_values += [0.0] * len(init_dict[key]["order"])
+
+        if np.all(init_dict["DIST"]["params"] == 0):
+            init_dict["DETERMINISTIC"] = True
+        else:
+            init_dict["DETERMINISTIC"] = False
+
+    #
     num_covars = len(
         set(
             init_dict["TREATED"]["order"]
@@ -24,11 +56,6 @@ def init_dict_to_attr_dict(init_dict):
             + init_dict["CHOICE"]["order"]
         )
     )
-
-    if np.all(init_dict["DIST"]["params"] == 0):
-        init_dict["DETERMINISTIC"] = True
-    else:
-        init_dict["DETERMINISTIC"] = False
 
     covar_label = []
     for section in ["TREATED", "UNTREATED", "CHOICE"]:
