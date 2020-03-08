@@ -23,6 +23,11 @@ def par_fit(dict_):
     # Distribute initialization information.
     data = read_data(dict_["ESTIMATION"]["file"])
 
+    # # Check if constant already provided by user, but with name
+    # # other than 'const'. If so drop auto-generated constant
+    # if np.array_equal(np.asarray(data.iloc[:, 0]), np.ones(len(data))) is True:
+    #     data = read_data(dict_["ESTIMATION"]["file"], add_constant=True)
+
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     num_treated = dict_["AUX"]["num_covars_treated"]

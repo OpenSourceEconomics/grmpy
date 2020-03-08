@@ -10,7 +10,7 @@ from grmpy.check.auxiliary import read_data
 from grmpy.check.check import check_presence_init
 from grmpy.estimate.estimate_semipar import (
     estimate_treatment_propensity,
-    inputs_decision_equation,
+    process_choice_data,
     mte_components,
     process_default_input,
     process_user_input,
@@ -110,7 +110,7 @@ def bootstrap(init_file, nbootstraps):
         boot_data = resample(data, replace=True, n_samples=len(data), random_state=None)
 
         # Process the inputs for the decision equation
-        indicator, D, Z = inputs_decision_equation(dict_, boot_data)
+        indicator, D, Z = process_choice_data(dict_, boot_data)
 
         # Estimate propensity score P(z)
         ps = estimate_treatment_propensity(D, Z, logit, show_output)

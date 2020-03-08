@@ -2,33 +2,79 @@
 import numpy as np
 
 
-def create_attr_dict(init_dict, semipar=False):
+def create_attr_dict_est(init_dict, semipar=False, include_constant=False):
     """This function processes the imported initialization file so that it fulfills the
-    requirements for the subsequent simulation and estimation process.
+    requirements for the subsequent estimation process.
     """
     init_dict["AUX"] = {"init_values"}
     init_values = []
 
     if semipar is True:
+        if include_constant is True:
+            init_dict = add_constant(init_dict, semipar)
+        else:
+            pass
 
-        # Include constant if not provided by the user
+        # # Include constant if not provided by the user
+        # if "const" not in init_dict["CHOICE"]["order"] and add_constant is True:
+        #     init_dict["CHOICE"]["order"].insert(0, "const")
+        #     init_dict["CHOICE"]["params"] = np.array([1.0])
+        # else:
+        #     pass
+
+        init_dict = read_keys_semipar(init_dict, init_values)
+
+    # semipar is False
+    else:
+        if include_constant is True:
+            init_dict = add_constant(init_dict, semipar)
+        else:
+            pass
+
+        # # Include constant if not provided by the user
+        # for key in ["TREATED", "UNTREATED", "CHOICE"]:
+        #     if "const" not in init_dict[key]["order"] and add_constant is True:
+        #         init_dict[key]["order"].insert(0, "const")
+        #         init_dict[key]["params"] = np.array([1.0])
+        #     else:
+        #         pass
+
+        init_dict = read_keys_par(init_dict, init_values)
+
+    init_dict = provide_auxiliary_information(init_dict, init_values)
+
+    return init_dict
+
+
+def create_attr_dict_sim(init_dict):
+    """This function processes the imported initialization file so that it fulfills the
+    requirements for the following simulation and estimation process.
+    """
+    init_dict["AUX"] = {"init_values"}
+    init_values = []
+
+    init_dict = read_keys_par(init_dict, init_values)
+    init_dict = provide_auxiliary_information(init_dict, init_values)
+
+    return init_dict
+
+
+def add_constant(init_dict, semipar=False):
+    """The function checks if the user has provided a constant
+    for the relevant subsections:
+    ["TREATED", "UNTREATED", "CHOICE"] for the parametric, and
+    ["CHOICE"] for the semiparamteric estimation, respectively.
+    """
+
+    if semipar is True:
         if "const" not in init_dict["CHOICE"]["order"]:
             init_dict["CHOICE"]["order"].insert(0, "const")
             init_dict["CHOICE"]["params"] = np.array([1.0])
         else:
             pass
 
-        for key in ["TREATED", "UNTREATED", "CHOICE"]:
-            if "params" in init_dict[key].keys():
-                init_dict[key]["params"] = np.array(init_dict[key]["params"])
-                init_values += list(init_dict[key]["params"])
-            else:
-                init_values += [0.0] * len(init_dict[key]["order"])
-
     # semipar is False
     else:
-
-        # Include constant if not provided by the user
         for key in ["TREATED", "UNTREATED", "CHOICE"]:
             if "const" not in init_dict[key]["order"]:
                 init_dict[key]["order"].insert(0, "const")
@@ -36,19 +82,48 @@ def create_attr_dict(init_dict, semipar=False):
             else:
                 pass
 
-        for key in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
-            if "params" in init_dict[key].keys():
-                init_dict[key]["params"] = np.array(init_dict[key]["params"])
-                init_values += list(init_dict[key]["params"])
-            else:
-                init_values += [0.0] * len(init_dict[key]["order"])
+    return init_dict
 
-        if np.all(init_dict["DIST"]["params"] == 0):
-            init_dict["DETERMINISTIC"] = True
+
+def read_keys_par(init_dict, init_values):
+    """This function reads the information provided by the
+    ["TREATED", "UNTREATED", "CHOICE", "DIST"] keys for
+    the simulation and parametric estimation.
+    """
+    for key in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
+        if "params" in init_dict[key].keys():
+            init_dict[key]["params"] = np.array(init_dict[key]["params"])
+            init_values += list(init_dict[key]["params"])
         else:
-            init_dict["DETERMINISTIC"] = False
+            init_values += [0.0] * len(init_dict[key]["order"])
 
-    #
+    if np.all(init_dict["DIST"]["params"] == 0):
+        init_dict["DETERMINISTIC"] = True
+    else:
+        init_dict["DETERMINISTIC"] = False
+
+    return init_dict
+
+
+def read_keys_semipar(init_dict, init_values):
+    """This function reads the information provided by the
+    ["TREATED", "UNTREATED", "CHOICE"] keys for
+    semiparametric estimation.
+    """
+    for key in ["TREATED", "UNTREATED", "CHOICE"]:
+        if "params" in init_dict[key].keys():
+            init_dict[key]["params"] = np.array(init_dict[key]["params"])
+            init_values += list(init_dict[key]["params"])
+        else:
+            init_values += [0.0] * len(init_dict[key]["order"])
+
+    return init_dict
+
+
+def provide_auxiliary_information(init_dict, init_values):
+    """This function generates auxiliary information
+    given the parameters in the initialization dictionary
+    """
     num_covars = len(
         set(
             init_dict["TREATED"]["order"]
