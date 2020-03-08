@@ -387,63 +387,6 @@ def construct_Xp(X, ps):
     return Xp
 
 
-# def generate_residuals(x, y, bandwidth=0.05):
-#     """
-#     This function runs a series of loess regressions for different
-#     response variables (y) on a single explanatory variable (x)
-#     and computes the corresponding residuals.
-#     """
-#     # Turn input data into np.ndarrays.
-#     y = np.array(y)
-#     x = np.array(x)
-#
-#     # Determine number of observations and number of columns for the
-#     # outcome variable.
-#     n = len(y)
-#     col_len = len(y[0])
-#
-#     res = np.zeros([n, col_len])
-#
-#     # for i in range(col_len):
-#     #     yfit = lowess(y[:, i], x, frac=bandwidth, it=3, delta=0.0, is_sorted=False, missing='drop', return_sorted=False)
-#     #     res[:, i] = y[:, i] - yfit
-#
-#     for i in range(col_len):
-#         yfit = locpoly(x, y[:, i], derivative=0, degree=1, bandwidth=bandwidth, gridsize=n)
-#         res[:, i] = y[:, i] - yfit
-#
-#     return res
-
-
-# def generate_residuals(x, y, bandwidth=0.05):
-#     """
-#     This function runs a series of local linear regressions for
-#     different response variables (y) on a single explanatory
-#     variable (x) and computes the corresponding residuals.
-#     """
-#     # Turn input data into np.ndarrays.
-#     y = np.array(y)
-#     x = np.array(x)
-#
-#     # Determine number of observations and number of columns for the
-#     # outcome variable.
-#     n = len(y)
-#     col_len = len(y[0])
-#
-#     res = np.zeros([n, col_len])
-#
-#     for i in range(col_len):
-#         evalDF = loess(
-#             x, y[:, i], alpha=bandwidth, poly_degree=1, robustify=False
-#         )
-#
-#         #yfit = evalDF[evalDF['est'] == evalDF['est'].max()]['g'].values
-#         yfit = np.asarray(evalDF['g'])
-#         res[:, i] = y[:, i] - yfit
-#
-#     return res
-
-
 def generate_residuals(x, y, bandwidth=0.05):
     """
     This function runs a series of loess regressions for different

@@ -51,7 +51,7 @@ def fit(init_file, semipar=False):
         # Check if constant already provided by user, but with name
         # other than 'const'. If so, drop auto-generated constant.
         if np.array_equal(np.asarray(data.iloc[:, 0]), np.ones(len(data))) is False:
-            dict_ = read(dict_["ESTIMATION"]["file"], semipar=False, include_constant=True)
+            dict_ = read(init_file, semipar=False, include_constant=True)
 
         rslt = par_fit(dict_)
 
