@@ -4,6 +4,21 @@
 Marginal Treatment Effects (MTE) can be estimated based on a parametric normal model or,
 alternatively, via the semiparametric method of Local Instrumental Variables (LIV).
 
-Please visit our [online documentation](http://grmpy.readthedocs.io/) for details.
+You can install ```grmpy``` either via pip
 
+```
+$ pip install grmpy
+```
+Or download it directly from our GitHub repository and install the package in editable mode
+
+```
+$ git clone https://github.com/OpenSourceEconomics/grmpy.git
+$ pip install -e .
+```
+
+Please visit our [online documentation](http://grmpy.readthedocs.io/) for tutorials and more.
+
+-----
+[![docs passing](https://travis-ci.org/OpenSourceEconomics/grmpy.svg?branch=master)]()
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
+[![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
