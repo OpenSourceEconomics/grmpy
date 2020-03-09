@@ -15,13 +15,6 @@ def create_attr_dict_est(init_dict, semipar=False, include_constant=False):
         else:
             pass
 
-        # # Include constant if not provided by the user
-        # if "const" not in init_dict["CHOICE"]["order"] and add_constant is True:
-        #     init_dict["CHOICE"]["order"].insert(0, "const")
-        #     init_dict["CHOICE"]["params"] = np.array([1.0])
-        # else:
-        #     pass
-
         init_dict = read_keys_semipar(init_dict, init_values)
 
     # semipar is False
@@ -30,14 +23,6 @@ def create_attr_dict_est(init_dict, semipar=False, include_constant=False):
             init_dict = add_constant(init_dict, semipar)
         else:
             pass
-
-        # # Include constant if not provided by the user
-        # for key in ["TREATED", "UNTREATED", "CHOICE"]:
-        #     if "const" not in init_dict[key]["order"] and add_constant is True:
-        #         init_dict[key]["order"].insert(0, "const")
-        #         init_dict[key]["params"] = np.array([1.0])
-        #     else:
-        #         pass
 
         init_dict = read_keys_par(init_dict, init_values)
 
