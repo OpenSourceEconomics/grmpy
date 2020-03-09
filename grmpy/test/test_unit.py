@@ -1,6 +1,7 @@
 """The module provides unit tests for different aspects of the simulation process."""
 import numpy as np
 import pandas as pd
+import pytest
 
 from grmpy.check.auxiliary import read_data
 from grmpy.estimate.estimate import fit
@@ -354,6 +355,7 @@ def test12():
         np.testing.assert_equal(columns, real_column_values)
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 def test13():
     """This test checks if functions that affect the estimation output adjustment work as
     intended.
