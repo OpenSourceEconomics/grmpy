@@ -9,11 +9,14 @@ import sys
 from pathlib import Path
 from shutil import rmtree
 
-from setuptools import find_packages, setup, Command
+from setuptools import Command, find_packages, setup
 
 # Package meta-data.
 NAME = "grmpy"
-DESCRIPTION = "grmpy is a Python package for the simulation and estimation of the generalized Roy model."
+DESCRIPTION = (
+    "grmpy is a Python package for the simulation and estimation of the "
+    "generalized Roy model."
+)
 README = Path("README.md").read_text()
 URL = "http://grmpy.readthedocs.io"
 EMAIL = "eisenhauer@policy-lab.org"
