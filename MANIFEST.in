@@ -1,1 +1,1 @@
-include grmpy/test/resources/regression_vault.grmpy.json
+include grmpy/test/resources/*
