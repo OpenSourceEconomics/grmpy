@@ -1,1 +1,2 @@
 include grmpy/test/resources/*
+include setup.cfg
