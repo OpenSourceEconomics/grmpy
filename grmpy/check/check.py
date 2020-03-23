@@ -1,6 +1,6 @@
 """This module provides some capabilities to check the integrity of the package."""
-import os
 
+import os
 import numpy as np
 
 from grmpy.check.auxiliary import check_special_conf

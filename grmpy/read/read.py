@@ -43,6 +43,8 @@ def read_simulation(file):
 def check_append_constant(init_file, dict_, data, semipar=False):
     """Check if constant already provided by user.
     If not, add auto-generated constant.
+    In case a constant in first position of the data frame is, but
+    with a name other than 'const', pass.
     """
     if (
         "const" not in data

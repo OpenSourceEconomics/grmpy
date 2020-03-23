@@ -1,4 +1,7 @@
-"""The module provides auxiliary functions for the estimation process"""
+"""
+The module provides auxiliary functions for the estimation process.
+"""
+
 import copy
 
 import numpy as np

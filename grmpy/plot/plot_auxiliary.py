@@ -57,7 +57,6 @@ def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
     """This function returns the semiparametric MTE divided by the number
      of college years, which represents the returns per YEAR of
      post-secondary schooling.
-
      The corresponding 90 percent confidence intervals are bootstrapped
      based on 'nboot' iterations.
      """
@@ -85,7 +84,6 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     """This function returns the parametric MTE divided by the number
      of college years, which represents the returns per YEAR of
      post-secondary schooling.
-
      90 percent confidence intervals are computed analytically.
     """
     # Define quantiles of u_D (unobserved resistance to treatment)

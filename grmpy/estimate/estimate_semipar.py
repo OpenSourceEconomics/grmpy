@@ -1,6 +1,7 @@
 """
 This module contains the semiparametric estimation process.
 """
+
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm

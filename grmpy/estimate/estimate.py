@@ -18,7 +18,8 @@ from grmpy.estimate.estimate_par import par_fit
 def fit(init_file, semipar=False):
     """This function estimates the MTE based on a parametric normal model
     or, alternatively, via the semiparametric method of
-    local instrumental variables (LIV)"""
+    local instrumental variables (LIV).
+    """
 
     # Load the estimation file
     check_presence_init(init_file)

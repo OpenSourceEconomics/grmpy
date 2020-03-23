@@ -22,7 +22,6 @@ def plot_mte(
 ):
     """This function calculates the marginal treatment effect for
     different quantiles u_D of the unobservables.
-
     Depending on the model specification, either the parametric or
     semiparametric MTE is plotted along with the corresponding
     90 percent confidence bands.
