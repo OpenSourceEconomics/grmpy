@@ -1,5 +1,6 @@
 """The module contains the main function of the init file import process."""
 import yaml
+import numpy as np
 
 from grmpy.check.check import check_presence_init
 from grmpy.read.read_auxiliary import create_attr_dict_est, create_attr_dict_sim
@@ -43,7 +44,10 @@ def check_append_constant(init_file, dict_, data, semipar=False):
     """Check if constant already provided by user.
     If not, add auto-generated constant.
     """
-    if "const" not in data:
+    if (
+        "const" not in data
+        and np.array_equal(np.asarray(data.iloc[:, 0]), np.ones(len(data))) is False
+    ):
         dict_ = read(init_file, semipar, include_constant=True)
         data.insert(0, "const", 1.0)
 
