@@ -1,29 +1,31 @@
-import matplotlib.pyplot as plt
+"""This module contains the plot function, which plot the parametric or
+semiparametric MTE along with 90 percent confidence bands."""
 
 from grmpy.plot.plot_auxiliary import mte_and_cof_int_semipar
 from grmpy.plot.plot_auxiliary import mte_and_cof_int_par
+from grmpy.plot.plot_auxiliary import plot_curve
 
-from grmpy.check.check import check_append_constant
+from grmpy.read.read import read, check_append_constant
 from grmpy.check.auxiliary import read_data
-from grmpy.read.read import read
 
 
 def plot_mte(
     rslt,
     init_file,
     college_years=4,
-    font_size=20,
-    label_size=14,
+    font_size=22,
+    label_size=16,
     color="blue",
     semipar=False,
     nboot=250,
+    save_output=False,
 ):
     """This function calculates the marginal treatment effect for
     different quantiles u_D of the unobservables.
 
     Depending on the model specification, either the parametric or
     semiparametric MTE is plotted along with the corresponding
-    90 percent confindence bands.
+    90 percent confidence bands.
     """
     # Read init dict and data
     init_dict = read(init_file)
@@ -32,33 +34,16 @@ def plot_mte(
     dict_, data = check_append_constant(init_file, init_dict, data, semipar)
 
     if semipar is True:
-        quantiles, mte, mte_up, mte_d = mte_and_cof_int_semipar(
+        quantiles, mte, con_u, con_d = mte_and_cof_int_semipar(
             rslt, init_file, college_years, nboot
         )
 
     else:
-        quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, init_dict, data)
+        quantiles, mte, con_u, con_d = mte_and_cof_int_par(
+            rslt, init_dict, data, college_years
+        )
 
-    # Plot curve
-    ax = plt.figure(figsize=(17.5, 10)).add_subplot(111)
+    # Add confidence intervals to rslt dictionary
+    rslt.update({"con_u": con_u, "con_d": con_d})
 
-    ax.set_ylabel(r"$MTE$", fontsize=font_size)
-    ax.set_xlabel("$u_D$", fontsize=font_size)
-    ax.tick_params(
-        axis="both",
-        direction="in",
-        length=5,
-        width=1,
-        grid_alpha=0.25,
-        labelsize=label_size,
-    )
-    ax.xaxis.set_ticks_position("both")
-    ax.yaxis.set_ticks_position("both")
-
-    ax.plot(quantiles, mte, color=color, linewidth=4)
-    ax.plot(quantiles, mte_up, color=color, linestyle=":", linewidth=3)
-    ax.plot(quantiles, mte_d, color=color, linestyle=":", linewidth=3)
-
-    plt.show()
-
-    return mte, quantiles
+    plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_output)

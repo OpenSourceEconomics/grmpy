@@ -1,4 +1,5 @@
 """This module provides auxiliary functions for the semiparametric tutorial"""
+
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np

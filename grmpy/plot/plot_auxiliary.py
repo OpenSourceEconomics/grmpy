@@ -1,6 +1,9 @@
+"""This module provides auxiliary functions for the plot_mte function."""
+
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
+import matplotlib.pyplot as plt
 from sklearn.utils import resample
 
 from grmpy.read.read import read
@@ -19,6 +22,35 @@ from grmpy.estimate.estimate_semipar import (
 
 # surpress pandas warning
 pd.options.mode.chained_assignment = None
+
+
+def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_output):
+    """This function plots the MTE curve along with the
+    90 percent confidence bands.
+    """
+    ax = plt.figure(figsize=(17.5, 10)).add_subplot(111)
+
+    ax.set_ylabel(r"$MTE$", fontsize=font_size)
+    ax.set_xlabel("$u_D$", fontsize=font_size)
+    ax.tick_params(
+        axis="both",
+        direction="in",
+        length=5,
+        width=1,
+        grid_alpha=0.25,
+        labelsize=label_size,
+    )
+    ax.xaxis.set_ticks_position("both")
+    ax.yaxis.set_ticks_position("both")
+
+    ax.plot(quantiles, mte, color=color, linewidth=4)
+    ax.plot(quantiles, con_u, color=color, linestyle=":", linewidth=3)
+    ax.plot(quantiles, con_d, color=color, linestyle=":", linewidth=3)
+
+    if save_output is not False:
+        plt.savefig(save_output, dpi=300)
+
+    plt.show()
 
 
 def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
@@ -43,10 +75,10 @@ def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
     mte_boot_std = np.std(mte_boot, axis=1)
 
     # Compute 90 percent confidence intervals
-    mte_up = mte + norm.ppf(0.95) * mte_boot_std
-    mte_d = mte - norm.ppf(0.95) * mte_boot_std
+    con_u = mte + norm.ppf(0.95) * mte_boot_std
+    con_d = mte - norm.ppf(0.95) * mte_boot_std
 
-    return quantiles, mte, mte_up, mte_d
+    return quantiles, mte, con_u, con_d
 
 
 def mte_and_cof_int_par(rslt, init_dict, data, college_years):
@@ -62,9 +94,9 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     # Calculate the MTE and confidence intervals
     mte = calculate_mte(rslt, data, quantiles)
     mte = [i / college_years for i in mte]
-    mte_up, mte_d = calculate_cof_int(rslt, init_dict, data, mte, quantiles)
+    con_u, con_d = calculate_cof_int(rslt, init_dict, data, mte, quantiles)
 
-    return quantiles, mte, mte_up, mte_d
+    return quantiles, mte, con_u, con_d
 
 
 def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
@@ -93,17 +125,17 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     part2 = np.dot(dist_gradients, np.dot(dist_cov, dist_gradients))
 
     # Prepare two lists for storing the values
-    mte_up = []
-    mte_d = []
+    con_u = []
+    con_d = []
 
     # Combine all auxiliary parameters and calculate the confidence intervals
     for counter, i in enumerate(quantiles):
         value = part2 * (norm.ppf(i)) ** 2
         aux = np.sqrt(part1 + value)
-        mte_up += [mte[counter] + norm.ppf(0.95) * aux]
-        mte_d += [mte[counter] - norm.ppf(0.95) * aux]
+        con_u += [mte[counter] + norm.ppf(0.95) * aux]
+        con_d += [mte[counter] - norm.ppf(0.95) * aux]
 
-    return mte_up, mte_d
+    return con_u, con_d
 
 
 def bootstrap(init_file, nbootstraps):
