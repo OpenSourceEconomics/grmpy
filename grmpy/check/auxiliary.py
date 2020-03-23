@@ -41,5 +41,3 @@ def check_special_conf(dict_):
                 return True, msg
 
     return False, " "
-
-
