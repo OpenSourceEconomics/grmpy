@@ -6,7 +6,6 @@ import pandas as pd
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
-from grmpy.check.auxiliary import read_data
 from grmpy.KernReg.locpoly import locpoly
 
 from skmisc.loess import loess
@@ -14,7 +13,7 @@ from skmisc.loess import loess
 lowess = sm.nonparametric.lowess
 
 
-def semipar_fit(dict_):
+def semipar_fit(dict_, data):
     """"This function runs the semiparametric estimation via
     local instrumental variables"""
     # Process the information specified in the initialization file
@@ -22,9 +21,6 @@ def semipar_fit(dict_):
     trim, rbandwidth, reestimate_p = process_default_input(dict_)
 
     show_output = dict_["ESTIMATION"]["show_output"]
-
-    # Load data
-    data = read_data(dict_["ESTIMATION"]["file"])
 
     # Prepare the sample for the estimation process
     # Compute propensity score, define common support and trim the sample
@@ -154,6 +150,9 @@ def trim_support(
         # Re-estimate propensity score P(z)
         ps = estimate_treatment_propensity(D, Z, logit, show_output)
 
+    else:
+        pass
+
     data = data.sort_values(by="ps", ascending=True)
     ps = np.sort(ps)
 
@@ -256,7 +255,7 @@ def estimate_treatment_propensity(D, Z, logit, show_output):
 def plot_common_support(
     ps, indicator, data, nbins, show_output, figsize, fontsize, plot_title
 ):
-    data["ps"] = ps
+    data.loc[:, "ps"] = ps
 
     treated = data[[indicator, "ps"]][data[indicator] == 1].values
     untreated = data[[indicator, "ps"]][data[indicator] == 0].values

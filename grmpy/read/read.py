@@ -37,3 +37,17 @@ def read_simulation(file):
     attr_dict = create_attr_dict_sim(init_dict)
 
     return attr_dict
+
+
+def check_append_constant(init_file, dict_, data, semipar=False):
+    """Check if constant already provided by user.
+    If not, add auto-generated constant.
+    """
+    if "const" not in data:
+        dict_ = read(init_file, semipar, include_constant=True)
+        data.insert(0, "const", 1.0)
+
+    else:
+        pass
+
+    return dict_, data

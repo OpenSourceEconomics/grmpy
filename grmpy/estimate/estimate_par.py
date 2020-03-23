@@ -13,15 +13,11 @@ from grmpy.estimate.estimate_output import write_comparison
 from grmpy.estimate.estimate_output import print_logfile
 
 from grmpy.check.check import UserError, check_start_values
-from grmpy.check.auxiliary import read_data
 
 
-def par_fit(dict_):
+def par_fit(dict_, data):
     """The function estimates the coefficients of the simulated data set."""
     np.random.seed(dict_["SIMULATION"]["seed"])
-
-    # Distribute initialization information.
-    data = read_data(dict_["ESTIMATION"]["file"])
 
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
