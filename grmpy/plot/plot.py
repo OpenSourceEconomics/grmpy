@@ -18,7 +18,7 @@ def plot_mte(
     color="blue",
     semipar=False,
     nboot=250,
-    save_output=False,
+    save_plot=False,
 ):
     """This function calculates the marginal treatment effect for
     different quantiles u_D of the unobservables.
@@ -27,10 +27,10 @@ def plot_mte(
     90 percent confidence bands.
     """
     # Read init dict and data
-    init_dict = read(init_file)
-    data = read_data(init_dict["ESTIMATION"]["file"])
+    dict_ = read(init_file, semipar)
+    data = read_data(dict_["ESTIMATION"]["file"])
 
-    dict_, data = check_append_constant(init_file, init_dict, data, semipar)
+    dict_, data = check_append_constant(init_file, dict_, data, semipar)
 
     if semipar is True:
         quantiles, mte, con_u, con_d = mte_and_cof_int_semipar(
@@ -39,10 +39,10 @@ def plot_mte(
 
     else:
         quantiles, mte, con_u, con_d = mte_and_cof_int_par(
-            rslt, init_dict, data, college_years
+            rslt, dict_, data, college_years
         )
 
     # Add confidence intervals to rslt dictionary
     rslt.update({"con_u": con_u, "con_d": con_d})
 
-    plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_output)
+    plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_plot)

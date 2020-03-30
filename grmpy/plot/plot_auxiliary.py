@@ -24,7 +24,7 @@ from grmpy.estimate.estimate_semipar import (
 pd.options.mode.chained_assignment = None
 
 
-def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_output):
+def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_plot):
     """This function plots the MTE curve along with the
     90 percent confidence bands.
     """
@@ -47,8 +47,8 @@ def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_
     ax.plot(quantiles, con_u, color=color, linestyle=":", linewidth=3)
     ax.plot(quantiles, con_d, color=color, linestyle=":", linewidth=3)
 
-    if save_output is not False:
-        plt.savefig(save_output, dpi=300)
+    if save_plot is not False:
+        plt.savefig(save_plot, dpi=300)
 
     plt.show()
 
@@ -142,7 +142,7 @@ def bootstrap(init_file, nbootstraps):
     given an init_file and the number of bootsraps to be drawn.
     """
     check_presence_init(init_file)
-    dict_ = read(init_file)
+    dict_ = read(init_file, semipar=True)
 
     # Process the information specified in the initialization file
     nbins, logit, bandwidth, gridsize, a, b = process_user_input(dict_)

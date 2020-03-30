@@ -1,11 +1,9 @@
 """The module provides an estimation process given the simulated data set and the
 initialization file.
 """
-
 from grmpy.check.check import check_presence_estimation_dataset
-from grmpy.check.check import check_basic_init_basic
-from grmpy.check.check import check_par_init_dict
 from grmpy.check.check import check_presence_init
+from grmpy.check.check import check_est_init_dict
 from grmpy.check.check import check_par_init_file
 from grmpy.check.auxiliary import read_data
 
@@ -27,11 +25,10 @@ def fit(init_file, semipar=False):
 
     # Perform some consistency checks given the user's request
     check_presence_estimation_dataset(dict_)
+    check_est_init_dict(dict_)
 
     # Semiparametric LIV Model
     if semipar is True:
-        check_basic_init_basic(dict_)
-
         # Distribute initialization information.
         data = read_data(dict_["ESTIMATION"]["file"])
         dict_, data = check_append_constant(init_file, dict_, data, semipar=True)
@@ -40,7 +37,7 @@ def fit(init_file, semipar=False):
 
     # Parametric Normal Model
     else:
-        check_par_init_dict(dict_)
+        # Perform some extra checks
         check_par_init_file(dict_)
 
         # Distribute initialization information.

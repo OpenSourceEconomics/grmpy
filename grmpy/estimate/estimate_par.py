@@ -5,6 +5,7 @@ The module provides auxiliary functions for the estimation process.
 import copy
 
 import numpy as np
+from random import randint
 import statsmodels.api as sm
 from scipy.stats import t, norm
 from scipy.optimize import minimize
@@ -20,7 +21,12 @@ from grmpy.check.check import UserError, check_start_values
 
 def par_fit(dict_, data):
     """The function estimates the coefficients of the simulated data set."""
-    np.random.seed(dict_["SIMULATION"]["seed"])
+    # Set seed
+    if "SIMULATION" not in dict_ or "seed" not in dict_["SIMULATION"]:
+        seed_ = randint(0, 9999)
+        np.random.seed(seed_)
+    else:
+        np.random.seed(dict_["SIMULATION"]["seed"])
 
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
@@ -54,13 +60,16 @@ def par_fit(dict_, data):
     # Print Output files
     print_logfile(dict_, rslt)
 
-    if "comparison" in dict_["ESTIMATION"].keys():
-        if dict_["ESTIMATION"]["comparison"] == 0:
-            pass
+    if "SIMULATION" in dict_:
+        if "comparison" in dict_["ESTIMATION"].keys():
+            if dict_["ESTIMATION"]["comparison"] == 0:
+                pass
+            else:
+                write_comparison(data, rslt)
         else:
             write_comparison(data, rslt)
     else:
-        write_comparison(data, rslt)
+        rslt.update({"ESTIMATION": {"seed": seed_}})
 
     return rslt
 
