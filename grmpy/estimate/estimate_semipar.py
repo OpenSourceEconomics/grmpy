@@ -30,7 +30,7 @@ def semipar_fit(dict_, data):
     )
 
     # Estimate the observed and unobserved component of the MTE
-    X, b1_b0, mte_u = mte_components(
+    X, b1_b0, b0, mte_u = mte_components(
         dict_, data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output
     )
 
@@ -48,6 +48,8 @@ def semipar_fit(dict_, data):
     mte_min = np.min(mte_x) + mte_u
     mte_max = np.max(mte_x) + mte_u
 
+    b1 = np.array(b1_b0) + np.array(b0)
+
     rslt = {
         "quantiles": quantiles,
         "mte": mte,
@@ -56,7 +58,8 @@ def semipar_fit(dict_, data):
         "mte_min": mte_min,
         "mte_max": mte_max,
         "X": X,
-        "b1-b0": b1_b0,
+        "b1": b1,
+        "b0": b0,
     }
 
     return rslt
@@ -224,7 +227,7 @@ def mte_components(dict_, data, ps, rbandwidth, bandwidth, gridsize, a, b, show_
     # through a locally quadratic regression
     mte_u = locpoly(ps, Y_tilde, 1, 2, bandwidth, gridsize, a, b)
 
-    return X, b1_b0, mte_u
+    return X, b1_b0, b0, mte_u
 
 
 def estimate_treatment_propensity(D, Z, logit, show_output):

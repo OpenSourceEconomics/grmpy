@@ -182,7 +182,7 @@ def bootstrap(init_file, nbootstraps):
             )
 
             # Estimate the observed and unobserved component of the MTE
-            X, b1_b0, mte_u = mte_components(
+            X, b1_b0, b0, mte_u = mte_components(
                 dict_, boot_data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output
             )
 
