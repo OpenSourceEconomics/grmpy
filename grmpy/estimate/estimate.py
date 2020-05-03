@@ -7,7 +7,6 @@ from grmpy.check.check import check_presence_estimation_dataset
 from grmpy.check.check import check_par_init_dict
 from grmpy.check.check import check_presence_init
 from grmpy.check.check import check_basic_init_basic
-from grmpy.check.check import check_par_init_file
 from grmpy.check.auxiliary import read_data
 from grmpy.read.read import read
 
@@ -43,7 +42,6 @@ def fit(init_file, semipar=False):
     # Parametric Normal Model
     else:
         check_par_init_dict(dict_)
-        check_par_init_file(dict_)
 
         # Distribute initialization information.
         data = read_data(dict_["ESTIMATION"]["file"])

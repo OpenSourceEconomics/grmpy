@@ -23,6 +23,7 @@ def par_fit(dict_):
     # Distribute initialization information.
     data = read_data(dict_["ESTIMATION"]["file"])
 
+    #
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     num_treated = dict_["AUX"]["num_covars_treated"]
@@ -48,6 +49,7 @@ def par_fit(dict_):
             args=(dict_, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, rslt_dict),
             method=method,
             options=opts,
+            jac=True,
         )
         rslt = adjust_output(
             opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict
@@ -195,7 +197,7 @@ def backward_transformation(x0, dict_=None):
 
 
 def log_likelihood(
-    x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_=None
+    x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_=None
 ):
     """The function provides the log-likelihood function for the minimization process."""
 
@@ -207,22 +209,49 @@ def log_likelihood(
     sd1, sd0, rho1v, rho0v = x0[-4], x0[-2], x0[-3], x0[-1]
     # Provide parameterization for D=1 and D=0 and provide auxiliary list likl
 
-    part11 = (Y1 - np.dot(beta1, X1.T)) / sd1
-    part21 = (np.dot(gamma, Z1.T) - rho1v * part11) / (np.sqrt((1 - rho1v ** 2)))
+    nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
+    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt((1 - rho1v ** 2)))
 
-    part10 = (Y0 - np.dot(beta0, X0.T)) / sd0
-    part20 = (np.dot(gamma, Z0.T) - rho0v * part10) / (np.sqrt((1 - rho0v ** 2)))
+    nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
+    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt((1 - rho0v ** 2)))
 
-    treated = (1 / sd1) * norm.pdf(part11) * norm.cdf(part21)
-    untreated = (1 / sd0) * norm.pdf(part10) * (1 - norm.cdf(part20))
+    treated = (1 / sd1) * norm.pdf(nu1) * norm.cdf(lambda1)
+    untreated = (1 / sd0) * norm.pdf(nu0) * (1 - norm.cdf(lambda0))
 
-    likl = -np.mean(np.log(np.clip(np.append(treated, untreated), 1e-20, np.inf)))
-
+    likl = -np.mean(np.log(np.append(treated, untreated)))
+    llh_grad = gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v)
     if dict_ is None:
         pass
     else:
         dict_["crit"][str(len(dict_["crit"]))] = likl
+        dict_["grad"][str(len(dict_["crit"]))] = llh_grad
 
+    return likl, llh_grad
+
+
+def log_likelihood_hess(
+    x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
+):
+    """The function provides the log-likelihood function for the minimization process."""
+
+    beta1, beta0, gamma = (
+        x0[:num_treated],
+        x0[num_treated:num_untreated],
+        x0[num_untreated:-4],
+    )
+    sd1, sd0, rho1v, rho0v = x0[-4], x0[-2], x0[-3], x0[-1]
+    # Provide parameterization for D=1 and D=0 and provide auxiliary list likl
+
+    nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
+    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt((1 - rho1v ** 2)))
+
+    nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
+    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt((1 - rho0v ** 2)))
+
+    treated = (1 / sd1) * norm.pdf(nu1) * norm.cdf(lambda1)
+    untreated = (1 / sd0) * norm.pdf(nu0) * (1 - norm.cdf(lambda0))
+
+    likl = -np.mean(np.log(np.clip(np.append(treated, untreated), 1e-20, np.inf)))
     return likl
 
 
@@ -231,8 +260,8 @@ def calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, x0):
     x = backward_transformation(x0)
     num_treated = init_dict["AUX"]["num_covars_treated"]
     num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
-    criteria = log_likelihood(
-        x, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
+    criteria, _ = log_likelihood(
+        x, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
     )
     return criteria
 
@@ -257,11 +286,12 @@ def minimizing_interface(
     # Collect arguments
     x0 = backward_transformation(x0, dict_)
     # Calculate likelihood for pre-specified arguments
-    likl = log_likelihood(
-        x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_
+    likl, llh_grad = log_likelihood(
+        x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_
     )
 
-    return likl
+
+    return likl, llh_grad
 
 
 def adjust_output(opt_rslt, init_dict, x0, X1, X0, Z1, Z0, Y1, Y0, dict_=None):
@@ -421,6 +451,11 @@ def process_output(init_dict, dict_, x0, flag):
                 "criterion function value \n                         "
                 "                  that was reached during the optimization.\n"
             )
+        else:
+            x0 = x0
+            crit = dict_["crit"][str(x)]
+            warning= "NONE"
+
     elif flag == "notfinite":
         x0 = init_dict["AUX"]["starting_values"]
         crit = init_dict["AUX"]["criteria"]
@@ -428,6 +463,8 @@ def process_output(init_dict, dict_, x0, flag):
             "Tho optimization process is not able to provide finite values. This is "
             "probably due to perfect separation."
         )
+    else:
+        crit = x
     return x0, crit, warning
 
 
@@ -435,7 +472,8 @@ def bfgs_dict():
     """The function provides a dictionary for tracking the criteria function values and the
     associated parametrization.
     """
-    rslt_dict = {"parameter": {}, "crit": {}}
+    rslt_dict = {"parameter": {}, "crit": {}, "grad":{}}
+
     return rslt_dict
 
 
@@ -457,8 +495,8 @@ def calculate_se(x, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreate
         # Calculate the hessian matrix, check if it is p
         hess = approx_hess_cs(
             x0,
-            log_likelihood,
-            args=(init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated),
+            log_likelihood_hess,
+            args=(X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated),
         )
         try:
             hess_inv = np.linalg.inv(hess)
@@ -502,3 +540,72 @@ def calculate_p_values(se, x0, num_ind):
     p_values = 2 * (1 - t.cdf(np.abs(t_values), df=df))
 
     return p_values, t_values
+
+
+def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v):
+
+
+    n = X1.shape[0] + X0.shape[0]
+
+
+    # compute gradient coef for beta 1
+
+    grad_beta1 = (norm.pdf(lambda1) / norm.cdf(lambda1)) * (
+        rho1v / (np.sqrt(1 - rho1v ** 2) * sd1)
+    ) + nu1 / sd1
+
+    # compute coef for beta 0
+    grad_beta0 = (
+        -norm.pdf(lambda0)
+        / (1 - norm.cdf(lambda0))
+        * (rho0v / (np.sqrt(1 - rho0v ** 2) * sd0))
+        + nu0 / sd0
+    )
+
+    grad_sd1 = (
+        +1 / sd1
+        - (norm.pdf(lambda1) / norm.cdf(lambda1))
+        * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
+        - nu1 ** 2 / sd1
+    )
+    grad_sd0 = (
+        +1 / sd0
+        + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
+        * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
+        - nu0 ** 2 / sd0
+    )
+    grad_rho1v = (
+        -(norm.pdf(lambda1) / norm.cdf(lambda1))
+        * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
+        / (1 - rho1v ** 2) ** (3 / 2)
+    )
+    grad_rho0v = (
+        (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
+        * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
+        / (1 - rho0v ** 2) ** (3 / 2)
+    )
+
+    grad_gamma = np.sum(
+        np.einsum(
+            "ij, i ->ij",
+            Z1,
+            (norm.pdf(lambda1) / norm.cdf(lambda1)) * 1 / np.sqrt(1 - rho1v ** 2),
+        ),
+        0,
+    ) - sum(
+        np.einsum(
+            "ij, i ->ij",
+            Z0,
+            (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
+            * (1 / np.sqrt(1 - rho0v ** 2)),
+        )
+    )
+
+    grad = np.sum(np.einsum("ij, i ->ij", X1, -grad_beta1), 0) / n
+    grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0) / n)
+    grad = np.append(grad, -grad_gamma/n)
+    grad = np.append(grad, sum(grad_sd1) / n)
+    grad = np.append(grad, sum(grad_rho1v) / n)
+    grad = np.append(grad, sum(grad_sd0) / n)
+    grad = np.append(grad, sum(grad_rho0v) / n)
+    return grad
