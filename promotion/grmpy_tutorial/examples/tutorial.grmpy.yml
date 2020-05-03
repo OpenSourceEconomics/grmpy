@@ -12,7 +12,7 @@ ESTIMATION:
     agents: 165
     dependent: Y
     indicator: D
-    comparison: 1
+    comparison: 0
     print_output: 0
 TREATED:
     params:

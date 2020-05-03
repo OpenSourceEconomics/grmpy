@@ -11,9 +11,9 @@ ESTIMATION:
     maxiter: 80000
     dependent: wage
     indicator: state
-    output_file: replication.grmp.info
+    output_file: replication.grmpy.info
     comparison: 0
-    print_output: 0
+    print_output: 1
 
 TREATED:
     params:
@@ -120,7 +120,7 @@ VARTYPES:
     const: nonbinary
 SCIPY-BFGS:
     gtol: 1.0e-05
-    eps: 1.4901161193847656e-08
+    eps: 1.4901161193847656e-10
 SCIPY-POWELL:
     xtol: 0.0001
     ftol: 0.0001

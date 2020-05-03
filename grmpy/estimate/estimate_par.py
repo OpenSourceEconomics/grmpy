@@ -3,17 +3,15 @@ import copy
 
 import numpy as np
 import statsmodels.api as sm
-from scipy.stats import t, norm
-from scipy.optimize import minimize
 from numpy.linalg import LinAlgError
+from scipy.optimize import minimize
+from scipy.stats import norm, t
 from statsmodels.tools.numdiff import approx_hess_cs
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 
-from grmpy.estimate.estimate_output import write_comparison
-from grmpy.estimate.estimate_output import print_logfile
-
-from grmpy.check.check import UserError, check_start_values
 from grmpy.check.auxiliary import read_data
+from grmpy.check.check import UserError, check_start_values
+from grmpy.estimate.estimate_output import print_logfile, write_comparison
 
 
 def par_fit(dict_):
@@ -196,9 +194,7 @@ def backward_transformation(x0, dict_=None):
     return x
 
 
-def log_likelihood(
-    x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_=None
-):
+def log_likelihood(x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_=None):
     """The function provides the log-likelihood function for the minimization process."""
 
     beta1, beta0, gamma = (
@@ -219,7 +215,9 @@ def log_likelihood(
     untreated = (1 / sd0) * norm.pdf(nu0) * (1 - norm.cdf(lambda0))
 
     likl = -np.mean(np.log(np.append(treated, untreated)))
-    llh_grad = gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v)
+    llh_grad = gradient(
+        X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v
+    )
     if dict_ is None:
         pass
     else:
@@ -229,9 +227,7 @@ def log_likelihood(
     return likl, llh_grad
 
 
-def log_likelihood_hess(
-    x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
-):
+def log_likelihood_hess(x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated):
     """The function provides the log-likelihood function for the minimization process."""
 
     beta1, beta0, gamma = (
@@ -260,9 +256,7 @@ def calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, x0):
     x = backward_transformation(x0)
     num_treated = init_dict["AUX"]["num_covars_treated"]
     num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
-    criteria, _ = log_likelihood(
-        x, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
-    )
+    criteria, _ = log_likelihood(x, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated)
     return criteria
 
 
@@ -289,7 +283,6 @@ def minimizing_interface(
     likl, llh_grad = log_likelihood(
         x0, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_
     )
-
 
     return likl, llh_grad
 
@@ -454,7 +447,7 @@ def process_output(init_dict, dict_, x0, flag):
         else:
             x0 = x0
             crit = dict_["crit"][str(x)]
-            warning= "NONE"
+            warning = "NONE"
 
     elif flag == "notfinite":
         x0 = init_dict["AUX"]["starting_values"]
@@ -472,7 +465,7 @@ def bfgs_dict():
     """The function provides a dictionary for tracking the criteria function values and the
     associated parametrization.
     """
-    rslt_dict = {"parameter": {}, "crit": {}, "grad":{}}
+    rslt_dict = {"parameter": {}, "crit": {}, "grad": {}}
 
     return rslt_dict
 
@@ -544,9 +537,7 @@ def calculate_p_values(se, x0, num_ind):
 
 def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v):
 
-
     n = X1.shape[0] + X0.shape[0]
-
 
     # compute gradient coef for beta 1
 
@@ -603,7 +594,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
 
     grad = np.sum(np.einsum("ij, i ->ij", X1, -grad_beta1), 0) / n
     grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0) / n)
-    grad = np.append(grad, -grad_gamma/n)
+    grad = np.append(grad, -grad_gamma / n)
     grad = np.append(grad, sum(grad_sd1) / n)
     grad = np.append(grad, sum(grad_rho1v) / n)
     grad = np.append(grad, sum(grad_sd0) / n)
