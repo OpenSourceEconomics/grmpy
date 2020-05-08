@@ -7,7 +7,7 @@ ESTIMATION:
     file: data/aer-replication-mock.pkl
     start: auto
     agents: 1000
-    optimizer: SCIPY-BFGS
+    optimizer: SCIPY-L-BFGS-B
     maxiter: 80000
     dependent: wage
     indicator: state

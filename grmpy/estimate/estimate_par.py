@@ -47,8 +47,9 @@ def par_fit(dict_):
             args=(dict_, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, rslt_dict),
             method=method,
             options=opts,
-            jac=True,
+            jac=True
         )
+        print(opt_rslt)
         rslt = adjust_output(
             opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict
         )
@@ -264,12 +265,9 @@ def optimizer_options(init_dict_):
     """The function provides the optimizer options given the initialization
     dictionary.
     """
-    method = init_dict_["ESTIMATION"]["optimizer"].split("-")[1:]
-    if isinstance(method, list):
-        method = "-".join(method)
+    method = init_dict_["ESTIMATION"]["optimizer"]
     opt_dict = init_dict_["SCIPY-" + method]
     opt_dict["maxiter"] = init_dict_["ESTIMATION"]["maxiter"]
-
     return opt_dict, method
 
 
@@ -417,7 +415,7 @@ def check_rslt_parameters(init_dict, X1, X0, Z1, Z0, Y1, Y0, dict_, x0):
     if False in np.isfinite(x0).tolist():
         check, flag = True, "notfinite"
 
-    elif dict_["crit"][str(x)] <= crit:
+    elif dict_["crit"][str(x)] < crit:
         check, flag = True, "adjustment"
 
     else:
@@ -476,6 +474,7 @@ def calculate_se(x, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreate
     """
     num_ind = Y1.shape[0] + Y0.shape[0]
     x0 = x.copy()
+    print(x0)
     warning = None
 
     if init_dict["ESTIMATION"]["maxiter"] == 0:
@@ -536,7 +535,7 @@ def calculate_p_values(se, x0, num_ind):
 
 
 def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v):
-
+    """This function returns the jacobian of our Maximum Likelihood function."""
     n = X1.shape[0] + X0.shape[0]
 
     # compute gradient coef for beta 1
@@ -596,7 +595,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
     grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0) / n)
     grad = np.append(grad, -grad_gamma / n)
     grad = np.append(grad, sum(grad_sd1) / n)
-    grad = np.append(grad, sum(grad_rho1v) / n)
+    grad = np.append(grad, (sum(grad_rho1v)/10) / n)
     grad = np.append(grad, sum(grad_sd0) / n)
-    grad = np.append(grad, sum(grad_rho0v) / n)
+    grad = np.append(grad, (sum(grad_rho0v)/10) / n)
     return grad
