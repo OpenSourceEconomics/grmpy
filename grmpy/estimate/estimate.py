@@ -1,16 +1,15 @@
 """The module provides an estimation process given the simulated data set and the
 initialization file.
 """
-from grmpy.check.check import check_presence_estimation_dataset
-from grmpy.check.check import check_presence_init
-from grmpy.check.check import check_est_init_dict
-from grmpy.check.check import check_par_init_file
 from grmpy.check.auxiliary import read_data
-
-from grmpy.read.read import read, check_append_constant
-
-from grmpy.estimate.estimate_semipar import semipar_fit
+from grmpy.check.check import (
+    check_est_init_dict,
+    check_par_init_file,
+    check_presence_estimation_dataset,
+)
 from grmpy.estimate.estimate_par import par_fit
+from grmpy.estimate.estimate_semipar import semipar_fit
+from grmpy.read.read import check_append_constant, read
 
 
 def fit(init_file, semipar=False):
@@ -20,7 +19,6 @@ def fit(init_file, semipar=False):
     """
 
     # Load the estimation file
-    check_presence_init(init_file)
     dict_ = read(init_file, semipar)
 
     # Perform some consistency checks given the user's request

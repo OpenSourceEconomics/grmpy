@@ -1,24 +1,25 @@
-"""This module provides auxiliary functions for the plot_mte function."""
-
+"""
+This module provides auxiliary functions for the plot_mte function.
+"""
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
-import matplotlib.pyplot as plt
 from sklearn.utils import resample
 
-from grmpy.read.read import read
 from grmpy.check.auxiliary import read_data
 from grmpy.check.check import check_presence_init
 from grmpy.estimate.estimate_output import calculate_mte
-
 from grmpy.estimate.estimate_semipar import (
+    double_residual_reg,
     estimate_treatment_propensity,
-    process_choice_data,
-    mte_components,
-    process_default_input,
-    process_user_input,
+    mte_observed,
+    mte_unobserved,
+    process_primary_inputs,
+    process_secondary_inputs,
     trim_support,
 )
+from grmpy.read.read import read
 
 # surpress pandas warning
 pd.options.mode.chained_assignment = None
@@ -47,7 +48,11 @@ def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_
     ax.plot(quantiles, con_u, color=color, linestyle=":", linewidth=3)
     ax.plot(quantiles, con_d, color=color, linestyle=":", linewidth=3)
 
-    if save_plot is not False:
+    if save_plot is False:
+        pass
+    elif save_plot is True:
+        plt.savefig("MTE_plot.png", dpi=300)
+    else:
         plt.savefig(save_plot, dpi=300)
 
     plt.show()
@@ -139,14 +144,14 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
 def bootstrap(init_file, nbootstraps):
     """
     This function generates bootsrapped standard errors
-    given an init_file and the number of bootsraps to be drawn.
+    given an init_file and the number of bootstraps to be drawn.
     """
     check_presence_init(init_file)
     dict_ = read(init_file, semipar=True)
 
     # Process the information specified in the initialization file
-    nbins, logit, bandwidth, gridsize, a, b = process_user_input(dict_)
-    trim, rbandwidth, reestimate_p = process_default_input(dict_)
+    bins, logit, bandwidth, gridsize, startgrid, endgrid = process_primary_inputs(dict_)
+    trim, rbandwidth, reestimate_p, show_output = process_secondary_inputs(dict_)
 
     # Suppress output
     show_output = False
@@ -161,33 +166,23 @@ def bootstrap(init_file, nbootstraps):
     while counter < nbootstraps:
         boot_data = resample(data, replace=True, n_samples=len(data), random_state=None)
 
-        # Process the inputs for the decision equation
-        indicator, D, Z = process_choice_data(dict_, boot_data)
-
         # Estimate propensity score P(z)
-        ps = estimate_treatment_propensity(D, Z, logit, show_output)
+        boot_data = estimate_treatment_propensity(dict_, boot_data, logit, show_output)
+        prop_score = boot_data["prop_score"]
 
-        if isinstance(ps, np.ndarray):
-            # Define common support and trim the data, if trim=True
-            boot_data, ps = trim_support(
-                dict_,
-                boot_data,
-                logit,
-                ps,
-                indicator,
-                nbins,
-                trim,
-                reestimate_p,
-                show_output,
+        if isinstance(prop_score, np.ndarray):
+            # Define common support and trim the data (if trim=True)
+            X, Y, prop_score = trim_support(
+                dict_, data, logit, bins, trim, reestimate_p, show_output=False
             )
 
-            # Estimate the observed and unobserved component of the MTE
-            X, b1_b0, b0, mte_u = mte_components(
-                dict_, boot_data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output
-            )
+            b0, b1_b0 = double_residual_reg(X, Y, prop_score)
 
-            # Calculate the MTE component that depends on X
-            mte_x = np.dot(X, b1_b0).mean(axis=0)
+            # # Construct the MTE
+            mte_x = mte_observed(X, b1_b0)
+            mte_u = mte_unobserved(
+                X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
+            )
 
             # Put the MTE together
             mte = mte_x + mte_u

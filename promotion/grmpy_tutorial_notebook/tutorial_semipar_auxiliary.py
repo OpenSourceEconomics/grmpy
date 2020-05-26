@@ -1,23 +1,13 @@
-"""This module provides auxiliary functions for the semiparametric tutorial"""
-
+"""
+This module provides auxiliary functions for the semiparametric tutorial.
+"""
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
-from sklearn.utils import resample
 
-from grmpy.check.auxiliary import read_data
-from grmpy.check.check import check_presence_init
-from grmpy.estimate.estimate_semipar import (
-    estimate_treatment_propensity,
-    process_choice_data,
-    mte_components,
-    process_default_input,
-    process_user_input,
-    trim_support,
-)
-from grmpy.read.read import read
+from grmpy.plot.plot_auxiliary import bootstrap
 
 # surpress pandas warning
 pd.options.mode.chained_assignment = None
@@ -87,68 +77,3 @@ def plot_semipar_mte(rslt, init_file, nbootstraps=250):
     plt.show()
 
     return mte, quantiles
-
-
-def bootstrap(init_file, nbootstraps):
-    """
-    This function generates bootsrapped standard errors
-    given an init_file and the number of bootsraps to be drawn.
-    """
-    check_presence_init(init_file)
-    dict_ = read(init_file)
-
-    # Process the information specified in the initialization file
-    nbins, logit, bandwidth, gridsize, a, b = process_user_input(dict_)
-    trim, rbandwidth, reestimate_p = process_default_input(dict_)
-
-    # Suppress output
-    show_output = False
-
-    # Prepare empty array to store output values
-    mte_boot = np.zeros([gridsize, nbootstraps])
-
-    # Load the baseline data
-    data = read_data(dict_["ESTIMATION"]["file"])
-
-    counter = 0
-    while counter < nbootstraps:
-        boot_data = resample(data, replace=True, n_samples=len(data), random_state=None)
-
-        # Process the inputs for the decision equation
-        indicator, D, Z = process_choice_data(dict_, boot_data)
-
-        # Estimate propensity score P(z)
-        ps = estimate_treatment_propensity(D, Z, logit, show_output)
-
-        if isinstance(ps, np.ndarray):  # & (np.min(ps) <= 0.3) & (np.max(ps) >= 0.7):
-            # Define common support and trim the data, if trim=True
-            boot_data, ps = trim_support(
-                dict_,
-                boot_data,
-                logit,
-                ps,
-                indicator,
-                nbins,
-                trim,
-                reestimate_p,
-                show_output,
-            )
-
-            # Estimate the observed and unobserved component of the MTE
-            X, b1_b0, b0, mte_u = mte_components(
-                dict_, boot_data, ps, rbandwidth, bandwidth, gridsize, a, b, show_output
-            )
-
-            # Calculate the MTE component that depends on X
-            mte_x = np.dot(X, b1_b0).mean(axis=0)
-
-            # Put the MTE together
-            mte = mte_x + mte_u
-            mte_boot[:, counter] = mte
-
-            counter += 1
-
-        else:
-            continue
-
-    return mte_boot

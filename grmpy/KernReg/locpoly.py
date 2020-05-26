@@ -2,12 +2,13 @@
 This module provides a function for the estimation of a local polynomial
 kernel regression.
 """
+from grmpy.KernReg.locpoly_auxiliary import (
+    combine_bincounts_kernelweights,
+    get_curve_estimator,
+    get_kernelweights,
+    is_sorted,
+)
 from grmpy.KernReg.locpoly_linbin import linear_binning
-
-from grmpy.KernReg.locpoly_auxiliary import combine_bincounts_kernelweights
-from grmpy.KernReg.locpoly_auxiliary import get_curve_estimator
-from grmpy.KernReg.locpoly_auxiliary import get_kernelweights
-from grmpy.KernReg.locpoly_auxiliary import is_sorted
 
 
 def locpoly(
@@ -87,10 +88,7 @@ def locpoly(
 
     Returns
     -------
-    gridpoints: np.ndarry
-        Array of sorted x values, i.e. grid points, at which the estimate
-        of E[Y|X] (or its derivative) is computed.
-    curvest: np.ndarry
+    curvest: np.ndarray
         Array of M local estimators.
     """
     # The input arrays x (predictor) and y (response variable)
