@@ -20,10 +20,13 @@ $ pip install -e .
 ## Quick Start
 > Initialization File
 
-```grmpy``` relies on an ```"initialization.yml"``` file to perform both simulation and estimation.
-For example, check out these two init files for the 
+```grmpy``` relies on an ```"initialization.yml"``` file (referred to as ``ìnit_file`` below)
+to perform both simulation and estimation.
+For example, check out these two ``init_files`` for
 [simulation and parametric estimation](https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial.grmpy.yml) as well as 
-the [semiparametric](https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial_semipar.yml) setup.
+a [semiparametric estimation](https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial_semipar.yml) setup.
+
+Below you'll find some example code you can copy to jump-start your project.  
 
 > Simulation
 ```
