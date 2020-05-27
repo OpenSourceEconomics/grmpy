@@ -1,5 +1,7 @@
-"""This module contains the plot function, which plot the parametric or
-semiparametric MTE along with 90 percent confidence bands."""
+"""
+This module contains the plot function, which plot the parametric or
+semiparametric MTE along with 90 percent confidence bands.
+"""
 
 from grmpy.check.auxiliary import read_data
 from grmpy.plot.plot_auxiliary import (
@@ -33,7 +35,8 @@ def plot_mte(
     rslt: dict
         Result dictionary returned by grmpy.fit().
     init_file: yaml
-        Initialization file.
+        Initialization file containing parameters for the estimation
+        process.
     college_years: int, default is 4
         Average duration of college degree. The MTE plotted will thus
         refer to the returns per one year of college education.

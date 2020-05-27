@@ -26,8 +26,34 @@ pd.options.mode.chained_assignment = None
 
 
 def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_plot):
-    """This function plots the MTE curve along with the
+    """
+    This function plots the MTE curve (based on either the
+    parametric or semiparmaetric model) along with its
     90 percent confidence bands.
+
+    Parameters
+    ----------
+    mte: np.ndarray
+        Estimate of the parametric MTE.
+    quantiles: np.ndarray
+        Quantiles of the u_D, along which the *mte* has been estimated.
+    con_u: list
+        Upper bound of the 90 percent confidence interval.
+    con_d: list
+        Lower bound of the 90 percent confidence interval.
+    font_size: int, default is 22
+        Font size of the MTE graph.
+    label_size: int, default is 16
+        Label size of the MTE graph
+    color: str, default is "blue"
+        Color of the MTE curve.
+    save_plot: bool or str or PathLike or file-like object, default is False
+        If False, the resulting plot is shown but not saved.
+        If True, the MTE plot is saved as 'MTE_plot.png'.
+        Else, if a str or Pathlike or file-like object is specified,
+        the plot is saved according to *save_plot*.
+        The output format is inferred from the extension ('png', 'pdf', 'svg'... etc.)
+        By default, '.png' is assumed.
     """
     ax = plt.figure(figsize=(17.5, 10)).add_subplot(111)
 
@@ -59,12 +85,39 @@ def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_
 
 
 def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
-    """This function returns the semiparametric MTE divided by the number
-     of college years, which represents the returns per YEAR of
-     post-secondary schooling.
-     The corresponding 90 percent confidence intervals are bootstrapped
-     based on 'nboot' iterations.
-     """
+    """
+    This function returns the semiparametric MTE divided by the number
+    of college years, which represents the returns per YEAR of
+    post-secondary schooling.
+    The corresponding 90 percent confidence intervals are bootstrapped
+    based on *nboot* iterations.
+
+    Parameters
+    ----------
+    rslt: dict
+        Result dictionary containing parameters for the estimation
+        process.
+    init_file: yaml
+        Initialization file containing parameters for the estimation
+        process.
+    college_years: int, default is 4
+        Average duration of college degree. The MTE plotted will thus
+        refer to the returns per one year of college education.
+    nboot: int
+        Number of bootstrap iterations, i.e. number of times
+        the MTE is computed via bootstrap.
+
+    Returns
+    -------
+    quantiles: np.ndarray
+        Quantiles of the u_D, along which the *mte* has been estimated.
+    mte: np.ndarray
+        Estimate of the parametric MTE.
+    con_u: list
+        Upper bound of the 90 percent confidence interval.
+    con_d: list
+        Lower bound of the 90 percent confidence interval.
+    """
     # Define quantiles of u_D (unobserved resistance to treatment)
     quantiles = rslt["quantiles"]
 
@@ -86,10 +139,26 @@ def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
 
 
 def mte_and_cof_int_par(rslt, init_dict, data, college_years):
-    """This function returns the parametric MTE divided by the number
-     of college years, which represents the returns per YEAR of
-     post-secondary schooling.
-     90 percent confidence intervals are computed analytically.
+    """
+    This function returns the parametric MTE divided by the number
+    of college years, which represents the returns per YEAR of
+    post-secondary schooling.
+    90 percent confidence intervals are computed analytically.
+
+    Parameters
+    ----------
+    rslt: dict
+        Result dictionary containing parameters for the estimation
+        process.
+    init_dict: dict
+        Initialization dictionary containing parameters for the
+        estimation process.
+    data: pandas.DataFrame
+        Data set containing the observables (explanatory and outcome variables)
+        analyzed in the generalized Roy framework.
+    college_years: int, default is 4
+        Average duration of college degree. The MTE plotted will thus
+        refer to the returns per one year of college education.
     """
     # Define quantiles of u_D (unobserved resistance to treatment)
     quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
@@ -102,12 +171,37 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     return quantiles, mte, con_u, con_d
 
 
-def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
-    """This function calculates the confidence intervals of
-    the parametric marginal treatment effect.
+def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
     """
+    This function calculates the analytical confidence intervals of
+    the parametric marginal treatment effect.
+
+    Parameters
+    ----------
+    rslt: dict
+        Result dictionary containing parameters for the estimation
+        process.
+    init_dict: dict
+        Initialization dictionary containing parameters for the estimation
+        process.
+    data: pandas.DataFrame
+        Data set containing the observables (explanatory and outcome variables)
+        analyzed in the generalized Roy framework.
+    mte: np.ndarray
+        Estimate of the parametric MTE.
+    quantiles: np.ndarray
+        Quantiles of the u_D, along which the *mte* has been estimated.
+
+    Returns
+    ------
+    con_u: list
+        Upper bound of the 90 percent confidence interval.
+    con_d: list
+        Lower bound of the 90 percent confidence interval.
+    """
+
     # Import parameters and inverse hessian matrix
-    hess_inv = rslt["AUX"]["hess_inv"] / data_frame.shape[0]
+    hess_inv = rslt["AUX"]["hess_inv"] / data.shape[0]
     params = rslt["AUX"]["x_internal"]
     numx = len(init_dict["TREATED"]["order"]) + len(init_dict["UNTREATED"]["order"])
 
@@ -118,7 +212,7 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
 
     # Process data
     covariates = init_dict["TREATED"]["order"]
-    x = np.mean(data_frame[covariates]).tolist()
+    x = np.mean(data[covariates]).tolist()
     x_neg = [-i for i in x]
     x += x_neg
     x = np.array(x)
@@ -141,10 +235,24 @@ def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
     return con_u, con_d
 
 
-def bootstrap(init_file, nbootstraps):
+def bootstrap(init_file, nboot):
     """
     This function generates bootsrapped standard errors
     given an init_file and the number of bootstraps to be drawn.
+
+    Parameters
+    ----------
+    init_file: yaml
+        Initialization file containing parameters for the estimation
+        process.
+    nboot: int
+        Number of bootstrap iterations, i.e. number of times
+        the MTE is computed via bootstrap.
+
+    Returns
+    -------
+    mte_boot: np.ndarray
+        Array containing *nbootstrap* estimates of the MTE.
     """
     check_presence_init(init_file)
     dict_ = read(init_file, semipar=True)
@@ -157,13 +265,13 @@ def bootstrap(init_file, nbootstraps):
     show_output = False
 
     # Prepare empty array to store output values
-    mte_boot = np.zeros([gridsize, nbootstraps])
+    mte_boot = np.zeros([gridsize, nboot])
 
     # Load the baseline data
     data = read_data(dict_["ESTIMATION"]["file"])
 
     counter = 0
-    while counter < nbootstraps:
+    while counter < nboot:
         boot_data = resample(data, replace=True, n_samples=len(data), random_state=None)
 
         # Estimate propensity score P(z)

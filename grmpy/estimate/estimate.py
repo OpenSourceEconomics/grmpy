@@ -16,6 +16,26 @@ def fit(init_file, semipar=False):
     """This function estimates the MTE based on a parametric normal model
     or, alternatively, via the semiparametric method of
     local instrumental variables (LIV).
+
+    Parameters
+    ----------
+    init_file: yaml
+        Initialization file containing parameters for the estimation
+        process.
+
+    Returns
+    ------
+    rslt: dict
+        Result dictionary containing
+        - quantiles
+        - mte
+        - mte_x
+        - mte_u
+        - mte_min
+        - mte_max
+        - X
+        - b1
+        - b0
     """
 
     # Load the estimation file
