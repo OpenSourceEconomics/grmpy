@@ -88,98 +88,6 @@ def semipar_fit(dict_, data):
     return rslt
 
 
-def mte_unobserved(
-    X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
-):
-    """
-    This function computes the unobserved component of the MTE
-    in MTE = mte_x + *mte_u*, where *mte_u* depends on the unobserved
-    esistance to treatment u_D.
-
-    Parameters
-    ----------
-    X: pandas.DataFrame
-        DataFrame of observables (i.e. covariates).
-    Xp: pandas.DataFrame
-        X data multiplied by *prop_score* X * P(z).
-    Y: pandas.DataFrame
-        Individuals' wage data.
-    b0: np.ndarray
-        Beta0 coefficient in the Double Residual Regression,
-        i.e. the no-intercept OLS regression of the residuals of
-        X, Xp, and Y on *prop_score*.
-    b1_b0: np.ndarray
-        Difference of the coefficients in the Double Residual Regression,
-        i.e. the no-intercept OLS regression of the residuals of
-        X, Xp, and Y on *prop_score*.
-    prop_score: pandas.Series
-        Propensity score (range between [0, 1]). Values closer to 1
-        denote a higher inclination to treatment.
-        Sorted in ascending order.
-    bandwidth: float
-        Kernel bandwidth for the local polynomial regression.
-    gridsize: int
-        Number of equally-spaced grid points of u_D over which the
-        MTE shall be estimated.
-    startgrid: int
-        Start point of the grid of unobservable resistance (u_D),
-        over which the MTE is evaluated.
-    endgrid: int
-        End point of the grid of unobservable resistance (u_D),
-        over which the MTE is evaluated.
-
-    Returns
-    -------
-    mte_u: np.ndarray
-        Part of the MTE that depends on the unobserved resistance
-        to treatment (u_D).
-    """
-    # 0) Construct Xp := X * P(z)
-    Xp = construct_Xp(X, prop_score)
-
-    # Turn the X, Xp, and Y DataFrames as well as the
-    # propensity score Series into np.ndarrays
-    X_arr = np.array(X)
-    Xp_arr = np.array(Xp)
-    Y_arr = np.array(Y).ravel()
-    prop_score = np.array(prop_score)
-
-    # Compute the unobserved part of Y
-    Y_tilde = Y_arr - np.dot(X_arr, b0) - np.dot(Xp_arr, b1_b0)
-
-    # Estimate mte_u, the unobserved component of the MTE,
-    # through a locally quadratic regression
-    mte_u = locpoly(prop_score, Y_tilde, 1, 2, bandwidth, gridsize, startgrid, endgrid)
-
-    return mte_u
-
-
-def mte_observed(X, b1_b0):
-    """
-    This function computes the observed component of the MTE (*mte_x*)
-    that depends on observables X:
-
-    mte = *mte_x* + mte_u
-
-    Parameters
-    ----------
-    X: pandas.DataFrame
-        Data of observables (covariates).
-    b1_b0: np.ndarray
-        Difference of the coefficients in the Double Residual Regression,
-        i.e. the no-intercept OLS regression of the residuals of
-        X, Xp, and Y on *prop_score*.
-
-    Returns
-    -------
-    mte_x: np.ndarray
-        Part of the MTE that depends on observables X.
-    """
-    mte_x = np.dot(X, b1_b0)
-
-    return mte_x
-
-
 def process_primary_inputs(dict_):
     """
     This functions processes the parameters specified
@@ -399,7 +307,7 @@ def trim_support(
     """
     # Find common support
     prop_score = data["prop_score"]
-    common_support = define_common_support(dict_, data, bins, show_output)
+    common_support = _define_common_support(dict_, data, bins, show_output)
 
     # Trim the data. Recommended.
     if trim is True:
@@ -432,7 +340,154 @@ def trim_support(
     return X, Y, prop_score
 
 
-def define_common_support(
+def double_residual_reg(X, Y, prop_score, rbandwidth=0.05, show_output=False):
+    """
+    This function performs a Double Residual Regression (DDR)
+    of X, Xp, and Y on *prop_score*.
+
+    A local linear kernel regression (polynomial of degree 1)
+    is implemented to generate the residuals.
+
+    Parameters
+    ----------
+    X: pandas.DataFrame
+        DataFrame of observables (i.e. covariates).
+    Y: pandas.DataFrame
+        Individuals' wage data.
+    prop_score: pandas.Series
+        Propensity score (range between [0, 1]). Values closer to 1
+        denote a higher inclination to treatment.
+        Sorted in ascending order.
+
+    Returns
+    -------
+    b0: np.ndarray
+        Beta0 coefficient of the DDR (no-intercept OLS regression
+        of the residuals of X, Xp, and Y on *prop_score*).
+    b1: np.ndarray
+        Beta1 coefficient of the DDR (no-intercept OLS regression
+        of the residuals of X, Xp, and Y on *prop_score*).
+    """
+    # 0) Construct Xp := X * P(z)
+    Xp = _construct_Xp(X, prop_score)
+
+    # 1) Fit a separate local linear regression of X, Xp, and Y on prop_score,
+    # which yields residuals e_X, e_Xp, and e_Y.
+    res_X = _generate_residuals(prop_score, X, rbandwidth)
+    res_Xp = _generate_residuals(prop_score, Xp, rbandwidth)
+    res_Y = _generate_residuals(prop_score, Y, rbandwidth)
+
+    # Append res_X and res_Xp.
+    col_names = list(X) + list(Xp)
+    res_X_Xp = pd.DataFrame(np.append(res_X, res_Xp, axis=1), columns=col_names)
+
+    # 2) Run a single OLS regression of e_Y on e_X and e_Xp without intercept:
+    # e_Y = e_X * beta_0 + e_Xp * (beta_1 - beta_0),
+    # to estimate the values of beta_0 and (beta_1 - beta_0).
+    model = sm.OLS(res_Y, res_X_Xp)
+    results = model.fit()
+    b0 = results.params[: len(list(X))]
+    b1_b0 = results.params[len((list(X))) :]
+
+    if show_output is True:
+        print(results.summary())
+
+    return np.array(b0), np.array(b1_b0)
+
+
+def mte_observed(X, b1_b0):
+    """
+    This function computes the observed component of the MTE (*mte_x*)
+    that depends on observables X:
+
+    mte = *mte_x* + mte_u
+
+    Parameters
+    ----------
+    X: pandas.DataFrame
+        Data of observables (covariates).
+    b1_b0: np.ndarray
+        Difference of the coefficients in the Double Residual Regression,
+        i.e. the no-intercept OLS regression of the residuals of
+        X, Xp, and Y on *prop_score*.
+
+    Returns
+    -------
+    mte_x: np.ndarray
+        Part of the MTE that depends on observables X.
+    """
+    mte_x = np.dot(X, b1_b0)
+
+    return mte_x
+
+
+def mte_unobserved(
+    X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
+):
+    """
+    This function computes the unobserved component of the MTE
+    in MTE = mte_x + *mte_u*, where *mte_u* depends on the unobserved
+    esistance to treatment u_D.
+
+    Parameters
+    ----------
+    X: pandas.DataFrame
+        DataFrame of observables (i.e. covariates).
+    Xp: pandas.DataFrame
+        X data multiplied by *prop_score* X * P(z).
+    Y: pandas.DataFrame
+        Individuals' wage data.
+    b0: np.ndarray
+        Beta0 coefficient in the Double Residual Regression,
+        i.e. the no-intercept OLS regression of the residuals of
+        X, Xp, and Y on *prop_score*.
+    b1_b0: np.ndarray
+        Difference of the coefficients in the Double Residual Regression,
+        i.e. the no-intercept OLS regression of the residuals of
+        X, Xp, and Y on *prop_score*.
+    prop_score: pandas.Series
+        Propensity score (range between [0, 1]). Values closer to 1
+        denote a higher inclination to treatment.
+        Sorted in ascending order.
+    bandwidth: float
+        Kernel bandwidth for the local polynomial regression.
+    gridsize: int
+        Number of equally-spaced grid points of u_D over which the
+        MTE shall be estimated.
+    startgrid: int
+        Start point of the grid of unobservable resistance (u_D),
+        over which the MTE is evaluated.
+    endgrid: int
+        End point of the grid of unobservable resistance (u_D),
+        over which the MTE is evaluated.
+
+    Returns
+    -------
+    mte_u: np.ndarray
+        Part of the MTE that depends on the unobserved resistance
+        to treatment (u_D).
+    """
+    # 0) Construct Xp := X * P(z)
+    Xp = _construct_Xp(X, prop_score)
+
+    # Turn the X, Xp, and Y DataFrames as well as the
+    # propensity score Series into np.ndarrays
+    X_arr = np.array(X)
+    Xp_arr = np.array(Xp)
+    Y_arr = np.array(Y).ravel()
+    prop_score = np.array(prop_score)
+
+    # Compute the unobserved part of Y
+    Y_tilde = Y_arr - np.dot(X_arr, b0) - np.dot(Xp_arr, b1_b0)
+
+    # Estimate mte_u, the unobserved component of the MTE,
+    # through a locally quadratic regression
+    mte_u = locpoly(prop_score, Y_tilde, 1, 2, bandwidth, gridsize, startgrid, endgrid)
+
+    return mte_u
+
+
+def _define_common_support(
     dict_,
     data,
     bins=25,
@@ -479,10 +534,10 @@ def define_common_support(
     common_support: list
         List containing lower and upper bound of the propensity score.
     """
-    hist, treated, untreated = make_histogram(
+    hist, treated, untreated = _make_histogram(
         dict_, data, bins, show_output, figsize, fontsize, plot_title
     )
-    lower_limit, upper_limit = find_limits(hist, treated, untreated)
+    lower_limit, upper_limit = _find_limits(hist, treated, untreated)
     common_support = [lower_limit, upper_limit]
 
     if show_output is True:
@@ -508,7 +563,7 @@ def define_common_support(
     return common_support
 
 
-def make_histogram(
+def _make_histogram(
     dict_,
     data,
     bins=25,
@@ -590,7 +645,7 @@ def make_histogram(
     return hist, treated, untreated
 
 
-def find_limits(hist, treated, untreated):
+def _find_limits(hist, treated, untreated):
     """
     Find the upper and lower limit of the common support.
 
@@ -676,7 +731,7 @@ def find_limits(hist, treated, untreated):
     return lower_limit, upper_limit
 
 
-def construct_Xp(X, prop_score):
+def _construct_Xp(X, prop_score):
     """
     This function generates the X * *prop_score* regressors:
 
@@ -708,7 +763,7 @@ def construct_Xp(X, prop_score):
     return Xp
 
 
-def generate_residuals(exog, endog, bandwidth=0.05):
+def _generate_residuals(exog, endog, bandwidth=0.05):
     """
     This function runs a series of loess regressions (degree=1)
     for a set of response variables (*endog*) on a single explanatory
@@ -771,58 +826,3 @@ def generate_residuals(exog, endog, bandwidth=0.05):
             res[:, col] = y_fit.outputs.fitted_residuals
 
     return res
-
-
-def double_residual_reg(X, Y, prop_score, rbandwidth=0.05, show_output=False):
-    """
-    This function performs a Double Residual Regression (DDR)
-    of X, Xp, and Y on *prop_score*.
-
-    A local linear kernel regression (polynomial of degree 1)
-    is implemented to generate the residuals.
-
-    Parameters
-    ----------
-    X: pandas.DataFrame
-        DataFrame of observables (i.e. covariates).
-    Y: pandas.DataFrame
-        Individuals' wage data.
-    prop_score: pandas.Series
-        Propensity score (range between [0, 1]). Values closer to 1
-        denote a higher inclination to treatment.
-        Sorted in ascending order.
-
-    Returns
-    -------
-    b0: np.ndarray
-        Beta0 coefficient of the DDR (no-intercept OLS regression
-        of the residuals of X, Xp, and Y on *prop_score*).
-    b1: np.ndarray
-        Beta1 coefficient of the DDR (no-intercept OLS regression
-        of the residuals of X, Xp, and Y on *prop_score*).
-    """
-    # 0) Construct Xp := X * P(z)
-    Xp = construct_Xp(X, prop_score)
-
-    # 1) Fit a separate local linear regression of X, Xp, and Y on prop_score,
-    # which yields residuals e_X, e_Xp, and e_Y.
-    res_X = generate_residuals(prop_score, X, rbandwidth)
-    res_Xp = generate_residuals(prop_score, Xp, rbandwidth)
-    res_Y = generate_residuals(prop_score, Y, rbandwidth)
-
-    # Append res_X and res_Xp.
-    col_names = list(X) + list(Xp)
-    res_X_Xp = pd.DataFrame(np.append(res_X, res_Xp, axis=1), columns=col_names)
-
-    # 2) Run a single OLS regression of e_Y on e_X and e_Xp without intercept:
-    # e_Y = e_X * beta_0 + e_Xp * (beta_1 - beta_0),
-    # to estimate the values of beta_0 and (beta_1 - beta_0).
-    model = sm.OLS(res_Y, res_X_Xp)
-    results = model.fit()
-    b0 = results.params[: len(list(X))]
-    b1_b0 = results.params[len((list(X))) :]
-
-    if show_output is True:
-        print(results.summary())
-
-    return np.array(b0), np.array(b1_b0)

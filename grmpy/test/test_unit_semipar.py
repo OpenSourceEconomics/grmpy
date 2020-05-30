@@ -6,11 +6,11 @@ import pandas as pd
 import pytest
 
 from grmpy.estimate.estimate_semipar import (
-    construct_Xp,
-    define_common_support,
+    _construct_Xp,
+    _define_common_support,
+    _generate_residuals,
     double_residual_reg,
     estimate_treatment_propensity,
-    generate_residuals,
     process_primary_inputs,
     process_secondary_inputs,
     trim_support,
@@ -227,7 +227,7 @@ def test_common_support():
     prop_score = pd.Series(np.ones(len(data))) * 0.5
     data.loc[:, "prop_score"] = prop_score
 
-    estimated_support = define_common_support(dict_, data)
+    estimated_support = _define_common_support(dict_, data)
     expected_support = [0.5, 0.5]
 
     np.testing.assert_equal(estimated_support, expected_support)
@@ -242,7 +242,7 @@ def test_loess_residuals(loess_example_data):
 
     exog, endog = loess_example_data
 
-    res = generate_residuals(exog, endog, 0.5)
+    res = _generate_residuals(exog, endog, 0.5)
 
     res_expected = np.array(
         [
@@ -283,7 +283,7 @@ def test_loess_residuals2(loess_example_data):
     exog, endog = loess_example_data
     y2 = pd.DataFrame(np.array([endog, endog * 2]).T)
 
-    res2 = generate_residuals(exog, y2, 0.5)
+    res2 = _generate_residuals(exog, y2, 0.5)
 
     res_expected2 = np.array(
         [
@@ -346,7 +346,7 @@ def test_constructXp(loess_example_data):
 
     prop_score = pd.Series(np.linspace(0.2, 0.8, 21))
 
-    Xp = construct_Xp(X_data, prop_score)
+    Xp = _construct_Xp(X_data, prop_score)
 
     assert isinstance(Xp, pd.DataFrame) is True
     np.testing.assert_equal(X_data.shape, Xp.shape)
