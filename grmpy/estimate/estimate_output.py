@@ -14,7 +14,6 @@ from grmpy.simulate.simulate_auxiliary import (
 def print_logfile(init_dict, rslt):
     """The function writes the log file for the estimation process."""
     # Adjust output
-
     if "output_file" in init_dict["ESTIMATION"].keys():
         file_name = init_dict["ESTIMATION"]["output_file"]
     else:
@@ -85,10 +84,10 @@ def print_logfile(init_dict, rslt):
         else:
 
             file_input += write_identifier_section(rslt)
-        if rslt["ESTIMATION"]["print_output"] == "1":
-            print(file_input)
-        with open(file_name, "w") as file_:
-            file_.write(file_input)
+    if rslt["ESTIMATION"]["print_output"] is True:
+        print(file_input)
+    with open(file_name, "w") as file_:
+        file_.write(file_input)
 
 
 def write_identifier_section(rslt):
