@@ -33,9 +33,7 @@ def generate_random_dict(constr=None):
     if "OPTIMIZER" in constr.keys():
         optimizer = constr["OPTIMIZER"]
     else:
-        optimizer = str(
-            np.random.choice(a=["SCIPY-BFGS", "SCIPY-POWELL"], p=[0.5, 0.5])
-        )
+        optimizer = str(np.random.choice(a=["BFGS", "POWELL"], p=[0.5, 0.5]))
 
     if "SAME_SIZE" in constr.keys():
         same_size = constr["SAME_SIZE"]

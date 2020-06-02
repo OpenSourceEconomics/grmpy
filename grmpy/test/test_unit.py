@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from statsmodels.tools.numdiff import approx_fprime_cs
 
 from grmpy.check.auxiliary import read_data
 from grmpy.estimate.estimate import fit
@@ -12,6 +13,9 @@ from grmpy.estimate.estimate_par import (
     calculate_p_values,
     calculate_se,
     check_rslt_parameters,
+    gradient_hessian,
+    log_likelihood,
+    minimizing_interface,
     process_data,
     process_output,
     start_value_adjustment,
@@ -233,12 +237,11 @@ def test5():
 
 
 def test6():
-    """The test ensures that the cholesky decomposition and re-composition works
-    appropriately. For this purpose the test creates a positive smi definite matrix from
-    a Wishart distribution, decomposes this matrix with, reconstruct it and compares the
-    matrix with the one that was specified as the input for the decomposition process.
+    """The test ensures that the transformation of the optimization value vector works
+    appropriately. For this purpose the test creates some random values converts them,
+    transformes the values back and compared the resulting values to the initial values.
     """
-    for _ in range(1000):
+    for _ in range(100):
 
         cov = np.random.uniform(0, 1, 2)
         var = np.random.uniform(1, 2, 3)
@@ -414,7 +417,7 @@ def test13():
         np.testing.assert_equal(rslt["crit"], opt_rslt["fun"])
         np.testing.assert_equal(rslt["warning"][0], "---")
 
-        x_linalign = [0.0000000000000001] * len(x0)
+        x_linalign = [0] * len(x0)
         num_treated = init_dict["AUX"]["num_covars_treated"]
         num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
         se, hess_inv, conf_interval, p_values, t_values, _ = calculate_se(
@@ -425,5 +428,41 @@ def test13():
         np.testing.assert_equal(conf_interval, [[np.nan, np.nan]] * len(x0))
         np.testing.assert_equal(t_values, [np.nan] * len(x0))
         np.testing.assert_equal(p_values, [np.nan] * len(x0))
+
+
+def test14():
+    """This test checks wether our gradient functions work properly."""
+    constr = dict()
+    constr["AGENTS"], constr["DETERMINISTIC"] = 10000, False
+
+    for _ in range(10):
+
+        init_dict = generate_random_dict(constr)
+        df = simulate("test.grmpy.yml")
+        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        num_treated = X1.shape[1]
+        num_untreated = X1.shape[1] + X0.shape[1]
+        x0 = start_values(init_dict, df, "auto")
+        x0_back = backward_transformation(x0)
+        llh_gradient_approx = approx_fprime_cs(
+            x0_back,
+            log_likelihood,
+            args=(X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, False),
+        )
+        llh_gradient = gradient_hessian(x0_back, X1, X0, Z1, Z0, Y1, Y0)
+        min_inter_approx = approx_fprime_cs(
+            x0,
+            minimizing_interface,
+            args=(X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, False),
+        )
+        _, min_inter_gradient = log_likelihood(
+            x0_back, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, True
+        )
+        np.testing.assert_array_almost_equal(
+            min_inter_approx, min_inter_gradient, decimal=5
+        )
+        np.testing.assert_array_almost_equal(
+            llh_gradient_approx, llh_gradient, decimal=5
+        )
 
     cleanup()

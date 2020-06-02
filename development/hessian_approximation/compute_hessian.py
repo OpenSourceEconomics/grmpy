@@ -1,7 +1,6 @@
 """This module provides the analytical solution for computing the hessian matrix of our
 loglikelihood function
 """
-
 import numpy as np
 from scipy.stats import norm
 

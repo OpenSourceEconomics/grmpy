@@ -8,14 +8,14 @@ import pytest
 
 from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.check import (
-    check_par_init_file,
     check_par_init_dict,
+    check_par_init_file,
     check_start_values,
 )
 from grmpy.check.custom_exceptions import UserError
 from grmpy.estimate.estimate import fit
-from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
 from grmpy.estimate.estimate_output import simulate_estimation
+from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
 from grmpy.grmpy_config import TEST_RESOURCES_DIR
 from grmpy.read.read import read
 from grmpy.simulate.simulate import simulate
@@ -63,7 +63,7 @@ def test3():
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENTS"], constr["START"] = False, 1000, "init"
-        constr["OPTIMIZER"], constr["SAME_SIZE"] = "SCIPY-BFGS", True
+        constr["OPTIMIZER"], constr["SAME_SIZE"] = "BFGS", True
         generate_random_dict(constr)
         df1 = simulate("test.grmpy.yml")
         rslt = fit("test.grmpy.yml")
@@ -89,7 +89,7 @@ def test4():
             10000,
             "init",
         )
-        constr["optimizer"] = "SCIPY-Powell"
+        constr["optimizer"] = "Powell"
         generate_random_dict(constr)
 
         simulate("test.grmpy.yml")

@@ -115,7 +115,8 @@ def start_values(init_dict, data_frame, option):
     elif option in ["auto", "random"]:
 
         try:
-
+            if data_frame[indicator].shape[0] == sum(data_frame[indicator]):
+                raise PerfectSeparationError
             # Estimate beta1 and beta0:
             beta = []
             sd_ = []
@@ -452,7 +453,7 @@ def process_output(init_dict, dict_, x0, flag):
         x0 = init_dict["AUX"]["starting_values"]
         crit = init_dict["AUX"]["criteria"]
         warning = (
-            "Tho optimization process is not able to provide finite values. This is "
+            "The optimization process is not able to provide finite values. This is "
             "probably due to perfect separation."
         )
     else:
@@ -629,13 +630,13 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
         + nu0 / sd0
     )
 
-    grad_sd1 = sd1 * (
+    grad_sd1 = (
         +1 / sd1
         - (norm.pdf(lambda1) / norm.cdf(lambda1))
         * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
         - nu1 ** 2 / sd1
     )
-    grad_sd0 = sd0 * (
+    grad_sd0 = (
         +1 / sd0
         + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
         * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))

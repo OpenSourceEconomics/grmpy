@@ -6,7 +6,7 @@ SIMULATION:
 ESTIMATION:
     agents: 602
     file: DE623210.grmpy.txt
-    optimizer: SCIPY-BFGS
+    optimizer: BFGS
     start: auto
     maxiter: 1185
     dependent: Y
