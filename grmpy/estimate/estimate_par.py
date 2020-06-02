@@ -47,9 +47,8 @@ def par_fit(dict_):
             args=(dict_, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, rslt_dict),
             method=method,
             options=opts,
-            jac=True
+            jac=True,
         )
-        print(opt_rslt)
         rslt = adjust_output(
             opt_rslt, dict_, opt_rslt["x"], X1, X0, Z1, Z0, Y1, Y0, rslt_dict
         )
@@ -101,6 +100,14 @@ def start_values(init_dict, data_frame, option):
     if option == "init":
         # Set coefficients equal the true init file values
         x0 = init_dict["AUX"]["init_values"][:-6]
+
+    if option == "random":
+        num_cov = (
+            len(init_dict["TREATED"]["order"])
+            + len(init_dict["UNTREATED"]["order"])
+            + len(init_dict["CHOICE"]["order"])
+        )
+        x0 = np.random.normal(0, 1, size=num_cov)
     elif option == "auto":
 
         try:
@@ -119,7 +126,11 @@ def start_values(init_dict, data_frame, option):
 
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
-                sd_ += [np.sqrt(ols_results.scale), 0.0]
+                # TODO: how to handle start values for rho, setting rho=0.0 leads to crazy values for the replication
+                rho = np.random.uniform(
+                    -np.sqrt(ols_results.scale), np.sqrt(ols_results.scale), 1
+                ) / np.sqrt(ols_results.scale)
+                sd_ += [np.sqrt(ols_results.scale), rho[0]]
             # Estimate gamma via Probit
             Z = data_frame[init_dict["CHOICE"]["order"]]
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
@@ -144,11 +155,10 @@ def start_values(init_dict, data_frame, option):
 
     x0 = start_value_adjustment(x0, init_dict, option)
     x0 = np.array(x0)
-
     return x0
 
 
-def start_value_adjustment(x, init_dict, option):
+def start_value_adjustment(x, init_dict, option, seed=None):
     """This function transforms the rho values so that they are always between zero and 1.
     Additionally it transforms the sigma values so that all values are always positive.
     """
@@ -165,6 +175,12 @@ def start_value_adjustment(x, init_dict, option):
             rho0,
         ]
         x = np.concatenate((x, dist))
+
+    elif option == "random":
+        sds = np.random.uniform(0, 1, 2)
+        rho1 = np.random.uniform(-sds[0], sds[0], 1) / sds[0]
+        rho0 = np.random.uniform(-sds[1], sds[1], 1) / sds[1]
+        x = np.concatenate((x, [sds[0], rho1[0], sds[1], rho0[0]]))
 
     # transform the distributional characteristics s.t. r = log((1-rho)/(1+rho))/2
     x[-4:] = [
@@ -474,7 +490,6 @@ def calculate_se(x, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreate
     """
     num_ind = Y1.shape[0] + Y0.shape[0]
     x0 = x.copy()
-    print(x0)
     warning = None
 
     if init_dict["ESTIMATION"]["maxiter"] == 0:
@@ -552,13 +567,13 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         + nu0 / sd0
     )
 
-    grad_sd1 = (
+    grad_sd1 = sd1 * (
         +1 / sd1
         - (norm.pdf(lambda1) / norm.cdf(lambda1))
         * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
         - nu1 ** 2 / sd1
     )
-    grad_sd0 = (
+    grad_sd0 = sd0 * (
         +1 / sd0
         + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
         * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
@@ -567,12 +582,12 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
     grad_rho1v = (
         -(norm.pdf(lambda1) / norm.cdf(lambda1))
         * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
-        / (1 - rho1v ** 2) ** (3 / 2)
+        / (1 - rho1v ** 2) ** (1 / 2)
     )
     grad_rho0v = (
         (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
         * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
-        / (1 - rho0v ** 2) ** (3 / 2)
+        / (1 - rho0v ** 2) ** (1 / 2)
     )
 
     grad_gamma = np.sum(
@@ -595,7 +610,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
     grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0) / n)
     grad = np.append(grad, -grad_gamma / n)
     grad = np.append(grad, sum(grad_sd1) / n)
-    grad = np.append(grad, (sum(grad_rho1v)/10) / n)
+    grad = np.append(grad, sum(grad_rho1v) / n)
     grad = np.append(grad, sum(grad_sd0) / n)
-    grad = np.append(grad, (sum(grad_rho0v)/10) / n)
+    grad = np.append(grad, sum(grad_rho0v) / n)
     return grad
