@@ -130,11 +130,14 @@ def start_values(init_dict, data_frame, option):
                 X = data_frame[order][i == data_frame[indicator]]
                 ols_results = sm.OLS(Y, X).fit()
                 beta += [ols_results.params]
-                if option == "auto":
+                if option == "random":
                     rho = np.random.uniform(
                         -np.sqrt(ols_results.scale), np.sqrt(ols_results.scale), 1
                     ) / np.sqrt(ols_results.scale)
                     sd_ += [np.sqrt(ols_results.scale), rho[0]]
+                elif option == "auto":
+                    sd_ += [np.sqrt(ols_results.scale), 0]
+
             # Estimate gamma via Probit
             Z = data_frame[init_dict["CHOICE"]["order"]]
             probitRslt = sm.Probit(data_frame[indicator], Z).fit(disp=0)
