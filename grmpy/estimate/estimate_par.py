@@ -191,12 +191,6 @@ def start_value_adjustment(x, init_dict, option):
         ]
         x = np.concatenate((x, dist))
 
-    elif option == "random":
-        sds = np.random.uniform(0, 0.5, 2)
-        rho1 = np.random.uniform(-sds[0], sds[0], 1) / sds[0]
-        rho0 = np.random.uniform(-sds[1], sds[1], 1) / sds[1]
-        x = np.concatenate((x, [sds[0], rho1[0], sds[1], rho0[0]]))
-
     # transform the distributional characteristics s.t. r = log((1-rho)/(1+rho))/2
     x[-4:] = [
         np.log(x[-4]),
