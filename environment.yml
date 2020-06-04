@@ -1,7 +1,7 @@
 name: grmpy
 
 dependencies:
-  - python=3.6
+  - python=3.7
   - numpy
   - pandas
   - statsmodels
@@ -25,4 +25,4 @@ dependencies:
     - pytest-cov
     - jupyterlab
     - scikit-misc
-    - sklearn
+    - scikit-learn

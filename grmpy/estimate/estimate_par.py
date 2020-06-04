@@ -1,5 +1,9 @@
-"""The module provides auxiliary functions for the estimation process"""
+"""
+The module provides auxiliary functions for the estimation process.
+"""
+
 import copy
+from random import randint
 
 import numpy as np
 import statsmodels.api as sm
@@ -9,17 +13,18 @@ from scipy.stats import norm, t
 from statsmodels.tools.numdiff import approx_fprime_cs
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 
-from grmpy.check.auxiliary import read_data
 from grmpy.check.check import UserError, check_start_values
 from grmpy.estimate.estimate_output import print_logfile, write_comparison
 
 
-def par_fit(dict_):
+def par_fit(dict_, data):
     """The function estimates the coefficients of the simulated data set."""
-    np.random.seed(dict_["SIMULATION"]["seed"])
-
-    # Distribute initialization information.
-    data = read_data(dict_["ESTIMATION"]["file"])
+    # Set seed
+    if "SIMULATION" not in dict_ or "seed" not in dict_["SIMULATION"]:
+        seed_ = randint(0, 9999)
+        np.random.seed(seed_)
+    else:
+        np.random.seed(dict_["SIMULATION"]["seed"])
 
     #
     _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
@@ -66,13 +71,16 @@ def par_fit(dict_):
     # Print Output files
     print_logfile(dict_, rslt)
 
-    if "comparison" in dict_["ESTIMATION"].keys():
-        if dict_["ESTIMATION"]["comparison"] == 0:
-            pass
+    if "SIMULATION" in dict_:
+        if "comparison" in dict_["ESTIMATION"].keys():
+            if dict_["ESTIMATION"]["comparison"] == 0:
+                pass
+            else:
+                write_comparison(data, rslt)
         else:
             write_comparison(data, rslt)
     else:
-        write_comparison(data, rslt)
+        rslt.update({"ESTIMATION": {"seed": seed_}})
 
     return rslt
 

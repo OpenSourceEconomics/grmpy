@@ -8,8 +8,8 @@ import pytest
 
 from grmpy.check.auxiliary import check_special_conf
 from grmpy.check.check import (
-    check_par_init_dict,
-    check_par_init_file,
+    check_sim_distribution,
+    check_sim_init_dict,
     check_start_values,
 )
 from grmpy.check.custom_exceptions import UserError
@@ -155,7 +155,7 @@ def test7():
         constr["AGENTS"], constr["DETERMINISTIC"] = 1000, True
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")
-        pytest.raises(UserError, check_par_init_file, dict_)
+        pytest.raises(UserError, check_sim_distribution, dict_)
         pytest.raises(UserError, fit, "test.grmpy.yml")
 
         generate_random_dict(constr)
@@ -167,14 +167,14 @@ def test7():
 
         dict_["CHOICE"]["order"][1] = "X1"
         print_dict(dict_)
-        pytest.raises(UserError, check_par_init_dict, dict_)
+        pytest.raises(UserError, check_sim_init_dict, dict_)
         pytest.raises(UserError, simulate, "test.grmpy.yml")
         pytest.raises(UserError, fit, "test.grmpy.yml")
 
         constr["AGENTS"] = 0
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")
-        pytest.raises(UserError, check_par_init_dict, dict_)
+        pytest.raises(UserError, check_sim_init_dict, dict_)
         pytest.raises(UserError, simulate, "test.grmpy.yml")
 
         length = np.random.randint(2, 100)
@@ -184,33 +184,33 @@ def test7():
         pytest.raises(UserError, check_start_values, array)
 
     dict_ = read(fname_possd)
-    pytest.raises(UserError, check_par_init_dict, dict_)
+    pytest.raises(UserError, check_sim_init_dict, dict_)
     pytest.raises(UserError, simulate, fname_possd)
 
     dict_ = read(fname_zero)
-    pytest.raises(UserError, check_par_init_file, dict_)
+    pytest.raises(UserError, check_sim_distribution, dict_)
     pytest.raises(UserError, fit, fname_zero)
 
     dict_ = read(fname_vzero)
-    pytest.raises(UserError, check_par_init_file, dict_)
+    pytest.raises(UserError, check_sim_distribution, dict_)
     pytest.raises(UserError, fit, fname_vzero)
 
     dict_ = read(fname_noparams)
-    pytest.raises(UserError, check_par_init_file, dict_)
+    pytest.raises(UserError, check_sim_distribution, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
     dict_ = read(fname_falsespec1)
-    pytest.raises(UserError, check_par_init_dict, dict_)
+    pytest.raises(UserError, check_sim_init_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
     dict_ = read(fname_falsespec2)
-    pytest.raises(UserError, check_par_init_dict, dict_)
+    pytest.raises(UserError, check_sim_init_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
     dict_ = read(fname_binary)
     status, _ = check_special_conf(dict_)
     np.testing.assert_equal(status, True)
-    pytest.raises(UserError, check_par_init_dict, dict_)
+    pytest.raises(UserError, check_sim_init_dict, dict_)
     pytest.raises(UserError, fit, fname_noparams)
 
 

@@ -29,11 +29,15 @@ def simulate_covariates(init_dict):
     X[labels[0]] = 1.0
 
     # Include binary variables
-    for variable in init_dict["VARTYPES"]:
-        if isinstance(init_dict["VARTYPES"][variable], list):
-            X[variable] = np.random.binomial(
-                1, init_dict["VARTYPES"][variable][1], size=num_agents
-            )
+    if "VARTYPES" in init_dict:
+        for variable in init_dict["VARTYPES"]:
+            if isinstance(init_dict["VARTYPES"][variable], list):
+                X[variable] = np.random.binomial(
+                    1, init_dict["VARTYPES"][variable][1], size=num_agents
+                )
+    else:
+        pass
+
     return X
 
 

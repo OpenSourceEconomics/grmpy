@@ -6,6 +6,8 @@ import pytest
 from grmpy.simulate.simulate import simulate
 from grmpy.grmpy_config import PACKAGE_DIR
 from grmpy.estimate.estimate import fit
+from grmpy.plot.plot import plot_mte
+
 import grmpy.grmpy_config
 
 

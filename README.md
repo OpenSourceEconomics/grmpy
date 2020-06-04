@@ -16,6 +16,44 @@ $ git clone https://github.com/OpenSourceEconomics/grmpy.git
 $ pip install -e .
 ```
 
+---
+## Quick Start
+> Initialization File
+
+```grmpy``` relies on an ```"initialization.yml"``` file (referred to as ``ìnit_file`` below)
+to perform both simulation and estimation.
+For example, check out these two ``init_files`` for
+[simulation and parametric estimation](https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial.grmpy.yml) as well as 
+a [semiparametric estimation](https://github.com/OpenSourceEconomics/grmpy/blob/master/promotion/grmpy_tutorial_notebook/files/tutorial_semipar.yml) setup.
+
+Below you'll find some example code you can copy to jump-start your project.  
+
+> Simulation
+```
+import grmpy
+
+# Specify the initilaization file you want to use, e.g.:
+init_file = "ProjectFiles/simulation.yml"
+
+data = grmpy.simulate(init_file)
+```
+> Estimation
+
+```
+import grmpy
+
+# Specify the initilaization file you want to use, e.g.:
+init_file = "ProjectFiles/estimation.yml"
+
+# Parametric Normal Model
+rslt = grmpy.fit(init_file, semipar=False)
+grmpy.plot_mte(rslt, init_file, color="blue", semipar=False, save_plot="MTE_par.png")
+
+# Local Instrumental Variables (Semiparametric Model)
+rslt = grmpy.fit(init_file, semipar=True)
+grmpy.plot_mte(rslt, init_file, color="orange", semipar=True, nboot= 250, save_plot="MTE_semipar.png")
+```
+
 Please visit our [online documentation](http://grmpy.readthedocs.io/) for tutorials and more.
 
 -----
