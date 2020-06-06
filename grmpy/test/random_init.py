@@ -35,6 +35,11 @@ def generate_random_dict(constr=None):
     else:
         state_diff = np.random.random_sample() < 0.5
 
+    if "BINARY" in constr.keys():
+        allow_binary = constr["BINARY"]
+    else:
+        allow_binary = True
+
     if "OPTIMIZER" in constr.keys():
         optimizer = constr["OPTIMIZER"]
     else:
@@ -117,7 +122,8 @@ def generate_random_dict(constr=None):
     ):
         init_dict["VARTYPES"][variable] = "nonbinary"
 
-    init_dict = types(init_dict)
+    if allow_binary is True:
+        init_dict = types(init_dict)
 
     # Simulation parameters
     init_dict["SIMULATION"] = {}

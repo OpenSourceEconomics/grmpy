@@ -72,7 +72,8 @@ def test3():
         df1 = simulate("test.grmpy.yml")
         rslt = fit("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
-        _, df2 = simulate_estimation(rslt)
+        seed_ = init_dict["SIMULATION"]["seed"]
+        _, df2 = simulate_estimation(rslt, seed_)
         D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df1, init_dict)
         start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
 
@@ -121,7 +122,12 @@ def test6():
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 15000
-        constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"] = "init", True, "BFGS"
+        constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"], constr["Binary"], = (
+            "init",
+            True,
+            "BFGS",
+            False,
+        )
         dict_ = generate_random_dict(constr)
         dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0
         print_dict(dict_)

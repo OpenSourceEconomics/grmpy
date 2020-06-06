@@ -153,14 +153,14 @@ def write_identifier_section(rslt):
     return file_
 
 
-def write_comparison(df1, rslt):
+def write_comparison(df1, rslt, seed_):
     """The function writes the info file including the descriptives of the original and the
     estimated sample.
     """
 
     file_name = "comparison.grmpy.info"
 
-    df3, df2 = simulate_estimation(rslt)
+    df3, df2 = simulate_estimation(rslt, seed_)
     file_input = ""
     # First we note some basic information ab out the dataset.
     header = "\n\n Number of Observations \n\n"
@@ -237,11 +237,11 @@ def write_comparison(df1, rslt):
         file_.write(file_input)
 
 
-def simulate_estimation(rslt):
+def simulate_estimation(rslt, seed_):
     """The function simulates a new sample based on the estimated coefficients."""
 
     # Distribute information
-    seed = rslt["SIMULATION"]["seed"]
+    seed = seed_
     # Determine parametrization and read in /simulate observables
     start, finish = process_results(rslt)
     data_frames = []

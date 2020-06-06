@@ -82,7 +82,7 @@ def par_fit(dict_, data):
     if "SIMULATION" in dict_.keys():
         if comparison:
             rslt["SIMULATION"] = {"seed": seed_, "agents": Y1.shape[0] + Y0.shape[0]}
-            write_comparison(data, rslt)
+            write_comparison(data, rslt, seed_)
     else:
         rslt.update({"ESTIMATION": {"seed": seed_}})
 
