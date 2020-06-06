@@ -47,10 +47,10 @@ def test2():
         print_dict(dict_transformation(dict_))
         df = simulate("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
-        start = start_values(init_dict, df, "init")
-        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
 
-        criteria_ = calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)
+        criteria_ = calculate_criteria(start, X1, X0, Z1, Z0, Y1, Y0)
         np.testing.assert_almost_equal(np.sum(df.sum()), stat)
         np.testing.assert_array_almost_equal(criteria, criteria_)
 
@@ -63,18 +63,23 @@ def test3():
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENTS"], constr["START"] = False, 1000, "init"
-        constr["OPTIMIZER"], constr["SAME_SIZE"] = "BFGS", True
+        constr["OPTIMIZER"], constr["SAME_SIZE"], constr["COMPARISON"] = (
+            "BFGS",
+            True,
+            True,
+        )
         generate_random_dict(constr)
         df1 = simulate("test.grmpy.yml")
         rslt = fit("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
         _, df2 = simulate_estimation(rslt)
-        start = start_values(init_dict, df1, "init")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df1, init_dict)
+        start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
 
         criteria = []
         for data in [df1, df2]:
-            _, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, init_dict)
-            criteria += [calculate_criteria(init_dict, X1, X0, Z1, Z0, Y1, Y0, start)]
+            D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, init_dict)
+            criteria += [calculate_criteria(start, X1, X0, Z1, Z0, Y1, Y0)]
         np.testing.assert_allclose(criteria[1], criteria[0], rtol=0.1)
 
 
@@ -116,15 +121,15 @@ def test6():
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 15000
-        constr["START"], constr["SAME_SIZE"] = "init", True
+        constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"] = "init", True, "BFGS"
         dict_ = generate_random_dict(constr)
         dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0
         print_dict(dict_)
         simulate("test.grmpy.yml")
         fit("test.grmpy.yml")
         dict_ = read_desc("comparison.grmpy.info")
+        print(dict_)
         for section in ["ALL", "TREATED", "UNTREATED"]:
-            np.testing.assert_equal(len(set(dict_[section]["Number"])), 1)
             np.testing.assert_almost_equal(
                 dict_[section]["Observed Sample"],
                 dict_[section]["Simulated Sample (finish)"],
@@ -221,7 +226,7 @@ def test8():
     constr = dict()
     constr["DETERMINISTIC"], constr["AGENTS"] = False, 1000
     generate_random_dict(constr)
-    df = simulate("test.grmpy.yml")
+    simulate("test.grmpy.yml")
     dict_ = read("test.grmpy.yml")
     a = list()
     dict_["ESTIMATION"]["file"] = "data.grmpy.yml"
@@ -230,7 +235,6 @@ def test8():
     pytest.raises(UserError, fit, "false_data.grmpy.yml")
     pytest.raises(UserError, simulate, "tast.grmpy.yml")
     pytest.raises(UserError, read, "tast.grmpy.yml")
-    pytest.raises(UserError, start_values, a, df, "init")
     pytest.raises(UserError, generate_random_dict, a)
 
 

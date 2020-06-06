@@ -10,7 +10,6 @@ from grmpy.estimate.estimate_par import (
     adjust_output,
     backward_transformation,
     calculate_criteria,
-    calculate_p_values,
     calculate_se,
     check_rslt_parameters,
     gradient_hessian,
@@ -63,8 +62,8 @@ def test1():
 
 
 def test2():
-    """The second test  checks whether the relationships hold if the coefficients are zero in
-    different setups.
+    """The second test  checks whether the relationships hold if the coefficients are
+    zero in different setups.
     """
     for _ in range(10):
         for case in ["ALL", "TREATED", "UNTREATED", "CHOICE", "TREATED & UNTREATED"]:
@@ -143,7 +142,8 @@ def test3():
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")
         df = simulate("test.grmpy.yml")
-        start = start_values(dict_, df, "auto")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        start = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         np.testing.assert_equal(dict_["AUX"]["init_values"][:(-6)], start[:(-4)])
 
 
@@ -242,15 +242,14 @@ def test6():
     transformes the values back and compared the resulting values to the initial values.
     """
     for _ in range(100):
-
         cov = np.random.uniform(0, 1, 2)
         var = np.random.uniform(1, 2, 3)
-        aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
-        dict_ = {"DIST": {"params": aux}}
         before = [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
-        x0 = start_value_adjustment([], dict_, "init")
-        after = backward_transformation(x0)
-        np.testing.assert_array_almost_equal(before, after, decimal=6)
+        transformed = start_value_adjustment(
+            [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
+        )
+        backward_transformed = backward_transformation(transformed)
+        np.testing.assert_array_almost_equal(before, backward_transformed, decimal=6)
 
 
 def test7():
@@ -293,8 +292,8 @@ def test9():
         for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
             true += list(dict_[key_]["params"])
         df = simulate("test.grmpy.yml")
-        x0 = start_values(dict_, df, "init")[:-4]
-
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        x0 = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")[:-4]
         np.testing.assert_array_equal(true, x0)
 
 
@@ -306,11 +305,12 @@ def test10():
     for _ in range(10):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENTS"] = False, 1000
-        constr["MAXITER"], constr["START"] = 0, "init"
+        constr["MAXITER"], constr["START"], constr["OPTIMIZER"] = 0, "init", "BFGS"
         generate_random_dict(constr)
-        init_dict = read("test.grmpy.yml")
+        dict_ = read("test.grmpy.yml")
         df = simulate("test.grmpy.yml")
-        start = start_values(init_dict, df, "init")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        start = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         start = backward_transformation(start)
 
         rslt = fit("test.grmpy.yml")
@@ -367,11 +367,10 @@ def test13():
         generate_random_dict({"DETERMINISTIC": False})
         df = simulate("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
-        start = start_values(init_dict, dict, "init")
-        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
-        init_dict["AUX"]["criteria"] = calculate_criteria(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, start
-        )
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+
+        start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
+        init_dict["AUX"]["criteria"] = calculate_criteria(start, X1, X0, Z1, Z0, Y1, Y0)
         init_dict["AUX"]["starting_values"] = backward_transformation(start)
 
         aux_dict1 = {"crit": {"1": 10}}
@@ -379,11 +378,6 @@ def test13():
         x0, se = [np.nan] * len(start), [np.nan] * len(start)
         index = np.random.randint(0, len(x0) - 1)
         x0[index], se[index] = np.nan, np.nan
-
-        p_values, t_values = calculate_p_values(se, x0, df.shape[0])
-        np.testing.assert_array_equal(
-            [p_values[index], t_values[index]], [np.nan, np.nan]
-        )
 
         x_processed, crit_processed, _ = process_output(
             init_dict, aux_dict1, x0, "notfinite"
@@ -394,34 +388,40 @@ def test13():
             [init_dict["AUX"]["starting_values"], init_dict["AUX"]["criteria"]],
         )
 
-        check1, flag1 = check_rslt_parameters(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, aux_dict1, start
-        )
-        check2, flag2 = check_rslt_parameters(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, aux_dict1, x0
-        )
+        check1, flag1 = check_rslt_parameters(start, X1, X0, Z1, Z0, Y1, Y0, aux_dict1)
+        check2, flag2 = check_rslt_parameters(x0, X1, X0, Z1, Z0, Y1, Y0, aux_dict1)
 
         np.testing.assert_equal([check1, flag1], [False, None])
         np.testing.assert_equal([check2, flag2], [True, "notfinite"])
 
         opt_rslt = {
+            "x": start,
             "fun": 1.0,
             "success": 1,
             "status": 1,
             "message": "msg",
-            "nfev": 10000,
+            "nit": 10000,
         }
         rslt = adjust_output(
-            opt_rslt, init_dict, start, X1, X0, Z1, Z0, Y1, Y0, dict_=aux_dict1
+            opt_rslt,
+            init_dict,
+            start,
+            "BFGS",
+            "init",
+            X1,
+            X0,
+            Z1,
+            Z0,
+            Y1,
+            Y0,
+            aux_dict1,
         )
         np.testing.assert_equal(rslt["crit"], opt_rslt["fun"])
         np.testing.assert_equal(rslt["warning"][0], "---")
 
         x_linalign = [0] * len(x0)
-        num_treated = init_dict["AUX"]["num_covars_treated"]
-        num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
         se, hess_inv, conf_interval, p_values, t_values, _ = calculate_se(
-            x_linalign, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
+            x_linalign, 1, X1, X0, Z1, Z0, Y1, Y0
         )
         np.testing.assert_equal(se, [np.nan] * len(x0))
         np.testing.assert_equal(hess_inv, np.full((len(x0), len(x0)), np.nan))
@@ -437,12 +437,15 @@ def test14():
 
     for _ in range(10):
 
-        init_dict = generate_random_dict(constr)
+        generate_random_dict(constr)
+        init_dict = read("test.grmpy.yml")
+        print(init_dict["AUX"])
         df = simulate("test.grmpy.yml")
-        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
         num_treated = X1.shape[1]
         num_untreated = X1.shape[1] + X0.shape[1]
-        x0 = start_values(init_dict, df, "auto")
+
+        x0 = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         x0_back = backward_transformation(x0)
         llh_gradient_approx = approx_fprime_cs(
             x0_back,

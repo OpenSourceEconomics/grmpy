@@ -1,18 +1,16 @@
 """The module provides the simulation process."""
 import numpy as np
 
-from grmpy.simulate.simulate_auxiliary import simulate_unobservables
-from grmpy.simulate.simulate_auxiliary import simulate_covariates
-from grmpy.estimate.estimate_par import calculate_criteria
-
-from grmpy.simulate.simulate_auxiliary import simulate_outcomes
-from grmpy.simulate.simulate_auxiliary import write_output
-from grmpy.simulate.simulate_auxiliary import print_info
-
-from grmpy.estimate.estimate_par import start_values
-from grmpy.estimate.estimate_par import process_data
 from grmpy.check.check import check_sim_init_dict
+from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
 from grmpy.read.read import read_simulation
+from grmpy.simulate.simulate_auxiliary import (
+    print_info,
+    simulate_covariates,
+    simulate_outcomes,
+    simulate_unobservables,
+    write_output,
+)
 
 
 def simulate(init_file):
@@ -42,10 +40,10 @@ def simulate(init_file):
 
     # Calculate Criteria function value
     if not init_dict["DETERMINISTIC"]:
-        x0 = start_values(init_dict, df, "init")
-        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        x0 = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         init_dict["AUX"]["criteria_value"] = calculate_criteria(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, x0
+            x0, X1, X0, Z1, Z0, Y1, Y0
         )
 
     # Print Log file

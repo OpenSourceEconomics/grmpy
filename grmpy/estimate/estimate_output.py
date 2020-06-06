@@ -11,7 +11,7 @@ from grmpy.simulate.simulate_auxiliary import (
 )
 
 
-def print_logfile(init_dict, rslt):
+def print_logfile(init_dict, rslt, print_output):
     """The function writes the log file for the estimation process."""
     # Adjust output
     if "output_file" in init_dict["ESTIMATION"].keys():
@@ -42,7 +42,7 @@ def print_logfile(init_dict, rslt):
                 fmt = "  {:<10}" + " {:<30}" + "{:<30} \n"
 
                 if section == "Number of Evaluations":
-                    file_input += fmt.format("", section + ":", rslt["nfev"])
+                    file_input += fmt.format("", section + ":", rslt["nit"])
                 elif section in ["Start Values", "Optimizer"]:
                     file_input += fmt.format(
                         "",
@@ -84,7 +84,7 @@ def print_logfile(init_dict, rslt):
         else:
 
             file_input += write_identifier_section(rslt)
-    if rslt["ESTIMATION"]["print_output"] is True:
+    if print_output is True:
         print(file_input)
     with open(file_name, "w") as file_:
         file_.write(file_input)
@@ -146,8 +146,8 @@ def write_identifier_section(rslt):
                     rslt[category]["standard_errors"][counter],
                     rslt[category]["t_values"][counter],
                     rslt[category]["p_values"][counter],
-                    rslt[category]["confidence_intervals"][counter][0],
-                    rslt[category]["confidence_intervals"][counter][1],
+                    rslt[category]["confidence_intervals"][counter, 0],
+                    rslt[category]["confidence_intervals"][counter, 1],
                 )
             )
     return file_
@@ -263,32 +263,27 @@ def simulate_estimation(rslt):
 def process_results(rslt):
     """The function processes the results dictionary for the following simulation."""
     start, finish = copy.deepcopy(rslt), copy.deepcopy(rslt)
-    maxiter = rslt["ESTIMATION"]["maxiter"]
-    if maxiter != 0:
+    if rslt["nit"] != 0:
         for section in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
             start[section]["params"] = start[section]["starting_values"]
-    start["DIST"]["params"] = transform_rslt_DIST(start, maxiter, start=True)
-    finish["DIST"]["params"] = transform_rslt_DIST(finish, maxiter)
+    start["DIST"]["params"] = transform_rslt_DIST(start, start=True)
+    finish["DIST"]["params"] = transform_rslt_DIST(finish)
+
     return start, finish
 
 
-def transform_rslt_DIST(dict_, maxiter, start=False):
+def transform_rslt_DIST(dict_, start=False):
     """The function converts the correlation parameters from the estimation outcome to
     covariances for the simulation of the estimation sample.
     """
-    x0 = dict_["DIST"]["params"]
-    aux = x0[-4:].copy()
-    cov1V = aux[1] * aux[0]
-    cov0V = aux[3] * aux[2]
-    if maxiter != 0:
-        if not start:
-            list_ = np.round([aux[0], 0.0, cov1V, aux[2], cov0V, 1.0], 4)
-        else:
-            list_ = dict_["AUX"]["init_values"][-6:].copy()
+    x0 = dict_["DIST"]["params"][-4:]
+    x = x0[-4:].copy()
+    if not start:
+        dist_params = np.round([x[0], 0.0, x[0] * x[1], x[2], x[2] * x[3], 1.0], 4)
     else:
-        list_ = dict_["AUX"]["init_values"][-6:].copy()
-
-    return list_
+        dist_params = dict_["AUX"]["init_values"][-6:].copy()
+    print("processed:", dist_params)
+    return dist_params
 
 
 def calculate_mte(rslt, data_frame, quant=None):

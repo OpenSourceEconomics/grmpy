@@ -25,6 +25,11 @@ def generate_random_dict(constr=None):
     else:
         is_deterministic = np.random.random_sample() < 0.1
 
+    if "COMPARISON" in constr.keys():
+        comparison = constr["COMPARISON"]
+    else:
+        comparison = False
+
     if "STATE_DIFF" in constr.keys():
         state_diff = constr["STATE_DIFF"]
     else:
@@ -133,8 +138,8 @@ def generate_random_dict(constr=None):
     init_dict["ESTIMATION"]["dependent"] = "Y"
     init_dict["ESTIMATION"]["indicator"] = "D"
     init_dict["ESTIMATION"]["output_file"] = "est.grmpy.info"
-    init_dict["ESTIMATION"]["comparison"] = "0"
-    init_dict["ESTIMATION"]["print_output"] = "0"
+    init_dict["ESTIMATION"]["comparison"] = comparison
+    init_dict["ESTIMATION"]["print_output"] = False
 
     init_dict["SCIPY-BFGS"], init_dict["SCIPY-POWELL"] = {}, {}
     init_dict["SCIPY-BFGS"]["gtol"] = np.random.uniform(1.5e-05, 0.8e-05)
