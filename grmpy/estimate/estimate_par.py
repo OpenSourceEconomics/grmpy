@@ -831,7 +831,7 @@ def calculate_se(x, maxiter, X1, X0, Z1, Z0, Y1, Y0):
 
 
 def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v):
-    """This function returns the jacobian of our minimization interface.
+    """This function returns the gradient of our minimization interface.
 
     Parameters
     ----------
@@ -875,42 +875,68 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
 
     # compute gradient coef for beta 1
 
-    grad_beta1 = (norm.pdf(lambda1) / norm.cdf(lambda1)) * (
-        rho1v / (np.sqrt(1 - rho1v ** 2) * sd1)
-    ) + nu1 / sd1
+    grad_beta1 = np.sum(
+        np.einsum(
+            "ij, i ->ij",
+            X1,
+            -(norm.pdf(lambda1) / norm.cdf(lambda1))
+            * (rho1v / (np.sqrt(1 - rho1v ** 2) * sd1))
+            - nu1 / sd1,
+        ),
+        0,
+    )
 
     # compute coef for beta 0
-    grad_beta0 = (
-        -norm.pdf(lambda0)
-        / (1 - norm.cdf(lambda0))
-        * (rho0v / (np.sqrt(1 - rho0v ** 2) * sd0))
-        + nu0 / sd0
+    grad_beta0 = np.sum(
+        np.einsum(
+            "ij, i ->ij",
+            X0,
+            norm.pdf(lambda0)
+            / (1 - norm.cdf(lambda0))
+            * (rho0v / (np.sqrt(1 - rho0v ** 2) * sd0))
+            - nu0 / sd0,
+        ),
+        0,
+    )
+    grad_sd1 = np.sum(
+        sd1
+        * (
+            +1 / sd1
+            - (norm.pdf(lambda1) / norm.cdf(lambda1))
+            * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
+            - nu1 ** 2 / sd1
+        ),
+        keepdims=True,
+    )
+    grad_sd0 = np.sum(
+        sd0
+        * (
+            +1 / sd0
+            + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
+            * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
+            - nu0 ** 2 / sd0
+        ),
+        keepdims=True,
+    )
+    grad_rho1v = np.sum(
+        (
+            -(norm.pdf(lambda1) / norm.cdf(lambda1))
+            * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
+            / (1 - rho1v ** 2) ** (1 / 2)
+        ),
+        keepdims=True,
     )
 
-    grad_sd1 = sd1 * (
-        +1 / sd1
-        - (norm.pdf(lambda1) / norm.cdf(lambda1))
-        * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
-        - nu1 ** 2 / sd1
-    )
-    grad_sd0 = sd0 * (
-        +1 / sd0
-        + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-        * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
-        - nu0 ** 2 / sd0
-    )
-    grad_rho1v = (
-        -(norm.pdf(lambda1) / norm.cdf(lambda1))
-        * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
-        / (1 - rho1v ** 2) ** (1 / 2)
-    )
-    grad_rho0v = (
-        (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-        * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
-        / (1 - rho0v ** 2) ** (1 / 2)
+    grad_rho0v = np.sum(
+        (
+            (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
+            * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
+            / (1 - rho0v ** 2) ** (1 / 2)
+        ),
+        keepdims=True,
     )
 
-    grad_gamma = sum(
+    grad_gamma = +sum(
         np.einsum(
             "ij, i ->ij",
             Z1,
@@ -925,12 +951,16 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         )
     )
 
-    grad = np.sum(np.einsum("ij, i ->ij", X1, -grad_beta1), 0)
-    grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0))
-    grad = np.append(grad, -grad_gamma)
-    grad = np.append(
-        grad,
-        np.append(np.sum([grad_sd1, grad_rho1v], 1), np.sum([grad_sd0, grad_rho0v], 1)),
+    grad = np.concatenate(
+        (
+            grad_beta1,
+            grad_beta0,
+            -grad_gamma,
+            grad_sd1,
+            grad_rho1v,
+            grad_sd0,
+            grad_rho0v,
+        )
     )
 
     return grad / n_obs
@@ -973,7 +1003,6 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
     )
     sd1, sd0, rho1v, rho0v = x0[-4], x0[-2], x0[-3], x0[-1]
 
-    n_obs = Y1.shape[0] + Y0.shape[0]
     # compute gradient for beta 1
 
     nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
@@ -982,62 +1011,15 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
     nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
     lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt((1 - rho0v ** 2)))
 
-    grad_beta1 = (norm.pdf(lambda1) / norm.cdf(lambda1)) * (
-        rho1v / (np.sqrt(1 - rho1v ** 2) * sd1)
-    ) + nu1 / sd1
-
-    grad_beta0 = (
-        -norm.pdf(lambda0)
-        / (1 - norm.cdf(lambda0))
-        * (rho0v / (np.sqrt(1 - rho0v ** 2) * sd0))
-        + nu0 / sd0
+    grad = gradient(
+        X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v
     )
 
-    grad_sd1 = (
-        +1 / sd1
-        - (norm.pdf(lambda1) / norm.cdf(lambda1))
-        * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
-        - nu1 ** 2 / sd1
-    )
-    grad_sd0 = (
-        +1 / sd0
-        + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-        * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
-        - nu0 ** 2 / sd0
-    )
-    grad_rho1v = (
-        -(norm.pdf(lambda1) / norm.cdf(lambda1))
-        * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
-        / (1 - rho1v ** 2) ** (3 / 2)
-    )
-    grad_rho0v = (
-        (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-        * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
-        / (1 - rho0v ** 2) ** (3 / 2)
-    )
-
-    grad_gamma = np.sum(
-        np.einsum(
-            "ij, i ->ij",
-            Z1,
-            (norm.pdf(lambda1) / norm.cdf(lambda1)) * 1 / np.sqrt(1 - rho1v ** 2),
-        ),
-        0,
-    ) - sum(
-        np.einsum(
-            "ij, i ->ij",
-            Z0[:, :],
-            (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-            * (1 / np.sqrt(1 - rho0v ** 2)),
+    multiplier = np.concatenate(
+        (
+            np.ones(len(grad[:-4])),
+            np.array([1 / sd1, 1 / (1 - rho1v ** 2), 1 / sd0, 1 / (1 - rho0v ** 2)]),
         )
     )
 
-    grad = np.sum(np.einsum("ij, i ->ij", X1, -grad_beta1), 0)
-    grad = np.append(grad, np.sum(np.einsum("ij, i ->ij", X0, -grad_beta0), 0))
-    grad = np.append(grad, -grad_gamma)
-    grad = np.append(
-        grad,
-        np.append(np.sum([grad_sd1, grad_rho1v], 1), np.sum([grad_sd0, grad_rho0v], 1)),
-    )
-
-    return grad / n_obs
+    return multiplier * grad

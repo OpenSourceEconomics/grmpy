@@ -256,7 +256,10 @@ def print_dict(init_dict, file_name="test"):
     ]
 
     for key_ in order:
-        ordered_dict[key_] = init_dict[key_]
+        if key_ in init_dict.keys():
+            ordered_dict[key_] = init_dict[key_]
+        else:
+            pass
     for section in ["TREATED", "CHOICE", "UNTREATED", "DIST"]:
         if isinstance(ordered_dict[section]["params"], list):
             pass
