@@ -125,7 +125,7 @@ def test6():
         constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"], constr[
             "COMPARISON"
         ] = (False, 0, 15000, True)
-        constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"], constr["Binary"], = (
+        constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"], constr["BINARY"], = (
             "init",
             True,
             "BFGS",
@@ -133,6 +133,7 @@ def test6():
         )
         dict_ = generate_random_dict(constr)
         dict_["DIST"]["params"][1], dict_["DIST"]["params"][5] = 0.0, 1.0
+        print(dict_)
         print_dict(dict_)
         simulate("test.grmpy.yml")
         fit("test.grmpy.yml")
