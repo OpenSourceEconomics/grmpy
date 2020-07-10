@@ -120,8 +120,11 @@ def test6():
     initialization file values as start values.
     """
     for _ in range(5):
+
         constr = dict()
-        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"] = False, 0, 15000
+        constr["DETERMINISTIC"], constr["MAXITER"], constr["AGENTS"], constr[
+            "COMPARISON"
+        ] = (False, 0, 15000, True)
         constr["START"], constr["SAME_SIZE"], constr["OPTIMIZER"], constr["Binary"], = (
             "init",
             True,
@@ -134,7 +137,6 @@ def test6():
         simulate("test.grmpy.yml")
         fit("test.grmpy.yml")
         dict_ = read_desc("comparison.grmpy.info")
-        print(dict_)
         for section in ["ALL", "TREATED", "UNTREATED"]:
             np.testing.assert_almost_equal(
                 dict_[section]["Observed Sample"],
@@ -248,7 +250,8 @@ def test9():
     """This test ensures that the random initialization file generating process, the
     read in process and the simulation process works if the constraints function allows
     for different number of covariates for each treatment state and the occurence of
-    cost-benefit shifters."""
+    cost-benefit shifters.
+    """
     for _ in range(5):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENT"], constr["STATE_DIFF"] = (

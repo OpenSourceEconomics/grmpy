@@ -192,7 +192,7 @@ def generate_coeff(num, is_zero):
 
 
 def types(init_dict):
-    """This function determines if there are any binary variables. If so the funtion
+    """This function determines if there are any binary variables. If so the function
     specifies the rate for which the variable is equal to one.
     """
 

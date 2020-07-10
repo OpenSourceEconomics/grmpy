@@ -50,8 +50,10 @@ def par_fit(dict_, data):
         seed_ = dict_["SIMULATION"]["seed"]
         np.random.seed(seed_)
 
-    #
+    # process the data set
     D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
+
+    # process optimization options
     opt_dict, method, grad_opt, start_option, print_output, comparison = process_inputs(
         dict_
     )
@@ -75,7 +77,6 @@ def par_fit(dict_, data):
     rslt = adjust_output(
         opt_rslt, dict_, x0, method, start_option, X1, X0, Z1, Z0, Y1, Y0, bfgs_dict
     )
-    # Print Output files
     # Print Output files
     print_logfile(dict_, rslt, print_output)
 
@@ -283,7 +284,10 @@ def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):
             )
 
             # Set coefficients equal the true init file values
-            x0 = dict_["AUX"]["init_values"][:-6]
+            rho1 = dict_["DIST"]["params"][2] / dict_["DIST"]["params"][0]
+            rho0 = dict_["DIST"]["params"][4] / dict_["DIST"]["params"][3]
+            dist = [dict_["DIST"]["params"][0], rho1, dict_["DIST"]["params"][3], rho0]
+            x0 = np.concatenate((dict_["AUX"]["init_values"][:-6], dist))
             dict_["ESTIMATION"]["warning"] = msg
             start_option = "init"
 
