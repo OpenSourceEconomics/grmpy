@@ -20,12 +20,8 @@ def print_logfile(init_dict, rslt, print_output):
         file_name = "est.grmpy.info"
 
     file_input = ""
-    for label in [
-        "Optimization Information",
-        "Criterion Function",
-        "Economic Parameters",
-    ]:
-        header = "\n \n  {:<10}\n\n".format(label)
+    for label in ["Optimization Information", "Economic Parameters"]:
+        header = "\n \n {:<10}\n\n".format(label)
         file_input += header
         if label == "Optimization Information":
             for section in [
@@ -35,11 +31,11 @@ def print_logfile(init_dict, rslt, print_output):
                 "Status",
                 "Message",
                 "Number of Evaluations",
-                "Criterion",
                 "Observations",
+                "Criterion",
                 "Warning",
             ]:
-                fmt = "  {:<10}" + " {:<30}" + "{:<30} \n"
+                fmt = "  {:<5}" + " {:<30}" + "{:<30} \n"
 
                 if section == "Number of Evaluations":
                     file_input += fmt.format("", section + ":", rslt["nit"])
@@ -51,8 +47,12 @@ def print_logfile(init_dict, rslt, print_output):
                     )
 
                 elif section == "Criterion":
-                    fmt_float = "  {:<10}" + " {:<30}" + "{:<30.4f}\n"
-                    file_input += fmt_float.format("", section + ":", rslt["crit"])
+                    fmt_float = "  {:<9}" + " {:<26}" + "{:<+25.4f}\n"
+                    file_input += fmt.format("", section + ":", "")
+                    file_input += fmt_float.format(
+                        "", "Start" + ":", init_dict["AUX"]["criteria"]
+                    )
+                    file_input += fmt_float.format("", "Finish" + ":", rslt["crit"])
                 elif section in ["Warning"]:
 
                     for counter, _ in enumerate(rslt[section.lower()]):
@@ -74,13 +74,6 @@ def print_logfile(init_dict, rslt, print_output):
                 else:
                     file_input += fmt.format("", section + ":", rslt[section.lower()])
 
-        elif label == "Criterion Function":
-            fmt = "  {:<10}" * 2 + " {:>20}" * 2 + "\n\n"
-            file_input += fmt.format("", "", "Start", "Finish")
-            file_input += "\n" + fmt.format(
-                "", "", init_dict["AUX"]["criteria"], rslt["crit"]
-            )
-
         else:
 
             file_input += write_identifier_section(rslt)
@@ -95,18 +88,18 @@ def write_identifier_section(rslt):
      file.
      """
     file_ = ""
-    fmt_ = "\n  {:<10}" + "{:>10}" + " {:>18}" + "{:>16}" + "\n\n"
+    fmt_ = "\n  {:<10}" + "   {:>15}" + " {:>10}" + " {:>10}" + "\n\n"
 
     file_ += fmt_.format(*["", "", "Start", "Finish"])
 
     fmt_ = (
         " {:<10}"
-        + "    {:>10}"
-        + "{:>15}" * 2
-        + "{:>18}"
-        + "{:>9}"
-        + "{:>19}"
-        + "{:>24}"
+        + "    {:<15}"
+        + "{:>10}" * 2
+        + "{:>12}"
+        + "{:>6}"
+        + "{:>12}"
+        + "{:>17}"
     )
 
     file_ += (
@@ -127,11 +120,14 @@ def write_identifier_section(rslt):
 
     fmt = (
         "  {:>10}"
-        + "   {:<15}"
-        + " {:>11.4f}"
-        + "{:>15.4f}" * 4
-        + "{:>15.4f}"
+        + "    {:<15.15}"
+        + "{:>11.4f}"
         + "{:>10.4f}"
+        + "{:>9.4f}"
+        + "{:>11.3f}"
+        + "{:>8.3f}"
+        + "{:>9.4f}"
+        + "{:>9.4f}"
     )
 
     for category in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:

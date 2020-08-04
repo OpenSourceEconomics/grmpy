@@ -46,7 +46,7 @@ def fit(init_file, semipar=False):
     check_est_init_dict(dict_)
 
     # Semiparametric LIV Model
-    if semipar is True:
+    if semipar:
         # Distribute initialization information.
         data = read_data(dict_["ESTIMATION"]["file"])
         dict_, data = check_append_constant(init_file, dict_, data, semipar=True)
