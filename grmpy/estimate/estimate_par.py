@@ -13,7 +13,7 @@ from statsmodels.tools.numdiff import approx_fprime_cs
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 
 from grmpy.check.check import UserError, check_start_values
-from grmpy.estimate.estimate_output import print_logfile, write_comparison
+from grmpy.estimate.estimate_output import print_logfile
 
 
 def par_fit(dict_, data):
@@ -79,13 +79,6 @@ def par_fit(dict_, data):
     )
     # Print Output files
     print_logfile(dict_, rslt, print_output)
-
-    if "SIMULATION" in dict_.keys():
-        if comparison:
-            rslt["SIMULATION"] = {"seed": seed_, "agents": Y1.shape[0] + Y0.shape[0]}
-            write_comparison(data, rslt, seed_)
-    else:
-        rslt.update({"ESTIMATION": {"seed": seed_}})
 
     return rslt
 
@@ -251,6 +244,7 @@ def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):
         rho0 = dict_["DIST"]["params"][4] / dict_["DIST"]["params"][3]
         dist = [dict_["DIST"]["params"][0], rho1, dict_["DIST"]["params"][3], rho0]
         x0 = np.concatenate((dict_["AUX"]["init_values"][:-6], dist))
+        print(len(x0))
     elif start_option == "auto":
         try:
             if D.shape[0] == sum(D):
@@ -728,13 +722,11 @@ def process_output(init_dict, bfgs_dict, x0, flag):
             x0 = bfgs_dict["parameter"][str(x)].tolist()
             crit = bfgs_dict["crit"][str(x)]
             warning = (
-                "The optimization algorithm has failed to provide the parametrization "
-                "that leads to the minimal criterion function value. \n"
-                "                         "
-                "                  The estimation output is automatically "
-                "adjusted and provides the parameterization with the smallest "
-                "criterion function value \n                         "
-                "                  that was reached during the optimization.\n"
+                "The optimization algorithm has failed to provide the "
+                "parametrization that leads to the minimal criterion function "
+                "value.The estimation output is automatically adjusted and "
+                "provides the parameterization with the smallest criterion "
+                "function value that was reached during the optimization."
             )
         else:
             x0 = x0
@@ -826,9 +818,8 @@ def calculate_se(x, maxiter, X1, X0, Z1, Z0, Y1, Y0):
         if False in np.isfinite(se):
             warning = [
                 "The estimation process was not able to provide standard errors for"
-                " the estimation results, because the approximation \n            "
-                "                               of the hessian matrix "
-                "leads to a singular Matrix.\n"
+                " the estimation results, because the approximation of the hessian "
+                "matrix leads to a singular Matrix."
             ]
 
     return se, hess_inv, conf_interval, p_values, t_values, warning
