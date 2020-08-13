@@ -54,9 +54,7 @@ def par_fit(dict_, data):
     D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     # process optimization options
-    opt_dict, method, grad_opt, start_option, print_output, comparison = process_inputs(
-        dict_
-    )
+    opt_dict, method, grad_opt, start_option, print_output = process_inputs(dict_)
     num_treated = X1.shape[1]
     num_untreated = num_treated + X0.shape[1]
 
@@ -152,9 +150,6 @@ def process_inputs(dict_):
         either "init" or "auto".
     print_output: bool
         If True the estimation output is printed
-    comparison: bool
-        Flag that indicates whether the comparison file should be created
-
     """
     try:
         method = dict_["ESTIMATION"]["optimizer"]
@@ -185,12 +180,7 @@ def process_inputs(dict_):
     except KeyError:
         print_output = True
 
-    try:
-        comparison = dict_["ESTIMATION"]["comparison"]
-    except KeyError:
-        comparison = False
-
-    return opt_dict, method, grad_opt, start_option, print_output, comparison
+    return opt_dict, method, grad_opt, start_option, print_output
 
 
 def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):

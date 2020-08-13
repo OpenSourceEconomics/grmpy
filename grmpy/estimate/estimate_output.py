@@ -2,6 +2,10 @@
 import time
 from textwrap import wrap
 
+import numpy as np
+
+from grmpy.simulate.simulate_auxiliary import mte_information
+
 
 def print_logfile(init_dict, rslt, print_output):
     """The function writes the log file for the estimation process."""
@@ -122,3 +126,29 @@ def write_identifier_section(rslt):
             est_out += "{}\n".format(j)
 
     return est_out
+
+
+def calculate_mte(rslt, data_frame, quant=None):
+
+    coeffs_treated = rslt["TREATED"]["params"]
+    coeffs_untreated = rslt["UNTREATED"]["params"]
+
+    if quant is None:
+        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
+        args = [str(i) + "%" for i in quantiles]
+        quantiles = [i * 0.01 for i in quantiles]
+    else:
+        quantiles = quant
+
+    cov = np.zeros((3, 3))
+    cov[2, 0] = rslt["AUX"]["x_internal"][-3] * rslt["AUX"]["x_internal"][-4]
+    cov[2, 1] = rslt["AUX"]["x_internal"][-1] * rslt["AUX"]["x_internal"][-2]
+    cov[2, 2] = 1.0
+
+    value = mte_information(
+        coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt
+    )
+    if quant is None:
+        return value, args
+    else:
+        return value
