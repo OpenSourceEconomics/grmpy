@@ -62,7 +62,7 @@ def semipar_fit(dict_, data):
     quantiles = np.linspace(startgrid, endgrid, gridsize)
 
     mte_x = mte_observed(X, b1_b0)
-    mte_u = mte_unobserved(
+    mte_u = mte_unobserved_semipar(
         X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
     )
 
@@ -421,7 +421,7 @@ def mte_observed(X, b1_b0):
     return mte_x
 
 
-def mte_unobserved(
+def mte_unobserved_semipar(
     X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
 ):
     """
@@ -637,7 +637,7 @@ def _make_histogram(
         plt.ylabel("$f(P)$", fontsize=fontsize)
 
         if plot_title is True:
-            plt.title("Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
+            plt.title(r"Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
 
     else:
         plt.close(fig)

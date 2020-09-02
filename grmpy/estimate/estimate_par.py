@@ -5,6 +5,7 @@ The module provides auxiliary functions for the estimation process.
 from random import randint
 
 import numpy as np
+import pandas as pd
 import statsmodels.api as sm
 from numpy.linalg import LinAlgError
 from scipy.optimize import minimize
@@ -31,37 +32,39 @@ def par_fit(dict_, data):
     ------
     rslt: dict
         Result dictionary containing
-        - quantiles
+        - opt_info: dict
+            Dictionary that contains information regarding the conducted optimization
+        - opt_rslt: pandas.DataFrame
+            Dataframe that provides the results of the optimization process
         - mte
         - mte_x
         - mte_u
         - mte_min
         - mte_max
         - X
-        - b1
-        - b0
-        - gamma
+        - b1_b0
     """
-
-    if "SIMULATION" not in dict_ or "seed" not in dict_["SIMULATION"]:
-        seed_ = randint(0, 9999)
-        np.random.seed(seed_)
-    else:
-        seed_ = dict_["SIMULATION"]["seed"]
-        np.random.seed(seed_)
 
     # process the data set
     D, X1, X0, Z1, Z0, Y1, Y0 = process_data(data, dict_)
 
     # process optimization options
-    opt_dict, method, grad_opt, start_option, print_output = process_inputs(dict_)
+    opt_dict, method, grad_opt, start_option, print_output, seed_ = process_inputs(
+        dict_
+    )
     num_treated = X1.shape[1]
     num_untreated = num_treated + X0.shape[1]
 
-    # define starting values
+    # set seed
+    np.random.seed(seed_)
+
+    # set up rslt dataframe object
+    rslt_cont = create_rslt_df(dict_)
+
+    # determine start values
     x0 = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option)
     dict_["AUX"]["criteria"] = calculate_criteria(x0, X1, X0, Z1, Z0, Y1, Y0)
-    dict_["AUX"]["starting_values"] = backward_transformation(x0)
+    rslt_cont["start_values"] = backward_transformation(x0)
     bfgs_dict = {"parameter": {}, "crit": {}, "grad": {}}
 
     opt_rslt = minimize(
@@ -73,10 +76,49 @@ def par_fit(dict_, data):
         jac=grad_opt,
     )
     rslt = adjust_output(
-        opt_rslt, dict_, x0, method, start_option, X1, X0, Z1, Z0, Y1, Y0, bfgs_dict
+        opt_rslt,
+        dict_,
+        rslt_cont,
+        x0,
+        method,
+        start_option,
+        X1,
+        X0,
+        Z1,
+        Z0,
+        Y1,
+        Y0,
+        bfgs_dict,
     )
     # Print Output files
     print_logfile(dict_, rslt, print_output)
+
+    quantiles, cov, X, b1_b0, b1, b0 = prepare_mte_calc(rslt["opt_rslt"], data)
+
+    mte_x = np.dot(X, b1_b0)
+
+    mte_u = (cov[2, 0] - cov[2, 1]) * norm.ppf(quantiles)
+
+    # Put the MTE together
+    mte = mte_x.mean(axis=0) + mte_u
+
+    # Account for variation in X
+    mte_min = np.min(mte_x) + mte_u
+    mte_max = np.max(mte_x) + mte_u
+
+    rslt.update(
+        {
+            "quantiles": quantiles,
+            "mte": mte,
+            "mte_x": mte_x,
+            "mte_u": mte_u,
+            "mte_min": mte_min,
+            "mte_max": mte_max,
+            "X": X,
+            "b1": b1,
+            "b0": b0,
+        }
+    )
 
     return rslt
 
@@ -150,6 +192,8 @@ def process_inputs(dict_):
         either "init" or "auto".
     print_output: bool
         If True the estimation output is printed
+    seed_: int
+        Seed value for drawing the random start values for the rho1 and rho0
     """
     try:
         method = dict_["ESTIMATION"]["optimizer"]
@@ -180,7 +224,50 @@ def process_inputs(dict_):
     except KeyError:
         print_output = True
 
-    return opt_dict, method, grad_opt, start_option, print_output
+    try:
+        seed_ = dict_["SIMULATION"]["seed"]
+    except KeyError:
+        seed_ = randint(0, 9999)
+
+    return opt_dict, method, grad_opt, start_option, print_output, seed_
+
+
+def create_rslt_df(dict_):
+    """This function creates the pandas dataframe container in which the estimation
+    rslts are stored.
+
+    Parameters
+    ----------
+    dict_: dict
+        Estimation dictionary. Returned by grmpy.read(init_file)).
+
+    Returns
+    ------
+    rslt_cont: pandas.DataFrame
+        Container for stroing the upcoming estimation results.
+    """
+
+    index = []
+    # set up multiindex
+    for section in ["TREATED", "UNTREATED", "CHOICE"]:
+        index += [(section, i) for i in dict_[section]["order"]]
+    for subsection in ["sigma1", "rho1", "sigma0", "rho0"]:
+        index += [("DIST", subsection)]
+
+    column_names = [
+        "params",
+        "start_values",
+        "std",
+        "t_values",
+        "p_values",
+        "conf_int_low",
+        "conf_int_up",
+    ]
+
+    return pd.DataFrame(
+        index=pd.MultiIndex.from_tuples(index, names=["section", "name"]),
+        columns=column_names,
+    )
 
 
 def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):
@@ -201,17 +288,17 @@ def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):
     D: numpy.array
         Treatment indicator
     X1: numpy.array
-        Outcome related regressors of the treated individuals
+        Outcome related regressors of the treated individuals.
     X0: numpy.array
-        Outcome related regressors of the untreated individuals
+        Outcome related regressors of the untreated individuals.
     Z1: numpy.array
-        Choice related regressors of the treated individuals
+        Choice related regressors of the treated individuals.
     Z0: numpy.array
-        Choice related regressors of the untreated individuals
+        Choice related regressors of the untreated individuals.
     Y1: numpy.array
-        Outcomes of the treated individuals
+        Outcomes of the treated individuals.
     Y0: numpy.array
-        Outcomes of the untreated individuals
+        Outcomes of the untreated individuals.
     start_option: str
         Denotes which start value routine should be used. Options are
         either "init" or "auto".
@@ -234,7 +321,6 @@ def start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, start_option):
         rho0 = dict_["DIST"]["params"][4] / dict_["DIST"]["params"][3]
         dist = [dict_["DIST"]["params"][0], rho1, dict_["DIST"]["params"][3], rho0]
         x0 = np.concatenate((dict_["AUX"]["init_values"][:-6], dist))
-        print(len(x0))
     elif start_option == "auto":
         try:
             if D.shape[0] == sum(D):
@@ -331,9 +417,7 @@ def backward_transformation(x_trans, bfgs_dict=None):
         np.exp(x_rev[-2]),
         (np.exp(2 * x_rev[-1]) - 1) / (np.exp(2 * x_rev[-1]) + 1),
     ]
-    if bfgs_dict is None:
-        pass
-    else:
+    if bfgs_dict is not None:
         bfgs_dict["parameter"][str(len(bfgs_dict["parameter"]))] = x_rev
     return x_rev
 
@@ -381,7 +465,7 @@ def log_likelihood(
     likl: float
         Negative log-likelihood value
     llh_grad: numpy.array
-        Jacobian of the minimization interface, only returned if grad_opt==True
+        Gradient of the minimization interface, only returned if grad_opt==True
     """
 
     # assign parameter values
@@ -403,9 +487,7 @@ def log_likelihood(
 
     likl = -np.mean(np.log(np.append(treated, untreated)))
 
-    if bfgs_dict is None:
-        pass
-    else:
+    if bfgs_dict is not None:
         bfgs_dict["crit"][str(len(bfgs_dict["crit"]))] = likl
 
     if grad_opt is True:
@@ -446,10 +528,10 @@ def calculate_criteria(x0, X1, X0, Z1, Z0, Y1, Y0):
     x = backward_transformation(x0)
     num_treated = X1.shape[1]
     num_untreated = num_treated + X0.shape[1]
-    crit_value = log_likelihood(
+
+    return log_likelihood(
         x, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, False
     )
-    return crit_value
 
 
 def minimizing_interface(
@@ -505,6 +587,7 @@ def minimizing_interface(
 def adjust_output(
     opt_rslt,
     dict_,
+    rslt_cont,
     start_values,
     method,
     start_option,
@@ -519,29 +602,26 @@ def adjust_output(
     """The function adds different information of the minimization process to the
     estimation output.
     """
-    num_treated = X1.shape[1]
-    num_untreated = num_treated + X0.shape[1]
+
     rslt = {
-        "ESTIMATION": {
+        "opt_info": {
             "optimizer": method,
             "start": start_option,
             "indicator": dict_["ESTIMATION"]["indicator"],
             "dependent": dict_["ESTIMATION"]["dependent"],
-        },
-        "AUX": {},
-        "observations": Y1.shape[0] + Y0.shape[0],
+            "observations": Y1.shape[0] + Y0.shape[0],
+        }
     }
-    rslt["ESTIMATION"]["start values"] = start_values
     # Adjust output if
     if opt_rslt["nit"] == 0:
         x = backward_transformation(opt_rslt["x"])
-        rslt["success"], rslt["status"] = False, 2
-        rslt["message"], rslt["nit"], rslt["crit"] = (
-            "---",
-            0,
-            dict_["AUX"]["criteria"],
-        )
-        rslt["warning"] = ["---"]
+        rslt["opt_info"]["success"], rslt["opt_info"]["status"] = False, 2
+        (
+            rslt["opt_info"]["message"],
+            rslt["opt_info"]["nit"],
+            rslt["opt_info"]["crit"],
+        ) = ("---", 0, dict_["AUX"]["criteria"])
+        rslt["opt_info"]["warning"] = ["---"]
 
     else:
         # Check if the algorithm has returned the values with the lowest criterium
@@ -552,73 +632,38 @@ def adjust_output(
         # Adjust values if necessary
         if check:
             x, crit, warning = process_output(dict_, bfgs_dict, opt_rslt["x"], flag)
-            rslt["crit"] = crit
-            rslt["warning"] = [warning]
+            rslt["opt_info"]["crit"] = crit
+            rslt["opt_info"]["warning"] = [warning]
 
         else:
             x = backward_transformation(opt_rslt["x"])
-            rslt["crit"] = opt_rslt["fun"]
-            rslt["warning"] = ["---"]
+            rslt["opt_info"]["crit"] = opt_rslt["fun"]
+            rslt["opt_info"]["warning"] = ["---"]
 
-        rslt["success"], rslt["status"], rslt["message"], rslt["nit"] = map(
-            opt_rslt.get, ["success", "status", "message", "nit"]
-        )
+        (
+            rslt["opt_info"]["success"],
+            rslt["opt_info"]["status"],
+            rslt["opt_info"]["message"],
+            rslt["opt_info"]["nit"],
+        ) = map(opt_rslt.get, ["success", "status", "message", "nit"])
 
     # Adjust Result dict
-    rslt["AUX"]["x_internal"] = x
-    rslt["AUX"]["init_values"] = dict_["AUX"]["init_values"]
+    rslt_cont["params"] = x
 
     (
-        rslt["AUX"]["standard_errors"],
-        rslt["AUX"]["hess_inv"],
-        rslt["AUX"]["confidence_intervals"],
-        rslt["AUX"]["p_values"],
-        rslt["AUX"]["t_values"],
+        rslt_cont["std"],
+        rslt["hessian"],
+        rslt_cont["conf_int_low"],
+        rslt_cont["conf_int_up"],
+        rslt_cont["p_values"],
+        rslt_cont["t_values"],
         warning_se,
     ) = calculate_se(x, dict_, X1, X0, Z1, Z0, Y1, Y0)
 
-    num_slice0 = 0
-    start_values_ = backward_transformation(start_values)
-    for section, num_slice1 in [
-        ("TREATED", num_treated),
-        ("UNTREATED", num_untreated),
-        ("CHOICE", -4),
-        ("DIST", None),
-    ]:
-        rslt[section] = {}
-        if section == "DIST":
-            rslt["DIST"]["order"] = ["sigma1", "rho1", "sigma0", "rho0"]
-        else:
-            rslt[section]["order"] = dict_[section]["order"]
+    rslt["opt_rslt"] = rslt_cont
 
-        rslt[section]["params"] = x[num_slice0:num_slice1]
-
-        rslt[section]["starting_values"] = start_values_[num_slice0:num_slice1]
-
-        rslt[section]["standard_errors"] = rslt["AUX"]["standard_errors"][
-            num_slice0:num_slice1
-        ]
-
-        rslt[section]["confidence_intervals"] = rslt["AUX"]["confidence_intervals"][
-            num_slice0:num_slice1, :
-        ]
-
-        rslt[section]["p_values"] = rslt["AUX"]["p_values"][num_slice0:num_slice1]
-        rslt[section]["t_values"] = rslt["AUX"]["t_values"][num_slice0:num_slice1]
-
-        num_slice0 = num_slice1
-
-    for subkey in [
-        "num_covars_choice",
-        "num_covars_treated",
-        "num_covars_untreated",
-        "num_paras",
-        "num_covars",
-        "labels",
-    ]:
-        rslt["AUX"][subkey] = dict_["AUX"][subkey]
     if warning_se is not None:
-        rslt["warning"] += warning_se
+        rslt["opt_info"]["warning"] += warning_se
     return rslt
 
 
@@ -812,7 +857,15 @@ def calculate_se(x, maxiter, X1, X0, Z1, Z0, Y1, Y0):
                 "matrix leads to a singular Matrix."
             ]
 
-    return se, hess_inv, conf_interval, p_values, t_values, warning
+    return (
+        se,
+        hess_inv,
+        conf_interval[:, 0],
+        conf_interval[:, 1],
+        p_values,
+        t_values,
+        warning,
+    )
 
 
 def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v):
@@ -1008,3 +1061,71 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
     )
 
     return multiplier * grad
+
+
+def prepare_mte_calc(opt_rslt, data):
+    """This function construct the marginal treatment effect
+    given the optimization results.
+
+    Parameters
+    ----------
+    opt_rslt: pandas.DataFrame
+        Dataframe that contains the optimization results.
+    data: pandas.DataFrame
+        Data set to perform the estimation on.
+
+    Returns
+    ------
+    quantiles: numpy.array
+        Gradient of the log-likelihood function.
+    cov: numpy.array
+        Covariance matrix based on the estimation results.
+    X: numpy.array
+        Array object that contains all covariates that affect the treated
+        as well as the untreated outcome.
+    b1_b0: numpy.array
+        Difference of the coefficients of the treated and the untreated outcome equation.
+    """
+
+    quantiles = np.arange(0.01, 0.99, 0.01)
+
+    # create a proper covariance matrix from the estimation results
+    dist_params = opt_rslt.loc["DIST", "params"]
+    cov = np.zeros((3, 3))
+    np.fill_diagonal(cov, np.array([dist_params[0], dist_params[2], 1.0]) ** 2)
+    cov[2, 0] = dist_params[0] * dist_params[1]
+    cov[2, 1] = dist_params[2] * dist_params[3]
+
+    treated_labels = opt_rslt.loc["TREATED", :].index.values
+    untreated_labels = opt_rslt.loc["UNTREATED", :].index.values
+
+    common = np.intersect1d(treated_labels, untreated_labels)
+    only_treated = treated_labels[np.where(treated_labels != untreated_labels)[0]]
+    only_untreated = untreated_labels[np.where(treated_labels != untreated_labels)[0]]
+    if (len(only_treated) != 0) | (len(only_untreated) != 0):
+        beta1 = np.append(
+            np.append(
+                opt_rslt.loc[("TREATED", common), "params"],
+                opt_rslt.loc[("TREATED", only_treated), "params"],
+            ),
+            np.zeros(len(only_untreated)),
+        )
+
+        beta0 = np.append(
+            np.append(
+                opt_rslt.loc[("UNTREATED", common), "params"],
+                np.zeros(len(only_treated)),
+            ),
+            opt_rslt.loc[("UNTREATED", only_untreated), "params"],
+        )
+
+        all_labels = np.append(common, np.append(only_treated, only_untreated))
+    else:
+        beta1 = opt_rslt.loc[("TREATED", common), "params"]
+        beta0 = opt_rslt.loc[("UNTREATED", common), "params"]
+        all_labels = common
+
+    X = data[all_labels].values
+    b1_b0 = beta1 - beta0
+
+    return quantiles, cov, X, b1_b0, beta1, beta0

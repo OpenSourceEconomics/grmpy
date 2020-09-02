@@ -2,10 +2,6 @@
 import time
 from textwrap import wrap
 
-import numpy as np
-
-from grmpy.simulate.simulate_auxiliary import mte_information
-
 
 def print_logfile(init_dict, rslt, print_output):
     """The function writes the log file for the estimation process."""
@@ -14,13 +10,17 @@ def print_logfile(init_dict, rslt, print_output):
         file_name = init_dict["ESTIMATION"]["output_file"]
     else:
         file_name = "est.grmpy.info"
-    print(rslt["message"])
     file_input = ""
+
+    # obtain optimization information and results
+    opt_info = rslt["opt_info"]
+    opt_rslt = rslt["opt_rslt"]
+
     # create header of output table
     header = "{:>50}".format("Optimization Results") + "\n" + 80 * "=" + "\n"
 
     # specify some table inputs
-    message = wrap(rslt["message"], 24)
+    message = wrap(opt_info["message"], 24)
     if len(message) == 1:
         message += [""]
     time_now = time.localtime()
@@ -32,22 +32,12 @@ def print_logfile(init_dict, rslt, print_output):
 
     # define table input
     header_input = [
-        (
-            "Dep. Variable:",
-            rslt["ESTIMATION"]["dependent"],
-            "Optimizer:",
-            rslt["ESTIMATION"]["optimizer"],
-        ),
-        (
-            "Choice Var:",
-            rslt["ESTIMATION"]["indicator"],
-            "No. Evaluations:",
-            rslt["nit"],
-        ),
-        ("Date:", date, "Success:", rslt["success"]),
-        ("Time:", time_, "Status:", rslt["status"]),
-        ("Observations:", rslt["observations"], "Message:", message[0]),
-        ("Start Values:", rslt["ESTIMATION"]["start"], "", message[1]),
+        ("Dep. Variable:", opt_info["dependent"], "Optimizer:", opt_info["optimizer"]),
+        ("Choice Var:", opt_info["indicator"], "No. Evaluations:", opt_info["nit"]),
+        ("Date:", date, "Success:", opt_info["success"]),
+        ("Time:", time_, "Status:", opt_info["status"]),
+        ("Observations:", opt_info["observations"], "Message:", message[0]),
+        ("Start Values:", opt_info["start"], "", message[1]),
     ]
 
     # loop over header input
@@ -57,7 +47,7 @@ def print_logfile(init_dict, rslt, print_output):
 
     header += fmt.format("", "", "", "Criterion Func:", "")
     fmt = "{:<15}" + "{:>20}" + "{:>10}" + "{:<16}" + "{:>+19.4f}\n"
-    for section in [("Start", rslt["crit"]), ("Finish", rslt["crit"])]:
+    for section in [("Start", opt_info["crit"]), ("Finish", opt_info["crit"])]:
         header += fmt.format("", "", "", section[0] + ":", section[1])
 
     header += "=" * 80 + "\n"
@@ -68,7 +58,7 @@ def print_logfile(init_dict, rslt, print_output):
     header += fmt.format("", "coef", "std err", "t", "P>|t|", "[0.025", "0.975]")
     header += "-" * 80
 
-    estimation_output = write_identifier_section(rslt)
+    estimation_output = write_identifier_section(opt_rslt, opt_info)
 
     file_input = header + estimation_output
 
@@ -78,10 +68,11 @@ def print_logfile(init_dict, rslt, print_output):
         file_.write(file_input)
 
 
-def write_identifier_section(rslt):
+def write_identifier_section(opt_rslt, opt_info):
     """This function prints the information about the estimation results in the output
      file.
      """
+
     # write estimation output
     est_out = ""
     fmt_section = "\n{:<14}\n\n"
@@ -96,21 +87,22 @@ def write_identifier_section(rslt):
     )
     for section in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
         est_out += fmt_section.format(section)
-        params = rslt[section]["params"]
-        std = rslt[section]["standard_errors"]
-        t = rslt[section]["t_values"]
-        P = rslt[section]["p_values"]
-        conf_int = rslt[section]["confidence_intervals"]
+        params = opt_rslt.loc[section, "params"]
+        std = opt_rslt.loc[section, "std"]
+        t = opt_rslt.loc[section, "t_values"]
+        P = opt_rslt.loc[section, "p_values"]
+        conf_int_low = opt_rslt.loc[section, "conf_int_low"]
+        conf_int_up = opt_rslt.loc[section, "conf_int_up"]
 
-        for counter, var in enumerate(rslt[section]["order"]):
+        for var_label in opt_rslt.loc[section, slice(None)].index:
             est_out += fmt.format(
-                var,
-                params[counter],
-                std[counter],
-                t[counter],
-                P[counter],
-                conf_int[counter][0],
-                conf_int[counter][1],
+                var_label,
+                params.loc[var_label],
+                std.loc[var_label],
+                t.loc[var_label],
+                P.loc[var_label],
+                conf_int_low.loc[var_label],
+                conf_int_up.loc[var_label],
             )
     est_out += 80 * "=" + "\n"
 
@@ -118,37 +110,10 @@ def write_identifier_section(rslt):
 
     est_out += "\n{}\n".format("Warning:")
 
-    for i in rslt["warning"]:
+    for i in opt_info["warning"]:
         est_out += "\n"
         lines = wrap(i, 80)
-        print(lines)
         for j in lines:
             est_out += "{}\n".format(j)
 
     return est_out
-
-
-def calculate_mte(rslt, data_frame, quant=None):
-
-    coeffs_treated = rslt["TREATED"]["params"]
-    coeffs_untreated = rslt["UNTREATED"]["params"]
-
-    if quant is None:
-        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-        args = [str(i) + "%" for i in quantiles]
-        quantiles = [i * 0.01 for i in quantiles]
-    else:
-        quantiles = quant
-
-    cov = np.zeros((3, 3))
-    cov[2, 0] = rslt["AUX"]["x_internal"][-3] * rslt["AUX"]["x_internal"][-4]
-    cov[2, 1] = rslt["AUX"]["x_internal"][-1] * rslt["AUX"]["x_internal"][-2]
-    cov[2, 2] = 1.0
-
-    value = mte_information(
-        coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt
-    )
-    if quant is None:
-        return value, args
-    else:
-        return value
