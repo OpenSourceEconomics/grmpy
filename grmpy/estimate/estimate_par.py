@@ -42,7 +42,8 @@ def par_fit(dict_, data):
         - mte_min
         - mte_max
         - X
-        - b1_b0
+        - b1
+        - b0
     """
 
     # process the data set
@@ -652,7 +653,7 @@ def adjust_output(
 
     (
         rslt_cont["std"],
-        rslt["hessian"],
+        rslt["hessian_inv"],
         rslt_cont["conf_int_low"],
         rslt_cont["conf_int_up"],
         rslt_cont["p_values"],
@@ -1087,7 +1088,7 @@ def prepare_mte_calc(opt_rslt, data):
         Difference of the coefficients of the treated and the untreated outcome equation.
     """
 
-    quantiles = np.arange(0.01, 0.99, 0.01)
+    quantiles = np.arange(0.0001, 0.9999, 0.0001)
 
     # create a proper covariance matrix from the estimation results
     dist_params = opt_rslt.loc["DIST", "params"]
@@ -1102,6 +1103,8 @@ def prepare_mte_calc(opt_rslt, data):
     common = np.intersect1d(treated_labels, untreated_labels)
     only_treated = treated_labels[np.where(treated_labels != untreated_labels)[0]]
     only_untreated = untreated_labels[np.where(treated_labels != untreated_labels)[0]]
+
+    # correct the parameter vectors if the outcome equations contain different covariates
     if (len(only_treated) != 0) | (len(only_untreated) != 0):
         beta1 = np.append(
             np.append(
@@ -1119,13 +1122,17 @@ def prepare_mte_calc(opt_rslt, data):
             opt_rslt.loc[("UNTREATED", only_untreated), "params"],
         )
 
-        all_labels = np.append(common, np.append(only_treated, only_untreated))
     else:
-        beta1 = opt_rslt.loc[("TREATED", common), "params"]
-        beta0 = opt_rslt.loc[("UNTREATED", common), "params"]
-        all_labels = common
+        beta1 = opt_rslt.loc[("TREATED", common), "params"].values
+        beta0 = opt_rslt.loc[("UNTREATED", common), "params"].values
 
-    X = data[all_labels].values
+    all_labels = (
+        [i for i in treated_labels if i in common]
+        + only_treated.tolist()
+        + only_untreated.tolist()
+    )
+
+    X = data[all_labels]
     b1_b0 = beta1 - beta0
 
     return quantiles, cov, X, b1_b0, beta1, beta0

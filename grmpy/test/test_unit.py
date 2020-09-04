@@ -12,6 +12,7 @@ from grmpy.estimate.estimate_par import (
     calculate_criteria,
     calculate_se,
     check_rslt_parameters,
+    create_rslt_df,
     gradient_hessian,
     log_likelihood,
     minimizing_interface,
@@ -315,7 +316,7 @@ def test10():
 
         rslt = fit("test.grmpy.yml")
 
-        np.testing.assert_equal(start, rslt["AUX"]["x_internal"])
+        np.testing.assert_equal(start, rslt["opt_rslt"]["params"].values)
 
 
 def test11():
@@ -368,7 +369,7 @@ def test13():
         df = simulate("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
         D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
-
+        rslt_cont = create_rslt_df(init_dict)
         start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         init_dict["AUX"]["criteria"] = calculate_criteria(start, X1, X0, Z1, Z0, Y1, Y0)
         init_dict["AUX"]["starting_values"] = backward_transformation(start)
@@ -402,9 +403,11 @@ def test13():
             "message": "msg",
             "nit": 10000,
         }
+
         rslt = adjust_output(
             opt_rslt,
             init_dict,
+            rslt_cont,
             start,
             "BFGS",
             "init",
@@ -416,24 +419,30 @@ def test13():
             Y0,
             aux_dict1,
         )
-        np.testing.assert_equal(rslt["crit"], opt_rslt["fun"])
-        np.testing.assert_equal(rslt["warning"][0], "---")
+        np.testing.assert_equal(rslt["opt_info"]["crit"], opt_rslt["fun"])
+        np.testing.assert_equal(rslt["opt_info"]["warning"][0], "---")
 
         x_linalign = [0] * len(x0)
-        se, hess_inv, conf_interval, p_values, t_values, _ = calculate_se(
-            x_linalign, 1, X1, X0, Z1, Z0, Y1, Y0
-        )
+        (
+            se,
+            hess_inv,
+            conf_interval_low,
+            conf_interval_up,
+            p_values,
+            t_values,
+            _,
+        ) = calculate_se(x_linalign, 1, X1, X0, Z1, Z0, Y1, Y0)
         np.testing.assert_equal(se, [np.nan] * len(x0))
         np.testing.assert_equal(hess_inv, np.full((len(x0), len(x0)), np.nan))
-        np.testing.assert_equal(conf_interval, [[np.nan, np.nan]] * len(x0))
+        np.testing.assert_equal(conf_interval_low, [np.nan] * len(x0))
+        np.testing.assert_equal(conf_interval_up, [np.nan] * len(x0))
         np.testing.assert_equal(t_values, [np.nan] * len(x0))
         np.testing.assert_equal(p_values, [np.nan] * len(x0))
 
 
 def test14():
     """This test checks wether our gradient functions work properly."""
-    constr = dict()
-    constr["AGENTS"], constr["DETERMINISTIC"] = 10000, False
+    constr = {"AGENTS": 10000, "DETERMINISTIC": False}
 
     for _ in range(10):
 

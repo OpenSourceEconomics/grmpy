@@ -550,8 +550,6 @@ def _define_common_support(
                 lower_limit, upper_limit
             )
         )
-    else:
-        pass
 
     if save_output is False:
         pass
