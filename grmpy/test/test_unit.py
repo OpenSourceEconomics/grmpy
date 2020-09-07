@@ -36,40 +36,34 @@ def test1():
     """The first test tests whether the relationships in the simulated datasets are
     appropriate in a deterministic and an un-deterministic setting.
     """
-    constr = dict()
-    for case in ["deterministic", "undeterministic"]:
-        if case == "deterministic":
-            constr["DETERMINISTIC"] = True
-        else:
-            constr["DETERMINISTIC"] = True
-        for _ in range(10):
-            generate_random_dict(constr)
-            df = simulate("test.grmpy.yml")
-            dict_ = read("test.grmpy.yml")
-            x_treated = df[dict_["TREATED"]["order"]]
-            y_treated = (
-                pd.DataFrame.sum(dict_["TREATED"]["params"] * x_treated, axis=1) + df.U1
-            )
-            x_untreated = df[dict_["UNTREATED"]["order"]]
-            y_untreated = (
-                pd.DataFrame.sum(dict_["UNTREATED"]["params"] * x_untreated, axis=1)
-                + df.U0
-            )
+    constr = {"DETERMINISTIC": True}
+    for _ in range(10):
+        generate_random_dict(constr)
+        df = simulate("test.grmpy.yml")
+        dict_ = read("test.grmpy.yml")
+        x_treated = df[dict_["TREATED"]["order"]]
+        y_treated = (
+            pd.DataFrame.sum(dict_["TREATED"]["params"] * x_treated, axis=1) + df.U1
+        )
+        x_untreated = df[dict_["UNTREATED"]["order"]]
+        y_untreated = (
+            pd.DataFrame.sum(dict_["UNTREATED"]["params"] * x_untreated, axis=1) + df.U0
+        )
 
-            np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
-            np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+        np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
+        np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
+        np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+        np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
 
 
 def test2():
     """The second test  checks whether the relationships hold if the coefficients are
     zero in different setups.
     """
+    constr = {"DETERMINISTIC": True}
+
     for _ in range(10):
         for case in ["ALL", "TREATED", "UNTREATED", "CHOICE", "TREATED & UNTREATED"]:
-            constr = dict()
-            constr["DETERMINISTIC"] = False
             dict_ = generate_random_dict(constr)
 
             if case == "ALL":
@@ -137,8 +131,7 @@ def test3():
     test checks if the start values for the estimation process are set to the init-
     ialization file values due to perfect separation.
     """
-    constr = dict()
-    constr["AGENTS"], constr["DETERMINISTIC"] = 1, False
+    constr = {"AGENTS": 1, "DETERMINISTIC": False}
     for _ in range(10):
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")

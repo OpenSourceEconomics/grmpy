@@ -66,6 +66,7 @@ def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_
         grid_alpha=0.25,
         labelsize=label_size,
     )
+    # TODO: trim the y axis based on the results
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 

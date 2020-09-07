@@ -1088,7 +1088,7 @@ def prepare_mte_calc(opt_rslt, data):
         Difference of the coefficients of the treated and the untreated outcome equation.
     """
 
-    quantiles = np.arange(0.0001, 0.9999, 0.0001)
+    quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
 
     # create a proper covariance matrix from the estimation results
     dist_params = opt_rslt.loc["DIST", "params"]
