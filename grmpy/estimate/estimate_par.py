@@ -3,20 +3,18 @@ The module provides auxiliary functions for the estimation process.
 """
 
 import copy
+from random import randint
 
 import numpy as np
-from random import randint
 import statsmodels.api as sm
-from scipy.stats import t, norm
-from scipy.optimize import minimize
 from numpy.linalg import LinAlgError
+from scipy.optimize import minimize
+from scipy.stats import norm, t
 from statsmodels.tools.numdiff import approx_hess_cs
 from statsmodels.tools.sm_exceptions import PerfectSeparationError
 
-from grmpy.estimate.estimate_output import write_comparison
-from grmpy.estimate.estimate_output import print_logfile
-
 from grmpy.check.check import UserError, check_start_values
+from grmpy.estimate.estimate_output import print_logfile, write_comparison
 
 
 def par_fit(dict_, data):
@@ -160,8 +158,8 @@ def start_value_adjustment(x, init_dict, option):
     Additionally it transforms the sigma values so that all values are always positive.
     """
 
-    # if option = init the estimation process takes its distributional arguments from the
-    # inititialization dict
+    # if option = init the estimation process takes its distributional arguments
+    # from the inititialization dict
     if option == "init":
         rho1 = init_dict["DIST"]["params"][2] / init_dict["DIST"]["params"][0]
         rho0 = init_dict["DIST"]["params"][4] / init_dict["DIST"]["params"][3]
@@ -205,7 +203,7 @@ def backward_transformation(x0, dict_=None):
 def log_likelihood(
     x0, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, dict_=None
 ):
-    """The function provides the log-likelihood function for the minimization process."""
+    """Provide the log-likelihood function for the minimization process."""
 
     beta1, beta0, gamma = (
         x0[:num_treated],

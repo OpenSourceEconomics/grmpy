@@ -1,7 +1,11 @@
 name: grmpy
 
+channels:
+  - conda-forge
+  - defaults
+
 dependencies:
-  - python=3.7
+  - python>=3.7,<3.9
   - numpy
   - pandas
   - statsmodels
@@ -11,6 +15,7 @@ dependencies:
   - numba
   - matplotlib
   - flake8
+  - scikit-learn
   - seaborn
   - pandoc
   - pip
@@ -25,4 +30,3 @@ dependencies:
     - pytest-cov
     - jupyterlab
     - scikit-misc
-    - scikit-learn

@@ -2,9 +2,19 @@
 import os
 import sys
 import warnings
+from pathlib import Path
 
 import numpy as np
 from statsmodels.tools.sm_exceptions import ConvergenceWarning
+
+# Obtain the root directory of the package.
+# Do not import grmpy which creates a circular import.
+ROOT_DIR = Path(__file__).parent
+
+
+# Directory with additional resources for the testing harness
+TEST_DIR = ROOT_DIR / "tests"
+TEST_RESOURCES_DIR = ROOT_DIR / "tests" / "resources"
 
 # Set Debug mode dependend on the environment in which the test battery is running
 IS_PRODUCTION = False
