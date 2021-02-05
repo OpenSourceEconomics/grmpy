@@ -12,3 +12,4 @@ scikit-misc==0.1.1
 scikit-learn==0.22.1
 numba==0.47.0
 matplotlib>=3.1.1
+sphinxcontrib.bibtex<2.0.0
