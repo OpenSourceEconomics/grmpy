@@ -14,14 +14,14 @@ repos:
         '--ignore=E203,E402,E501,E800,W503, C901, C407',
         '--select=B,C,E,F,W,T4,B9'
       ]
--   repo: https://github.com/timothycrosley/isort
-    rev: 4.3.20
-    hooks:
-    - id: isort
-      name: isort
-      exclude: ^docs/
-      entry: isort
-      require_serial: true
-      language: python
-      types: [python]
+# -   repo: https://github.com/timothycrosley/isort
+#     rev: 4.3.20
+#     hooks:
+#     - id: isort
+#       name: isort
+#       exclude: ^docs/
+#       entry: isort
+#       require_serial: true
+#       language: python
+#       types: [python]
 
