@@ -1,6 +1,6 @@
 """This module provides the fixtures for the PYTEST runs."""
-import tempfile
 import os
+import tempfile
 
 import numpy as np
 import pytest

@@ -1,7 +1,7 @@
 """This module provides auxiliary functions for locpoly."""
-import numpy as np
 import math
 
+import numpy as np
 from numba import jit
 
 

@@ -1,19 +1,21 @@
-"""The module allows to run tests from inside the interpreter."""
-import os
+"""This is the entry-point to the grmpy package.
 
+Include only imports which should be available using
+
+.. code-block::
+
+    import grmpy as gp
+
+    gp.<func>
+"""
 import pytest
 
-from grmpy.simulate.simulate import simulate
-from grmpy.grmpy_config import PACKAGE_DIR
-from grmpy.estimate.estimate import fit
-from grmpy.plot.plot import plot_mte
-
-import grmpy.grmpy_config
+from grmpy.estimate.estimate import fit  # noqa: F401
+from grmpy.grmpy_config import ROOT_DIR
+from grmpy.plot.plot import plot_mte  # noqa: F401
+from grmpy.simulate.simulate import simulate  # noqa: F401
 
 
-def test():
-    """The function allows to run the tests from inside the interpreter."""
-    current_directory = os.getcwd()
-    os.chdir(PACKAGE_DIR)
-    pytest.main()
-    os.chdir(current_directory)
+def test(*args, **kwargs):
+    """Run basic tests of the package."""
+    pytest.main([str(ROOT_DIR), *args], **kwargs)

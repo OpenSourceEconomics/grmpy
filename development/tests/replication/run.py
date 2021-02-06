@@ -1,14 +1,15 @@
 """This script replicates the estimation results from Cainero 2011 via the grmpy estimation method.
 Additionally it returns a figure of the Marginal treatment effect based on the estimation results.
 """
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-import pandas as pd
-import numpy as np
 import json
 
-from grmpy.estimate.estimate_output import calculate_mte
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
+
 from grmpy.estimate.estimate import fit
+from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.read.read import read
 
 

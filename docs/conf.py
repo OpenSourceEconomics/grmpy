@@ -18,12 +18,15 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sys
 
-# We want to change some of the behavior for Read the docs.
+# Set variable so that todos are shown in local build
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- General configuration ------------------------------------------------

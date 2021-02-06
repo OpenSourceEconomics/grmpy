@@ -1,11 +1,11 @@
 """This module provides some capabilities to check the integrity of the package."""
 
 import os
+
 import numpy as np
 
-from grmpy.check.auxiliary import check_special_conf
+from grmpy.check.auxiliary import check_special_conf, is_pos_def
 from grmpy.check.custom_exceptions import UserError
-from grmpy.check.auxiliary import is_pos_def
 
 
 def check_presence_init(fname):

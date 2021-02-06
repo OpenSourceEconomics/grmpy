@@ -2,9 +2,9 @@
 simulation processes of the unobservable and endogenous variables of the model as well
 as functions regarding the info file output.
 """
-from scipy.stats import norm
-import pandas as pd
 import numpy as np
+import pandas as pd
+from scipy.stats import norm
 
 
 def simulate_covariates(init_dict):
