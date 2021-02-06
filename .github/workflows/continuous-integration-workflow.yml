@@ -22,7 +22,7 @@ jobs:
         # run: |
         #   python -m pip install --upgrade pip
         #   pip install tox tox-gh-actions
-        pip install tox
+        run: pip install tox
       - name: Run Tox
         # shell: bash -l {0}
         run: tox -e py
