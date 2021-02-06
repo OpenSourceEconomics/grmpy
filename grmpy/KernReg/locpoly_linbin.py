@@ -1,5 +1,6 @@
 """This module contains a function that implements the linear binning procedure."""
 import numpy as np
+
 from numba import jit
 
 

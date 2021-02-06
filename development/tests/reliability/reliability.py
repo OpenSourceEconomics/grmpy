@@ -3,11 +3,11 @@ tion strategy. For this purpose data and the associated parameterization from Ca
 used. Additionally the module creates two different figures for the reliability section of the
 documentation.
 """
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
+import matplotlib.pyplot as plt
 from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables

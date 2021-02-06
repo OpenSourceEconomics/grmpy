@@ -1,9 +1,9 @@
 """The module provides unit tests for different aspects of the simulation process."""
 import numpy as np
 import pandas as pd
-import pytest
 from statsmodels.tools.numdiff import approx_fprime_cs
 
+import pytest
 from grmpy.check.auxiliary import read_data
 from grmpy.estimate.estimate import fit
 from grmpy.estimate.estimate_par import (

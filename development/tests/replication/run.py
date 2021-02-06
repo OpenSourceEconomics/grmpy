@@ -3,11 +3,11 @@ Additionally it returns a figure of the Marginal treatment effect based on the e
 """
 import json
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+import matplotlib.pyplot as plt
 from grmpy.estimate.estimate import fit
 from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.read.read import read

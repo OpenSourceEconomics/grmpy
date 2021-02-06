@@ -1,7 +1,7 @@
 """The module contains the main function of the init file import process."""
 import numpy as np
-import yaml
 
+import yaml
 from grmpy.check.check import check_presence_init
 from grmpy.read.read_auxiliary import create_attr_dict_est, create_attr_dict_sim
 

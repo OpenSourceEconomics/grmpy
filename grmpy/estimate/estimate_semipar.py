@@ -1,13 +1,13 @@
 """
 This module contains the semiparametric estimation process.
 """
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from skmisc.loess import loess
 
+import matplotlib.pyplot as plt
 from grmpy.KernReg.locpoly import locpoly
+from skmisc.loess import loess
 
 lowess = sm.nonparametric.lowess
 
