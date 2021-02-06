@@ -33,21 +33,45 @@ jobs:
         shell: bash -l {0}
         run: conda install -c conda-forge tox-conda
 
-      ###############################################################################
-      # tox-conda fixes on Windows (https://github.com/tox-dev/tox-conda/issues/37) #
-      ###############################################################################
-
-      # - name: Install fixes for Python 3+ on Windows
-      #   if: runner.os == 'Windows'
-      #   shell: bash -l {0}
-      #   run: conda install -c conda-forge -c opensourceeconomics conda-build estimagic matplotlib python-snappy
-
-      ###############
-      # Test Matrix #
-      ###############
-
-      # Unit tests.
-
-      - name: Run unit tests and doctests.
+      - name: Run pytest 
         shell: bash -l {0}
-        run: tox -e pytest # -- -m "not slow and not integration and not end_to_end" --cov=./ --cov-report=xml -n auto
+        run: tox -e pytest
+
+  pre-commit:
+
+    name: Run pre-commit.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: pip install tox
+
+      - name: Run pre-commit
+        run: tox -e pre-commit
+  
+  docs:
+
+    name: Run documentation.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: 3.8
+
+      - name: Install core dependencies.
+        shell: bash -l {0}
+        run: conda install -c conda-forge tox-conda
+
+      - name: Build docs
+        shell: bash -l {0}
+        run: tox -e sphinx
