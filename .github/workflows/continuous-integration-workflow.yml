@@ -3,16 +3,15 @@ name: Continuous Integration
 on: [push]
 
 jobs:
-  build:
+  tests:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [3.6, 3.7, 3.8]
+        python-version: ['3.6', '3.7', '3.8']
 
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python }}
@@ -21,4 +20,4 @@ jobs:
         run: conda install -c conda-forge tox-conda
       - name: Run Tox
         shell: bash -l {0}
-        run: tox
+        run: tox -e pytest
