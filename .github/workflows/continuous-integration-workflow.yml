@@ -1,28 +1,53 @@
-name: Continuous Integration
+name: Continuous Integration Workflow
+on:
+  push:
+    # branches:
+    # - main
+  pull_request:
+    branches:
+    - '*'
 
-on: [push]
+env:
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
 jobs:
-  build:
 
-    runs-on: ubuntu-latest
+  run-tests:
+
+    name: Run tests for ${{ matrix.os }} on ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: ['ubuntu-latest', 'macos-latest', 'windows-latest']
         python-version: ['3.7', '3.8']
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v1
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          # auto-update-conda: true
-          python-version: ${{ matrix.python }}
-      - name: Install Tox and any other packages
-         # shell: bash -l {0}
-        run: |
-          python -m pip install --upgrade pip
-          pip install tox-conda
-        # run: pip install tox
-      - name: Run Tox
-        # shell: bash -l {0}
-        run: tox -e py
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install core dependencies.
+        shell: bash -l {0}
+        run: conda install -c conda-forge tox-conda
+
+      ###############################################################################
+      # tox-conda fixes on Windows (https://github.com/tox-dev/tox-conda/issues/37) #
+      ###############################################################################
+
+      # - name: Install fixes for Python 3+ on Windows
+      #   if: runner.os == 'Windows'
+      #   shell: bash -l {0}
+      #   run: conda install -c conda-forge -c opensourceeconomics conda-build estimagic matplotlib python-snappy
+
+      ###############
+      # Test Matrix #
+      ###############
+
+      # Unit tests.
+
+      - name: Run unit tests and doctests.
+        shell: bash -l {0}
+        run: tox -e pytest -- -m "not slow and not integration and not end_to_end" --cov=./ --cov-report=xml -n auto
