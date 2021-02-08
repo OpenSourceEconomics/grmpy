@@ -28,5 +28,6 @@ dependencies:
   - statsmodels
   - tox-conda
   - pip:
+    - kernreg
     - scikit-misc
     - scikit-learn
