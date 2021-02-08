@@ -6,7 +6,9 @@ import pandas as pd
 import statsmodels.api as sm
 
 import matplotlib.pyplot as plt
-from grmpy.KernReg.locpoly import locpoly
+
+# from grmpy.KernReg.locpoly import locpoly
+import kernreg as kr
 from skmisc.loess import loess
 
 lowess = sm.nonparametric.lowess
@@ -482,7 +484,18 @@ def mte_unobserved_semipar(
 
     # Estimate mte_u, the unobserved component of the MTE,
     # through a locally quadratic regression
-    mte_u = locpoly(prop_score, Y_tilde, 1, 2, bandwidth, gridsize, startgrid, endgrid)
+    rslt_locpoly = kr.locpoly(
+        x=prop_score,
+        y=Y_tilde,
+        derivative=1,
+        degree=2,
+        bandwidth=bandwidth,
+        gridsize=gridsize,
+        a=startgrid,
+        b=endgrid,
+    )
+
+    mte_u = rslt_locpoly["curvest"]
 
     return mte_u
 
