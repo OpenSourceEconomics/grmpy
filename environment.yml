@@ -5,7 +5,7 @@ channels:
   - conda-forge
 
 dependencies:
-  - python=3.7
+  - python>=3.7
   - pip
   - isort
   - jupyterlab
@@ -13,12 +13,12 @@ dependencies:
   - matplotlib
   - nbsphinx
   - numba
-  - numpy
+  - numpy>=1.2
   - flake8
   - oyaml
-  - pandas
+  - pandas>=0.24
   - pandoc
-  - pytest
+  - pytest>=6.2.1
   - pytest-cov
   - pytest-xdist
   - scipy
