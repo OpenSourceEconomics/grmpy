@@ -1,5 +1,5 @@
 exclude_paths:
-  - development/working/*
+  - development/*
   - setup.py
   - docs/presentation/*
   - docs/conf.py

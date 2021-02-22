@@ -3,7 +3,7 @@ import os
 import subprocess
 from subprocess import CalledProcessError
 
-import pytest
+# import pytest
 from grmpy.grmpy_config import PACKAGE_DIR
 
 
