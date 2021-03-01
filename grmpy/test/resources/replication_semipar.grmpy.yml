@@ -1,21 +1,23 @@
 ---
-SIMULATION:
+SIMULATION: null
 ESTIMATION:
-    file: grmpy/test/resources/aer-replication-mock.pkl
+    file: /home/sebastian/github/OpenSourceEconomics/grmpy/grmpy/test/resources/aer-replication-mock.pkl
     dependent: wage
     indicator: state
-    semipar: True
-    show_output: True
-    logit: True
+    semipar: true
+    show_output: true
+    logit: true
     nbins: 30
     bandwidth: 0.322
     gridsize: 500
-    trim_support: True
-    reestimate_p: False
+    trim_support: true
+    reestimate_p: false
     rbandwidth: 0.05
     derivative: 1
     degree: 2
-    ps_range: [0.005, 0.995]
+    ps_range:
+    - 0.005
+    - 0.995
 TREATED:
     params:
     - 1.0
@@ -115,7 +117,6 @@ DIST:
     - 0.1
     - 0.0
     - 1.0
-
-VARTYPES:
-SCIPY-BFGS:
-SCIPY-POWELL:
+VARTYPES: null
+SCIPY-BFGS: null
+SCIPY-POWELL: null

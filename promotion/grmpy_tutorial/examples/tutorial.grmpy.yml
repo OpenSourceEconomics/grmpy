@@ -6,13 +6,13 @@ SIMULATION:
 ESTIMATION:
     file: data.grmpy.txt
     output_file: output/est.grmpy.info
-    optimizer: SCIPY-BFGS
+    optimizer: BFGS
     start: auto
     maxiter: 6383
     agents: 165
     dependent: Y
     indicator: D
-    comparison: 1
+    comparison: 0
     print_output: 0
 TREATED:
     params:

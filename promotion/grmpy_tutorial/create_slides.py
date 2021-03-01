@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 """This module compiles the lecture notes."""
-import argparse
 import glob
 import os
-import shutil
 import subprocess
+
+import argparse
+import shutil
 
 
 def compile_single(is_update):

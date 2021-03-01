@@ -2,18 +2,14 @@
 """The test provides the basic capabilities to work with the regression tests of the
 package.
 """
-import argparse
-import json
 import os
 
+import argparse
+import json
 import numpy as np
 
 import grmpy
-from grmpy.estimate.estimate_par import (
-    calculate_criteria,
-    process_data,
-    start_values,
-)
+from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
 from grmpy.read.read import read
 from grmpy.simulate.simulate import simulate
 from grmpy.test.auxiliary import cleanup, dict_transformation

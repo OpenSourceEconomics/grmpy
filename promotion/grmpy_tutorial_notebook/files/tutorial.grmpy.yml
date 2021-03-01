@@ -6,7 +6,7 @@ SIMULATION:
 ESTIMATION:
     file: data.grmpy.txt
     output_file: output/est.grmpy.info
-    optimizer: SCIPY-BFGS
+    optimizer: BFGS
     start: auto
     maxiter: 6383
     agents: 165

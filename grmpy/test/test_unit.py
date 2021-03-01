@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import pytest
+from statsmodels.tools.numdiff import approx_fprime_cs
 
 from grmpy.check.auxiliary import read_data
 from grmpy.estimate.estimate import fit
@@ -9,9 +10,12 @@ from grmpy.estimate.estimate_par import (
     adjust_output,
     backward_transformation,
     calculate_criteria,
-    calculate_p_values,
     calculate_se,
     check_rslt_parameters,
+    create_rslt_df,
+    gradient_hessian,
+    log_likelihood,
+    minimizing_interface,
     process_data,
     process_output,
     start_value_adjustment,
@@ -32,40 +36,34 @@ def test1():
     """The first test tests whether the relationships in the simulated datasets are
     appropriate in a deterministic and an un-deterministic setting.
     """
-    constr = dict()
-    for case in ["deterministic", "undeterministic"]:
-        if case == "deterministic":
-            constr["DETERMINISTIC"] = True
-        else:
-            constr["DETERMINISTIC"] = True
-        for _ in range(10):
-            generate_random_dict(constr)
-            df = simulate("test.grmpy.yml")
-            dict_ = read("test.grmpy.yml")
-            x_treated = df[dict_["TREATED"]["order"]]
-            y_treated = (
-                pd.DataFrame.sum(dict_["TREATED"]["params"] * x_treated, axis=1) + df.U1
-            )
-            x_untreated = df[dict_["UNTREATED"]["order"]]
-            y_untreated = (
-                pd.DataFrame.sum(dict_["UNTREATED"]["params"] * x_untreated, axis=1)
-                + df.U0
-            )
+    constr = {"DETERMINISTIC": True}
+    for _ in range(10):
+        generate_random_dict(constr)
+        df = simulate("test.grmpy.yml")
+        dict_ = read("test.grmpy.yml")
+        x_treated = df[dict_["TREATED"]["order"]]
+        y_treated = (
+            pd.DataFrame.sum(dict_["TREATED"]["params"] * x_treated, axis=1) + df.U1
+        )
+        x_untreated = df[dict_["UNTREATED"]["order"]]
+        y_untreated = (
+            pd.DataFrame.sum(dict_["UNTREATED"]["params"] * x_untreated, axis=1) + df.U0
+        )
 
-            np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
-            np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
-            np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
-            np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
+        np.testing.assert_array_almost_equal(df.Y1, y_treated, decimal=5)
+        np.testing.assert_array_almost_equal(df.Y0, y_untreated, decimal=5)
+        np.testing.assert_array_equal(df.Y[df.D == 1], df.Y1[df.D == 1])
+        np.testing.assert_array_equal(df.Y[df.D == 0], df.Y0[df.D == 0])
 
 
 def test2():
-    """The second test  checks whether the relationships hold if the coefficients are zero in
-    different setups.
+    """The second test  checks whether the relationships hold if the coefficients are
+    zero in different setups.
     """
+    constr = {"DETERMINISTIC": True}
+
     for _ in range(10):
         for case in ["ALL", "TREATED", "UNTREATED", "CHOICE", "TREATED & UNTREATED"]:
-            constr = dict()
-            constr["DETERMINISTIC"] = False
             dict_ = generate_random_dict(constr)
 
             if case == "ALL":
@@ -133,13 +131,13 @@ def test3():
     test checks if the start values for the estimation process are set to the init-
     ialization file values due to perfect separation.
     """
-    constr = dict()
-    constr["AGENTS"], constr["DETERMINISTIC"] = 1, False
+    constr = {"AGENTS": 1, "DETERMINISTIC": False}
     for _ in range(10):
         generate_random_dict(constr)
         dict_ = read("test.grmpy.yml")
         df = simulate("test.grmpy.yml")
-        start = start_values(dict_, df, "auto")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        start = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         np.testing.assert_equal(dict_["AUX"]["init_values"][:(-6)], start[:(-4)])
 
 
@@ -233,21 +231,19 @@ def test5():
 
 
 def test6():
-    """The test ensures that the cholesky decomposition and re-composition works
-    appropriately. For this purpose the test creates a positive smi definite matrix from
-    a Wishart distribution, decomposes this matrix with, reconstruct it and compares the
-    matrix with the one that was specified as the input for the decomposition process.
+    """The test ensures that the transformation of the optimization value vector works
+    appropriately. For this purpose the test creates some random values converts them,
+    transformes the values back and compared the resulting values to the initial values.
     """
-    for _ in range(1000):
-
+    for _ in range(100):
         cov = np.random.uniform(0, 1, 2)
         var = np.random.uniform(1, 2, 3)
-        aux = [var[0], var[1], cov[0], var[2], cov[1], 1.0]
-        dict_ = {"DIST": {"params": aux}}
         before = [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
-        x0 = start_value_adjustment([], dict_, "init")
-        after = backward_transformation(x0)
-        np.testing.assert_array_almost_equal(before, after, decimal=6)
+        transformed = start_value_adjustment(
+            [var[0], cov[0] / var[0], var[2], cov[1] / var[2]]
+        )
+        backward_transformed = backward_transformation(transformed)
+        np.testing.assert_array_almost_equal(before, backward_transformed, decimal=6)
 
 
 def test7():
@@ -290,8 +286,8 @@ def test9():
         for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
             true += list(dict_[key_]["params"])
         df = simulate("test.grmpy.yml")
-        x0 = start_values(dict_, df, "init")[:-4]
-
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        x0 = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")[:-4]
         np.testing.assert_array_equal(true, x0)
 
 
@@ -303,16 +299,17 @@ def test10():
     for _ in range(10):
         constr = dict()
         constr["DETERMINISTIC"], constr["AGENTS"] = False, 1000
-        constr["MAXITER"], constr["START"] = 0, "init"
+        constr["MAXITER"], constr["START"], constr["OPTIMIZER"] = 0, "init", "BFGS"
         generate_random_dict(constr)
-        init_dict = read("test.grmpy.yml")
+        dict_ = read("test.grmpy.yml")
         df = simulate("test.grmpy.yml")
-        start = start_values(init_dict, df, "init")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, dict_)
+        start = start_values(dict_, D, X1, X0, Z1, Z0, Y1, Y0, "init")
         start = backward_transformation(start)
 
         rslt = fit("test.grmpy.yml")
 
-        np.testing.assert_equal(start, rslt["AUX"]["x_internal"])
+        np.testing.assert_equal(start, rslt["opt_rslt"]["params"].values)
 
 
 def test11():
@@ -324,8 +321,8 @@ def test11():
 
 def test12():
     """This test checks if our data import process is able to handle .txt, .dta and .pkl
-     files.
-     """
+    files.
+    """
 
     pkl = TEST_RESOURCES_DIR + "/data.grmpy.pkl"
     dta = TEST_RESOURCES_DIR + "/data.grmpy.dta"
@@ -364,11 +361,10 @@ def test13():
         generate_random_dict({"DETERMINISTIC": False})
         df = simulate("test.grmpy.yml")
         init_dict = read("test.grmpy.yml")
-        start = start_values(init_dict, dict, "init")
-        _, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
-        init_dict["AUX"]["criteria"] = calculate_criteria(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, start
-        )
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        rslt_cont = create_rslt_df(init_dict)
+        start = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
+        init_dict["AUX"]["criteria"] = calculate_criteria(start, X1, X0, Z1, Z0, Y1, Y0)
         init_dict["AUX"]["starting_values"] = backward_transformation(start)
 
         aux_dict1 = {"crit": {"1": 10}}
@@ -376,11 +372,6 @@ def test13():
         x0, se = [np.nan] * len(start), [np.nan] * len(start)
         index = np.random.randint(0, len(x0) - 1)
         x0[index], se[index] = np.nan, np.nan
-
-        p_values, t_values = calculate_p_values(se, x0, df.shape[0])
-        np.testing.assert_array_equal(
-            [p_values[index], t_values[index]], [np.nan, np.nan]
-        )
 
         x_processed, crit_processed, _ = process_output(
             init_dict, aux_dict1, x0, "notfinite"
@@ -391,39 +382,92 @@ def test13():
             [init_dict["AUX"]["starting_values"], init_dict["AUX"]["criteria"]],
         )
 
-        check1, flag1 = check_rslt_parameters(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, aux_dict1, start
-        )
-        check2, flag2 = check_rslt_parameters(
-            init_dict, X1, X0, Z1, Z0, Y1, Y0, aux_dict1, x0
-        )
+        check1, flag1 = check_rslt_parameters(start, X1, X0, Z1, Z0, Y1, Y0, aux_dict1)
+        check2, flag2 = check_rslt_parameters(x0, X1, X0, Z1, Z0, Y1, Y0, aux_dict1)
 
         np.testing.assert_equal([check1, flag1], [False, None])
         np.testing.assert_equal([check2, flag2], [True, "notfinite"])
 
         opt_rslt = {
+            "x": start,
             "fun": 1.0,
             "success": 1,
             "status": 1,
             "message": "msg",
-            "nfev": 10000,
+            "nit": 10000,
         }
-        rslt = adjust_output(
-            opt_rslt, init_dict, start, X1, X0, Z1, Z0, Y1, Y0, dict_=aux_dict1
-        )
-        np.testing.assert_equal(rslt["crit"], opt_rslt["fun"])
-        np.testing.assert_equal(rslt["warning"][0], "---")
 
-        x_linalign = [0.0000000000000001] * len(x0)
-        num_treated = init_dict["AUX"]["num_covars_treated"]
-        num_untreated = num_treated + init_dict["AUX"]["num_covars_untreated"]
-        se, hess_inv, conf_interval, p_values, t_values, _ = calculate_se(
-            x_linalign, init_dict, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated
+        rslt = adjust_output(
+            opt_rslt,
+            init_dict,
+            rslt_cont,
+            start,
+            "BFGS",
+            "init",
+            X1,
+            X0,
+            Z1,
+            Z0,
+            Y1,
+            Y0,
+            aux_dict1,
         )
+        np.testing.assert_equal(rslt["opt_info"]["crit"], opt_rslt["fun"])
+        np.testing.assert_equal(rslt["opt_info"]["warning"][0], "---")
+
+        x_linalign = [0] * len(x0)
+        (
+            se,
+            hess_inv,
+            conf_interval_low,
+            conf_interval_up,
+            p_values,
+            t_values,
+            _,
+        ) = calculate_se(x_linalign, 1, X1, X0, Z1, Z0, Y1, Y0)
         np.testing.assert_equal(se, [np.nan] * len(x0))
         np.testing.assert_equal(hess_inv, np.full((len(x0), len(x0)), np.nan))
-        np.testing.assert_equal(conf_interval, [[np.nan, np.nan]] * len(x0))
+        np.testing.assert_equal(conf_interval_low, [np.nan] * len(x0))
+        np.testing.assert_equal(conf_interval_up, [np.nan] * len(x0))
         np.testing.assert_equal(t_values, [np.nan] * len(x0))
         np.testing.assert_equal(p_values, [np.nan] * len(x0))
+
+
+def test14():
+    """This test checks wether our gradient functions work properly."""
+    constr = {"AGENTS": 10000, "DETERMINISTIC": False}
+
+    for _ in range(10):
+
+        generate_random_dict(constr)
+        init_dict = read("test.grmpy.yml")
+        print(init_dict["AUX"])
+        df = simulate("test.grmpy.yml")
+        D, X1, X0, Z1, Z0, Y1, Y0 = process_data(df, init_dict)
+        num_treated = X1.shape[1]
+        num_untreated = X1.shape[1] + X0.shape[1]
+
+        x0 = start_values(init_dict, D, X1, X0, Z1, Z0, Y1, Y0, "init")
+        x0_back = backward_transformation(x0)
+        llh_gradient_approx = approx_fprime_cs(
+            x0_back,
+            log_likelihood,
+            args=(X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, False),
+        )
+        llh_gradient = gradient_hessian(x0_back, X1, X0, Z1, Z0, Y1, Y0)
+        min_inter_approx = approx_fprime_cs(
+            x0,
+            minimizing_interface,
+            args=(X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, False),
+        )
+        _, min_inter_gradient = log_likelihood(
+            x0_back, X1, X0, Z1, Z0, Y1, Y0, num_treated, num_untreated, None, True
+        )
+        np.testing.assert_array_almost_equal(
+            min_inter_approx, min_inter_gradient, decimal=5
+        )
+        np.testing.assert_array_almost_equal(
+            llh_gradient_approx, llh_gradient, decimal=5
+        )
 
     cleanup()

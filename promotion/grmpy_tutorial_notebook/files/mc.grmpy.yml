@@ -7,7 +7,7 @@ ESTIMATION:
     file: mc.grmpy.txt
     start: auto
     agents: 165
-    optimizer: SCIPY-BFGS
+    optimizer: BFGS
     maxiter: 6383
     dependent: wage
     indicator: state

@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Note: To use the 'upload' functionality of this file, you must:
 #   $ pip install twine
 
 import os
 import sys
-from pathlib import Path
-from shutil import rmtree
 
+from pathlib import Path
 from setuptools import Command, find_packages, setup
+from shutil import rmtree
 
 # Package meta-data.
 NAME = "grmpy"
@@ -63,7 +62,7 @@ class PublishCommand(Command):
     @staticmethod
     def status(s):
         """Prints things in bold."""
-        print("\033[1m{0}\033[0m".format(s))
+        print(f"\033[1m{s}\033[0m")
 
     def initialize_options(self):
         pass
@@ -79,7 +78,7 @@ class PublishCommand(Command):
             pass
 
         self.status("Building Source and Wheel (universal) distribution…")
-        os.system("{0} setup.py sdist bdist_wheel --universal".format(sys.executable))
+        os.system(f"{sys.executable} setup.py sdist bdist_wheel --universal")
 
         self.status("Uploading the package to PyPi via Twine…")
         os.system("twine upload dist/*")

@@ -1,9 +1,8 @@
 """This file contains unit tests for the semiparametric estimation routine."""
-import random
-
 import numpy as np
 import pandas as pd
 import pytest
+import random
 
 from grmpy.estimate.estimate_semipar import (
     _construct_Xp,

@@ -1,19 +1,19 @@
 """
 This module contains the semiparametric estimation process.
 """
+# from grmpy.KernReg.locpoly import locpoly
+import kernreg as kr
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from skmisc.loess import loess
 
-from grmpy.KernReg.locpoly import locpoly
-
 lowess = sm.nonparametric.lowess
 
 
 def semipar_fit(dict_, data):
-    """"
+    """ "
     This function runs the semiparametric estimation of the
     marginal treatment effect via local instrumental variables.
 
@@ -62,7 +62,7 @@ def semipar_fit(dict_, data):
     quantiles = np.linspace(startgrid, endgrid, gridsize)
 
     mte_x = mte_observed(X, b1_b0)
-    mte_u = mte_unobserved(
+    mte_u = mte_unobserved_semipar(
         X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
     )
 
@@ -387,7 +387,7 @@ def double_residual_reg(X, Y, prop_score, rbandwidth=0.05, show_output=False):
     model = sm.OLS(res_Y, res_X_Xp)
     results = model.fit()
     b0 = results.params[: len(list(X))]
-    b1_b0 = results.params[len((list(X))) :]
+    b1_b0 = results.params[len(list(X)) :]
 
     if show_output is True:
         print(results.summary())
@@ -421,7 +421,7 @@ def mte_observed(X, b1_b0):
     return mte_x
 
 
-def mte_unobserved(
+def mte_unobserved_semipar(
     X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
 ):
     """
@@ -482,7 +482,18 @@ def mte_unobserved(
 
     # Estimate mte_u, the unobserved component of the MTE,
     # through a locally quadratic regression
-    mte_u = locpoly(prop_score, Y_tilde, 1, 2, bandwidth, gridsize, startgrid, endgrid)
+    rslt_locpoly = kr.locpoly(
+        x=prop_score,
+        y=Y_tilde,
+        derivative=1,
+        degree=2,
+        bandwidth=bandwidth,
+        gridsize=gridsize,
+        a=startgrid,
+        b=endgrid,
+    )
+
+    mte_u = rslt_locpoly["curvest"]
 
     return mte_u
 
@@ -545,13 +556,11 @@ def _define_common_support(
             """
     Common support lies beteen:
 
-        {0} and
-        {1}""".format(
+        {} and
+        {}""".format(
                 lower_limit, upper_limit
             )
         )
-    else:
-        pass
 
     if save_output is False:
         pass
@@ -637,7 +646,7 @@ def _make_histogram(
         plt.ylabel("$f(P)$", fontsize=fontsize)
 
         if plot_title is True:
-            plt.title("Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
+            plt.title(r"Support of $P(\hat{Z})$ for $D=1$ and $D=0$")
 
     else:
         plt.close(fig)

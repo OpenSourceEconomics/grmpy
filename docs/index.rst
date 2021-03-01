@@ -29,15 +29,15 @@ The package is used as a teaching tool for a course on the analysis human capita
     :hidden:
     :maxdepth: 1
 
-    economics
-    installation
-    tutorial
-    reliability
-    software_engineering
-    contributing
-    credits
-    changes
-    bibliography
+    source/economics
+    source/installation
+    source/tutorial
+    source/reliability
+    source/software_engineering
+    source/contributing
+    source/credits
+    source/changes
+    source/bibliography
 
 
 .. todo::

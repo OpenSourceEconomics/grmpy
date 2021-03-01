@@ -2,10 +2,10 @@
 notebook.
 """
 
-import json
-import linecache
 import shlex
 
+import json
+import linecache
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -15,10 +15,9 @@ import seaborn as sns
 import statsmodels.api as sm
 from linearmodels.iv import IV2SLS
 from pylab import rcParams
-from scipy.stats import norm
 
 from grmpy.estimate.estimate import fit
-from grmpy.estimate.estimate_output import calculate_mte
+from grmpy.plot.plot_auxiliary import mte_and_cof_int_par
 from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.test.random_init import print_dict
@@ -177,7 +176,7 @@ def monte_carlo(file, grid_points):
     """This function estimates the ATE for a sample with different correlation
     structures between U1 and V. Two different strategies for (OLS,LATE) are
     implemented.
-     """
+    """
 
     ATE = 0.5
 
@@ -205,7 +204,10 @@ def monte_carlo(file, grid_points):
 
         # Estimate  via grmpy
         rslt = fit(file)
-        beta_diff = rslt["TREATED"]["params"] - rslt["UNTREATED"]["params"]
+        beta_diff = (
+            rslt["opt_rslt"].loc["TREATED", "params"].values
+            - rslt["opt_rslt"].loc["UNTREATED", "params"].values
+        )
         stat = np.dot(np.mean(exog), beta_diff)
 
         effects["grmpy"] += [stat]
@@ -297,24 +299,21 @@ def plot_est_mte(rslt, file):
     data_frame = pd.read_pickle(init_dict["ESTIMATION"]["file"])
 
     # Define the Quantiles and read in the original results
-    quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
-    mte_ = json.load(open("data/mte_original.json", "r"))
+    mte_ = json.load(open("data/mte_original.json"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]
 
     # Calculate the MTE and confidence intervals
-    mte = calculate_mte(rslt, data_frame, quantiles)
-    mte = [i / 4 for i in mte]
-    mte_up, mte_d = calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles)
+    quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, data_frame, 4)
 
     # Plot both curves
     ax = plt.figure(figsize=(17.5, 10)).add_subplot(111)
 
-    ax.set_ylabel(r"$B^{MTE}$", fontsize=24)
+    ax.set_ylabel(r"MTE", fontsize=24)
     ax.set_xlabel("$u_D$", fontsize=24)
     ax.tick_params(axis="both", which="major", labelsize=18)
-    ax.plot(quantiles, mte, label="grmpy $B^{MTE}$", color="blue", linewidth=4)
+    ax.plot(quantiles, mte, label="grmpy MTE", color="blue", linewidth=4)
     ax.plot(quantiles, mte_up, color="blue", linestyle=":", linewidth=3)
     ax.plot(quantiles, mte_d, color="blue", linestyle=":", linewidth=3)
     ax.plot(
@@ -331,44 +330,6 @@ def plot_est_mte(rslt, file):
     plt.show()
 
     return mte
-
-
-def calculate_cof_int(rslt, init_dict, data_frame, mte, quantiles):
-    """This function calculates the confidence interval of the marginal treatment
-    effect.
-    """
-
-    # Import parameters and inverse hessian matrix
-    hess_inv = rslt["AUX"]["hess_inv"] / data_frame.shape[0]
-    params = rslt["AUX"]["x_internal"]
-
-    # Distribute parameters
-    dist_cov = hess_inv[-4:, -4:]
-    param_cov = hess_inv[:46, :46]
-    dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
-
-    # Process data
-    covariates = init_dict["TREATED"]["order"]
-    x = np.mean(data_frame[covariates]).tolist()
-    x_neg = [-i for i in x]
-    x += x_neg
-    x = np.array(x)
-
-    # Create auxiliary parameters
-    part1 = np.dot(x, np.dot(param_cov, x))
-    part2 = np.dot(dist_gradients, np.dot(dist_cov, dist_gradients))
-    # Prepare two lists for storing the values
-    mte_up = []
-    mte_d = []
-
-    # Combine all auxiliary parameters and calculate the confidence intervals
-    for counter, i in enumerate(quantiles):
-        value = part2 * (norm.ppf(i)) ** 2
-        aux = np.sqrt(part1 + value) / 4
-        mte_up += [mte[counter] + norm.ppf(0.95) * aux]
-        mte_d += [mte[counter] - norm.ppf(0.95) * aux]
-
-    return mte_up, mte_d
 
 
 def plot_joint_distribution_unobservables(df, df_eh):

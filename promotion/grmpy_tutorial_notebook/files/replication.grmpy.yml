@@ -5,15 +5,15 @@ SIMULATION:
     source: 8EF73AA0
 ESTIMATION:
     file: data/aer-replication-mock.pkl
-    start: auto
+    start: random
     agents: 1000
-    optimizer: SCIPY-BFGS
+    optimizer: BFGS
     maxiter: 80000
     dependent: wage
     indicator: state
     output_file: replication.grmp.info
     comparison: 0
-    print_output: 0
+    print_output: 1
 
 TREATED:
     params:

@@ -9,12 +9,11 @@ from sklearn.utils import resample
 
 from grmpy.check.auxiliary import read_data
 from grmpy.check.check import check_presence_init
-from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.estimate.estimate_semipar import (
     double_residual_reg,
     estimate_treatment_propensity,
     mte_observed,
-    mte_unobserved,
+    mte_unobserved_semipar,
     process_primary_inputs,
     process_secondary_inputs,
     trim_support,
@@ -67,6 +66,7 @@ def plot_curve(mte, quantiles, con_u, con_d, font_size, label_size, color, save_
         grid_alpha=0.25,
         labelsize=label_size,
     )
+    # TODO: trim the y axis based on the results
     ax.xaxis.set_ticks_position("both")
     ax.yaxis.set_ticks_position("both")
 
@@ -138,7 +138,7 @@ def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
     return quantiles, mte, con_u, con_d
 
 
-def mte_and_cof_int_par(rslt, init_dict, data, college_years):
+def mte_and_cof_int_par(rslt, data, college_years):
     """
     This function returns the parametric MTE divided by the number
     of college years, which represents the returns per YEAR of
@@ -150,9 +150,6 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     rslt: dict
         Result dictionary containing parameters for the estimation
         process.
-    init_dict: dict
-        Initialization dictionary containing parameters for the
-        estimation process.
     data: pandas.DataFrame
         Data set containing the observables (explanatory and outcome variables)
         analyzed in the generalized Roy framework.
@@ -161,17 +158,17 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
         refer to the returns per one year of college education.
     """
     # Define quantiles of u_D (unobserved resistance to treatment)
-    quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
+    quantiles = rslt["quantiles"]
 
-    # Calculate the MTE and confidence intervals
-    mte = calculate_mte(rslt, data, quantiles)
-    mte = [i / college_years for i in mte]
-    con_u, con_d = calculate_cof_int(rslt, init_dict, data, mte, quantiles)
+    # MTE per year of post-secondary education
+    mte = rslt["mte"] / college_years
 
-    return quantiles, mte, con_u, con_d
+    con_u, con_d = calculate_cof_int(rslt, data, quantiles)
+
+    return quantiles, mte, mte + con_u / college_years, mte - con_d / college_years
 
 
-def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
+def calculate_cof_int(rslt, data, quantiles):
     """
     This function calculates the analytical confidence intervals of
     the parametric marginal treatment effect.
@@ -181,14 +178,9 @@ def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
     rslt: dict
         Result dictionary containing parameters for the estimation
         process.
-    init_dict: dict
-        Initialization dictionary containing parameters for the estimation
-        process.
     data: pandas.DataFrame
         Data set containing the observables (explanatory and outcome variables)
         analyzed in the generalized Roy framework.
-    mte: np.ndarray
-        Estimate of the parametric MTE.
     quantiles: np.ndarray
         Quantiles of the u_D, along which the *mte* has been estimated.
 
@@ -201,36 +193,37 @@ def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
     """
 
     # Import parameters and inverse hessian matrix
-    hess_inv = rslt["AUX"]["hess_inv"] / data.shape[0]
-    params = rslt["AUX"]["x_internal"]
-    numx = len(init_dict["TREATED"]["order"]) + len(init_dict["UNTREATED"]["order"])
+    hess_inv = rslt["hessian_inv"] / data.shape[0]
+    params = rslt["opt_rslt"]["params"].values
+    numx = (
+        rslt["opt_rslt"].loc["TREATED"].shape[0]
+        + rslt["opt_rslt"].loc["UNTREATED"].shape[0]
+    )
 
     # Distribute parameters
     dist_cov = hess_inv[-4:, -4:]
     param_cov = hess_inv[:numx, :numx]
-    dist_gradients = np.array([params[-4], params[-3], params[-2], params[-1]])
+    dist_gradients = params[-4:]
 
     # Process data
-    covariates = init_dict["TREATED"]["order"]
-    x = np.mean(data[covariates]).tolist()
-    x_neg = [-i for i in x]
-    x += x_neg
-    x = np.array(x)
+
+    # goal should be to take into account that the treated and the
+    # untreated section can contain different covariates
+    x_treated = np.mean(data[rslt["opt_rslt"].loc["TREATED"].index.values]).values
+    x_untreated = np.mean(data[rslt["opt_rslt"].loc["UNTREATED"].index.values]).values
+    x = np.append(x_treated, -x_untreated)
 
     # Create auxiliary parameters
     part1 = np.dot(x, np.dot(param_cov, x))
     part2 = np.dot(dist_gradients, np.dot(dist_cov, dist_gradients))
 
     # Prepare two lists for storing the values
-    con_u = []
-    con_d = []
 
     # Combine all auxiliary parameters and calculate the confidence intervals
-    for counter, i in enumerate(quantiles):
-        value = part2 * (norm.ppf(i)) ** 2
-        aux = np.sqrt(part1 + value)
-        con_u += [mte[counter] + norm.ppf(0.95) * aux]
-        con_d += [mte[counter] - norm.ppf(0.95) * aux]
+    value = part2 * (norm.ppf(quantiles)) ** 2
+    aux = np.sqrt(part1 + value)
+    con_u = norm.ppf(0.95) * aux
+    con_d = norm.ppf(0.95) * aux
 
     return con_u, con_d
 
@@ -278,7 +271,7 @@ def bootstrap(init_file, nboot):
         boot_data = estimate_treatment_propensity(dict_, boot_data, logit, show_output)
         prop_score = boot_data["prop_score"]
 
-        if isinstance(prop_score, np.ndarray):
+        if isinstance(prop_score, pd.Series):
             # Define common support and trim the data (if trim=True)
             X, Y, prop_score = trim_support(
                 dict_, data, logit, bins, trim, reestimate_p, show_output=False
@@ -288,7 +281,7 @@ def bootstrap(init_file, nboot):
 
             # # Construct the MTE
             mte_x = mte_observed(X, b1_b0)
-            mte_u = mte_unobserved(
+            mte_u = mte_unobserved_semipar(
                 X, Y, b0, b1_b0, prop_score, bandwidth, gridsize, startgrid, endgrid
             )
 

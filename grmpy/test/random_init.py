@@ -15,7 +15,7 @@ def generate_random_dict(constr=None):
 
     if constr is not None:
         if not isinstance(constr, dict):
-            msg = "{} is not a dictionary.".format(constr)
+            msg = f"{constr} is not a dictionary."
             raise UserError(msg)
     else:
         constr = dict()
@@ -25,17 +25,25 @@ def generate_random_dict(constr=None):
     else:
         is_deterministic = np.random.random_sample() < 0.1
 
+    if "COMPARISON" in constr.keys():
+        comparison = constr["COMPARISON"]
+    else:
+        comparison = False
+
     if "STATE_DIFF" in constr.keys():
         state_diff = constr["STATE_DIFF"]
     else:
         state_diff = np.random.random_sample() < 0.5
 
+    if "BINARY" in constr.keys():
+        allow_binary = constr["BINARY"]
+    else:
+        allow_binary = True
+
     if "OPTIMIZER" in constr.keys():
         optimizer = constr["OPTIMIZER"]
     else:
-        optimizer = str(
-            np.random.choice(a=["SCIPY-BFGS", "SCIPY-POWELL"], p=[0.5, 0.5])
-        )
+        optimizer = str(np.random.choice(a=["BFGS", "POWELL"], p=[0.5, 0.5]))
 
     if "SAME_SIZE" in constr.keys():
         same_size = constr["SAME_SIZE"]
@@ -114,7 +122,8 @@ def generate_random_dict(constr=None):
     ):
         init_dict["VARTYPES"][variable] = "nonbinary"
 
-    init_dict = types(init_dict)
+    if allow_binary is True:
+        init_dict = types(init_dict)
 
     # Simulation parameters
     init_dict["SIMULATION"] = {}
@@ -135,8 +144,8 @@ def generate_random_dict(constr=None):
     init_dict["ESTIMATION"]["dependent"] = "Y"
     init_dict["ESTIMATION"]["indicator"] = "D"
     init_dict["ESTIMATION"]["output_file"] = "est.grmpy.info"
-    init_dict["ESTIMATION"]["comparison"] = "0"
-    init_dict["ESTIMATION"]["print_output"] = "0"
+    init_dict["ESTIMATION"]["comparison"] = comparison
+    init_dict["ESTIMATION"]["print_output"] = False
 
     init_dict["SCIPY-BFGS"], init_dict["SCIPY-POWELL"] = {}, {}
     init_dict["SCIPY-BFGS"]["gtol"] = np.random.uniform(1.5e-05, 0.8e-05)
@@ -183,7 +192,7 @@ def generate_coeff(num, is_zero):
 
 
 def types(init_dict):
-    """This function determines if there are any binary variables. If so the funtion
+    """This function determines if there are any binary variables. If so the function
     specifies the rate for which the variable is equal to one.
     """
 
@@ -247,7 +256,10 @@ def print_dict(init_dict, file_name="test"):
     ]
 
     for key_ in order:
-        ordered_dict[key_] = init_dict[key_]
+        if key_ in init_dict.keys():
+            ordered_dict[key_] = init_dict[key_]
+        else:
+            pass
     for section in ["TREATED", "CHOICE", "UNTREATED", "DIST"]:
         if isinstance(ordered_dict[section]["params"], list):
             pass
@@ -255,7 +267,7 @@ def print_dict(init_dict, file_name="test"):
             ordered_dict[section]["params"] = ordered_dict[section]["params"].tolist()
 
     # Print the initialization file
-    with open("{}.grmpy.yml".format(file_name), "w") as outfile:
+    with open(f"{file_name}.grmpy.yml", "w") as outfile:
         yaml.dump(
             ordered_dict,
             outfile,

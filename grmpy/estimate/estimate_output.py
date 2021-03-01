@@ -1,318 +1,119 @@
 """This module contains methods for producing the estimation output files."""
-import copy
-
-import numpy as np
-
-from grmpy.simulate.simulate_auxiliary import (
-    mte_information,
-    simulate_covariates,
-    simulate_outcomes,
-    simulate_unobservables,
-)
+import time
+from textwrap import wrap
 
 
-def print_logfile(init_dict, rslt):
+def print_logfile(init_dict, rslt, print_output):
     """The function writes the log file for the estimation process."""
     # Adjust output
-
     if "output_file" in init_dict["ESTIMATION"].keys():
         file_name = init_dict["ESTIMATION"]["output_file"]
     else:
         file_name = "est.grmpy.info"
-
     file_input = ""
-    for label in [
-        "Optimization Information",
-        "Criterion Function",
-        "Economic Parameters",
-    ]:
-        header = "\n \n  {:<10}\n\n".format(label)
-        file_input += header
-        if label == "Optimization Information":
-            for section in [
-                "Optimizer",
-                "Start Values",
-                "Success",
-                "Status",
-                "Message",
-                "Number of Evaluations",
-                "Criterion",
-                "Observations",
-                "Warning",
-            ]:
-                fmt = "  {:<10}" + " {:<30}" + "{:<30} \n"
 
-                if section == "Number of Evaluations":
-                    file_input += fmt.format("", section + ":", rslt["nfev"])
-                elif section in ["Start Values", "Optimizer"]:
-                    file_input += fmt.format(
-                        "",
-                        section + ":",
-                        rslt["ESTIMATION"][section.split(" ")[0].lower()],
-                    )
+    # obtain optimization information and results
+    opt_info = rslt["opt_info"]
+    opt_rslt = rslt["opt_rslt"]
 
-                elif section == "Criterion":
-                    fmt_float = "  {:<10}" + " {:<30}" + "{:<30.4f}\n"
-                    file_input += fmt_float.format("", section + ":", rslt["crit"])
-                elif section in ["Warning"]:
+    # create header of output table
+    header = "{:>50}".format("Optimization Results") + "\n" + 80 * "=" + "\n"
 
-                    for counter, _ in enumerate(rslt[section.lower()]):
-                        if counter == 0:
-                            file_input += fmt.format(
-                                "", section + ":", rslt[section.lower()][counter]
-                            )
-                        else:
-                            file_input += fmt.format(
-                                "", "", rslt[section.lower()][counter]
-                            )
+    # specify some table inputs
+    message = wrap(opt_info["message"], 24)
+    if len(message) == 1:
+        message += [""]
+    time_now = time.localtime()
+    time_ = time.strftime("%H:%M:%S", time_now)
+    date = time.strftime("%a, %d %b %Y", time_now)
 
-                    if section == "Warning":
-                        if "warning" in init_dict["ESTIMATION"].keys():
-                            file_input += fmt.format(
-                                "", "", init_dict["ESTIMATION"]["warning"]
-                            )
+    # define correctly aligned string
+    fmt = "{:<15}" + "{:>20}" + "{:>5}" + "{:<16}" + "{:>24}\n"
 
-                else:
-                    file_input += fmt.format("", section + ":", rslt[section.lower()])
-
-        elif label == "Criterion Function":
-            fmt = "  {:<10}" * 2 + " {:>20}" * 2 + "\n\n"
-            file_input += fmt.format("", "", "Start", "Finish")
-            file_input += "\n" + fmt.format(
-                "", "", init_dict["AUX"]["criteria"], rslt["crit"]
-            )
-
-        else:
-
-            file_input += write_identifier_section(rslt)
-        if rslt["ESTIMATION"]["print_output"] == "1":
-            print(file_input)
-        with open(file_name, "w") as file_:
-            file_.write(file_input)
-
-
-def write_identifier_section(rslt):
-    """This function prints the information about the estimation results in the output
-     file.
-     """
-    file_ = ""
-    fmt_ = "\n  {:<10}" + "{:>10}" + " {:>18}" + "{:>16}" + "\n\n"
-
-    file_ += fmt_.format(*["", "", "Start", "Finish"])
-
-    fmt_ = (
-        " {:<10}"
-        + "    {:>10}"
-        + "{:>15}" * 2
-        + "{:>18}"
-        + "{:>9}"
-        + "{:>19}"
-        + "{:>24}"
-    )
-
-    file_ += (
-        fmt_.format(
-            *[
-                "Section",
-                "Identifier",
-                "Coef",
-                "Coef",
-                "Std err",
-                "t",
-                "P>|t|",
-                "95% Conf. Int.",
-            ]
-        )
-        + "\n"
-    )
-
-    fmt = (
-        "  {:>10}"
-        + "   {:<15}"
-        + " {:>11.4f}"
-        + "{:>15.4f}" * 4
-        + "{:>15.4f}"
-        + "{:>10.4f}"
-    )
-
-    for category in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
-        file_ += "\n  {:<10} \n".format(category)
-        for counter, var in enumerate(rslt[category]["order"]):
-            file_ += "{0}\n".format(
-                fmt.format(
-                    "",
-                    var,
-                    rslt[category]["starting_values"][counter],
-                    rslt[category]["params"][counter],
-                    rslt[category]["standard_errors"][counter],
-                    rslt[category]["t_values"][counter],
-                    rslt[category]["p_values"][counter],
-                    rslt[category]["confidence_intervals"][counter][0],
-                    rslt[category]["confidence_intervals"][counter][1],
-                )
-            )
-    return file_
-
-
-def write_comparison(df1, rslt):
-    """The function writes the info file including the descriptives of the original and the
-    estimated sample.
-    """
-
-    file_name = "comparison.grmpy.info"
-
-    df3, df2 = simulate_estimation(rslt)
-    file_input = ""
-    # First we note some basic information ab out the dataset.
-    header = "\n\n Number of Observations \n\n"
-    file_input += header
-    indicator = rslt["ESTIMATION"]["indicator"]
-    dep = rslt["ESTIMATION"]["dependent"]
-
-    datasets_ = [df1[dep].values, df2[dep].values, df3[dep].values]
-    datasets1 = [
-        df1[df1[indicator] == 1][dep].values,
-        df2[df2[indicator] == 1][dep].values,
-        df3[df3[indicator] == 1][dep].values,
+    # define table input
+    header_input = [
+        ("Dep. Variable:", opt_info["dependent"], "Optimizer:", opt_info["optimizer"]),
+        ("Choice Var:", opt_info["indicator"], "No. Evaluations:", opt_info["nit"]),
+        ("Date:", date, "Success:", opt_info["success"]),
+        ("Time:", time_, "Status:", opt_info["status"]),
+        ("Observations:", opt_info["observations"], "Message:", message[0]),
+        ("Start Values:", opt_info["start"], "", message[1]),
     ]
-    datasets0 = [
-        df1[df1[indicator] == 0][dep].values,
-        df2[df2[indicator] == 0][dep].values,
-        df3[df3[indicator] == 0][dep].values,
-    ]
-    datasets = {"ALL": datasets_, "TREATED": datasets1, "UNTREATED": datasets0}
 
-    fmt = "    {:<25}" + " {:>20}" * 3
-    file_input += (
-        fmt.format(*["Sample", "Observed", "Simulated (finish)", "Simulated (start)"])
-        + "\n\n\n"
-    )
+    # loop over header input
 
-    for cat in datasets.keys():
+    for line in header_input:
+        header += fmt.format(line[0], line[1], "", line[2], line[3])
 
-        info = [cat] + [data.shape[0] for data in datasets[cat]]
-        file_input += fmt.format(*info) + "\n"
+    header += fmt.format("", "", "", "Criterion Func:", "")
+    fmt = "{:<15}" + "{:>20}" + "{:>10}" + "{:<16}" + "{:>+19.4f}\n"
+    for section in [("Start", opt_info["crit"]), ("Finish", opt_info["crit"])]:
+        header += fmt.format("", "", "", section[0] + ":", section[1])
 
-    header = "\n\n Distribution of Outcomes\n\n"
-    file_input += header
-    args = ["", "Mean", "Std-Dev.", "25%", "50%", "75%"]
+    header += "=" * 80 + "\n"
 
-    for group in datasets.keys():
-        header = "\n\n " "  {:<10}".format(group) + "\n\n"
-        fmt = "    {:<25}" + " {:>20}" * 5 + "\n\n"
-        file_input += header
-        file_input += fmt.format(*args)
+    # Add estimation output
+    fmt = "{:<17}" + "{:>11}" + "{:>10}" * 3 + "{:>11}" + "{:>11}" "\n"
 
-        for counter, sample in enumerate(
-            ["Observed Sample", "Simulated Sample (finish)", "Simulated Sample (start)"]
-        ):
-            data = datasets[group][counter]
-            fmt = "    {:<25}" + " {:>20.4f}" * 5 + "\n"
-            info = [
-                np.mean(data),
-                np.std(data),
-                np.quantile(data, 0.25),
-                np.quantile(data, 0.5),
-                np.quantile(data, 0.75),
-            ]
-            if np.isnan(info).all():
-                fmt = "    {:<10}" + " {:>20}" * 5 + "\n"
-                info = ["---"] * 5
-            elif np.isnan(info[1]):
-                info[1] = "---"
-                fmt = "    {:<25}" " {:>20.4f}" " {:>20}" + " {:>20.4f}" * 3 + "\n"
+    header += fmt.format("", "coef", "std err", "t", "P>|t|", "[0.025", "0.975]")
+    header += "-" * 80
 
-            file_input += fmt.format(*[sample] + info)
+    estimation_output = write_identifier_section(opt_rslt, opt_info)
 
-    header = "\n\n {} \n\n".format("MTE Information")
-    file_input += header
-    value, args = calculate_mte(rslt, df1)
-    str_ = "  {0:>10} {1:>20}\n\n".format("Quantile", "Value")
-    file_input += str_
-    len_ = len(value)
-    for i in range(len_):
-        if isinstance(value[i], float):
-            file_input += "  {0:>10} {1:>20.4f}\n".format(str(args[i]), value[i])
+    file_input = header + estimation_output
 
+    if print_output is True:
+        print(file_input)
     with open(file_name, "w") as file_:
         file_.write(file_input)
 
 
-def simulate_estimation(rslt):
-    """The function simulates a new sample based on the estimated coefficients."""
-
-    # Distribute information
-    seed = rslt["SIMULATION"]["seed"]
-    # Determine parametrization and read in /simulate observables
-    start, finish = process_results(rslt)
-    data_frames = []
-    for dict_ in [start, finish]:
-
-        # Set seed value
-        np.random.seed(seed)
-        # Simulate unobservables
-        U = simulate_unobservables(dict_)
-        X = simulate_covariates(dict_)
-
-        # Simulate endogeneous variables
-        df = simulate_outcomes(dict_, X, U)
-        data_frames += [df]
-
-    return data_frames[0], data_frames[1]
-
-
-def process_results(rslt):
-    """The function processes the results dictionary for the following simulation."""
-    start, finish = copy.deepcopy(rslt), copy.deepcopy(rslt)
-    maxiter = rslt["ESTIMATION"]["maxiter"]
-    if maxiter != 0:
-        for section in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
-            start[section]["params"] = start[section]["starting_values"]
-    start["DIST"]["params"] = transform_rslt_DIST(start, maxiter, start=True)
-    finish["DIST"]["params"] = transform_rslt_DIST(finish, maxiter)
-    return start, finish
-
-
-def transform_rslt_DIST(dict_, maxiter, start=False):
-    """The function converts the correlation parameters from the estimation outcome to
-    covariances for the simulation of the estimation sample.
+def write_identifier_section(opt_rslt, opt_info):
+    """This function prints the information about the estimation results in the output
+    file.
     """
-    x0 = dict_["DIST"]["params"]
-    aux = x0[-4:].copy()
-    cov1V = aux[1] * aux[0]
-    cov0V = aux[3] * aux[2]
-    if maxiter != 0:
-        if not start:
-            list_ = np.round([aux[0], 0.0, cov1V, aux[2], cov0V, 1.0], 4)
-        else:
-            list_ = dict_["AUX"]["init_values"][-6:].copy()
-    else:
-        list_ = dict_["AUX"]["init_values"][-6:].copy()
 
-    return list_
-
-
-def calculate_mte(rslt, data_frame, quant=None):
-
-    coeffs_treated = rslt["TREATED"]["params"]
-    coeffs_untreated = rslt["UNTREATED"]["params"]
-
-    if quant is None:
-        quantiles = [1] + np.arange(5, 100, 5).tolist() + [99]
-        args = [str(i) + "%" for i in quantiles]
-        quantiles = [i * 0.01 for i in quantiles]
-    else:
-        quantiles = quant
-
-    cov = np.zeros((3, 3))
-    cov[2, 0] = rslt["AUX"]["x_internal"][-3] * rslt["AUX"]["x_internal"][-4]
-    cov[2, 1] = rslt["AUX"]["x_internal"][-1] * rslt["AUX"]["x_internal"][-2]
-    cov[2, 2] = 1.0
-
-    value = mte_information(
-        coeffs_treated, coeffs_untreated, cov, quantiles, data_frame, rslt
+    # write estimation output
+    est_out = ""
+    fmt_section = "\n{:<14}\n\n"
+    fmt = (
+        "{:<17.17}"
+        + "{:>11.4f}"
+        + "{:>10.3f}"
+        + "{:>10.3f}"
+        + "{:>10.3f}"
+        + "{:>11.3f}" * 2
+        + "\n"
     )
-    if quant is None:
-        return value, args
-    else:
-        return value
+    for section in ["TREATED", "UNTREATED", "CHOICE", "DIST"]:
+        est_out += fmt_section.format(section)
+        params = opt_rslt.loc[section, "params"]
+        std = opt_rslt.loc[section, "std"]
+        t = opt_rslt.loc[section, "t_values"]
+        P = opt_rslt.loc[section, "p_values"]
+        conf_int_low = opt_rslt.loc[section, "conf_int_low"]
+        conf_int_up = opt_rslt.loc[section, "conf_int_up"]
+
+        for var_label in opt_rslt.loc[section, slice(None)].index:
+            est_out += fmt.format(
+                var_label,
+                params.loc[var_label],
+                std.loc[var_label],
+                t.loc[var_label],
+                P.loc[var_label],
+                conf_int_low.loc[var_label],
+                conf_int_up.loc[var_label],
+            )
+    est_out += 80 * "=" + "\n"
+
+    # Add warnings to table
+
+    est_out += "\n{}\n".format("Warning:")
+
+    for i in opt_info["warning"]:
+        est_out += "\n"
+        lines = wrap(i, 80)
+        for j in lines:
+            est_out += f"{j}\n"
+
+    return est_out
