@@ -138,7 +138,7 @@ def mte_and_cof_int_semipar(rslt, init_file, college_years, nboot):
     return quantiles, mte, con_u, con_d
 
 
-def mte_and_cof_int_par(rslt, init_dict, data, college_years):
+def mte_and_cof_int_par(rslt, data, college_years):
     """
     This function returns the parametric MTE divided by the number
     of college years, which represents the returns per YEAR of
@@ -150,9 +150,6 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     rslt: dict
         Result dictionary containing parameters for the estimation
         process.
-    init_dict: dict
-        Initialization dictionary containing parameters for the
-        estimation process.
     data: pandas.DataFrame
         Data set containing the observables (explanatory and outcome variables)
         analyzed in the generalized Roy framework.
@@ -166,12 +163,12 @@ def mte_and_cof_int_par(rslt, init_dict, data, college_years):
     # MTE per year of post-secondary education
     mte = rslt["mte"] / college_years
 
-    con_u, con_d = calculate_cof_int(rslt, init_dict, data, mte, quantiles)
+    con_u, con_d = calculate_cof_int(rslt, data, mte, quantiles)
 
     return quantiles, mte, mte + con_u / college_years, mte - con_d / college_years
 
 
-def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
+def calculate_cof_int(rslt, data, quantiles):
     """
     This function calculates the analytical confidence intervals of
     the parametric marginal treatment effect.
@@ -181,14 +178,9 @@ def calculate_cof_int(rslt, init_dict, data, mte, quantiles):
     rslt: dict
         Result dictionary containing parameters for the estimation
         process.
-    init_dict: dict
-        Initialization dictionary containing parameters for the estimation
-        process.
     data: pandas.DataFrame
         Data set containing the observables (explanatory and outcome variables)
         analyzed in the generalized Roy framework.
-    mte: np.ndarray
-        Estimate of the parametric MTE.
     quantiles: np.ndarray
         Quantiles of the u_D, along which the *mte* has been estimated.
 
