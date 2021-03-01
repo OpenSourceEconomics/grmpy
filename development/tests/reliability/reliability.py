@@ -3,11 +3,11 @@ tion strategy. For this purpose data and the associated parameterization from Ca
 used. Additionally the module creates two different figures for the reliability section of the
 documentation.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
-import matplotlib.pyplot as plt
 from grmpy.estimate.estimate import fit
 from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
@@ -79,8 +79,8 @@ def get_effect_grmpy(file):
 
 def monte_carlo(file, grid_points):
     """This function estimates the ATE for a sample with different correlation structures between U1
-     and V. Two different strategies for (OLS,LATE) are implemented.
-     """
+    and V. Two different strategies for (OLS,LATE) are implemented.
+    """
 
     # Define a dictionary with a key for each estimation strategy
     effects = {}
@@ -148,7 +148,7 @@ def create_plots(effects, true):
         ax.yaxis.get_major_ticks()[0].set_visible(False)
         plt.title(title)
         plt.legend()
-        file_name = "fig-{}-average-effect-estimation.png".format(strategy)
+        file_name = f"fig-{strategy}-average-effect-estimation.png"
         plt.savefig(file_name)
 
 

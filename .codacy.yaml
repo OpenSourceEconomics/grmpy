@@ -3,4 +3,3 @@ exclude_paths:
   - setup.py
   - docs/presentation/*
   - docs/conf.py
-

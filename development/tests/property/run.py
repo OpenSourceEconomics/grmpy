@@ -1,12 +1,12 @@
 """The test provides the basic capabilities to run numerous property tests."""
-import functools
 import os
+
+import functools
+import numpy as np
 import random
 import shutil
 import traceback
 from datetime import datetime, timedelta
-
-import numpy as np
 
 from development.tests.property.property_auxiliary import (
     collect_tests,

@@ -2,10 +2,10 @@
 """The test provides the basic capabilities to work with the regression tests of the
 package.
 """
-import argparse
-import json
 import os
 
+import argparse
+import json
 import numpy as np
 
 import grmpy

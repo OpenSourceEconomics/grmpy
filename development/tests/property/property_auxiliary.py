@@ -1,13 +1,13 @@
 """This module contains some auxiliary functions for the property testing."""
-import argparse
 import glob
-import importlib
 import os
+
+import argparse
+import importlib
+import numpy as np
 import shutil
 import string
 from datetime import datetime
-
-import numpy as np
 
 from grmpy.grmpy_config import PACKAGE_DIR
 

@@ -171,11 +171,11 @@ def print_info(init_dict, data_frame):
         header = "\n\n {} \n\n".format("Criterion Function")
         file_.write(header)
         if "criteria_value" in init_dict["AUX"].keys():
-            str_ = "  {0:<10}      {1:<21.12f}\n\n".format(
+            str_ = "  {:<10}      {:<21.12f}\n\n".format(
                 "Value", init_dict["AUX"]["criteria_value"]
             )
         else:
-            str_ = "  {0:>10} {1:>20}\n\n".format("Value", "---")
+            str_ = "  {:>10} {:>20}\n\n".format("Value", "---")
         file_.write(str_)
 
         header = "\n\n {} \n\n".format("Marginal Treatment Effect")
@@ -188,14 +188,14 @@ def print_info(init_dict, data_frame):
         value = mte_information(
             coeffs_treated, coeffs_untreated, cov, quantiles, x, init_dict
         )
-        str_ = "  {0:>10} {1:>20}\n\n".format("Quantile", "Value")
+        str_ = "  {:>10} {:>20}\n\n".format("Quantile", "Value")
         file_.write(str_)
         len_ = len(value)
         for i in range(len_):
             if isinstance(value[i], float):
-                file_.write("  {0:>10} {1:>20.4f}\n".format(str(args[i]), value[i]))
+                file_.write("  {:>10} {:>20.4f}\n".format(str(args[i]), value[i]))
             else:
-                file_.write("  {0:>10} {1:>20.4}\n".format(str(args[i]), value[i]))
+                file_.write("  {:>10} {:>20.4}\n".format(str(args[i]), value[i]))
 
         # Write out parameterization of the model.
         write_identifier_section_simulate(init_dict, file_)
@@ -253,8 +253,8 @@ def mte_information(coeffs_treated, coeffs_untreated, cov, quantiles, x, dict_):
 
 def write_identifier_section_simulate(init_dict, file_):
     """This function prints the information about the estimation results in the output
-     file.
-     """
+    file.
+    """
 
     file_.write("\n\n {} \n\n".format("Parameterization"))
 
@@ -295,13 +295,13 @@ def write_identifier_section_simulate(init_dict, file_):
         elif i == num_choice:
             file_.write("\n  {:<10} \n".format("DIST"))
 
-        file_.write("{0}\n".format(fmt.format("", identifier[i], coeffs[i])))
+        file_.write("{}\n".format(fmt.format("", identifier[i], coeffs[i])))
 
 
 def construct_covariance_matrix(init_dict):
     """This function constructs the covariance matrix based on the user's initialization
-     file.
-     """
+    file.
+    """
     cov = np.zeros((3, 3))
     cov[np.triu_indices(3)] = init_dict["DIST"]["params"]
     cov[np.tril_indices(3, k=-1)] = cov[np.triu_indices(3, k=1)]

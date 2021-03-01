@@ -1,11 +1,12 @@
 """
 This module provides auxiliary functions for the plot_mte function.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
+from sklearn.utils import resample
 
-import matplotlib.pyplot as plt
 from grmpy.check.auxiliary import read_data
 from grmpy.check.check import check_presence_init
 from grmpy.estimate.estimate_semipar import (
@@ -18,7 +19,6 @@ from grmpy.estimate.estimate_semipar import (
     trim_support,
 )
 from grmpy.read.read import read
-from sklearn.utils import resample
 
 # surpress pandas warning
 pd.options.mode.chained_assignment = None

@@ -1,21 +1,19 @@
 """
 This module contains the semiparametric estimation process.
 """
+# from grmpy.KernReg.locpoly import locpoly
+import kernreg as kr
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-
-import matplotlib.pyplot as plt
-
-# from grmpy.KernReg.locpoly import locpoly
-import kernreg as kr
 from skmisc.loess import loess
 
 lowess = sm.nonparametric.lowess
 
 
 def semipar_fit(dict_, data):
-    """"
+    """ "
     This function runs the semiparametric estimation of the
     marginal treatment effect via local instrumental variables.
 
@@ -389,7 +387,7 @@ def double_residual_reg(X, Y, prop_score, rbandwidth=0.05, show_output=False):
     model = sm.OLS(res_Y, res_X_Xp)
     results = model.fit()
     b0 = results.params[: len(list(X))]
-    b1_b0 = results.params[len((list(X))) :]
+    b1_b0 = results.params[len(list(X)) :]
 
     if show_output is True:
         print(results.summary())
@@ -558,8 +556,8 @@ def _define_common_support(
             """
     Common support lies beteen:
 
-        {0} and
-        {1}""".format(
+        {} and
+        {}""".format(
                 lower_limit, upper_limit
             )
         )

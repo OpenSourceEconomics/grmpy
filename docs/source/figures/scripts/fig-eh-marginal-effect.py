@@ -10,7 +10,7 @@ from grmpy.test.auxiliary import cleanup
 from grmpy.simulate.simulate import simulate
 from grmpy.simulate.simulate_auxiliary import (
     mte_information,
-    construct_covariance_matrix
+    construct_covariance_matrix,
 )
 
 filename = "/tutorial.grmpy.ini"

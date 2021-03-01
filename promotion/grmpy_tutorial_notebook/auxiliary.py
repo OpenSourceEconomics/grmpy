@@ -2,25 +2,25 @@
 notebook.
 """
 
-import json
-import linecache
 import shlex
 
-import numpy as np
-import pandas as pd
-import statsmodels.api as sm
-
+import json
+import linecache
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import numpy as np
+import pandas as pd
 import seaborn as sns
+import statsmodels.api as sm
+from linearmodels.iv import IV2SLS
+from pylab import rcParams
+
 from grmpy.estimate.estimate import fit
 from grmpy.plot.plot_auxiliary import mte_and_cof_int_par
 from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import simulate_unobservables
 from grmpy.test.random_init import print_dict
-from linearmodels.iv import IV2SLS
-from pylab import rcParams
 
 
 def process_data(df, output_file):
@@ -176,7 +176,7 @@ def monte_carlo(file, grid_points):
     """This function estimates the ATE for a sample with different correlation
     structures between U1 and V. Two different strategies for (OLS,LATE) are
     implemented.
-     """
+    """
 
     ATE = 0.5
 
@@ -299,7 +299,7 @@ def plot_est_mte(rslt, file):
     data_frame = pd.read_pickle(init_dict["ESTIMATION"]["file"])
 
     # Define the Quantiles and read in the original results
-    mte_ = json.load(open("data/mte_original.json", "r"))
+    mte_ = json.load(open("data/mte_original.json"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]

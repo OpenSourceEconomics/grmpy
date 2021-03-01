@@ -70,8 +70,8 @@ def print_logfile(init_dict, rslt, print_output):
 
 def write_identifier_section(opt_rslt, opt_info):
     """This function prints the information about the estimation results in the output
-     file.
-     """
+    file.
+    """
 
     # write estimation output
     est_out = ""
@@ -114,6 +114,6 @@ def write_identifier_section(opt_rslt, opt_info):
         est_out += "\n"
         lines = wrap(i, 80)
         for j in lines:
-            est_out += "{}\n".format(j)
+            est_out += f"{j}\n"
 
     return est_out

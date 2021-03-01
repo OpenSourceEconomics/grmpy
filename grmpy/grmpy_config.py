@@ -2,9 +2,9 @@
 import os
 import sys
 import warnings
-from pathlib import Path
 
 import numpy as np
+from pathlib import Path
 from statsmodels.tools.sm_exceptions import ConvergenceWarning
 
 # Obtain the root directory of the package.

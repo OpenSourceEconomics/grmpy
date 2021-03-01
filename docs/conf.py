@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
 # grmpy documentation build configuration file, created by
 # sphinx-quickstart on Fri Aug 18 13:05:32 2017.

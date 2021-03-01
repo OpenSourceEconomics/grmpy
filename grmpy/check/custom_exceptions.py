@@ -2,7 +2,7 @@
 
 
 class UserError(Exception):
-    """ This custom error class provides informative feedback in case of a misspecified
+    """This custom error class provides informative feedback in case of a misspecified
     request by the user.
     """
 
@@ -10,4 +10,4 @@ class UserError(Exception):
         self.msg = msg
 
     def __str__(self):
-        return "\n\n         {}\n\n".format(self.msg)
+        return f"\n\n         {self.msg}\n\n"

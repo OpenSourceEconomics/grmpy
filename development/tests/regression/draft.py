@@ -7,9 +7,9 @@ sums it up again and compares the sum from the first step with the one from the 
 step.
  """
 
-import json
 import os
 
+import json
 import numpy as np
 
 from grmpy.estimate.estimate_par import calculate_criteria, process_data, start_values
@@ -42,7 +42,7 @@ if True:
     json.dump(tests, open(file_dir, "w"))
 
 if True:
-    tests = json.load(open(file_dir, "r"))
+    tests = json.load(open(file_dir))
 
     for test in tests:
         stat, dict_, criteria = test
