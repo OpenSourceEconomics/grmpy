@@ -163,7 +163,7 @@ def mte_and_cof_int_par(rslt, data, college_years):
     # MTE per year of post-secondary education
     mte = rslt["mte"] / college_years
 
-    con_u, con_d = calculate_cof_int(rslt, data, mte, quantiles)
+    con_u, con_d = calculate_cof_int(rslt, data, quantiles)
 
     return quantiles, mte, mte + con_u / college_years, mte - con_d / college_years
 
