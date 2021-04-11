@@ -1,7 +1,6 @@
 """
 This module contains the semiparametric estimation process.
 """
-# from grmpy.KernReg.locpoly import locpoly
 import kernreg as kr
 import matplotlib.pyplot as plt
 import numpy as np
@@ -259,7 +258,6 @@ def estimate_treatment_propensity(dict_, data, logit, show_output=False):
             print(probitRslt.summary())
 
     data.loc[:, "prop_score"] = prop_score
-    # prop_score.values
 
     return data
 
