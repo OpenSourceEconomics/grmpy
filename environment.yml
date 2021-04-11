@@ -10,13 +10,13 @@ dependencies:
   - isort
   - jupyterlab
   - linearmodels
-  - matplotlib
+  - matplotlib>=3.3.3
   - nbsphinx
-  - numba
-  - numpy>=1.2
+  - numba>=0.52.0
+  - numpy>=1.19.5
   - flake8
   - oyaml
-  - pandas>=0.24
+  - pandas>=1.2.0
   - pandoc
   - pytest>=6.2.1
   - pytest-cov
