@@ -12,12 +12,12 @@ BDFL
 Development Lead
 ^^^^^^^^^^^^^^^^
 
-`Sebastian Becker <https://github.com/sebecker>`_
+`Sebastian Becker <https://github.com/sebecker>`_, `Sebastian Gsell <https://github.com/segsell>`_
 
 Contributors
 ^^^^^^^^^^^^
 
-`Sebastian Gsell <https://github.com/segsell>`_, `Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/bekauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
+`Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/bekauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
 
 Acknowledgments
 ^^^^^^^^^^^^^^^
