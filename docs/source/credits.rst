@@ -16,6 +16,7 @@ Development Lead
 
 Contributors
 ^^^^^^^^^^^^
+
 `Maximilian Blesch <https://github.com/MaxBlesch>`_, `Benedikt Kauf <https://github.com/bekauf>`_, `Tobias Raabe <https://github.com/tobiasraabe>`_
 
 Acknowledgments
