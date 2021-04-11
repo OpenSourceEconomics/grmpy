@@ -1,6 +1,8 @@
 name: Continuous Integration Workflow
 on:
-  # push:
+  push:
+    branches:
+      - '*'
   pull_request:
     branches:
     - '*'
