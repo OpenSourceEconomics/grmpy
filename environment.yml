@@ -12,7 +12,7 @@ dependencies:
   - linearmodels
   - matplotlib>=3.3.3
   - nbsphinx
-  - numba>=0.52.0
+  # - numba>=0.52.0
   - numpy>=1.19.5
   - flake8
   - oyaml
