@@ -186,7 +186,7 @@ def generate_coeff(num, is_zero):
     else:
         params = np.array([0] * num).tolist()
 
-    order = ["X1"] + ["X{}".format(i + 1) for i in range(num[0], num[1])]
+    order = ["X1"] + [f"X{i + 1}" for i in range(num[0], num[1])]
 
     return params, order
 
