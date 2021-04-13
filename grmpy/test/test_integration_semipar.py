@@ -1,8 +1,7 @@
 """This file contains integration tests for the semiparametric estimation routine."""
-import pickle
-
 import numpy as np
 import pandas as pd
+import pickle
 
 from grmpy.estimate.estimate import fit
 from grmpy.grmpy_config import TEST_RESOURCES_DIR

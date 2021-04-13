@@ -54,7 +54,7 @@ def read_desc(fname):
     contains the relevant parameters for test6 in test_integration.py.
     """
     dict_ = {}
-    with open(fname, "r") as handle:
+    with open(fname) as handle:
         for i, line in enumerate(handle):
             list_ = shlex.split(line)
             if 7 <= i < 10:

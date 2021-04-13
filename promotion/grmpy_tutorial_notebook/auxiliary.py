@@ -2,10 +2,10 @@
 notebook.
 """
 
-import json
-import linecache
 import shlex
 
+import json
+import linecache
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -176,7 +176,7 @@ def monte_carlo(file, grid_points):
     """This function estimates the ATE for a sample with different correlation
     structures between U1 and V. Two different strategies for (OLS,LATE) are
     implemented.
-     """
+    """
 
     ATE = 0.5
 
@@ -299,13 +299,13 @@ def plot_est_mte(rslt, file):
     data_frame = pd.read_pickle(init_dict["ESTIMATION"]["file"])
 
     # Define the Quantiles and read in the original results
-    mte_ = json.load(open("data/mte_original.json", "r"))
+    mte_ = json.load(open("data/mte_original.json"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]
 
     # Calculate the MTE and confidence intervals
-    quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, init_dict, data_frame, 4)
+    quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, data_frame, 4)
 
     # Plot both curves
     ax = plt.figure(figsize=(17.5, 10)).add_subplot(111)

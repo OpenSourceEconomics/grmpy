@@ -7,7 +7,7 @@ from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import (
     mte_information,
     simulate_covariates,
-    construct_covariance_matrix
+    construct_covariance_matrix,
 )
 
 filename = "/tutorial.grmpy.yml"

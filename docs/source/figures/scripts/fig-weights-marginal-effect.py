@@ -11,7 +11,7 @@ from grmpy.read.read import read
 from grmpy.simulate.simulate_auxiliary import (
     mte_information,
     simulate_covariates,
-    construct_covariance_matrix
+    construct_covariance_matrix,
 )
 
 filename = "/tutorial.grmpy.yml"
@@ -67,7 +67,6 @@ def weights_treatment_parameters(init_dict, GRID):
 
 def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax = plt.figure().add_subplot(111)
-
     ax.set_xlabel(r"$u_S$")
     ax.set_ylabel(r"$\omega(u_S)$")
     ax.set_ylim(0, 4.5)

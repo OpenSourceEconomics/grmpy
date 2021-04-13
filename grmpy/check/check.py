@@ -1,17 +1,17 @@
 """This module provides some capabilities to check the integrity of the package."""
 
 import os
+
 import numpy as np
 
-from grmpy.check.auxiliary import check_special_conf
+from grmpy.check.auxiliary import check_special_conf, is_pos_def
 from grmpy.check.custom_exceptions import UserError
-from grmpy.check.auxiliary import is_pos_def
 
 
 def check_presence_init(fname):
     """This function checks whether the model initialization file does in fact exist."""
     if not os.path.isfile(fname):
-        msg = "{}: There is no such file or directory.".format(fname)
+        msg = f"{fname}: There is no such file or directory."
         raise UserError(msg)
 
 
@@ -97,7 +97,7 @@ def check_par_init_file(dict_):
     """
     for key_ in ["TREATED", "UNTREATED", "CHOICE"]:
         if len(set(dict_[key_]["order"])) != len(dict_[key_]["order"]):
-            msg = "There are two start coefficients {} Section".format(key_)
+            msg = f"There are two start coefficients {key_} Section"
             raise UserError(msg)
         if (
             "params" not in dict_[key_].keys()
@@ -114,8 +114,7 @@ def check_par_init_file(dict_):
 
 
 def check_start_values(x0):
-    """This function checks the start values for the parametric estimation.
-    """
+    """This function checks the start values for the parametric estimation."""
     if False in np.isfinite(x0):
         msg = (
             "The automatic start value generating process did not lead to finite "

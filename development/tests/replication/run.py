@@ -1,14 +1,14 @@
 """This script replicates the estimation results from Cainero 2011 via the grmpy estimation method.
 Additionally it returns a figure of the Marginal treatment effect based on the estimation results.
 """
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-import pandas as pd
-import numpy as np
 import json
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy.stats import norm
 
-from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.estimate.estimate import fit
+from grmpy.estimate.estimate_output import calculate_mte
 from grmpy.read.read import read
 
 
@@ -18,7 +18,7 @@ def plot_est_mte(rslt, init_dict, data_frame):
 
     # Define the Quantiles and read in the original results
     quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
-    mte_ = json.load(open("mte_original.json", "r"))
+    mte_ = json.load(open("mte_original.json"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]
@@ -35,7 +35,7 @@ def plot_est_mte(rslt, init_dict, data_frame):
 
     ax1.set_ylabel(r"$B^{MTE}$")
     ax1.set_xlabel("$u_D$")
-    l1, = ax1.plot(quantiles, mte, color="blue")
+    (l1,) = ax1.plot(quantiles, mte, color="blue")
     ax1.plot(quantiles, mte_up, color="blue", linestyle=":")
     ax1.plot(quantiles, mte_d, color="blue", linestyle=":")
 
@@ -46,7 +46,7 @@ def plot_est_mte(rslt, init_dict, data_frame):
     ax2.set_ylabel(r"$B^{MTE}$")
     ax2.set_xlabel("$u_D$")
 
-    l4, = ax2.plot(quantiles, mte_original, color="orange")
+    (l4,) = ax2.plot(quantiles, mte_original, color="orange")
     ax2.plot(quantiles, mte_original_d, color="orange", linestyle=":")
     ax2.plot(quantiles, mte_original_u, color="orange", linestyle=":")
     ax2.set_ylim([-0.4, 0.5])

@@ -15,7 +15,7 @@ def generate_random_dict(constr=None):
 
     if constr is not None:
         if not isinstance(constr, dict):
-            msg = "{} is not a dictionary.".format(constr)
+            msg = f"{constr} is not a dictionary."
             raise UserError(msg)
     else:
         constr = dict()
@@ -186,7 +186,7 @@ def generate_coeff(num, is_zero):
     else:
         params = np.array([0] * num).tolist()
 
-    order = ["X1"] + ["X{}".format(i + 1) for i in range(num[0], num[1])]
+    order = ["X1"] + [f"X{i + 1}" for i in range(num[0], num[1])]
 
     return params, order
 
@@ -267,7 +267,7 @@ def print_dict(init_dict, file_name="test"):
             ordered_dict[section]["params"] = ordered_dict[section]["params"].tolist()
 
     # Print the initialization file
-    with open("{}.grmpy.yml".format(file_name), "w") as outfile:
+    with open(f"{file_name}.grmpy.yml", "w") as outfile:
         yaml.dump(
             ordered_dict,
             outfile,

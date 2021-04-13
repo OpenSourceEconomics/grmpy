@@ -29,9 +29,9 @@ def compute_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
 
     # aux_params
     nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
-    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt((1 - rho1v ** 2)))
+    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt(1 - rho1v ** 2))
     nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
-    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt((1 - rho0v ** 2)))
+    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt(1 - rho0v ** 2))
 
     eta1 = (
         -lambda1 * norm.pdf(lambda1) * norm.cdf(lambda1) - norm.pdf(lambda1) ** 2
@@ -113,7 +113,7 @@ def calc_hess_beta1(
     """
 
     # define some auxiliary variables
-    rho_aux1 = lambda1 * rho1v / ((1 - rho1v ** 2)) - nu1 / (1 - rho1v ** 2) ** 0.5
+    rho_aux1 = lambda1 * rho1v / (1 - rho1v ** 2) - nu1 / (1 - rho1v ** 2) ** 0.5
     rho_aux2 = rho1v ** 2 / ((1 - rho1v ** 2) ** (3 / 2)) + 1 / (1 - rho1v ** 2) ** 0.5
     sd_aux1 = rho1v ** 2 / (1 - rho1v ** 2)
     sd_aux2 = rho1v / np.sqrt(1 - rho1v ** 2)
@@ -176,7 +176,7 @@ def calc_hess_beta0(
     """
 
     # define some aux_vars
-    rho_aux1 = lambda0 * rho0v / ((1 - rho0v ** 2)) - nu0 / (1 - rho0v ** 2) ** 0.5
+    rho_aux1 = lambda0 * rho0v / (1 - rho0v ** 2) - nu0 / (1 - rho0v ** 2) ** 0.5
     rho_aux2 = rho0v ** 2 / ((1 - rho0v ** 2) ** (3 / 2)) + 1 / (1 - rho0v ** 2) ** 0.5
     sd_aux1 = rho0v ** 2 / (1 - rho0v ** 2)
     sd_aux2 = rho0v / (np.sqrt(1 - rho0v ** 2))
@@ -268,11 +268,11 @@ def calc_hess_gamma(
 
     # rho1
     aux_rho11 = np.einsum("ij, i ->ij", Z1, eta1).T @ (
-        lambda1 * rho1v / ((1 - rho1v ** 2)) - nu1 / np.sqrt((1 - rho1v ** 2))
+        lambda1 * rho1v / (1 - rho1v ** 2) - nu1 / np.sqrt(1 - rho1v ** 2)
     )
     aux_rho21 = Z1.T @ (norm.pdf(lambda1) / norm.cdf(lambda1))
 
-    der_g_rho1 = -aux_rho11 * 1 / (np.sqrt((1 - rho1v ** 2))) - aux_rho21 * rho1v / (
+    der_g_rho1 = -aux_rho11 * 1 / (np.sqrt(1 - rho1v ** 2)) - aux_rho21 * rho1v / (
         (1 - rho1v ** 2) ** (3 / 2)
     )
     der_g_rho1 = np.expand_dims(der_g_rho1, 0).T
@@ -291,11 +291,11 @@ def calc_hess_gamma(
 
     # rho1
     aux_rho10 = np.einsum("ij, i ->ij", Z0, eta0).T @ (
-        lambda0 * rho0v / ((1 - rho0v ** 2)) - nu0 / np.sqrt((1 - rho0v ** 2))
+        lambda0 * rho0v / (1 - rho0v ** 2) - nu0 / np.sqrt(1 - rho0v ** 2)
     )
     aux_rho20 = -Z0.T @ (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
 
-    der_g_rho0 = aux_rho10 * 1 / (np.sqrt((1 - rho0v ** 2))) + aux_rho20 * rho0v / (
+    der_g_rho0 = aux_rho10 * 1 / (np.sqrt(1 - rho0v ** 2)) + aux_rho20 * rho0v / (
         (1 - rho0v ** 2) ** (3 / 2)
     )
     der_g_rho0 = np.expand_dims(-der_g_rho0, 0).T
@@ -359,7 +359,7 @@ def calc_hess_dist(
         )
     )
 
-    aux_rho11 = lambda1 * rho1v / ((1 - rho1v ** 2)) - nu1 / np.sqrt((1 - rho1v ** 2))
+    aux_rho11 = lambda1 * rho1v / (1 - rho1v ** 2) - nu1 / np.sqrt(1 - rho1v ** 2)
     aux_rho12 = 1 / (1 - rho1v ** 2) ** (3 / 2)
 
     aux_rho_rho11 = (np.dot(gamma, Z1.T) * rho1v - nu1) / (1 - rho1v ** 2) ** (3 / 2)
@@ -367,7 +367,7 @@ def calc_hess_dist(
         2 * np.dot(gamma, Z1.T) * rho1v ** 2 + np.dot(gamma, Z1.T) - 3 * nu1 * rho1v
     ) / (1 - rho1v ** 2) ** (5 / 2)
 
-    aux_rho01 = lambda0 * rho0v / ((1 - rho0v ** 2)) - nu0 / np.sqrt((1 - rho0v ** 2))
+    aux_rho01 = lambda0 * rho0v / (1 - rho0v ** 2) - nu0 / np.sqrt(1 - rho0v ** 2)
     aux_rho02 = 1 / (1 - rho0v ** 2) ** (3 / 2)
 
     aux_rho_rho01 = (np.dot(gamma, Z0.T) * rho0v - nu0) / (1 - rho0v ** 2) ** (3 / 2)

@@ -1,28 +1,32 @@
 name: grmpy
 
+channels:
+  - defaults
+  - conda-forge
+
 dependencies:
-  - python=3.7
-  - numpy
-  - pandas
-  - statsmodels
-  - pytest
+  - python>=3.7
+  - pip
+  - isort
+  - jupyterlab
+  - linearmodels
+  - matplotlib>=3.3.3
+  - nbsphinx
+  - numpy>=1.19.5
+  - flake8
+  - oyaml
+  - pandas>=1.2.0
+  - pandoc
+  - pytest>=6.2.1
+  - pytest-cov
   - pytest-xdist
   - scipy
-  - numba
-  - matplotlib
-  - flake8
   - seaborn
-  - pandoc
-  - pip
+  - sphinxcontrib-bibtex<2.0.0
+  - sphinx_rtd_theme
+  - statsmodels
+  - tox-conda
   - pip:
-    - sphinxcontrib.bibtex
-    - sphinx_rtd_theme
-    - linearmodels
-    - oyaml
-    - isort
-    - nbsphinx
-    - sphinx_rtd_theme
-    - pytest-cov
-    - jupyterlab
+    - kernreg
     - scikit-misc
     - scikit-learn

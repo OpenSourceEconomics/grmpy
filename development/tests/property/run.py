@@ -1,22 +1,23 @@
 """The test provides the basic capabilities to run numerous property tests."""
-from datetime import timedelta
-from datetime import datetime
-import functools
-import traceback
-import shutil
-import random
 import os
 
+import functools
 import numpy as np
+import random
+import shutil
+import traceback
+from datetime import datetime, timedelta
 
+from development.tests.property.property_auxiliary import (
+    collect_tests,
+    distribute_command_line_arguments,
+    finish,
+    get_random_string,
+    print_rslt_ext,
+    process_command_line_arguments,
+    run_property_test,
+)
 from grmpy.test.auxiliary import cleanup
-from development.tests.property.property_auxiliary import distribute_command_line_arguments
-from development.tests.property.property_auxiliary import process_command_line_arguments
-from development.tests.property.property_auxiliary import get_random_string
-from development.tests.property.property_auxiliary import run_property_test
-from development.tests.property.property_auxiliary import print_rslt_ext
-from development.tests.property.property_auxiliary import collect_tests
-from development.tests.property.property_auxiliary import finish
 
 
 def choose_module(inp_dict):
@@ -42,8 +43,8 @@ def run(args):
 
     cleanup()
 
-    if args['is_check']:
-        np.random.seed(args['seed'])
+    if args["is_check"]:
+        np.random.seed(args["seed"])
         module = choose_module(test_dict)
         test = np.random.choice(test_dict[module])
         run_property_test(module, test)
@@ -51,7 +52,7 @@ def run(args):
     else:
         err_msg = []
 
-        start, timeout = datetime.now(), timedelta(hours=args['hours'])
+        start, timeout = datetime.now(), timedelta(hours=args["hours"])
 
         print_rslt = functools.partial(print_rslt_ext, start, timeout)
         print_rslt(rslt, err_msg)
@@ -72,7 +73,7 @@ def run(args):
                 msg = traceback.format_exc()
                 err_msg += [(module, test, seed, msg)]
 
-            os.chdir('../')
+            os.chdir("../")
 
             shutil.rmtree(dirname)
 
@@ -84,8 +85,8 @@ def run(args):
         finish(rslt)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    args = process_command_line_arguments('property')
+    args = process_command_line_arguments("property")
 
     run(args)

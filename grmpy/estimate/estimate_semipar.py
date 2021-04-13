@@ -1,19 +1,18 @@
 """
 This module contains the semiparametric estimation process.
 """
+import kernreg as kr
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from skmisc.loess import loess
 
-from grmpy.KernReg.locpoly import locpoly
-
 lowess = sm.nonparametric.lowess
 
 
 def semipar_fit(dict_, data):
-    """"
+    """ "
     This function runs the semiparametric estimation of the
     marginal treatment effect via local instrumental variables.
 
@@ -259,7 +258,6 @@ def estimate_treatment_propensity(dict_, data, logit, show_output=False):
             print(probitRslt.summary())
 
     data.loc[:, "prop_score"] = prop_score
-    # prop_score.values
 
     return data
 
@@ -387,7 +385,7 @@ def double_residual_reg(X, Y, prop_score, rbandwidth=0.05, show_output=False):
     model = sm.OLS(res_Y, res_X_Xp)
     results = model.fit()
     b0 = results.params[: len(list(X))]
-    b1_b0 = results.params[len((list(X))) :]
+    b1_b0 = results.params[len(list(X)) :]
 
     if show_output is True:
         print(results.summary())
@@ -482,7 +480,18 @@ def mte_unobserved_semipar(
 
     # Estimate mte_u, the unobserved component of the MTE,
     # through a locally quadratic regression
-    mte_u = locpoly(prop_score, Y_tilde, 1, 2, bandwidth, gridsize, startgrid, endgrid)
+    rslt_locpoly = kr.locpoly(
+        x=prop_score,
+        y=Y_tilde,
+        derivative=1,
+        degree=2,
+        bandwidth=bandwidth,
+        gridsize=gridsize,
+        a=startgrid,
+        b=endgrid,
+    )
+
+    mte_u = rslt_locpoly["curvest"]
 
     return mte_u
 
@@ -545,8 +554,8 @@ def _define_common_support(
             """
     Common support lies beteen:
 
-        {0} and
-        {1}""".format(
+        {} and
+        {}""".format(
                 lower_limit, upper_limit
             )
         )

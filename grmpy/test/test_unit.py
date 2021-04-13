@@ -321,8 +321,8 @@ def test11():
 
 def test12():
     """This test checks if our data import process is able to handle .txt, .dta and .pkl
-     files.
-     """
+    files.
+    """
 
     pkl = TEST_RESOURCES_DIR + "/data.grmpy.pkl"
     dta = TEST_RESOURCES_DIR + "/data.grmpy.dta"

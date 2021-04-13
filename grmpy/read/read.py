@@ -9,7 +9,7 @@ from grmpy.read.read_auxiliary import create_attr_dict_est, create_attr_dict_sim
 def read(file, semipar=False, include_constant=False):
     """This function processes the initialization file
     for the estimation process.
-     """
+    """
     # Check if there is an init file with the specified filename
     check_presence_init(file)
 
@@ -35,8 +35,7 @@ def read(file, semipar=False, include_constant=False):
 
 
 def read_simulation(file):
-    """Process initialization file for the simulation.
-    """
+    """Process initialization file for the simulation."""
     # Check if there is an init file with the specified filename
     check_presence_init(file)
 
