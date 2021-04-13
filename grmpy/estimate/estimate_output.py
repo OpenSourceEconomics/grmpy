@@ -47,7 +47,10 @@ def print_logfile(init_dict, rslt, print_output):
 
     header += fmt.format("", "", "", "Criterion Func:", "")
     fmt = "{:<15}" + "{:>20}" + "{:>10}" + "{:<16}" + "{:>+19.4f}\n"
-    for section in [("Start", opt_info["crit"]), ("Finish", opt_info["crit"])]:
+    for section in [
+        ("Start", init_dict["AUX"]["criteria"]),
+        ("Finish", opt_info["crit"]),
+    ]:
         header += fmt.format("", "", "", section[0] + ":", section[1])
 
     header += "=" * 80 + "\n"

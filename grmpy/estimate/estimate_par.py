@@ -54,7 +54,6 @@ def par_fit(dict_, data):
     )
     num_treated = X1.shape[1]
     num_untreated = num_treated + X0.shape[1]
-
     # set seed
     np.random.seed(seed_)
 
@@ -66,7 +65,6 @@ def par_fit(dict_, data):
     dict_["AUX"]["criteria"] = calculate_criteria(x0, X1, X0, Z1, Z0, Y1, Y0)
     rslt_cont["start_values"] = backward_transformation(x0)
     bfgs_dict = {"parameter": {}, "crit": {}, "grad": {}}
-
     opt_rslt = minimize(
         minimizing_interface,
         x0,
@@ -467,6 +465,7 @@ def log_likelihood(
     llh_grad: numpy.array
         Gradient of the minimization interface, only returned if grad_opt==True
     """
+
     # assign parameter values
     beta1, beta0, gamma = (
         x0[:num_treated],
@@ -1089,7 +1088,6 @@ def prepare_mte_calc(opt_rslt, data):
         Estimated beta1 vector.
     b0: numpy.array
         Estimated beta0 vector.
-
     """
 
     quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
@@ -1101,42 +1099,17 @@ def prepare_mte_calc(opt_rslt, data):
     cov[2, 0] = dist_params[0] * dist_params[1]
     cov[2, 1] = dist_params[2] * dist_params[3]
 
+    x_treated = data[opt_rslt.loc["TREATED"].index.values].values
+    x_untreated = data[opt_rslt.loc["UNTREATED"].index.values].values
+    X = np.append(x_treated, -x_untreated, axis=1)
+
     treated_labels = opt_rslt.loc["TREATED", :].index.values
     untreated_labels = opt_rslt.loc["UNTREATED", :].index.values
+    common = [i for i in treated_labels if i in untreated_labels]
 
-    common = np.intersect1d(treated_labels, untreated_labels)
-    only_treated = treated_labels[np.where(treated_labels != untreated_labels)[0]]
-    only_untreated = untreated_labels[np.where(treated_labels != untreated_labels)[0]]
+    beta1 = opt_rslt.loc[("TREATED", common), "params"].values
+    beta0 = opt_rslt.loc[("UNTREATED", common), "params"].values
 
-    # correct the parameter vectors if the outcome equations contain different covariates
-    if (len(only_treated) != 0) | (len(only_untreated) != 0):
-        beta1 = np.append(
-            np.append(
-                opt_rslt.loc[("TREATED", common), "params"],
-                opt_rslt.loc[("TREATED", only_treated), "params"],
-            ),
-            np.zeros(len(only_untreated)),
-        )
-
-        beta0 = np.append(
-            np.append(
-                opt_rslt.loc[("UNTREATED", common), "params"],
-                np.zeros(len(only_treated)),
-            ),
-            opt_rslt.loc[("UNTREATED", only_untreated), "params"],
-        )
-
-    else:
-        beta1 = opt_rslt.loc[("TREATED", common), "params"].values
-        beta0 = opt_rslt.loc[("UNTREATED", common), "params"].values
-
-    all_labels = (
-        [i for i in treated_labels if i in common]
-        + only_treated.tolist()
-        + only_untreated.tolist()
-    )
-
-    X = data[all_labels]
-    b1_b0 = beta1 - beta0
+    b1_b0 = np.append(beta1, beta0)
 
     return quantiles, cov, X, b1_b0, beta1, beta0
