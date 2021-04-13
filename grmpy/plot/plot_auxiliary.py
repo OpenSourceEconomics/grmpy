@@ -278,11 +278,10 @@ def bootstrap(init_file, nboot):
         # Estimate propensity score P(z)
         boot_data = estimate_treatment_propensity(dict_, boot_data, logit, show_output)
         prop_score = boot_data["prop_score"]
-
-        if isinstance(prop_score, np.ndarray):
+        if isinstance(prop_score.values, np.ndarray):
             # Define common support and trim the data (if trim=True)
             X, Y, prop_score = trim_support(
-                dict_, data, logit, bins, trim, reestimate_p, show_output=False
+                dict_, boot_data, logit, bins, trim, reestimate_p, show_output=False
             )
 
             b0, b1_b0 = double_residual_reg(X, Y, prop_score)
@@ -294,7 +293,7 @@ def bootstrap(init_file, nboot):
             )
 
             # Put the MTE together
-            mte = mte_x + mte_u
+            mte = mte_x.mean(axis=0) + mte_u
             mte_boot[:, counter] = mte
 
             counter += 1

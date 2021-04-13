@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from grmpy.estimate.estimate import estimate
+from grmpy.estimate.estimate import fit
 from grmpy.simulate.simulate import simulate
 
 

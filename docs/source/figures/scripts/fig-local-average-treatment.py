@@ -10,7 +10,7 @@ from grmpy.simulate.simulate_auxiliary import (
     construct_covariance_matrix
 )
 
-filename = "/tutorial.grmpy.ini"
+filename = "/tutorial.grmpy.yml"
 
 GRID = [i / 100 for i in range(1, 100, 1)]
 init_dict = read(RESOURCE_DIR + filename)
@@ -68,7 +68,7 @@ def plot_local_average_treatment(mte):
         ax.text(x=xtick - 0.01, y=height - 0.1, s="]", fontsize=30)
 
     ax.set_xlabel("$u_S$")
-    ax.set_ylabel(r"$B^{MTE}$")
+    ax.set_ylabel(r"$MTE$")
 
     ax.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1])
     ax.set_xticklabels([0, "$p_1$", "$p_2$", "$p_3$", "$p_4$", 1])
@@ -80,11 +80,10 @@ def plot_local_average_treatment(mte):
 
 
 if __name__ == "__main__":
-    coeffs_untreated = init_dict["UNTREATED"]["all"]
-    coeffs_treated = init_dict["TREATED"]["all"]
+    coeffs_untreated = init_dict["UNTREATED"]["params"]
+    coeffs_treated = init_dict["TREATED"]["params"]
     cov = construct_covariance_matrix(init_dict)
     x = simulate_covariates(init_dict)
-    x = x[:, :2]
 
     mte = mte_information(coeffs_treated, coeffs_untreated, cov, GRID, x, init_dict)
 

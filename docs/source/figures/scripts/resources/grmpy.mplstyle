@@ -1,12 +1,10 @@
 figure.figsize: 12, 8
 font.size: 20
 lines.linewidth: 3
-image.cmap: jet
+image.cmap: je      t
 
-axes.labelsize      : 20
+axes.labelsize: 20
 axes.labelpad: 15
-
-backend: Agg
 axes.spines.right: False
 axes.spines.left: True
 axes.spines.top: False

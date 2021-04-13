@@ -13,7 +13,7 @@ from grmpy.plot.plot_auxiliary import bootstrap
 pd.options.mode.chained_assignment = None
 
 
-def plot_semipar_mte(rslt, init_file, nbootstraps=250):
+def plot_semipar_mte(rslt, init_file, nbootstraps):
     """This function plots the original and the replicated MTE
     from Carneiro et al. (2011)"""
     # mte per year of university education

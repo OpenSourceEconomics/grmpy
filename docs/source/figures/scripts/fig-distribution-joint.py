@@ -5,6 +5,7 @@ from scipy.stats import multivariate_normal
 
 from fig_config import OUTPUT_DIR
 
+
 y_min, y_max = -4, 4
 
 x = np.linspace(y_min, y_max, 100)

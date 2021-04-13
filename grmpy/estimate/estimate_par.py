@@ -468,7 +468,6 @@ def log_likelihood(
     llh_grad: numpy.array
         Gradient of the minimization interface, only returned if grad_opt==True
     """
-
     # assign parameter values
     beta1, beta0, gamma = (
         x0[:num_treated],
@@ -576,7 +575,7 @@ def minimizing_interface(
         Jacobian of the minimization interface, only returned if grad_opt==True
     """
 
-    # transform input parameter vector
+    # transform input parameter
     x0 = backward_transformation(x0, bfgs_dict)
 
     # Calculate likelihood
@@ -753,6 +752,7 @@ def process_output(init_dict, bfgs_dict, x0, flag):
     """
 
     x = min(bfgs_dict["crit"], key=bfgs_dict["crit"].get)
+
     if flag == "adjustment":
         if bfgs_dict["crit"][str(x)] < init_dict["AUX"]["criteria"]:
             x0 = bfgs_dict["parameter"][str(x)].tolist()
@@ -1078,7 +1078,7 @@ def prepare_mte_calc(opt_rslt, data):
     Returns
     ------
     quantiles: numpy.array
-        Gradient of the log-likelihood function.
+        Grid on which the marginal treatment effect got evaluated.
     cov: numpy.array
         Covariance matrix based on the estimation results.
     X: numpy.array
@@ -1086,6 +1086,11 @@ def prepare_mte_calc(opt_rslt, data):
         as well as the untreated outcome.
     b1_b0: numpy.array
         Difference of the coefficients of the treated and the untreated outcome equation.
+    b1: numpy.array
+        Estimated beta1 vector.
+    b0: numpy.array
+        Estimated beta0 vector.
+
     """
 
     quantiles = [0.0001] + np.arange(0.01, 1.0, 0.01).tolist() + [0.9999]
