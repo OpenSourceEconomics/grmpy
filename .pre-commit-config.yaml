@@ -10,12 +10,12 @@ repos:
     -   id: debug-statements
     -   id: end-of-file-fixer
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.10.0
+    rev: v2.12.0
     hooks:
     -   id: pyupgrade
         args: [--py36-plus]
--   repo: https://github.com/timothycrosley/isort
-    rev: 5.7.0
+-   repo: https://github.com/PyCQA/isort
+    rev: 5.8.0
     hooks:
     - id: isort
       name: isort
@@ -29,12 +29,12 @@ repos:
     hooks:
     -   id: black
 -   repo: https://github.com/asottile/blacken-docs
-    rev: v1.9.2
+    rev: v1.10.0
     hooks:
     -   id: blacken-docs
         additional_dependencies: [black]
--   repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+-   repo: https://gitlab.com/PyCQA/flake8
+    rev: 3.9.0
     hooks:
     -   id: flake8
         additional_dependencies: [

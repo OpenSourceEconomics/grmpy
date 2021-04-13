@@ -193,9 +193,9 @@ def print_info(init_dict, data_frame):
         len_ = len(value)
         for i in range(len_):
             if isinstance(value[i], float):
-                file_.write("  {:>10} {:>20.4f}\n".format(str(args[i]), value[i]))
+                file_.write(f"  {str(args[i]):>10} {value[i]:>20.4f}\n")
             else:
-                file_.write("  {:>10} {:>20.4}\n".format(str(args[i]), value[i]))
+                file_.write(f"  {str(args[i]):>10} {value[i]:>20.4}\n")
 
         # Write out parameterization of the model.
         write_identifier_section_simulate(init_dict, file_)

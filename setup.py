@@ -23,17 +23,18 @@ AUTHOR = "The grmpy Development Team"
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    "numpy",
-    "scipy",
-    "pytest",
-    "pandas",
-    "statsmodels",
+    "kernreg",
     "linearmodels",
-    "oyaml",
+    "numpy",
     "matplotlib",
-    "seaborn",
+    "oyaml",
+    "pandas",
+    "pytest",
+    "scikit-learn",
     "scikit-misc",
-    "numba",
+    "scipy",
+    "seaborn",
+    "statsmodels",
 ]
 
 # The rest you shouldn't have to touch too much :)
