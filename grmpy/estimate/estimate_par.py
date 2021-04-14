@@ -92,7 +92,8 @@ def par_fit(dict_, data):
     print_logfile(dict_, rslt, print_output)
 
     quantiles, cov, X, b1_b0, b1, b0 = prepare_mte_calc(rslt["opt_rslt"], data)
-
+    print(dict_["TREATED"]["order"], dict_["TREATED"]["order"])
+    print(b1_b0)
     mte_x = np.dot(X, b1_b0)
 
     mte_u = (cov[2, 0] - cov[2, 1]) * norm.ppf(quantiles)
@@ -1103,12 +1104,8 @@ def prepare_mte_calc(opt_rslt, data):
     x_untreated = data[opt_rslt.loc["UNTREATED"].index.values].values
     X = np.append(x_treated, -x_untreated, axis=1)
 
-    treated_labels = opt_rslt.loc["TREATED", :].index.values
-    untreated_labels = opt_rslt.loc["UNTREATED", :].index.values
-    common = [i for i in treated_labels if i in untreated_labels]
-
-    beta1 = opt_rslt.loc[("TREATED", common), "params"].values
-    beta0 = opt_rslt.loc[("UNTREATED", common), "params"].values
+    beta1 = opt_rslt.loc["TREATED"].params.values
+    beta0 = opt_rslt.loc["UNTREATED"].params.values
 
     b1_b0 = np.append(beta1, beta0)
 
