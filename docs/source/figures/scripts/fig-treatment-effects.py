@@ -5,6 +5,8 @@ from scipy.stats import norm
 
 from fig_config import OUTPUT_DIR
 
+plt.style.use("resources/grmpy.mplstyle")
+
 
 def plot_treatment_effect():
 

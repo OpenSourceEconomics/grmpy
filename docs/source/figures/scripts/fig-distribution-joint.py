@@ -5,6 +5,8 @@ from scipy.stats import multivariate_normal
 
 from fig_config import OUTPUT_DIR
 
+plt.style.use("resources/grmpy.mplstyle")
+
 y_min, y_max = -4, 4
 
 x = np.linspace(y_min, y_max, 100)

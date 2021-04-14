@@ -18,7 +18,6 @@ The ``grmpy`` package implements the normal linear-in-parameters version of the 
     D &= I[D^{*} > 0] \\
     D^{*}    &= Z \gamma -V
 
-We collect all unobservables determining treatment choice in :math:`V = U_C - (U_1 - U_0)`.
 Individuals decide to select into latent indicator variable :math:`D^{*}` is positive. Depending on their decision, we either observe :math:`Y_1` or :math:`Y_0`.
 
 
@@ -244,10 +243,7 @@ The start values and optimizer options need to be specified in the *ESTIMATION* 
 
     grmpy.fit('tutorial.grmpy.yml', semipar=False)
 
-As in the simulation process this creates a number of output files that contain information about the estimation results.
-
-* **est.grmpy.info**, basic information of the estimation process
-* **comparison.grmpy.txt**, distributional characteristics of the input sample and the samples simulated from the start and result values of the estimation process
+As in the simulation process this creates an output files that contain information about the estimation results.
 
 
 Local Instrumental Variables

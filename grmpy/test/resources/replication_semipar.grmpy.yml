@@ -1,7 +1,7 @@
 ---
 SIMULATION: null
 ESTIMATION:
-    file: /home/sebastian/github/OpenSourceEconomics/grmpy/grmpy/test/resources/aer-replication-mock.pkl
+    file: /home/sebastian/Desktop/opensourceconomics/grmpy/grmpy/test/resources/aer-replication-mock.pkl
     dependent: wage
     indicator: state
     semipar: true

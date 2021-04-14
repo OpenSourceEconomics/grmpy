@@ -13,10 +13,11 @@ from grmpy.simulate.simulate_auxiliary import (
     construct_covariance_matrix,
 )
 
-filename = "/tutorial.grmpy.ini"
+filename = "/tutorial.grmpy.yml"
 
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
 init_dict = read(RESOURCE_DIR + filename)
+plt.style.use("resources/grmpy.mplstyle")
 
 
 def plot_marginal_treatment_effect(pres, abs_):
@@ -36,11 +37,11 @@ def plot_marginal_treatment_effect(pres, abs_):
 
 
 if __name__ == "__main__":
-    coeffs_untreated = init_dict["UNTREATED"]["all"]
-    coeffs_treated = init_dict["TREATED"]["all"]
+    coeffs_untreated = init_dict["UNTREATED"]["params"]
+    coeffs_treated = init_dict["TREATED"]["params"]
     cov = construct_covariance_matrix(init_dict)
     df = simulate(RESOURCE_DIR + filename)
-    x = df[[init_dict["varnames"][i - 1] for i in init_dict["TREATED"]["order"]]]
+    x = df[init_dict["TREATED"]["order"]]
     MTE_pres = mte_information(
         coeffs_treated, coeffs_untreated, cov, GRID, x, init_dict
     )

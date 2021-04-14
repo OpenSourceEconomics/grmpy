@@ -14,10 +14,12 @@ from grmpy.simulate.simulate_auxiliary import (
     construct_covariance_matrix,
 )
 
-filename = "/tutorial.grmpy.ini"
+filename = "/tutorial.grmpy.yml"
 
 init_dict = read(RESOURCE_DIR + filename)
 GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
+
+plt.style.use("resources/grmpy.mplstyle")
 
 
 def weights_treatment_parameters(init_dict, GRID):
@@ -27,12 +29,10 @@ def weights_treatment_parameters(init_dict, GRID):
     """
     GRID = np.linspace(0.01, 0.99, num=99, endpoint=True)
 
-    coeffs_untreated = init_dict["UNTREATED"]["all"]
-    coeffs_treated = init_dict["TREATED"]["all"]
+    coeffs_untreated = init_dict["UNTREATED"]["params"]
+    coeffs_treated = init_dict["TREATED"]["params"]
     cov = construct_covariance_matrix(init_dict)
-
     x = simulate_covariates(init_dict)
-    x = x[:, :2]
 
     # We take the specified distribution for the cost shifters from the paper.
     cost_mean, cost_sd = -0.0026, np.sqrt(0.270)
@@ -67,8 +67,7 @@ def weights_treatment_parameters(init_dict, GRID):
 
 def plot_weights_marginal_effect(ate, tt, tut, mte):
     ax = plt.figure().add_subplot(111)
-
-    ax.set_xlabel("$u_S$")
+    ax.set_xlabel(r"$u_S$")
     ax.set_ylabel(r"$\omega(u_S)$")
     ax.set_ylim(0, 4.5)
     ax.set_xlim(0.0, 1.0)
