@@ -75,9 +75,7 @@ def plot_mte(
         )
 
     else:
-        quantiles, mte, con_u, con_d = mte_and_cof_int_par(
-            rslt, dict_, data, college_years
-        )
+        quantiles, mte, con_u, con_d = mte_and_cof_int_par(rslt, data, college_years)
 
     # Add confidence intervals to rslt dictionary
     rslt.update({"con_u": con_u, "con_d": con_d})
