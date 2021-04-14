@@ -23,13 +23,13 @@ def plot_rslts(rslt, file):
     data_frame = pd.read_pickle(init_dict["ESTIMATION"]["file"])
 
     # Define the Quantiles and read in the original results
-    mte_ = json.load(open("resources/mte_original.json", "r"))
+    mte_ = json.load(open("resources/mte_original.json"))
     mte_original = mte_[1]
     mte_original_d = mte_[0]
     mte_original_u = mte_[2]
 
     # Calculate the MTE and confidence intervals
-    quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, init_dict, data_frame, 4)
+    quantiles, mte, mte_up, mte_d = mte_and_cof_int_par(rslt, data_frame, 4)
 
     # Plot both curves
     ax = plt.figure().add_subplot(111)
@@ -56,7 +56,9 @@ def plot_rslts(rslt, file):
     blue_patch = mpatches.Patch(color="blue", label="original $MTE$")
     orange_patch = mpatches.Patch(color="orange", label="replicated $MTE$")
     plt.legend(handles=[blue_patch, orange_patch], prop={"size": 16})
-    plt.savefig(OUTPUT_DIR + "/fig-marginal-benefit-parametric-replication.png", dpi=300)
+    plt.savefig(
+        OUTPUT_DIR + "/fig-marginal-benefit-parametric-replication.png", dpi=300
+    )
 
 
 if __name__ == "__main__":

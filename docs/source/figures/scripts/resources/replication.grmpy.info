@@ -2,12 +2,12 @@
 ================================================================================
 Dep. Variable:                 wage     Optimizer:                          BFGS
 Choice Var:                   state     No. Evaluations:                     289
-Date:              Tue, 13 Apr 2021     Success:                               1
-Time:                      15:11:47     Status:                                0
+Date:              Wed, 14 Apr 2021     Success:                               1
+Time:                      11:38:45     Status:                                0
 Observations:                  1747     Message:         Optimization terminated
 Start Values:                  auto                                successfully.
                                         Criterion Func:                         
-                                             Start:                      +1.0666
+                                             Start:                      +1.2580
                                              Finish:                     +1.0666
 ================================================================================
                         coef   std err         t     P>|t|     [0.025     0.975]

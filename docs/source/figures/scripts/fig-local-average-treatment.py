@@ -11,6 +11,7 @@ from grmpy.simulate.simulate_auxiliary import (
 )
 
 filename = "/tutorial.grmpy.yml"
+plt.style.use("resources/grmpy.mplstyle")
 
 GRID = [i / 100 for i in range(1, 100, 1)]
 init_dict = read(RESOURCE_DIR + filename)

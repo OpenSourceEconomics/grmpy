@@ -1083,7 +1083,7 @@ def prepare_mte_calc(opt_rslt, data):
         Array object that contains all covariates that affect the treated
         as well as the untreated outcome.
     b1_b0: numpy.array
-        Difference of the coefficients of the treated and the untreated outcome equation.
+        Combined array of the parameters for the outcome equations.
     b1: numpy.array
         Estimated beta1 vector.
     b0: numpy.array

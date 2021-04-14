@@ -1,7 +1,7 @@
 figure.figsize: 12, 8
 font.size: 20
 lines.linewidth: 3
-image.cmap: je      t
+image.cmap: jet
 
 axes.labelsize: 20
 axes.labelpad: 15
