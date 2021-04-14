@@ -92,8 +92,6 @@ def par_fit(dict_, data):
     print_logfile(dict_, rslt, print_output)
 
     quantiles, cov, X, b1_b0, b1, b0 = prepare_mte_calc(rslt["opt_rslt"], data)
-    print(dict_["TREATED"]["order"], dict_["TREATED"]["order"])
-    print(b1_b0)
     mte_x = np.dot(X, b1_b0)
 
     mte_u = (cov[2, 0] - cov[2, 1]) * norm.ppf(quantiles)
