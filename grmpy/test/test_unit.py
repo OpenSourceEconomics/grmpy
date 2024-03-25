@@ -1,4 +1,5 @@
 """The module provides unit tests for different aspects of the simulation process."""
+
 import numpy as np
 import pandas as pd
 import pytest

@@ -1,6 +1,7 @@
 """This module creates all available figures and then provides them in a compiled
 document for review.
 """
+
 import os
 import subprocess
 
