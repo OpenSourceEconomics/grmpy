@@ -1,6 +1,7 @@
 """
 This module provides auxiliary functions for the plot_mte function.
 """
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd

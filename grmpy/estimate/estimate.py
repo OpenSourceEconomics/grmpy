@@ -1,6 +1,7 @@
 """The module provides an estimation process given the simulated data set and the
 initialization file.
 """
+
 from grmpy.check.auxiliary import read_data
 from grmpy.check.check import (
     check_est_init_dict,

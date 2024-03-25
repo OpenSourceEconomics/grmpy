@@ -1,4 +1,5 @@
 """The module contains the main function of the init file import process."""
+
 import numpy as np
 import yaml
 

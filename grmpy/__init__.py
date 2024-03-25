@@ -8,6 +8,7 @@ Include only imports which should be available using
 
     gp.<func>
 """
+
 import pytest
 
 from grmpy.estimate.estimate import fit  # noqa: F401

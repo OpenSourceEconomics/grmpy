@@ -1,4 +1,5 @@
 """The module allows to run tests from inside the interpreter."""
+
 import os
 
 import pytest
