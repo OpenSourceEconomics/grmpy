@@ -1,6 +1,7 @@
 """ This script creates a figure to illustrate how the usual treatment effects can be
 constructed by using differen weights on the marginal treatment effect.
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm

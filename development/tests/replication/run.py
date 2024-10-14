@@ -1,6 +1,7 @@
 """This script replicates the estimation results from Cainero 2011 via the grmpy estimation method.
 Additionally it returns a figure of the Marginal treatment effect based on the estimation results.
 """
+
 import json
 import matplotlib.pyplot as plt
 import numpy as np

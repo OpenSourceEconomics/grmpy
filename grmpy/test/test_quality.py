@@ -1,4 +1,5 @@
 """This module contains test that check the code quality of the package."""
+
 import os
 import subprocess
 from subprocess import CalledProcessError

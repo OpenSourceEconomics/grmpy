@@ -1,6 +1,7 @@
 """The script creates a figure to illustrate the appearance of the marginal treatment
 effect in the abscence and presence of individual heterogeneity.
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 

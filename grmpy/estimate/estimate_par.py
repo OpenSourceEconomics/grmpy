@@ -474,10 +474,10 @@ def log_likelihood(
     sd1, sd0, rho1v, rho0v = x0[-4], x0[-2], x0[-3], x0[-1]
 
     nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
-    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt(1 - rho1v ** 2))
+    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt(1 - rho1v**2))
 
     nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
-    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt(1 - rho0v ** 2))
+    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt(1 - rho0v**2))
 
     treated = (1 / sd1) * norm.pdf(nu1) * norm.cdf(lambda1)
     untreated = (1 / sd0) * norm.pdf(nu0) * (1 - norm.cdf(lambda0))
@@ -916,7 +916,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
             "ij, i ->ij",
             X1,
             -(norm.pdf(lambda1) / norm.cdf(lambda1))
-            * (rho1v / (np.sqrt(1 - rho1v ** 2) * sd1))
+            * (rho1v / (np.sqrt(1 - rho1v**2) * sd1))
             - nu1 / sd1,
         ),
         0,
@@ -929,7 +929,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
             X0,
             norm.pdf(lambda0)
             / (1 - norm.cdf(lambda0))
-            * (rho0v / (np.sqrt(1 - rho0v ** 2) * sd0))
+            * (rho0v / (np.sqrt(1 - rho0v**2) * sd0))
             - nu0 / sd0,
         ),
         0,
@@ -939,8 +939,8 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         * (
             +1 / sd1
             - (norm.pdf(lambda1) / norm.cdf(lambda1))
-            * (rho1v * nu1 / (np.sqrt(1 - rho1v ** 2) * sd1))
-            - nu1 ** 2 / sd1
+            * (rho1v * nu1 / (np.sqrt(1 - rho1v**2) * sd1))
+            - nu1**2 / sd1
         ),
         keepdims=True,
     )
@@ -949,8 +949,8 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         * (
             +1 / sd0
             + (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-            * (rho0v * nu0 / (np.sqrt(1 - rho0v ** 2) * sd0))
-            - nu0 ** 2 / sd0
+            * (rho0v * nu0 / (np.sqrt(1 - rho0v**2) * sd0))
+            - nu0**2 / sd0
         ),
         keepdims=True,
     )
@@ -958,7 +958,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         (
             -(norm.pdf(lambda1) / norm.cdf(lambda1))
             * ((np.dot(gamma, Z1.T) * rho1v) - nu1)
-            / (1 - rho1v ** 2) ** (1 / 2)
+            / (1 - rho1v**2) ** (1 / 2)
         ),
         keepdims=True,
     )
@@ -967,7 +967,7 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         (
             (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
             * ((np.dot(gamma, Z0.T) * rho0v) - nu0)
-            / (1 - rho0v ** 2) ** (1 / 2)
+            / (1 - rho0v**2) ** (1 / 2)
         ),
         keepdims=True,
     )
@@ -976,14 +976,13 @@ def gradient(X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v,
         np.einsum(
             "ij, i ->ij",
             Z1,
-            (norm.pdf(lambda1) / norm.cdf(lambda1)) * 1 / np.sqrt(1 - rho1v ** 2),
+            (norm.pdf(lambda1) / norm.cdf(lambda1)) * 1 / np.sqrt(1 - rho1v**2),
         )
     ) - sum(
         np.einsum(
             "ij, i ->ij",
             Z0,
-            (norm.pdf(lambda0) / (1 - norm.cdf(lambda0)))
-            * (1 / np.sqrt(1 - rho0v ** 2)),
+            (norm.pdf(lambda0) / (1 - norm.cdf(lambda0))) * (1 / np.sqrt(1 - rho0v**2)),
         )
     )
 
@@ -1042,10 +1041,10 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
     # compute gradient for beta 1
 
     nu1 = (Y1 - np.dot(beta1, X1.T)) / sd1
-    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt(1 - rho1v ** 2))
+    lambda1 = (np.dot(gamma, Z1.T) - rho1v * nu1) / (np.sqrt(1 - rho1v**2))
 
     nu0 = (Y0 - np.dot(beta0, X0.T)) / sd0
-    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt(1 - rho0v ** 2))
+    lambda0 = (np.dot(gamma, Z0.T) - rho0v * nu0) / (np.sqrt(1 - rho0v**2))
 
     grad = gradient(
         X1, X0, Z1, Z0, nu1, nu0, lambda1, lambda0, gamma, sd1, sd0, rho1v, rho0v
@@ -1054,7 +1053,7 @@ def gradient_hessian(x0, X1, X0, Z1, Z0, Y1, Y0):
     multiplier = np.concatenate(
         (
             np.ones(len(grad[:-4])),
-            np.array([1 / sd1, 1 / (1 - rho1v ** 2), 1 / sd0, 1 / (1 - rho0v ** 2)]),
+            np.array([1 / sd1, 1 / (1 - rho1v**2), 1 / sd0, 1 / (1 - rho0v**2)]),
         )
     )
 

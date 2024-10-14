@@ -1,4 +1,5 @@
 """This module provides some configuration for the package."""
+
 import os
 import sys
 import warnings
