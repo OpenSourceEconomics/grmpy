@@ -1,6 +1,7 @@
 """This module contains a tutorial illustrating the basic capabilities of the grmpy
 package.
 """
+
 import os
 
 from grmpy.estimate.estimate import fit

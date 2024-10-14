@@ -1,4 +1,5 @@
 """The module provides the simulation process."""
+
 import numpy as np
 
 from grmpy.check.check import check_sim_init_dict

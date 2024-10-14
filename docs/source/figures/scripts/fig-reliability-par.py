@@ -1,6 +1,7 @@
 """This script replicates the results of Caneiro 2011 via using a
  mock data set and plots the original as well as the estimated mar-
  ginal treatment effect"""
+
 import json
 
 import pandas as pd
