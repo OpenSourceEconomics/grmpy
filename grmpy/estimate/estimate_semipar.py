@@ -1,6 +1,7 @@
 """
 This module contains the semiparametric estimation process.
 """
+
 import kernreg as kr
 import matplotlib.pyplot as plt
 import numpy as np

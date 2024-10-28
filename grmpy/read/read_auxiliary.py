@@ -1,4 +1,5 @@
 """This module provides auxiliary functions for the import process of the init file."""
+
 import numpy as np
 
 

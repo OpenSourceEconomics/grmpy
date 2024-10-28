@@ -1,4 +1,5 @@
 """This module contains some auxiliary functions for the property testing."""
+
 import glob
 import os
 
